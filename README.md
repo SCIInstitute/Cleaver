@@ -16,15 +16,15 @@ Building Cleaver2
 
 It is often best to build programs outside of the source tree. Inside of Cleaver2:
 
-<code>mkdir build</code>
-<code>cd build</code>
-<code>cmake</code>
-<code>make</code>
+<code>mkdir build</code><br/>
+<code>cd build</code><br/>
+<code>cmake</code><br/>
+<code>make</code><br/>
 
 Using Cleaver2
 ========
-Inside of your build directory:
-<code>bin/cleaver-gui</code>
-Or, for the command line tool:
-<code> bin/cleaver-cli --help</code>
+Inside of your build directory:<br/>
+<code>bin/cleaver-gui</code><br/>
+Or, for the command line tool:<br/>
+<code> bin/cleaver-cli --help</code><br/>
 For a list of command line tool options.
