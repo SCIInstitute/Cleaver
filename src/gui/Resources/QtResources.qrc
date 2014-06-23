@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>Icons/Info.png</file>
+        <file>Icons/InfoOff.png</file>
+        <file>Icons/Visible.png</file>
+        <file>Icons/VisibleGray.png</file>
+        <file>Icons/VisibleOff.png</file>
+        <file>Icons/VisiblePlus.png</file>
+        <file>Icons/VisiblePlusOff.png</file>
+        <file>Icons/VisibleWhite.png</file>
+        <file>Icons/RightArrow.png</file>
+        <file>Icons/RightArrowWhite.png</file>
+        <file>Icons/DownArrow.png</file>
+        <file>Icons/DownArrowWhite.png</file>
+        <file>Icons/More1.png</file>
+        <file>Icons/Less1.png</file>
+        <file>Icons/tet.svg</file>
+        <file>Icons/volume.png</file>
+    </qresource>
+</RCC>
