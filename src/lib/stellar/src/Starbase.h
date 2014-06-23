@@ -514,7 +514,9 @@ struct behavior {
   starulong tricircumcentercount;    /* Triangular face circumcenter calc's. */
 
 };
+#ifndef PI
 #define PI 3.141592653589793238462643383279502884197169399375105820974944592308
+#endif
 #define INPUTLINESIZE 1024
 #define INEXACT /* Nothing */
 #define INTERFACE 0

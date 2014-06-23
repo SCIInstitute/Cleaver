@@ -90,7 +90,6 @@ void MeshViewOptionsWidget::materialItemChanged(QStandardItem* item)
             window->setMaterialCellLock(material, false);
     }
 
-    std::cout << "Updating OpenGL Mesh" << std::endl;
     window->updateMesh();
     window->updateGL();
 }

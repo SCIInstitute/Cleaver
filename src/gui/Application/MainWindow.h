@@ -6,8 +6,6 @@
 #include "ViewWidgets/MeshWindow.h"
 #include "ViewWidgets/MeshViewOptionsWidget.h"
 #include "ToolWidgets/CleaverWidget.h"
-#include "ToolWidgets/TestDataWidget.h"
-#include "ToolWidgets/BlobbiesWidget.h"
 #include "ToolWidgets/SizingFieldWidget.h"
 #include "DataWidgets/DataManagerWidget.h"
 #include <Cleaver/Cleaver.h>
@@ -68,8 +66,6 @@ private:
     DataManager *m_dataManager;
     MeshViewOptionsWidget *m_meshViewOptionsWidget;
     CleaverWidget *m_cleaverWidget;
-    TestDataWidget *m_testDataWidget;
-    BlobbiesWidget *m_blobbiesWidget;
     SizingFieldWidget *m_sizingFieldWidget;
     DataManagerWidget *m_dataManagerWidget;
 
@@ -96,8 +92,6 @@ private:
     QAction *loadCameraAct;
 
     // Tool Menu Actions    
-    QAction *testDataAction;
-    QAction *blobbiesAction;
     QAction *cleaverAction;
     QAction *meshViewOptionsAction;
     QAction *sizingFieldAction;

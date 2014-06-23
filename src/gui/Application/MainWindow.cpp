@@ -49,14 +49,8 @@ void MainWindow::createDockWindows()
     m_cleaverWidget = new CleaverWidget(this);
     m_sizingFieldWidget = new SizingFieldWidget(this);
     m_meshViewOptionsWidget = new MeshViewOptionsWidget(this);
-    m_testDataWidget = new TestDataWidget(this);
-    m_blobbiesWidget = new BlobbiesWidget(this);
-
-    m_blobbiesWidget->setVisible(false);
 
     addDockWidget(Qt::LeftDockWidgetArea, m_sizingFieldWidget);
-    addDockWidget(Qt::LeftDockWidgetArea, m_testDataWidget);
-    addDockWidget(Qt::LeftDockWidgetArea, m_blobbiesWidget);
     addDockWidget(Qt::LeftDockWidgetArea, m_cleaverWidget);
     addDockWidget(Qt::RightDockWidgetArea, m_dataManagerWidget);
     addDockWidget(Qt::RightDockWidgetArea, m_meshViewOptionsWidget);
@@ -128,12 +122,6 @@ void MainWindow::createActions()
     meshViewOptionsAction = m_meshViewOptionsWidget->toggleViewAction();
     meshViewOptionsAction->setCheckable(true);
 
-    testDataAction = m_testDataWidget->toggleViewAction();
-    testDataAction->setCheckable(true);
-
-    blobbiesAction = m_blobbiesWidget->toggleViewAction();
-    blobbiesAction->setCheckable(true);
-
     sizingFieldAction = m_sizingFieldWidget->toggleViewAction();
     sizingFieldAction->setCheckable(true);
 
@@ -204,7 +192,6 @@ void MainWindow::createMenus()
 
     // Tool Menu Actions
     m_toolsMenu->addAction(sizingFieldAction);
-    m_toolsMenu->addAction(testDataAction);
     m_toolsMenu->addSeparator();    
     m_toolsMenu->addAction(cleaverAction);
     m_toolsMenu->addSeparator();

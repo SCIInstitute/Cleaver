@@ -42,7 +42,6 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ./)
 FILE(GLOB srcs *.cpp )
 FILE(GLOB hdrs *.h   )
 SET(Synthetic_API_HEADER_FILES
-    BlobbyField.h
     PlaneField.h
     PlaneSizingField.h
     SphereField.h
