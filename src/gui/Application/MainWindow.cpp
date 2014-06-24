@@ -60,24 +60,24 @@ void MainWindow::createDockWindows()
 void MainWindow::createActions()
 {
     // File Menu Actions
-    importVolumeAct = new QAction(tr("&Import Volume"), this);
-    importVolumeAct->setShortcut(tr("Ctrl+O"));
+    importVolumeAct = new QAction(tr("Import &Volume"), this);
+    importVolumeAct->setShortcut(tr("Ctrl+v"));
     connect(importVolumeAct, SIGNAL(triggered()), this, SLOT(importVolume()));
 
-    importSizingFieldAct = new QAction(tr("&Import Sizing Field"), this);
-    importSizingFieldAct->setShortcut(tr("Ctrl+O"));
+    importSizingFieldAct = new QAction(tr("Import Sizing &Field"), this);
+    importSizingFieldAct->setShortcut(tr("Ctrl+f"));
     connect(importSizingFieldAct, SIGNAL(triggered()), this, SLOT(importSizingField()));
     importSizingFieldAct->setDisabled(true);
 
-    importMeshAct = new QAction(tr("&Import Mesh"), this);
-    importMeshAct->setShortcut(tr("Ctrl+O"));
+    importMeshAct = new QAction(tr("Import &Mesh"), this);
+    importMeshAct->setShortcut(tr("Ctrl+m"));
     connect(importMeshAct, SIGNAL(triggered()), this, SLOT(importMesh()));
 
     closeAct = new QAction(tr("&Close"), this);
     connect(closeAct, SIGNAL(triggered()), this, SLOT(closeSubWindow()));
     closeAct->setDisabled(true);
 
-    closeAllAct = new QAction(tr("&Close All"), this);
+    closeAllAct = new QAction(tr("Close &All"), this);
     connect(closeAllAct, SIGNAL(triggered()), this, SLOT(closeAllSubWindows()));
     closeAllAct->setDisabled(true);
 
@@ -92,10 +92,10 @@ void MainWindow::createActions()
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
     // Edit Menu Actions
-    removeExternalTetsAct = new QAction(tr("&Remove External Tets"), this);
+    removeExternalTetsAct = new QAction(tr("Remove &External Tets"), this);
     connect(removeExternalTetsAct, SIGNAL(triggered()), this, SLOT(removeExternalTets()));
 
-    removeLockedTetsAct = new QAction(tr("&Remove Locked Tets"), this);
+    removeLockedTetsAct = new QAction(tr("Remove &Locked Tets"), this);
     connect(removeLockedTetsAct, SIGNAL(triggered()), this, SLOT(removeLockedTets()));
 
     // Compute Menu Actions

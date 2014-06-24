@@ -125,6 +125,7 @@ int main(int argc,	char* argv[])
                 ("version", "display version information")
                 ("material_fields", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
                 ("background_mesh", po::value<std::string>(), "input background mesh")
+                ("mesh_mode", po::value<std::string>(), "background mesh mode")
                 ("mesh_improve", "improve background quality")
                 ("alpha", po::value<double>(), "initial alpha value")
                 ("sizing_field", po::value<std::string>(), "sizing field path")
@@ -258,7 +259,7 @@ int main(int argc,	char* argv[])
                 mesh_mode = cleaver::Structured;
             } else {
                 std::cerr << "Error: invalid background mesh mode: " << mesh_mode_string << std::endl;
-                std::cerr << "Valid Modes: [regular] [structured] [unstructured]" << std::endl;
+                std::cerr << "Valid Modes: [regular] [structured] " << std::endl;
                 return 0;
             }
         }
@@ -453,7 +454,7 @@ int main(int argc,	char* argv[])
     //-----------------------------------------------------------
     // Write Mesh To File
     //-----------------------------------------------------------    
-    mesh->writeNodeEle(output_path + output_name, verbose, true, true);
+    mesh->writeNodeEle(output_path + output_name, verbose, true, false);
     mesh->writePly(output_path + output_name, verbose);
     mesh->writeInfo(output_path + output_name, verbose);
 
