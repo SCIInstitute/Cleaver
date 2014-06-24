@@ -51,8 +51,8 @@
 
 namespace cleaver
 {
-  //              BCCLattice   BCCOctree  ParticleDelaunay
-  enum MeshType { Regular, Structured, Unstructured };
+  //              BCCLattice   BCCOctree
+  enum MeshType { Regular, Structured };
   enum MeshFormat { Tetgen, Scirun, Matlab, VTK };
 
   // forward declare dependent types

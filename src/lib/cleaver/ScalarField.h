@@ -61,19 +61,6 @@ public:
     virtual double valueAt(const vec3 &x) const;
     virtual double valueAt(double x, double y, double z) const;
 
-    virtual double tricubicValueAt(const vec3 &x) const;
-    virtual double tricubicValueAt(double x, double y, double z) const;
-
-    virtual vec3 tricubicGradientAt(const vec3 &x) const;
-    virtual vec3 tricubicGradientAt(double x, double y, double z) const;
-
-    virtual double cachedTricubicValueAt(const vec3 &x) const;
-    virtual double cachedTricubicValueAt(double x, double y, double z) const;
-
-    virtual vec3  cachedTricubicGradientAt(const vec3 &x) const;
-    virtual vec3  cachedTricubicGradientAt(double x, double y, double z) const;
-
-
     void setData(T *data);
     T* data() const;
     T& data(int i, int j, int k) const;
@@ -88,25 +75,6 @@ public:
 
     void setScale(const vec3 &scale);
     const vec3& scale() const;
-
-    virtual vec3 gradientAt(double x, double y, double z) const;
-    virtual vec3 gradientAt(const vec3 &x) const;
-
-    virtual vec3 FD_central_gradientAt(double x, double y, double z) const;
-    virtual vec3 FD_central_gradientAt(const vec3 &x) const;
-
-    virtual double convolutionTricubicValueAt(const vec3 &x) const;
-    virtual double convolutionTricubicValueAt(double x, double y, double z) const;
-    virtual double convolutionBicubicValueAt(double x, double y, double z) const;
-    virtual double convolutionCubicValueAt(double x, double y, double z) const;
-    virtual double convolutionInterpolate(double P[], double t) const;
-
-    virtual double convolve(int m, double x) const;
-    virtual double dconvolve(int m, double x) const;
-    virtual double convolutionValueAt(double x, double y, double z) const;
-    virtual double convolutionValueAt(const vec3 &x) const;
-    virtual vec3 convolutionGradientAt(double x, double y, double z) const;
-    virtual vec3 convolutionGradientAt(const vec3 &x) const;
 
 private:
 

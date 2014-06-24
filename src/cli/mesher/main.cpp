@@ -106,7 +106,7 @@ int main(int argc,	char* argv[])
     bool strict = false;
     bool accelerate = false;
     bool strip_exterior = false;
-    enum cleaver::MeshType mesh_mode = cleaver::Unstructured;
+    enum cleaver::MeshType mesh_mode = cleaver::Structured;
     cleaver::MeshFormat output_format = kDefaultOutputFormat;
 
     double sizing_field_time = 0;
