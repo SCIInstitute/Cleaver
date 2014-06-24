@@ -2,9 +2,7 @@ PROJECT(cleaver-gui)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-
 # Find QT4, OpenGL
-FIND_PACKAGE(BLAS QUIET)
 FIND_PACKAGE(Qt4 QUIET)
 FIND_PACKAGE(OpenGL QUIET)
 
@@ -123,17 +121,10 @@ ADD_CUSTOM_TARGET(comp_shaders
 
 ADD_EXECUTABLE(cleaver-gui ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
 
-if(USE_STELLAR)
-   set (OPTIONAL_LIBS ${OPTIONAL_LIBS} stellar)
-endif()
-if(USE_BLAS)
-   SET (OPTIONAL_LIBS ${OPTIONAL_LIBS} poisson ${BLAS_LIBRARIES})
-endif()
-
 if(WIN32)
-TARGET_LINK_LIBRARIES(cleaver-gui cleaver nrrd2cleaver teem synthetic tetgen ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${GLEW_LIBRARIES} )
+TARGET_LINK_LIBRARIES(cleaver-gui cleaver nrrd2cleaver teem synthetic ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${GLEW_LIBRARIES} )
 else()
-TARGET_LINK_LIBRARIES(cleaver-gui cleaver nrrd2cleaver teem synthetic tetgen ${OPTIONAL_LIBS} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} )
+TARGET_LINK_LIBRARIES(cleaver-gui cleaver nrrd2cleaver teem synthetic ${OPTIONAL_LIBS} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} )
 endif()
 
 ADD_DEPENDENCIES(cleaver-gui comp_shaders)

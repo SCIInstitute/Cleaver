@@ -13,4 +13,4 @@ FILE(GLOB hdrs *.h   )
 
 ADD_EXECUTABLE(cleaver-cli ${srcs} ${hdrs})
 
-TARGET_LINK_LIBRARIES(cleaver-cli cleaver nrrd2cleaver teem tetgen boostparts)
+TARGET_LINK_LIBRARIES(cleaver-cli cleaver nrrd2cleaver teem boostparts)

@@ -1,10 +1,6 @@
 #include <QtGui/QApplication>
 #include <QtGui>
 #include "MainWindow.h"
-#ifdef USE_STELLAR
-  #include <Stellar/Stellar.h>
-#endif
-
 
 int main(int argc, char *argv[])
 {
