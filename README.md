@@ -28,3 +28,26 @@ Inside of your build directory:<br/>
 Or, for the command line tool:<br/>
 <code> bin/cleaver-cli --help</code><br/>
 For a list of command line tool options.
+
+
+Command line flags:<br>
+  -h [ --help ]            display help message<br>
+  -v [ --verbose ]         enable verbose output<br>
+  --version                display version information<br>
+  --material_fields arg    material field paths<br>
+  --background_mesh arg    input background mesh<br>
+  --mesh_mode arg          background mesh mode<br>
+  --mesh_improve           improve background quality<br>
+  --alpha arg              initial alpha value<br>
+  --sizing_field arg       sizing field path<br>
+  --grading arg            sizing field grading<br>
+  --multiplier arg         sizing field multiplier<br>
+  --scale arg              sizing field scale<br>
+  --padding arg            volume padding<br>
+  --accelerate             use acceleration structure<br>
+  --write_background_mesh  write background mesh<br>
+  --strip_exterior         strip exterior tetrahedra<br>
+  --output_path arg        output path prefix<br>
+  --output_name arg        output mesh name<br>
+  --output_format arg      output mesh format<br>
+  --strict                 warnings become errors<br>
