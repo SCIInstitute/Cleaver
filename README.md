@@ -30,10 +30,10 @@ Or, for the command line tool:<br/>
 For a list of command line tool options.
 
 <code>
-Command line flags:
-  -h [ --help ]            display help message
-  -v [ --verbose ]         enable verbose output
-  --version                display version information
+Command line flags:\n
+  -h [ --help ]            display help message\n
+  -v [ --verbose ]         enable verbose output\n
+  --version                display version information\n
   --material_fields arg    material field paths
   --background_mesh arg    input background mesh
   --mesh_mode arg          background mesh mode
