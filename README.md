@@ -29,7 +29,7 @@ Or, for the command line tool:<br/>
 <code> bin/cleaver-cli --help</code><br/>
 For a list of command line tool options.
 
-
+<code>
 Command line flags:<br>
   -h [ --help ]            display help message<br>
   -v [ --verbose ]         enable verbose output<br>
@@ -51,3 +51,4 @@ Command line flags:<br>
   --output_name arg        output mesh name<br>
   --output_format arg      output mesh format<br>
   --strict                 warnings become errors<br>
+</code>
