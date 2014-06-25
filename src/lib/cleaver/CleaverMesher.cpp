@@ -2296,8 +2296,9 @@ void CleaverMesherImp::computeAlphas(bool verbose)
     std::cout << "Max dist  reduction: " << max_alpha_absol_change << std::endl;
 
     std::cout << "Following up with Altitude Fix" << std::endl;
-    computeAlphasAlt();
     */
+    computeAlphasAlt();
+
 
     if(verbose)
         std::cout << " done." << std::endl;
