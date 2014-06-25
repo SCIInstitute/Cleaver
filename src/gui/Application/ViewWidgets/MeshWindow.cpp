@@ -1390,8 +1390,6 @@ void MeshWindow::setup_vbos()
     if(glGetError() != GL_NO_ERROR)
     {
         std::cerr << "Failed to set up OpenGL VBOS. Disabling OpenGL Rendering." << std::endl;
-        m_bOpenGLError = true;
-        return;
     }
 
     update_vbos();
@@ -1665,12 +1663,9 @@ void MeshWindow::build_bkgrnd_vbos()
                 std::cerr << "\tInvalid Enum." << std::endl;
                 break;
             default:
-                std::cerr << "\tUnspecified Error" << std::endl;
+                std::cerr << "\tUnspecified Error: " << errorCode << std::endl;
                 break;
         }
-        if(errorCode != GL_INVALID_OPERATION)
-            m_bOpenGLError = true;
-        return;
     }
 
 
