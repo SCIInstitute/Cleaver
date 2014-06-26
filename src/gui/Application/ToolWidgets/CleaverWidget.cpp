@@ -4,6 +4,8 @@
 #include "ViewWidgets/MeshWindow.h"
 #include <Cleaver/TetMesh.h>
 #include <Cleaver/Cleaver.h>
+#include <Cleaver/Timer.h>
+#include <Cleaver/SizingFieldCreator.h>
 #include <iostream>
 
 
@@ -87,10 +89,13 @@ void CleaverWidget::update()
     //-----------------------------
     // Set Main Mesh Button
     //-----------------------------
-    if(mesher && !mesher->backgroundMeshCreated())
-        ui->createMeshButton->setEnabled(true);
-    else
+    if(mesher && !mesher->backgroundMeshCreated()) {
+      ui->createMeshButton->setEnabled(true);
+      ui->createLegacyMeshButton->setEnabled(true);
+    } else {
         ui->createMeshButton->setEnabled(false);
+        ui->createLegacyMeshButton->setEnabled(false);
+    }
 
     //-----------------------------
     // Set Background Mesh Button
@@ -184,6 +189,7 @@ void CleaverWidget::createMesh()
 {
     MeshWindow *window = MainWindow::instance()->activeWindow();
     if(window != NULL){
+        mesher->setRegular(false);
         mesher->createBackgroundMesh();
 
         window->setMesh(mesher->getBackgroundMesh());
@@ -209,6 +215,69 @@ void CleaverWidget::createMesh()
     }
 }
 
+//=========================================
+// - createLegacyMesh()
+//=========================================
+void CleaverWidget::createLegacyMesh()
+{
+      MeshWindow *window = MainWindow::instance()->activeWindow();
+
+      if(window != NULL){
+        //create the default sizing field
+        cleaver::Volume *volume = window->volume();
+        std::cout << "Computing Sizing Field..." << std::flush;
+
+        float scale = ui->scalingSpinner->value();
+
+        cleaver::Timer timer;
+        timer.start();
+        cleaver::AbstractScalarField *sizingField =
+            cleaver::SizingFieldCreator::createSizingFieldFromVolume(
+                volume, 0.2, scale, 1., 0., false, true);
+        timer.stop();
+
+        std::string sizingFieldName = volume->name() + "-computed-sizing-field";
+        sizingField->setName(sizingFieldName);
+        volume->setSizingField(sizingField);
+        this->mesher->setSizingFieldTime(timer.time());
+
+        // Add new sizing field to data manager
+        MainWindow::dataManager()->addField(sizingField);
+
+        std::cout << "done!" << std::endl;
+        std::cout << "Computed in " << timer.time() << " seconds." << std::endl;
+        //update the mesher
+        std::cout << "Creating legacy Cleaver Mesh..." << std::endl;
+        double al = ui->alphaLongSpinner->value();
+        double as = ui->alphaShortSpinner->value();
+        std::cout << "Alpha Long: "<< al << std::endl;
+        std::cout << "Alpha Short: "<< as << std::endl;
+        mesher->setAlphas(al,as);
+        mesher->setRegular(true);
+        mesher->createBackgroundMesh();
+
+        window->setMesh(mesher->getBackgroundMesh());
+
+        mesher->buildAdjacency();
+        mesher->sampleVolume();
+        window->updateMesh();
+        window->updateGL();
+
+        mesher->computeAlphas();
+        mesher->computeInterfaces();
+        mesher->generalizeTets();
+        mesher->snapsAndWarp();
+
+        window->updateMesh();
+        window->updateGL();
+
+        mesher->stencilTets();
+        window->updateMesh();
+        window->updateGL();
+
+        update();
+    }
+}
 //=========================================
 // - createBackgroundMesh()
 //

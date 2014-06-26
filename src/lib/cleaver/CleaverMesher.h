@@ -70,13 +70,18 @@ public:
     double getCleavingTime() const;
 
     //================================
-    // Data Getters.
+    // Data Getters / Setters
     //================================
     Octree* getTree() const;
+    void setAlphas(double l, double s);
+    void setRegular(bool reg);
 
 private:
 
     CleaverMesherImp *m_pimpl;
+    double m_alpha_long;
+    double m_alpha_short;
+    bool m_regular;
 };
 }
 

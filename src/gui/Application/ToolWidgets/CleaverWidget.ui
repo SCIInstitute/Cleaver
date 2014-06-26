@@ -6,14 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>210</width>
-    <height>301</height>
+    <width>208</width>
+    <height>340</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>210</width>
-    <height>301</height>
+    <width>208</width>
+    <height>340</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -33,6 +39,12 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <attribute name="title">
         <string>Basic</string>
        </attribute>
@@ -87,6 +99,114 @@
           </property>
           <property name="text">
            <string>Constuct Mesh</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Legacy Cleaver</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Alpha Short</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="alphaShortSpinner">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.203000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Alpha Long</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="alphaLongSpinner">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.357000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Scaling</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="scalingSpinner">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>0.000100000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="createLegacyMeshButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Construct Legacy Mesh</string>
           </property>
          </widget>
         </item>
@@ -291,8 +411,8 @@
    <slot>sampleVolume()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>73</y>
+     <x>112</x>
+     <y>134</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -307,8 +427,8 @@
    <slot>computeInterfaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>103</y>
+     <x>112</x>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -323,8 +443,8 @@
    <slot>generalizeTets()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>133</y>
+     <x>112</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -339,8 +459,8 @@
    <slot>stencilTets()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>163</y>
+     <x>112</x>
+     <y>274</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -355,8 +475,8 @@
    <slot>snapAndWarp()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>167</y>
+     <x>112</x>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -371,8 +491,8 @@
    <slot>buildMeshAdjacency()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>53</y>
+     <x>112</x>
+     <y>106</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -387,8 +507,8 @@
    <slot>computeAlphas()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>73</y>
+     <x>112</x>
+     <y>162</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -451,12 +571,28 @@
    <slot>topologyActionChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>120</y>
+     <x>105</x>
+     <y>144</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
      <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>createLegacyMeshButton</sender>
+   <signal>clicked()</signal>
+   <receiver>CleaverWidget</receiver>
+   <slot>createLegacyMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>157</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1643</x>
+     <y>334</y>
     </hint>
    </hints>
   </connection>
@@ -472,5 +608,6 @@
   <slot>buildMeshAdjacency()</slot>
   <slot>createMesh()</slot>
   <slot>topologyActionChanged()</slot>
+  <slot>createLegacyMesh()</slot>
  </slots>
 </ui>

@@ -39,6 +39,8 @@ For a list of command line tool options.
       --mesh_mode arg          background mesh mode
       --mesh_improve           improve background quality
       --alpha arg              initial alpha value
+      --alpha_long arg         alpha long value for regular mesh_mode
+      --alpha_short arg        alpha short value for regular mesh_mode
       --sizing_field arg       sizing field path
       --grading arg            sizing field grading
       --multiplier arg         sizing field multiplier

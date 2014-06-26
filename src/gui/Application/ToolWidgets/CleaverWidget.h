@@ -26,6 +26,8 @@ public slots:
 
     //------ run entire cleaving algorithm
     void createMesh();
+    //------ run entire legacy cleaving algorithm
+    void createLegacyMesh();
     //------ advanced indididual calls
     void createBackgroundMesh();
     void buildMeshAdjacency();

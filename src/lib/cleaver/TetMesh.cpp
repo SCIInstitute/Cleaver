@@ -842,7 +842,7 @@ HalfEdge* TetMesh::halfEdgeForVerts(Vertex *v1, Vertex *v2)
     // create new one if necessary
     if (res == halfEdges.end())
     {
-        half_edge = new HalfEdge();
+        half_edge = new HalfEdge(v1->dual && v2->dual);
         halfEdges[key] = half_edge;
     }
     // or return existing one
@@ -850,6 +850,7 @@ HalfEdge* TetMesh::halfEdgeForVerts(Vertex *v1, Vertex *v2)
     {
         half_edge = res->second;
     }
+
 
     return half_edge;
 }

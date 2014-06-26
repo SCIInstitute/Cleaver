@@ -72,7 +72,9 @@ const std::string kDefaultOutputName   = "output";
 const cleaver::MeshFormat kDefaultOutputFormat = cleaver::Tetgen;
 
 
-const double kDefaultAlpha = 0.4f;
+const double kDefaultAlpha = 0.4;
+const double kDefaultAlphaLong = 0.357;
+const double kDefaultAlphaShort = 0.203;
 const double kDefaultScale = 2.0;
 const double kDefaultLipschitz = 0.2;
 const double kDefaultMultiplier = 1.0;
@@ -95,6 +97,8 @@ int main(int argc,	char* argv[])
     std::string output_path = kDefaultOutputPath;
     std::string output_name = kDefaultOutputName;
     double alpha = kDefaultAlpha;
+    double alpha_long = kDefaultAlphaLong;
+    double alpha_short = kDefaultAlphaShort;
     double scale = kDefaultScale;
     double lipschitz = kDefaultLipschitz;
     double multiplier = kDefaultMultiplier;
@@ -128,6 +132,8 @@ int main(int argc,	char* argv[])
                 ("mesh_mode", po::value<std::string>(), "background mesh mode")
                 ("mesh_improve", "improve background quality")
                 ("alpha", po::value<double>(), "initial alpha value")
+                ("alpha_short", po::value<double>(), "alpha short value for regular mesh_mode")
+                ("alpha_long", po::value<double>(), "alpha long value for regular mesh_mode")
                 ("sizing_field", po::value<std::string>(), "sizing field path")
                 ("grading", po::value<double>(), "sizing field grading")
                 ("multiplier", po::value<double>(), "sizing field multiplier")
@@ -232,6 +238,12 @@ int main(int argc,	char* argv[])
 
         if (variables_map.count("alpha")) {
             alpha = variables_map["alpha"].as<double>();
+        }
+        if (variables_map.count("alpha_short")) {
+          alpha_short = variables_map["alpha_short"].as<double>();
+        }
+        if (variables_map.count("alpha_long")) {
+          alpha_long = variables_map["alpha_long"].as<double>();
         }
 
         if (variables_map.count("background_mesh")) {
@@ -374,7 +386,7 @@ int main(int argc,	char* argv[])
                         (float)scale,
                         (float)multiplier,
                         (int)padding,
-                        true,
+                        (mesh_mode==cleaver::Regular?false:true),
                         verbose);
             sizing_field_timer.stop();
             sizing_field_time = sizing_field_timer.time();
@@ -391,22 +403,20 @@ int main(int argc,	char* argv[])
         //-----------------------------------------------------------
         cleaver::Timer background_timer;
         background_timer.start();
+        if(verbose)
+            std::cout << "Creating Octree Mesh..." << std::endl;
         switch(mesh_mode) {
 
             case cleaver::Regular:
-            {
-                std::cerr << "Error: Regular background mesh not yet supported." << std::endl;
-                return 0;
-            }
-            default:
-            case cleaver::Structured:
-            {
-                if(verbose)
-                    std::cout << "Creating Octree Mesh..." << std::endl;
-                //bgMesh = cleaver::createBackgroundMesh(volume, cleaver::Structured);
+                mesher.setAlphas(alpha_long,alpha_short);
+                mesher.setRegular(true);
                 mesher.createBackgroundMesh();
                 break;
-            }
+            default:
+            case cleaver::Structured:
+                mesher.setRegular(false);
+                mesher.createBackgroundMesh();
+                break;
         }
         background_timer.stop();
         background_time = background_timer.time();

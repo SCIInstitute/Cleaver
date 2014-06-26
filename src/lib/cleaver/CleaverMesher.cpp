@@ -45,6 +45,10 @@ namespace cleaver
 #define FACES_PER_TET 4
 
 
+static const double DEFAULT_ALPHA_LONG  = 0.357;
+static const double DEFAULT_ALPHA_SHORT = 0.203;
+
+
 bool GRID_WARPING = true;
 bool SPLIT_ACROSS_CELLS = true;
 
@@ -220,7 +224,10 @@ public:
 
     void buildAdjacency(bool verbose = false);
     void sampleVolume(bool verbose = false);
-    void computeAlphas(bool verbose = false);
+    void computeAlphas(bool verbose = false,
+                       bool regular = false,
+                       double alp_long = 0.4,
+                       double alp_short = 0.4);
     void computeAlphasAlt(bool verbose = false);
     void computeInterfaces(bool verbose = false);
     void computeCutForEdge(HalfEdge *edge);
@@ -350,6 +357,9 @@ CleaverMesher::CleaverMesher(const Volume *volume) : m_pimpl(new CleaverMesherIm
     m_pimpl->m_volume = const_cast<Volume*>(volume);
     m_pimpl->m_bgMesh = NULL;
     m_pimpl->m_mesh = NULL;
+    m_alpha_long = DEFAULT_ALPHA_LONG;
+    m_alpha_short = DEFAULT_ALPHA_SHORT;
+    m_regular = false;
 }
 
 void CleaverMesher::createTetMesh(bool verbose)
@@ -2040,7 +2050,7 @@ void CleaverMesher::sampleVolume()
 //=================================
 void CleaverMesher::computeAlphas()
 {
-    m_pimpl->computeAlphas(true);
+    m_pimpl->computeAlphas(true,m_regular);
 }
 
 //=====================================
@@ -2134,9 +2144,23 @@ void CleaverMesherImp::sampleVolume(bool verbose)
 //double alpha_init = 0.4f;  // was 0.2
 
 //================================================
+// - setAlphas()
+//================================================
+void CleaverMesher::setAlphas(double l, double s) {
+  m_alpha_long = l;
+  m_alpha_short = s;
+}
+//================================================
+// - setRegular()
+//================================================
+void CleaverMesher::setRegular(bool reg) { m_regular = reg; }
+//================================================
 // - computeAlphas()
 //================================================
-void CleaverMesherImp::computeAlphas(bool verbose)
+void CleaverMesherImp::computeAlphas(bool verbose,
+                                     bool regular,
+                                     double alp_long,
+                                     double alp_short)
 {
     if(verbose)
         std::cout << "Computing Violation Alphas..." << std::flush;
@@ -2153,8 +2177,15 @@ void CleaverMesherImp::computeAlphas(bool verbose)
     for(edge_iter = m_bgMesh->halfEdges.begin(); edge_iter != m_bgMesh->halfEdges.end(); edge_iter++)
     {
         HalfEdge *half_edge = (*edge_iter).second;
-        half_edge->alpha = (float)m_alpha_init;
-        half_edge->alpha_length = (float)(half_edge->alpha*length(half_edge->vertex->pos() - half_edge->mate->vertex->pos()));
+        if (regular) {
+          half_edge->alpha = half_edge->m_long_edge?alp_long:alp_short;
+        } else {
+          half_edge->alpha = (float)m_alpha_init;
+        }
+        half_edge->alpha_length = (float)
+            (half_edge->alpha*length(half_edge->vertex->pos() -
+                                     half_edge->mate->vertex->pos()));
+        if (regular) half_edge->alpha = half_edge->alpha_length;
     }
 
     //---------------------------------------------------

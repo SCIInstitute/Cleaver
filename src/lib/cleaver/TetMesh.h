@@ -67,6 +67,8 @@ class HalfEdge : public Geometry
 {
 public:
     HalfEdge() : vertex(NULL), mate(NULL), cut(NULL), alpha(0.2f), evaluated(false), parity(false){}
+    HalfEdge(bool long_edge) : vertex(NULL), mate(NULL), cut(NULL),
+        alpha(0.2f), evaluated(false), parity(false), m_long_edge(long_edge){}
     Vertex *vertex;
     HalfEdge *mate;
     std::vector<HalfFace*> halfFaces;
@@ -75,6 +77,7 @@ public:
     float alpha_length;
     bool evaluated:1;
     bool parity:1;
+    bool m_long_edge:1;
 
     bool sameAs(HalfEdge *e){
         return(e == this || e->mate == this);
