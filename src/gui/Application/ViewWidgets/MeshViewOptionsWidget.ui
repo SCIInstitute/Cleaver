@@ -69,7 +69,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-8</y>
+         <y>0</y>
          <width>172</width>
          <height>160</height>
         </rect>
@@ -90,7 +90,7 @@
         <item>
          <widget class="QCheckBox" name="showAxisCheckbox">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="minimumSize">
            <size>
@@ -108,7 +108,7 @@
            <string>Show Axis</string>
           </property>
           <property name="checked">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>

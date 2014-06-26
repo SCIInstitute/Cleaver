@@ -36,7 +36,7 @@ public:
     //-- mutators --
     void setMesh(cleaver::TetMesh *mesh);
     void setVolume(cleaver::Volume *volume);
-    void setAxisVisible(bool value){ m_bShowAxis = value; }
+    void setAxisVisible(bool value){ m_bShowAxis = value; updateGL();}
     void setBBoxVisible(bool value){ m_bShowBBox = value; }
     void setFacesVisible(bool value){ m_bShowFaces = value; }
     void setEdgesVisible(bool value){ m_bShowEdges = value; }
@@ -84,7 +84,9 @@ private:
     cleaver::Volume  *m_volume;
     cleaver::BoundingBox m_dataBounds;
     Camera *m_camera;
+    Camera *m_Axiscamera;
     CameraType m_cameraType;
+    int m_width, m_height;
 
 
     StarMode m_starmode;

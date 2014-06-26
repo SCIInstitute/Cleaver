@@ -66,6 +66,7 @@ MeshWindow::MeshWindow(QObject *parent) :
 MeshWindow::~MeshWindow()
 {
     delete m_camera;
+    delete m_Axiscamera;
 }
 
 void MeshWindow::setDefaultOptions()
@@ -76,6 +77,7 @@ void MeshWindow::setDefaultOptions()
 void MeshWindow::resetView()
 {
     m_camera->reset();
+    m_Axiscamera->reset();
     this->updateGL();
 }
 
@@ -151,10 +153,14 @@ void MeshWindow::initializeOptions()
 
 void MeshWindow::initializeCamera()
 {
-    if(m_cameraType == Target)
+    if(m_cameraType == Target) {
         m_camera = new TargetCamera();
-    else if(m_cameraType == Trackball)
-        m_camera = new TrackballCamera();    
+        m_Axiscamera = new TargetCamera();
+    }
+    else if(m_cameraType == Trackball) {
+        m_camera = new TrackballCamera();
+        m_Axiscamera = new TargetCamera();
+    }
 }
 
 void MeshWindow::initializeShaders()
@@ -220,6 +226,8 @@ void MeshWindow::initializeGL()
 void MeshWindow::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
+    m_width = w;
+    m_height = h;
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -234,8 +242,10 @@ void MeshWindow::resizeGL(int w, int h)
     GLdouble right = top*aspectRatio;
     GLdouble left  = -right;
 
-    if(m_cameraType == Trackball)
+    if(m_cameraType == Trackball) {
         ((TrackballCamera*)m_camera)->setBallSize(w, h);
+        ((TrackballCamera*)m_Axiscamera)->setBallSize(w, h);
+    }
 
     glFrustum(left, right, bottom, top, zNear, zFar);
 
@@ -346,26 +356,57 @@ void MeshWindow::paintGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    if (m_bShowAxis) {
+        float ratio = (float)m_width / (float)m_height;
+        glPushMatrix();
+        glTranslatef(-4.2*ratio, +4.0, -15);
+        float * tmp = m_Axiscamera->viewMatrix();
+        tmp[14] = tmp[13] = tmp[12] = 0.f;
+        glMultMatrixf(tmp);
+        glDisable(GL_LIGHTING);
+        glBegin(GL_LINES);
+        glColor3f(1, 0, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(1, 0, 0);
+        
+        glVertex3f(1.2, 0.2, 0);
+        glVertex3f(1.4, -0.2, 0);
+        
+        glVertex3f(1.4, 0.2, 0);
+        glVertex3f(1.2, -0.2, 0);
+        
+        glColor3f(0, 1, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 1, 0);
+        
+        glVertex3f(0, 1.2, 0);
+        glVertex3f(0, 1.4, 0);
+        
+        glVertex3f(0, 1.4, 0);
+        glVertex3f(0.1, 1.6, 0);
+        
+        glVertex3f(0, 1.4, 0);
+        glVertex3f(-0.1, 1.6, 0);
+        
+        glColor3f(0, 0, 1);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 1);
+        
+        glVertex3f(0, 0.2, 1.4);
+        glVertex3f(0, 0.2, 1.2);
+        
+        glVertex3f(0, 0.2, 1.2);
+        glVertex3f(0, -0.2, 1.4);
+        
+        glVertex3f(0, -0.2, 1.4);
+        glVertex3f(0, -0.2, 1.2);
+        
+        glEnd();
+        glEnable(GL_LIGHTING);
+        glPopMatrix();
+    }
+    
     glMultMatrixf(m_camera->viewMatrix());
-
-//    std::cout << "View matrix = " <<
-//                 m_camera->viewMatrix()[0] << " " <<
-//                 m_camera->viewMatrix()[1] << " " <<
-//                 m_camera->viewMatrix()[2] << " " <<
-//                 m_camera->viewMatrix()[3] << " " << std::endl <<
-//                 m_camera->viewMatrix()[4] << " " <<
-//                 m_camera->viewMatrix()[5] << " " <<
-//                 m_camera->viewMatrix()[6] << " " <<
-//                 m_camera->viewMatrix()[7] << " " << std::endl <<
-//                 m_camera->viewMatrix()[8] << " " <<
-//                 m_camera->viewMatrix()[9] << " " <<
-//                 m_camera->viewMatrix()[10] << " " <<
-//                 m_camera->viewMatrix()[11] << " " << std::endl <<
-//                 m_camera->viewMatrix()[12] << " " <<
-//                 m_camera->viewMatrix()[13] << " " <<
-//                 m_camera->viewMatrix()[14] << " " <<
-//                 m_camera->viewMatrix()[15] << " " << std::endl << std::endl;
-
     static float rot = 0.1f;
     rot += 0.5f;
 
@@ -390,26 +431,6 @@ void MeshWindow::paintGL()
         qMultMatrix(matrix);
         qMultMatrix(postmatrix.transposed());
 
-//        std::cout << "Rotation matrix = " <<
-//                     matrix.data()[0] << " " <<
-//                     matrix.data()[1] << " " <<
-//                     matrix.data()[2] << " " <<
-//                     matrix.data()[3] << " " << std::endl <<
-//                     matrix.data()[4] << " " <<
-//                     matrix.data()[5] << " " <<
-//                     matrix.data()[6] << " " <<
-//                     matrix.data()[7] << " " << std::endl <<
-//                     matrix.data()[8] << " " <<
-//                     matrix.data()[9] << " " <<
-//                     matrix.data()[10] << " " <<
-//                     matrix.data()[11] << " " << std::endl <<
-//                     matrix.data()[12] << " " <<
-//                     matrix.data()[13] << " " <<
-//                     matrix.data()[14] << " " <<
-//                     matrix.data()[15] << " " << std::endl << std::endl;
-
-
-        //glRotatef(rot, 0.5, 0, 1);
         if(m_volume){
             glTranslatef(-m_volume->bounds().center().x,
                          -m_volume->bounds().center().y,
@@ -1175,10 +1196,16 @@ void MeshWindow::mouseMoveEvent(QMouseEvent *event)
         m_camera->pan((m_prev_x - event->x()), (event->y() - m_prev_y));
     }
     else if(buttonstate == Qt::LeftButton){
-        if(m_cameraType == Target)
+        if(m_cameraType == Target) {
             m_camera->rotate((m_prev_x - event->x()), (event->y() - m_prev_y));
-        else if(m_cameraType == Trackball)
-            ((TrackballCamera*)m_camera)->rotateBetween(QVector2D(m_prev_x, m_prev_y), QVector2D(event->x(), event->y()));
+            m_Axiscamera->rotate((m_prev_x - event->x()), (event->y() - m_prev_y));
+        }
+        else if(m_cameraType == Trackball) {
+            ((TrackballCamera*)m_camera)->
+            rotateBetween(QVector2D(m_prev_x, m_prev_y), QVector2D(event->x(), event->y()));
+            ((TrackballCamera*)m_Axiscamera)->
+            rotateBetween(QVector2D(m_prev_x, m_prev_y), QVector2D(event->x(), event->y()));
+        }
     }
 
     m_prev_x = event->x();
@@ -1342,9 +1369,11 @@ void MeshWindow::setMesh(cleaver::TetMesh *mesh)
    // MainWindow::instance()->focus((QMdiSubWindow*)this->parentWidget());
     if(m_cameraType == Target && m_volume == NULL){
         ((TargetCamera*)m_camera)->setTargetBounds(mesh->bounds);
+        ((TargetCamera*)m_Axiscamera)->setTargetBounds(mesh->bounds);
     }
 
     m_camera->reset();
+    m_Axiscamera->reset();
 
     if(init){
         update_vbos();
@@ -1371,11 +1400,16 @@ void MeshWindow::setVolume(cleaver::Volume *volume)
     }
 //    std::cout << "NUM MATERIALS IN VOLUME: " << m_bMaterialFaceLock.size() << std::endl;
 
-    if(m_cameraType == Target)
+    if(m_cameraType == Target) {
         ((TargetCamera*)m_camera)->setTargetBounds(m_volume->bounds());
-    else if(m_cameraType == Trackball)
+        ((TargetCamera*)m_Axiscamera)->setTargetBounds(m_volume->bounds());
+    }
+    else if(m_cameraType == Trackball) {
         ((TrackballCamera*)m_camera)->setTargetBounds(m_volume->bounds());
+        ((TrackballCamera*)m_Axiscamera)->setTargetBounds(m_volume->bounds());
+    }
     m_camera->reset();
+    m_Axiscamera->reset();
     updateGL();
 }
 
