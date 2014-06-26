@@ -357,7 +357,8 @@ void MainWindow::importMesh()
 
         if(elefilename.length() > 0 && nodefilename.length() > 0)
         {
-            cleaver::TetMesh *mesh = cleaver::TetMesh::createFromNodeElePair(nodefilename, elefilename);
+            cleaver::TetMesh *mesh =
+                cleaver::TetMesh::createFromNodeElePair(nodefilename, elefilename,true);
             if(mesh == NULL){
                 std::cerr << "Invalid Mesh" << std::endl;
                 return;
@@ -397,7 +398,7 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
 {
     // If no mesh selected, get active window mesh
     if(!mesh)
-        cleaver::TetMesh *mesh = activeWindow()->mesh();
+        mesh = activeWindow()->mesh();
 
     // If still no mesh, return (TODO: Error MessageBox)
     if(!mesh)
@@ -412,18 +413,21 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
     QString filter2("SCIRun (*.pts)");
     QString filter3("Surface PLY (*.ply)");
     QString filter4("Matlab (*.mat)");
+    
+    std::string f = fileName.toStdString();
+    f = f.substr(0,f.rfind("."));
 
     if(selectedFilter == filter1){
-        mesh->writeNodeEle(fileName.toStdString(), true, true);
+        mesh->writeNodeEle(f, true, true);
     }
     else if(selectedFilter == filter2){
-        mesh->writePtsEle(fileName.toStdString(), true);
+        mesh->writePtsEle(f, true);
     }
     else if(selectedFilter == filter3){
-        mesh->writePly(fileName.toStdString(), true);
+        mesh->writePly(f, true);
     }
     else if(selectedFilter == filter4){
-        mesh->writeMatlab(fileName.toStdString(), true);
+        mesh->writeMatlab(f, true);
     }
 
 }

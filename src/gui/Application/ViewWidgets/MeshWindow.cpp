@@ -1325,19 +1325,20 @@ void MeshWindow::setMesh(cleaver::TetMesh *mesh)
 {
     m_mesh = mesh;
     m_dataBounds = cleaver::BoundingBox::merge(m_dataBounds, mesh->bounds);
+    
+    if(mesh->imported) {
 
+        m_bMaterialFaceLock.clear();
+        m_bMaterialCellLock.clear();
 
-    m_bMaterialFaceLock.clear();
-    m_bMaterialCellLock.clear();
-
-    //if(mesh->imported) {
         for(int m = 0; m < mesh->material_count; m++)
         {
             m_bMaterialFaceLock.push_back(false);
             m_bMaterialCellLock.push_back(false);
         }
-    //}
-
+    }
+    
+//    std::cout << "NUM MATERIALS IN MESH: " << m_bMaterialFaceLock.size() << std::endl;
    // MainWindow::instance()->focus((QMdiSubWindow*)this->parentWidget());
     if(m_cameraType == Target && m_volume == NULL){
         ((TargetCamera*)m_camera)->setTargetBounds(mesh->bounds);
@@ -1368,6 +1369,7 @@ void MeshWindow::setVolume(cleaver::Volume *volume)
         m_bMaterialFaceLock.push_back(false);
         m_bMaterialCellLock.push_back(false);
     }
+//    std::cout << "NUM MATERIALS IN VOLUME: " << m_bMaterialFaceLock.size() << std::endl;
 
     if(m_cameraType == Target)
         ((TargetCamera*)m_camera)->setTargetBounds(m_volume->bounds());
@@ -1496,6 +1498,7 @@ cleaver::vec3 computeIncenter(cleaver::Tet *tet)
 
 void MeshWindow::build_bkgrnd_vbos()
 {
+    return;
     m_meshVertexCount = 0;
     m_cutVertexCount = 0;
     std::vector<GLfloat> PositionData;
@@ -1742,7 +1745,9 @@ void MeshWindow::build_output_vbos()
     std::vector<GLfloat> PositionData;
     std::vector<GLfloat> NormalData;
     std::vector<GLubyte> ColorData;    
-
+//    for(size_t i = 0; i < m_bMaterialFaceLock.size(); i++)
+//        std::cout << "Material " << i << ": " << m_bMaterialFaceLock[i] << std::endl;
+//    std::cout << "Num Materials: " << m_bMaterialFaceLock.size() << std::endl;
     for(size_t f=0; f < m_mesh->faces.size(); f++)
     {
         int t1 = m_mesh->faces[f]->tets[0];
@@ -1832,7 +1837,8 @@ void MeshWindow::build_output_vbos()
             }
         }
 
-        if((((!clipped && exterior) || clipborder) && !m_bSurfacesOnly) || (m_bSurfacesOnly && !clipped && surface) || force)
+        if((((!clipped && exterior) || clipborder) && !m_bSurfacesOnly) ||
+           (m_bSurfacesOnly && !clipped && surface) || force)
         {
             cleaver::Tet *tet1 = 0; 
             cleaver::Tet *tet2 = 0; 

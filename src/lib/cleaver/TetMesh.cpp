@@ -2680,6 +2680,8 @@ TetMesh* TetMesh::createFromNodeElePair(const std::string &nodeFileName, const s
     }
 
     mesh->material_count = mats.size();
+    if (verbose)
+        std::cout << "Number of materials: " << mats.size() << std::endl;
 
     // close input files
     nodestream.close();
