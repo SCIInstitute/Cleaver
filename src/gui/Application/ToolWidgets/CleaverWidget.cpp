@@ -14,6 +14,8 @@ CleaverWidget::CleaverWidget(QWidget *parent) :
     ui(new Ui::CleaverWidget)
 {
     ui->setupUi(this);
+
+    QObject::connect(MainWindow::dataManager(), SIGNAL(volumeListChanged()), this, SLOT(updateVolumeList()));
 }
 
 CleaverWidget::~CleaverWidget()
@@ -55,32 +57,6 @@ void CleaverWidget::clear()
 
 
 //=========================================
-// - topologyActionChanged()
-//  triggers when a topology radio button
-// is selected.
-//=========================================
-void CleaverWidget::topologyActionChanged()
-{
-    if(ui->noneRadioButton->isChecked())
-    {
-        mesher->setTopologyMode(cleaver::CleaverMesher::TopologyModeNone);
-    }
-    else if(ui->subdivideRadioButton->isChecked())
-    {
-        mesher->setTopologyMode(cleaver::CleaverMesher::TopologyModeSubdivide);
-    }
-    else if(ui->cleaveRadioButton->isChecked())
-    {
-        mesher->setTopologyMode(cleaver::CleaverMesher::TopologyModeCleave);
-    }
-    else
-    {
-        std::cout << "GUI Malfunction." << std::endl;
-        exit(11);
-    }
-}
-
-//=========================================
 // - update()       Updates the Widget
 //
 //=========================================
@@ -91,76 +67,11 @@ void CleaverWidget::update()
     //-----------------------------
     if(mesher && !mesher->backgroundMeshCreated()) {
       ui->createMeshButton->setEnabled(true);
-      ui->createLegacyMeshButton->setEnabled(true);
+      ui->createRegularMeshButton->setEnabled(true);
     } else {
         ui->createMeshButton->setEnabled(false);
-        ui->createLegacyMeshButton->setEnabled(false);
+        ui->createRegularMeshButton->setEnabled(false);
     }
-
-    //-----------------------------
-    // Set Background Mesh Button
-    //-----------------------------
-    if(mesher && mesher->backgroundMeshCreated())
-        ui->createBackgroundMeshButton->setEnabled(false);
-    else
-        ui->createBackgroundMeshButton->setEnabled(true);
-
-    //-----------------------------
-    // Set Build Adjacency Button
-    //-----------------------------
-    if(mesher && mesher->backgroundMeshCreated() && !mesher->adjacencyBuilt())
-        ui->buildAdjacencyButton->setEnabled(true);
-    else
-        ui->buildAdjacencyButton->setEnabled(false);
-
-    //-----------------------
-    //   Set Sample Button
-    //-----------------------
-    if(mesher && mesher->backgroundMeshCreated() && !mesher->samplingDone())
-        ui->sampleVolumeButton->setEnabled(true);
-    else
-        ui->sampleVolumeButton->setEnabled(false);
-
-    //----------------------------
-    // Set Compute Alphas Button
-    //----------------------------
-    if(mesher && mesher->adjacencyBuilt() && !mesher->alphasComputed())
-        ui->computeAlphasButton->setEnabled(true);
-    else
-        ui->computeAlphasButton->setEnabled(false);
-
-    //-----------------------
-    //    Set Cuts Button
-    //-----------------------
-    if(mesher && mesher->samplingDone() && !mesher->interfacesComputed())
-        ui->computeInterfacesButton->setEnabled(true);
-    else
-        ui->computeInterfacesButton->setEnabled(false);
-
-
-    //-----------------------
-    // Set Generalize Button
-    //-----------------------
-    if(mesher && mesher->interfacesComputed() && !mesher->generalized())
-        ui->generalizeTetsButton->setEnabled(true);
-    else
-        ui->generalizeTetsButton->setEnabled(false);
-
-    //-----------------------
-    //    Set Snap Button
-    //-----------------------
-    if(mesher && mesher->generalized() && !mesher->snapsAndWarpsDone())
-        ui->snapAndWarpButton->setEnabled(true);
-    else
-        ui->snapAndWarpButton->setEnabled(false);
-
-    //-----------------------
-    //   Set Stencil Button
-    //-----------------------
-    if(mesher && mesher->generalized() && !mesher->stencilsDone())
-        ui->stencilTetsButton->setEnabled(true);
-    else
-        ui->stencilTetsButton->setEnabled(false);
 
     /*
     //-----------------------
@@ -216,9 +127,9 @@ void CleaverWidget::createMesh()
 }
 
 //=========================================
-// - createLegacyMesh()
+// - createRegularMesh()
 //=========================================
-void CleaverWidget::createLegacyMesh()
+void CleaverWidget::createRegularMesh()
 {
       MeshWindow *window = MainWindow::instance()->activeWindow();
 
@@ -247,7 +158,7 @@ void CleaverWidget::createLegacyMesh()
         std::cout << "done!" << std::endl;
         std::cout << "Computed in " << timer.time() << " seconds." << std::endl;
         //update the mesher
-        std::cout << "Creating legacy Cleaver Mesh..." << std::endl;
+        std::cout << "Creating Regular Cleaver Mesh..." << std::endl;
         double al = ui->alphaLongSpinner->value();
         double as = ui->alphaShortSpinner->value();
         std::cout << "Alpha Long: "<< al << std::endl;
@@ -313,7 +224,6 @@ void CleaverWidget::createBackgroundMesh()
 
             window->setMesh(mesh);
         }
-        ui->computeInterfacesButton->setEnabled(true);
 
         //mesh->writeNodeEle("debug",true);
         update();
@@ -401,5 +311,34 @@ void CleaverWidget::stencilTets()
     mesher->getTetMesh()->writeNodeEle("output",true);
     mesher->getTetMesh()->writePly("output", true);
     //mesher->getTetMesh()->writeMatlab("mesh", true);
+}
+
+void CleaverWidget::updateVolumeList()
+{
+    ui->volumeBox->clear();
+    ui->regularVolumeBox->clear();
+
+    std::vector<cleaver::Volume*> volumes = MainWindow::dataManager()->volumes();
+
+    for(size_t i=0; i < volumes.size(); i++)
+    {
+        ui->volumeBox->addItem(volumes[i]->name().c_str());
+        ui->regularVolumeBox->addItem(volumes[i]->name().c_str());
+    }
+}
+
+void CleaverWidget::updateMeshList()
+{
+
+}
+
+void CleaverWidget::volumeSelected(int index)
+{
+
+}
+
+void CleaverWidget::meshSelected(int index)
+{
+
 }
 

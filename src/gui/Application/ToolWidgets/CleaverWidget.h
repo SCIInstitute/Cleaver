@@ -22,12 +22,10 @@ public slots:
     void update();
     void focus(QMdiSubWindow *);
 
-    void topologyActionChanged();
-
     //------ run entire cleaving algorithm
     void createMesh();
     //------ run entire legacy cleaving algorithm
-    void createLegacyMesh();
+    void createRegularMesh();
     //------ advanced indididual calls
     void createBackgroundMesh();
     void buildMeshAdjacency();
@@ -38,7 +36,10 @@ public slots:
     void snapAndWarp();
     void stencilTets();
 
-
+    void updateVolumeList();
+    void updateMeshList();
+    void volumeSelected(int index);
+    void meshSelected(int index);
     
 private:
     Ui::CleaverWidget *ui;

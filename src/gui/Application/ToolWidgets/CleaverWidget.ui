@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>208</width>
-    <height>340</height>
+    <width>295</width>
+    <height>245</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>208</width>
-    <height>340</height>
+    <width>295</width>
+    <height>245</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -38,7 +38,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="adaptiveTab">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -46,168 +46,217 @@
         </sizepolicy>
        </property>
        <attribute name="title">
-        <string>Basic</string>
+        <string>Adaptive</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
         <item>
-         <widget class="QLabel" name="topologyLabel">
-          <property name="text">
-           <string>Topology Correction</string>
-          </property>
+         <widget class="QWidget" name="topologyWidget" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="noneRadioButton">
-          <property name="text">
-           <string>None</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
+         <widget class="QWidget" name="volumeWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="volumeLabel">
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>70</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Volume:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="volumeBox"/>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="subdivideRadioButton">
-          <property name="text">
-           <string>Octree Subdivision</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="cleaveRadioButton">
-          <property name="text">
-           <string>Topological Cleaving</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="createMeshButton">
+         <widget class="QWidget" name="meshWidget" native="true">
           <property name="enabled">
            <bool>false</bool>
           </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Constuct Mesh</string>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="meshLabel">
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>70</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Mesh:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="comboBox"/>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
+         <widget class="QWidget" name="autoWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="octreeCheckbox">
+             <property name="text">
+              <string> Octree Background Mesh</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="tristate">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Legacy Cleaver</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Alpha Short</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="alphaShortSpinner">
-            <property name="decimals">
-             <number>4</number>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-            <property name="value">
-             <double>0.203000000000000</double>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Alpha Long</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="alphaLongSpinner">
-            <property name="decimals">
-             <number>4</number>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-            <property name="value">
-             <double>0.357000000000000</double>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Scaling</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="scalingSpinner">
-            <property name="decimals">
-             <number>4</number>
-            </property>
-            <property name="minimum">
-             <double>0.000100000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-            <property name="value">
-             <double>1.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QPushButton" name="createLegacyMeshButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Construct Legacy Mesh</string>
-          </property>
+         <widget class="QWidget" name="cleaveButtonWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <spacer name="rightHorizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="createMeshButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>171</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Cleave Mesh</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="leftHorizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
@@ -225,141 +274,263 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="regularTab">
        <attribute name="title">
-        <string>Advanced</string>
+        <string>Regular</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>4</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>20</number>
+        </property>
         <item>
-         <widget class="QToolButton" name="createBackgroundMeshButton">
-          <property name="enabled">
-           <bool>false</bool>
+         <widget class="QWidget" name="regularVolumeWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Create Background Mesh</string>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <property name="spacing">
+            <number>-1</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="regularVolumeLabel">
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>70</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Volume:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="regularVolumeBox"/>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="buildAdjacencyButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Build Adjacency</string>
-          </property>
+         <widget class="QWidget" name="alphaShortWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="alphaShortLabel">
+             <property name="text">
+              <string>Alpha Short:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="alphaShortSpinner">
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.203000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="sampleVolumeButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Sample Volume</string>
-          </property>
+         <widget class="QWidget" name="alphaLongWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="alphaLongLabel">
+             <property name="text">
+              <string>Alpha Long:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="alphaLongSpinner">
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.357000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="computeAlphasButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Compute Alphas</string>
-          </property>
+         <widget class="QWidget" name="scalingWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="scalingLabel">
+             <property name="text">
+              <string>Scaling:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="scalingSpinner">
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="minimum">
+              <double>0.000100000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="computeInterfacesButton">
-          <property name="enabled">
-           <bool>false</bool>
+         <widget class="QWidget" name="regularButtonWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Compute Interfaces</string>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <property name="spacing">
+            <number>-1</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="createRegularMeshButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>171</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Construct Mesh</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="generalizeTetsButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Generalize Tets</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="snapAndWarpButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Snap and Warp</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="stencilTetsButton">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Stencil Tets</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_2">
+         <spacer name="regularSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -378,141 +549,37 @@
    </layout>
   </widget>
  </widget>
- <tabstops>
-  <tabstop>createBackgroundMeshButton</tabstop>
-  <tabstop>sampleVolumeButton</tabstop>
-  <tabstop>computeInterfacesButton</tabstop>
-  <tabstop>generalizeTetsButton</tabstop>
-  <tabstop>snapAndWarpButton</tabstop>
-  <tabstop>stencilTetsButton</tabstop>
- </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>createBackgroundMeshButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>createBackgroundMesh()</slot>
+   <sender>octreeCheckbox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>meshWidget</receiver>
+   <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>57</y>
+     <x>147</x>
+     <y>145</y>
     </hint>
     <hint type="destinationlabel">
-     <x>104</x>
-     <y>69</y>
+     <x>147</x>
+     <y>104</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>sampleVolumeButton</sender>
+   <sender>createRegularMeshButton</sender>
    <signal>clicked()</signal>
    <receiver>CleaverWidget</receiver>
-   <slot>sampleVolume()</slot>
+   <slot>createRegularMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>134</y>
+     <x>134</x>
+     <y>191</y>
     </hint>
     <hint type="destinationlabel">
-     <x>104</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>computeInterfacesButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>computeInterfaces()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>190</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>generalizeTetsButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>generalizeTets()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>218</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>89</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>stencilTetsButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>stencilTets()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>274</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>89</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>snapAndWarpButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>snapAndWarp()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>246</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>124</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buildAdjacencyButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>buildMeshAdjacency()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>106</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>124</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>computeAlphasButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>computeAlphas()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>162</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>124</y>
+     <x>134</x>
+     <y>203</y>
     </hint>
    </hints>
   </connection>
@@ -523,76 +590,12 @@
    <slot>createMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>73</x>
-     <y>157</y>
+     <x>147</x>
+     <y>177</y>
     </hint>
     <hint type="destinationlabel">
-     <x>104</x>
-     <y>119</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>noneRadioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>topologyActionChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>98</x>
-     <y>80</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>119</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>subdivideRadioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>topologyActionChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>98</x>
-     <y>100</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>119</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cleaveRadioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>topologyActionChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>105</x>
-     <y>144</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>119</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>createLegacyMeshButton</sender>
-   <signal>clicked()</signal>
-   <receiver>CleaverWidget</receiver>
-   <slot>createLegacyMesh()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>157</x>
-     <y>299</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1643</x>
-     <y>334</y>
+     <x>147</x>
+     <y>124</y>
     </hint>
    </hints>
   </connection>
@@ -607,7 +610,6 @@
   <slot>computeAlphas()</slot>
   <slot>buildMeshAdjacency()</slot>
   <slot>createMesh()</slot>
-  <slot>topologyActionChanged()</slot>
-  <slot>createLegacyMesh()</slot>
+  <slot>createRegularMesh()</slot>
  </slots>
 </ui>
