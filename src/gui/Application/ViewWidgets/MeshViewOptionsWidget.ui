@@ -69,7 +69,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-8</y>
          <width>172</width>
          <height>160</height>
         </rect>
@@ -89,6 +89,9 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QCheckBox" name="showAxisCheckbox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>164</width>
@@ -105,7 +108,7 @@
            <string>Show Axis</string>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -257,6 +260,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="colorByQualityCheckbox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -309,16 +315,7 @@
        <property name="spacing">
         <number>-1</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -350,26 +347,12 @@
         </widget>
        </item>
       </layout>
-      <zorder>label2</zorder>
-      <zorder>label2</zorder>
-      <zorder>clippingCheckbox</zorder>
-      <zorder>label2_2</zorder>
-      <zorder>syncClippingCheckbox</zorder>
      </widget>
     </item>
     <item>
      <widget class="QWidget" name="xAxisWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -426,16 +409,7 @@
     <item>
      <widget class="QWidget" name="yAxisWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -489,16 +463,7 @@
     <item>
      <widget class="QWidget" name="zAxisWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -597,8 +562,8 @@
    <slot>clippingCheckboxClicked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>125</x>
-     <y>155</y>
+     <x>118</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -614,7 +579,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>46</x>
-     <y>182</y>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -630,7 +595,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>46</x>
-     <y>202</y>
+     <y>277</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -646,7 +611,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>46</x>
-     <y>222</y>
+     <y>308</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -661,8 +626,8 @@
    <slot>xSliderMoved(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>183</y>
+     <x>202</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -677,8 +642,8 @@
    <slot>ySliderMoved(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>203</y>
+     <x>202</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -693,8 +658,8 @@
    <slot>zSliderMoved(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>223</y>
+     <x>202</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -709,8 +674,8 @@
    <slot>clippingSliderPressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>179</y>
+     <x>202</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -725,8 +690,8 @@
    <slot>clippingSliderPressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>199</y>
+     <x>202</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -741,8 +706,8 @@
    <slot>clippingSliderPressed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>219</y>
+     <x>202</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -757,8 +722,8 @@
    <slot>clippingSliderReleased()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>179</y>
+     <x>202</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -773,8 +738,8 @@
    <slot>clippingSliderReleased()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>199</y>
+     <x>202</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -789,8 +754,8 @@
    <slot>clippingSliderReleased()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>135</x>
-     <y>219</y>
+     <x>202</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>
@@ -805,8 +770,8 @@
    <slot>syncClippingCheckboxClicked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>186</x>
-     <y>151</y>
+     <x>202</x>
+     <y>217</y>
     </hint>
     <hint type="destinationlabel">
      <x>104</x>

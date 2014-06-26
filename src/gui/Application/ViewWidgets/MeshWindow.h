@@ -43,7 +43,8 @@ public:
     void setCutsVisible(bool value){ m_bShowCuts = value; }
     void setSyncedClipping(bool value){ m_bSyncedClipping = value;  }
     void setSurfacesOnly(bool value){ m_bSurfacesOnly = value; }
-    void setColorByQuality(bool value){ m_bColorByQuality = value; }
+    void setColorByQuality(bool value){ m_bColorByQuality = value;
+        m_colorUpdate = true;}
     void setClippingPlaneVisible(bool value){ m_bShowClippingPlane = value; }
     void setClipping(bool value){ m_bClipping = value; update_vbos(); }
     void setClippingPlane(float plane[4]){ memcpy(m_4fvClippingPlane, plane, 4*sizeof(float)); if(!m_bShowClippingPlane || m_bSyncedClipping) update_vbos();}
@@ -107,6 +108,7 @@ private:
     bool m_bSurfacesOnly;
     bool m_bColorByQuality;
     bool m_bImportedBeta;
+    bool m_colorUpdate;
 
     bool m_bOpenGLError;
 

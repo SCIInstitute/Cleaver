@@ -1838,10 +1838,10 @@ void MeshWindow::build_output_vbos()
         }
 
         if((((!clipped && exterior) || clipborder) && !m_bSurfacesOnly) ||
-           (m_bSurfacesOnly && !clipped && surface) || force)
+           (m_bSurfacesOnly && !clipped && surface) || force || (m_colorUpdate && !clipped))
         {
             cleaver::Tet *tet1 = 0; 
-            cleaver::Tet *tet2 = 0; 
+            cleaver::Tet *tet2 = 0;
 
             float default_color[3] = {0.9f, 0.9f, 0.9f};
             float good_color[3]    = {0.3f, 1.0f, 0.0f};
@@ -1849,25 +1849,27 @@ void MeshWindow::build_output_vbos()
 
             float *color1 = default_color, *color2 = default_color;
             if(m_mesh->faces[f]->tets[0] >= 0){
+                
                 tet1 = m_mesh->tets[m_mesh->faces[f]->tets[0]];
-                color1 = color_for_label[(int)tet1->mat_label];
-
-                if(m_bColorByQuality){
+                if(m_bColorByQuality && m_colorUpdate){
                     float t   = tet1->minAngle() / 90.0f;
                     color1[0] = (1 - t)*bad_color[0] + t*good_color[0];
                     color1[1] = (1 - t)*bad_color[1] + t*good_color[1];
                     color1[2] = (1 - t)*bad_color[2] + t*good_color[2];
+                } else {
+                    color1 = color_for_label[(int)tet1->mat_label];
                 }
 			}
             if(m_mesh->faces[f]->tets[1] >= 0){
+                
                 tet2 = m_mesh->tets[m_mesh->faces[f]->tets[1]];
-                color2 = color_for_label[(int)tet2->mat_label];
-
-                if(m_bColorByQuality){
+                if(m_bColorByQuality && m_colorUpdate){
                     float t   = tet2->minAngle() / 90.0f;
                     color2[0] = (1 - t)*bad_color[0] + t*good_color[0];
                     color2[1] = (1 - t)*bad_color[1] + t*good_color[1];
                     color2[2] = (1 - t)*bad_color[2] + t*good_color[2];
+                } else {
+                    color2 = color_for_label[(int)tet2->mat_label];
                 }
 			}
             if(m_mesh->faces[f]->tets[0] < 0)
@@ -1875,63 +1877,13 @@ void MeshWindow::build_output_vbos()
             if(m_mesh->faces[f]->tets[1] < 0)
                 color2 = color1;
 
-
-            /*
-            // add all 4 faces of the bad Tet
-            if(m_mesh->faces[f].tets[0] >= 0 && tet1->flagged){
-                for(int f=0; f < 4; f++)
-                {
-                    for(int v=0; v < 3; v++)
-                    {
-                        Cleaver::Vertex *vert = tet1->verts[(f+v)%4];
-
-                        PositionData.push_back(vert->pos().x);
-                        PositionData.push_back(vert->pos().y);
-                        PositionData.push_back(vert->pos().z);
-
-                        NormalData.push_back(0);
-                        NormalData.push_back(1);
-                        NormalData.push_back(0);
-
-                        ColorData.push_back((int)(200));
-                        ColorData.push_back((int)(25));
-                        ColorData.push_back((int)(25));
-                        ColorData.push_back((int)(255));
-                    }
-                }
-            }
-            if(m_mesh->faces[f].tets[1] >= 0 && tet2->flagged){
-                for(int f=0; f < 4; f++)
-                {
-                    for(int v=0; v < 3; v++)
-                    {
-                        Cleaver::Vertex *vert = tet2->verts[(f+v)%4];
-
-                        PositionData.push_back(vert->pos().x);
-                        PositionData.push_back(vert->pos().y);
-                        PositionData.push_back(vert->pos().z);
-
-                        NormalData.push_back(0);
-                        NormalData.push_back(1);
-                        NormalData.push_back(0);
-
-                        ColorData.push_back((int)(200));
-                        ColorData.push_back((int)(25));
-                        ColorData.push_back((int)(25));
-                        ColorData.push_back((int)(255));
-                    }
-                }
-            }
-            continue;
-            */
-
             cleaver::vec3 normal = m_mesh->faces[f]->normal;
 
             // set vertex positions and colors
             for(int v=0; v < 3; v++)
             {
                 cleaver::Vertex *vertex = m_mesh->verts[m_mesh->faces[f]->verts[v]];
-
+                
                 PositionData.push_back(vertex->pos().x);
                 PositionData.push_back(vertex->pos().y);
                 PositionData.push_back(vertex->pos().z);
@@ -1948,6 +1900,8 @@ void MeshWindow::build_output_vbos()
 
         }
     }
+    std::cout << "Color updated: " << m_colorUpdate << std::endl;
+    m_colorUpdate = false;
 
 
     m_meshVertexCount = PositionData.size() / 3;
