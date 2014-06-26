@@ -340,8 +340,8 @@ void MeshWindow::paintGL()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(m_bOpenGLError)
-        return;
+//    if(m_bOpenGLError)
+//        return;
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -1387,10 +1387,11 @@ void MeshWindow::setup_vbos()
     glGenBuffers(1, &m_cutVBO);
     glGenBuffers(1, &m_violVBO);
 
-    if(glGetError() != GL_NO_ERROR)
-    {
-        std::cerr << "Failed to set up OpenGL VBOS. Disabling OpenGL Rendering." << std::endl;
-    }
+    if(glGetError() != GL_NO_ERROR) {
+        std::cerr << "Failed to set up OpenGL VBOS: " << glGetError() <<
+            ". Attempting OpenGL Rendering..." << std::endl;
+        m_bOpenGLError = true;
+    } else m_bOpenGLError = false;
 
     update_vbos();
 }
@@ -1650,7 +1651,8 @@ void MeshWindow::build_bkgrnd_vbos()
     GLenum errorCode = glGetError();
     if(errorCode != GL_NO_ERROR)
     {
-        std::cerr << "Failed to upload background mesh data to VBOS. Disabling OpenGL Rendering." << std::endl;
+        std::cerr << "Failed to upload background mesh data to VBOS. " <<
+            "Attempting OpenGL Rendering..." << std::endl;
         switch(errorCode)
         {
             case GL_OUT_OF_MEMORY:
@@ -1666,7 +1668,8 @@ void MeshWindow::build_bkgrnd_vbos()
                 std::cerr << "\tUnspecified Error: " << errorCode << std::endl;
                 break;
         }
-    }
+        m_bOpenGLError = true;
+    } else m_bOpenGLError = false;
 
 
     // Now update Cuts List
