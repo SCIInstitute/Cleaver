@@ -1498,7 +1498,6 @@ cleaver::vec3 computeIncenter(cleaver::Tet *tet)
 
 void MeshWindow::build_bkgrnd_vbos()
 {
-    return;
     m_meshVertexCount = 0;
     m_cutVertexCount = 0;
     std::vector<GLfloat> PositionData;
@@ -1836,9 +1835,11 @@ void MeshWindow::build_output_vbos()
                 }
             }
         }
-
-        if((((!clipped && exterior) || clipborder) && !m_bSurfacesOnly) ||
-           (m_bSurfacesOnly && !clipped && surface) || force || (m_colorUpdate && !clipped))
+        bool draw = ((!clipped && exterior) || clipborder) && !m_bSurfacesOnly;
+        draw |= force;
+        draw |= m_bSurfacesOnly && !clipped && surface;
+        draw |= m_colorUpdate && !clipped && (surface == m_bSurfacesOnly);
+        if(draw)
         {
             cleaver::Tet *tet1 = 0; 
             cleaver::Tet *tet2 = 0;
@@ -1851,7 +1852,7 @@ void MeshWindow::build_output_vbos()
             if(m_mesh->faces[f]->tets[0] >= 0){
                 
                 tet1 = m_mesh->tets[m_mesh->faces[f]->tets[0]];
-                if(m_bColorByQuality && m_colorUpdate){
+                if(m_bColorByQuality){
                     float t   = tet1->minAngle() / 90.0f;
                     color1[0] = (1 - t)*bad_color[0] + t*good_color[0];
                     color1[1] = (1 - t)*bad_color[1] + t*good_color[1];
@@ -1863,7 +1864,7 @@ void MeshWindow::build_output_vbos()
             if(m_mesh->faces[f]->tets[1] >= 0){
                 
                 tet2 = m_mesh->tets[m_mesh->faces[f]->tets[1]];
-                if(m_bColorByQuality && m_colorUpdate){
+                if(m_bColorByQuality){
                     float t   = tet2->minAngle() / 90.0f;
                     color2[0] = (1 - t)*bad_color[0] + t*good_color[0];
                     color2[1] = (1 - t)*bad_color[1] + t*good_color[1];
@@ -1900,7 +1901,6 @@ void MeshWindow::build_output_vbos()
 
         }
     }
-    std::cout << "Color updated: " << m_colorUpdate << std::endl;
     m_colorUpdate = false;
 
 
