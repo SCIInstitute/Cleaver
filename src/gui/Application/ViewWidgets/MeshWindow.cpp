@@ -350,8 +350,9 @@ void MeshWindow::paintGL()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//    if(m_bOpenGLError)
-//        return;
+    if(m_bOpenGLError)
+        return;
+    
     float glmat[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, glmat);
     for(size_t i = 0; i < 16; i++) {
@@ -1471,8 +1472,7 @@ void MeshWindow::setup_vbos()
     if(glGetError() != GL_NO_ERROR) {
         std::cerr << "Failed to set up OpenGL VBOS: " << glGetError() <<
             ". Attempting OpenGL Rendering..." << std::endl;
-        m_bOpenGLError = true;
-    } else m_bOpenGLError = false;
+    }
 
     update_vbos();
 }
@@ -1738,6 +1738,7 @@ void MeshWindow::build_bkgrnd_vbos()
         {
             case GL_OUT_OF_MEMORY:
                 std::cerr << "\tOut of memory." << std::endl;
+                m_bOpenGLError = true;
                 break;
             case GL_INVALID_OPERATION:
                 std::cerr << "\tInvalid Operation." << std::endl;
@@ -1749,8 +1750,7 @@ void MeshWindow::build_bkgrnd_vbos()
                 std::cerr << "\tUnspecified Error: " << errorCode << std::endl;
                 break;
         }
-        m_bOpenGLError = true;
-    } else m_bOpenGLError = false;
+    }
 
 
     // Now update Cuts List
