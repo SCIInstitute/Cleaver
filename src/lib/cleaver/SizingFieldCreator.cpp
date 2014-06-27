@@ -620,7 +620,8 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
         appendPadding(mypadding, myoffset, zeros);
 
         filename = "feature_field.nrrd";
-        std::cout << "Writing file '" << filename << "'" << std::endl;
+        if (verbose)
+            std::cout << "Writing file '" << filename << "'" << std::endl;
         nrrd_file.open(filename.c_str(), std::ofstream::binary);
 
         // JRB: added safety check
@@ -1487,9 +1488,10 @@ ScalarField<float>* SizingFieldCreator::createSizingFieldFromVolume(const Volume
 {
     if(verbose)
         std::cout << "Creating sizing field at " << sampleFactor << "x resolution, with "
-                  << "Lipschitz=" << 1.0/speed
+                  << "Lipschitz=" << speed
                   << ", sizingFactor=" << sizingFactor
                   << ", padding=" << padding
+                  << ", adaptive=" << adaptiveSurface
                   << std::endl;
 
     SizingFieldCreator fieldCreator(volume, speed, sampleFactor, sizingFactor, padding, adaptiveSurface, verbose);

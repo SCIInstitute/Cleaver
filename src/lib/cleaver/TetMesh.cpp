@@ -237,7 +237,7 @@ TetMesh::~TetMesh() {
     for(size_t f=0; f < faces.size(); f++)
         delete faces[f];
 
-    std::cout << "TetMesh Going out of scope" << std::endl;
+//    std::cout << "TetMesh Going out of scope" << std::endl;
     if (halfFaces){
         delete [] halfFaces;
         halfFaces = NULL;
@@ -2379,7 +2379,7 @@ void TetMesh::constructBottomUpIncidences(bool verbose)
     // free existing structure
 
     if(halfFaces){
-        std::cout << "freeing existing halfFaces to recompute them" << std::endl;
+//        std::cout << "freeing existing halfFaces to recompute them" << std::endl;
         delete [] halfFaces;
         halfFaces = NULL;
     }
@@ -2722,7 +2722,8 @@ void TetMesh::removeExternalTets()
     constructFaces();
     constructBottomUpIncidences();
 
-    std::cout << "Removed " << afterCount - beforeCount << " external tets from mesh." << std::endl;
+//    std::cout << "Removed " << afterCount - beforeCount <<
+//    " external tets from mesh." << std::endl;
 }
 
 //------------------------------
@@ -2782,7 +2783,7 @@ void TetMesh::removeLockedTets()
     constructBottomUpIncidences();
 
 
-    std::cout << "Removed " << beforeCount - afterCount << " locked tets from mesh." << std::endl;
+//    std::cout << "Removed " << beforeCount - afterCount << " locked tets from mesh." << std::endl;
 }
 
 //------------------------------
@@ -2814,7 +2815,7 @@ void TetMesh::removeMaterial(int m)
     constructFaces();
     constructBottomUpIncidences();
 
-    std::cout << "Removed " << afterCount - beforeCount << " material " << m << " tets from mesh." << std::endl;
+//    std::cout << "Removed " << afterCount - beforeCount << " material " << m << " tets from mesh." << std::endl;
 }
 
 //------------------------------
@@ -2870,7 +2871,7 @@ void TetMesh::removeOutsideBox(BoundingBox &box)
     constructFaces();
     constructBottomUpIncidences(true);
 
-    std::cout << "Removed " << afterCount - beforeCount << " tets from outside the bounds: [" << box.origin.toString() << " to " << box.maxCorner().toString() << std::endl;
+//    std::cout << "Removed " << afterCount - beforeCount << " tets from outside the bounds: [" << box.origin.toString() << " to " << box.maxCorner().toString() << std::endl;
 }
 
 //----------------------------------------------------------------

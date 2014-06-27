@@ -35,15 +35,15 @@ public:
     // Functions for development ONLY.
     // Remove after completion.
     //================================    
-    void createBackgroundMesh();
+    void createBackgroundMesh(bool verbose = false);
     void setBackgroundMesh(TetMesh *);
-    void buildAdjacency();
-    void sampleVolume();
-    void computeAlphas();
-    void computeInterfaces();
-    void generalizeTets();
-    void snapsAndWarp();
-    void stencilTets();
+    void buildAdjacency(bool verbose = false);
+    void sampleVolume(bool verbose = false);
+    void computeAlphas(bool verbose = false);
+    void computeInterfaces(bool verbose = false);
+    void generalizeTets(bool verbose = false);
+    void snapsAndWarp(bool verbose = false);
+    void stencilTets(bool verbose = false);
 
     //================================
     // State Getters.

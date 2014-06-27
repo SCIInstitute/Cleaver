@@ -192,7 +192,7 @@ public:
 
     void constructEdges();
     void constructFaces();    
-    void computeAngles();    
+    void computeAngles();
     void computeDihedralHistograms();
     void computeBounds();
     void updateBounds(Vertex *vertex);

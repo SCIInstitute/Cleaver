@@ -204,7 +204,7 @@ public:
     void createBackgroundTets();
     void topologicalCleaving();
     void resetMeshProperties();
-    TetMesh* createBackgroundMesh();
+    TetMesh* createBackgroundMesh(bool verbose = false);
     void setBackgroundMesh(TetMesh*);
     void adaptCell(OTCell *cell);
 
@@ -364,14 +364,14 @@ CleaverMesher::CleaverMesher(const Volume *volume) : m_pimpl(new CleaverMesherIm
 
 void CleaverMesher::createTetMesh(bool verbose)
 {
-    m_pimpl->createBackgroundMesh();
-    m_pimpl->buildAdjacency();
-    m_pimpl->sampleVolume();
-    m_pimpl->computeAlphas();
-    m_pimpl->computeInterfaces();
-    m_pimpl->generalizeTets();
-    m_pimpl->snapAndWarpViolations();
-    m_pimpl->stencilBackgroundTets();
+    m_pimpl->createBackgroundMesh(verbose);
+    m_pimpl->buildAdjacency(verbose);
+    m_pimpl->sampleVolume(verbose);
+    m_pimpl->computeAlphas(verbose);
+    m_pimpl->computeInterfaces(verbose);
+    m_pimpl->generalizeTets(verbose);
+    m_pimpl->snapAndWarpViolations(verbose);
+    m_pimpl->stencilBackgroundTets(verbose);
 }
 
 TetMesh* CleaverMesher::getBackgroundMesh() const
@@ -490,7 +490,7 @@ Vertex* CleaverMesherImp::vertexForPosition(const vec3 &position, bool create)
 //================================================
 // createBackgroundMesh()
 //================================================
-TetMesh* CleaverMesherImp::createBackgroundMesh()
+TetMesh* CleaverMesherImp::createBackgroundMesh(bool verbose)
 {    
     m_sizingField = m_volume->getSizingField();
 
@@ -548,7 +548,7 @@ TetMesh* CleaverMesherImp::createBackgroundMesh()
         topologicalCleaving();
     }
     */
-    m_bgMesh->writeNodeEle("background",true,false);
+    m_bgMesh->writeNodeEle("background",verbose,false);
 
     return m_bgMesh;
 }
@@ -2002,11 +2002,11 @@ Octree* CleaverMesher::getTree() const
 //========================================
 // - createBackgroundMesh()
 //========================================
-void CleaverMesher::createBackgroundMesh()
+void CleaverMesher::createBackgroundMesh(bool verbose)
 {
     cleaver::Timer timer;
     timer.start();
-    m_pimpl->createBackgroundMesh();
+    m_pimpl->createBackgroundMesh(verbose);
     timer.stop();
     setBackgroundTime(timer.time());
 }
@@ -2019,57 +2019,57 @@ void CleaverMesher::setBackgroundMesh(TetMesh *m)
 //==================================
 // - buildAdjacency();
 //==================================
-void CleaverMesher::buildAdjacency()
+void CleaverMesher::buildAdjacency(bool verbose)
 {
-    m_pimpl->buildAdjacency(false);
+    m_pimpl->buildAdjacency(verbose);
 }
 
 //================================
 // - SampleVolume()
 //================================
-void CleaverMesher::sampleVolume()
+void CleaverMesher::sampleVolume(bool verbose)
 {
-    m_pimpl->sampleVolume(false);
+    m_pimpl->sampleVolume(verbose);
 }
 
 //=================================
 // - computeInterfaces()
 //=================================
-void CleaverMesher::computeAlphas()
+void CleaverMesher::computeAlphas(bool verbose)
 {
-    m_pimpl->computeAlphas(false,m_regular,m_alpha_long,m_alpha_short);
+    m_pimpl->computeAlphas(verbose,m_regular,m_alpha_long,m_alpha_short);
 }
 
 //=====================================
 // - computeInterfaces()
 //=====================================
-void CleaverMesher::computeInterfaces()
+void CleaverMesher::computeInterfaces(bool verbose)
 {
-    m_pimpl->computeInterfaces(false);
+    m_pimpl->computeInterfaces(verbose);
 }
 
 //=====================================
 // - generalizeTets()
 //=====================================
-void CleaverMesher::generalizeTets()
+void CleaverMesher::generalizeTets(bool verbose)
 {
-    m_pimpl->generalizeTets(false);
+    m_pimpl->generalizeTets(verbose);
 }
 
 //================================
 // - snapAndWarp()
 //================================
-void CleaverMesher::snapsAndWarp()
+void CleaverMesher::snapsAndWarp(bool verbose)
 {
-    m_pimpl->snapAndWarpViolations(false);
+    m_pimpl->snapAndWarpViolations(verbose);
 }
 
 //===============================
 // - stencilTets()
 //===============================
-void CleaverMesher::stencilTets()
+void CleaverMesher::stencilTets(bool verbose)
 {
-    m_pimpl->stencilBackgroundTets(false);
+    m_pimpl->stencilBackgroundTets(verbose);
 }
 
 
@@ -4627,8 +4627,6 @@ void CleaverMesherImp::computeQuadrupleForTet(Tet *tet)
     // TODO:   Implement Compute Quadruple
 
     // for now, take middle
-
-    std::cerr << "computing a quadruple" << std::endl;
 
     Vertex *quadruple = new Vertex(m_volume->numberOfMaterials());
 

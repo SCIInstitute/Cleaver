@@ -180,7 +180,7 @@ int main(int argc,	char* argv[])
         // parse the material field input file names
         if (variables_map.count("material_fields")) {
             material_fields = variables_map["material_fields"].as<std::vector<std::string> >();
-            int file_count = material_fields.size();
+//            int file_count = material_fields.size();
         }
         else{
             std::cout << "Error: At least one material field file must be specified." << std::endl;
@@ -334,13 +334,6 @@ int main(int argc,	char* argv[])
     //-----------------------------------
     cleaver::Timer total_timer;
     total_timer.start();
-    if(verbose) {
-        std::cout << " Loading input fields:" << std::endl;
-        for (size_t i=0; i < material_fields.size(); i++) {
-            std::cout << " - " << material_fields[i] << std::endl;
-        }
-    }
-
     std::vector<cleaver::AbstractScalarField*> fields = loadNRRDFiles(material_fields, verbose);
     if(fields.empty()){
         std::cerr << "Failed to load image data. Terminating." << std::endl;
@@ -382,7 +375,7 @@ int main(int argc,	char* argv[])
             sizing_field_timer.start();
             sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(
                         volume,
-                        (float)(1.0/lipschitz),
+                        (float)lipschitz,
                         (float)scale,
                         (float)multiplier,
                         (int)padding,
@@ -410,12 +403,12 @@ int main(int argc,	char* argv[])
             case cleaver::Regular:
                 mesher.setAlphas(alpha_long,alpha_short);
                 mesher.setRegular(true);
-                mesher.createBackgroundMesh();
+                mesher.createBackgroundMesh(verbose);
                 break;
             default:
             case cleaver::Structured:
                 mesher.setRegular(false);
-                mesher.createBackgroundMesh();
+                mesher.createBackgroundMesh(verbose);
                 break;
         }
         background_timer.stop();
@@ -436,13 +429,13 @@ int main(int argc,	char* argv[])
     //-----------------------------------------------------------    
     cleaver::Timer cleaving_timer;
     cleaving_timer.start();
-    mesher.buildAdjacency();
-    mesher.sampleVolume();
-    mesher.computeAlphas();
-    mesher.computeInterfaces();
-    mesher.generalizeTets();
-    mesher.snapsAndWarp();
-    mesher.stencilTets();
+    mesher.buildAdjacency(verbose);
+    mesher.sampleVolume(verbose);
+    mesher.computeAlphas(verbose);
+    mesher.computeInterfaces(verbose);
+    mesher.generalizeTets(verbose);
+    mesher.snapsAndWarp(verbose);
+    mesher.stencilTets(verbose);
     cleaving_timer.stop();
     cleaving_time = cleaving_timer.time();
 
@@ -453,7 +446,7 @@ int main(int argc,	char* argv[])
     // Strip Exterior Tets
     //-----------------------------------------------------------
     if(strip_exterior){
-        cleaver::stripExteriorTets(mesh, volume);   
+        cleaver::stripExteriorTets(mesh, volume,verbose);
     }
 
     //-----------------------------------------------------------
@@ -474,20 +467,16 @@ int main(int argc,	char* argv[])
     total_timer.stop();
     double total_time = total_timer.time();
 
-    if(verbose)
-        std::cout << "Writing experiment file: " << output_path << "experiment.info" << std::endl;
-    std::string infoFilename = output_path + "experiment.info";
-    std::ofstream file(infoFilename.c_str());
-    file << "Experiment Info" << std::endl;
-    file << "Size: " << volume->size().toString() << std::endl;
-    file << "Materials: " << volume->numberOfMaterials() << std::endl;
-    file << "Min Dihedral: " << mesh->min_angle << std::endl;
-    file << "Max Dihedral: " << mesh->max_angle << std::endl;
-    file << "Total Time: " << total_time << " seconds" << std::endl;
-    file << "Sizing Field Time: " << sizing_field_time << " seconds" << std::endl;
-    file << "Backound Mesh Time: " << background_time << " seconds" << std::endl;
-    file << "Cleaving Time: " << cleaving_time << " seconds" << std::endl;
-    file.close();
-
+    if(verbose) {
+        std::cout << "Experiment Info" << std::endl;
+        std::cout << "Size: " << volume->size().toString() << std::endl;
+        std::cout << "Materials: " << volume->numberOfMaterials() << std::endl;
+        std::cout << "Min Dihedral: " << mesh->min_angle << std::endl;
+        std::cout << "Max Dihedral: " << mesh->max_angle << std::endl;
+        std::cout << "Total Time: " << total_time << " seconds" << std::endl;
+        std::cout << "Sizing Field Time: " << sizing_field_time << " seconds" << std::endl;
+        std::cout << "Backound Mesh Time: " << background_time << " seconds" << std::endl;
+        std::cout << "Cleaving Time: " << cleaving_time << " seconds" << std::endl;
+    }
     return 0;
 }
