@@ -17,6 +17,10 @@ The Cleaver Library is based on the 'Lattice Cleaving' algorithm:
 
 The method is theoretically guaranteed to produce valid meshes with bounded dihedral angles, while still conforming to multimaterial material surfaces. Empirically these bounds have been shown to be significant.
 
+Cleaver is an Open Source software project that is principally funded through the SCI Institute's NIH/NIGMS CIBC Center. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of NIH/NIGMS CIBC software or data sets.
+
+"This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545."
+
 <strong>Author: </strong> Jonathan Bronson<br/>
 <strong>Constributor: </strong> Ross Whitaker<br/>
 <strong>Constributor: </strong> Josh Levine<br/>
