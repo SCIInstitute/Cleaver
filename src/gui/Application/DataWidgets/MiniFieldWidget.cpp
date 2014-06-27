@@ -91,10 +91,6 @@ void MiniFieldWidget::mousePressEvent(QMouseEvent *event)
                     emit removeRequest(m_field);
                 }
             }
-            else
-            {
-                std::cout << "Canceled" << std::endl;
-            }
         }
     }
 }

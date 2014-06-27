@@ -340,10 +340,6 @@ void MeshDataWidget::mousePressEvent(QMouseEvent *event)
                 MainWindow::instance()->exportMesh(this->mesh);
             }
         }
-        else
-        {
-            std::cout << "Canceled" << std::endl;
-        }
     }
 }
 

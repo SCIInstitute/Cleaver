@@ -303,10 +303,6 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
                 MainWindow::instance()->exportField(floatField);
             }
         }
-        else
-        {
-            std::cout << "Canceled" << std::endl;
-        }
     }
 }
 

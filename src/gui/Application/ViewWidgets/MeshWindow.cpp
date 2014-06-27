@@ -352,6 +352,19 @@ void MeshWindow::paintGL()
 
 //    if(m_bOpenGLError)
 //        return;
+    float glmat[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX, glmat);
+    for(size_t i = 0; i < 16; i++) {
+        if(isnan(glmat[i])) {
+            std::cout << "Recovering from a NaN matrix error..." << std::endl;
+            if (m_volume) {
+                m_camera->reset();
+            } else {
+                m_Axiscamera->reset();
+            }
+            break;
+        }
+    }
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
