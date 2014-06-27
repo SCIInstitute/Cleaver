@@ -404,13 +404,11 @@ void CleaverMesher::setVolume(const Volume *volume)
 
 void CleaverMesher::setTopologyMode(TopologyMode mode)
 {
-    std::cout << "Topology mode set to: " << (int)mode << std::endl;
     m_pimpl->m_topologyMode = mode;
 }
 
 void CleaverMesher::setAlphaInit(double alpha)
 {
-	std::cout << "Setting Alpha Initial to: " << alpha << std::endl;
 	m_pimpl->m_alpha_init = alpha;
 }
 
@@ -550,9 +548,6 @@ TetMesh* CleaverMesherImp::createBackgroundMesh()
         topologicalCleaving();
     }
     */
-
-    std::cout << "Background mesh contains\n\t" << m_bgMesh->verts.size() << " verts, " << m_bgMesh->tets.size() << " tets." << std::endl;
-    std::cout << "Saving background mesh to file." << std::endl;
     m_bgMesh->writeNodeEle("background",true,false);
 
     return m_bgMesh;
@@ -564,9 +559,6 @@ void CleaverMesherImp::setBackgroundMesh(TetMesh *mesh)
         delete m_bgMesh;
     m_bgMesh = mesh;
     m_bBackgroundMeshCreated = true;
-
-    std::cout << "New background mesh set." << std::endl;
-    std::cout << "Background mesh contains\n\t" << m_bgMesh->verts.size() << " verts, " << m_bgMesh->tets.size() << " tets." << std::endl;
 }
 
 
@@ -920,9 +912,7 @@ TetMesh* CleaverMesherImp::createVisualizationBackgroundMesh()
 //================================================
 ScalarField<float>* CleaverMesherImp::createSizingField()
 {
-    std::cout << "Creating sizing field... " << std::flush;
     ScalarField<float> *sizingField = SizingFieldCreator::createSizingFieldFromVolume(m_volume, 1.0/0.2, 2.0f);
-    std::cout << "Done." << std::endl;
 
     return sizingField;
 }
@@ -1099,9 +1089,6 @@ std::vector<OTCell*> CleaverMesherImp::cellsAroundPos(const vec3 &pos)
         //std::cout << "Failed to find the root cell for cellsAroundPos(" << pos.toString() << ")" << std::endl;
         return cells;
     }
-    else
-        std::cout << "Found root central cell" << std::endl;
-
     //-------------------------------------------
     // Now,  descend oppositely for each child
     //-------------------------------------------
@@ -2034,7 +2021,7 @@ void CleaverMesher::setBackgroundMesh(TetMesh *m)
 //==================================
 void CleaverMesher::buildAdjacency()
 {
-    m_pimpl->buildAdjacency(true);
+    m_pimpl->buildAdjacency(false);
 }
 
 //================================
@@ -2042,7 +2029,7 @@ void CleaverMesher::buildAdjacency()
 //================================
 void CleaverMesher::sampleVolume()
 {
-    m_pimpl->sampleVolume(true);
+    m_pimpl->sampleVolume(false);
 }
 
 //=================================
@@ -2050,7 +2037,7 @@ void CleaverMesher::sampleVolume()
 //=================================
 void CleaverMesher::computeAlphas()
 {
-    m_pimpl->computeAlphas(true,m_regular,m_alpha_long,m_alpha_short);
+    m_pimpl->computeAlphas(false,m_regular,m_alpha_long,m_alpha_short);
 }
 
 //=====================================
@@ -2058,7 +2045,7 @@ void CleaverMesher::computeAlphas()
 //=====================================
 void CleaverMesher::computeInterfaces()
 {
-    m_pimpl->computeInterfaces(true);
+    m_pimpl->computeInterfaces(false);
 }
 
 //=====================================
@@ -2066,7 +2053,7 @@ void CleaverMesher::computeInterfaces()
 //=====================================
 void CleaverMesher::generalizeTets()
 {
-    m_pimpl->generalizeTets(true);
+    m_pimpl->generalizeTets(false);
 }
 
 //================================
@@ -2074,7 +2061,7 @@ void CleaverMesher::generalizeTets()
 //================================
 void CleaverMesher::snapsAndWarp()
 {
-    m_pimpl->snapAndWarpViolations(true);
+    m_pimpl->snapAndWarpViolations(false);
 }
 
 //===============================
@@ -2082,7 +2069,7 @@ void CleaverMesher::snapsAndWarp()
 //===============================
 void CleaverMesher::stencilTets()
 {
-    m_pimpl->stencilBackgroundTets(true);
+    m_pimpl->stencilBackgroundTets(false);
 }
 
 
@@ -5957,14 +5944,15 @@ void CleaverMesherImp::snapAndWarpVertexViolations(bool verbose)
     //---------------------------------------------------
     //  Apply vertex warping to all vertices in lattice
     //---------------------------------------------------
-    std::cout << "preparing to examine " << m_bgMesh->verts.size() << " verts" << std::endl;
+    if(verbose)
+        std::cout << "preparing to examine " << m_bgMesh->verts.size() << " verts" << std::endl;
     for(unsigned int v=0; v < m_bgMesh->verts.size(); v++)
     {
         Vertex *vertex = m_bgMesh->verts[v];            // TODO: add check for vertex->hasAdjacentCuts
         snapAndWarpForViolatedVertex(vertex);           //       to reduce workload significantly.
     }
-
-    std::cout << "Phase 1 Complete" << std::endl;
+    if(verbose)
+        std::cout << "Phase 1 Complete" << std::endl;
 }
 
 
@@ -7199,8 +7187,8 @@ void CleaverMesherImp::snapAndWarpEdgeViolations(bool verbose)
         snapAndWarpForViolatedEdge(edge);        //           to reduce workload.
         edgesIter++;
     }
-
-    std::cout << "Phase 2 Complete" << std::endl;
+    if(verbose)
+        std::cout << "Phase 2 Complete" << std::endl;
 }
 
 //===============================================================
@@ -7249,8 +7237,8 @@ void CleaverMesherImp::snapAndWarpFaceViolations(bool verbose)
         HalfFace *face = &m_bgMesh->halfFaces[f];  // TODO: add  redundancy checks
         snapAndWarpForViolatedFace(face);         //           to reduce workload.
     }
-
-    std::cout << "Phase 3 Complete" << std::endl;
+    if(verbose)
+        std::cout << "Phase 3 Complete" << std::endl;
 }
 
 
@@ -7928,7 +7916,7 @@ void CleaverMesherImp::topologicalCleaving()
     //----------------------------------------------------------
 
     // Build adjacency incase it hasn't already
-    buildAdjacency(true);
+    buildAdjacency(false);
 
     // Sample The Volume
     //std::cout << "Sampling Volume for Topology" << std::endl;

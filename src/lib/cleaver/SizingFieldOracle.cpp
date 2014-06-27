@@ -186,7 +186,7 @@ void SizingFieldOracle::createOctree()
 
     // breadth first creation
     adaptCell(m_tree->root());
-    std::cout<<"MinSF = "<<m_tree->root()->minLFS<<std::endl;
+    //std::cout<<"MinSF = "<<m_tree->root()->minLFS<<std::endl;
     //printTree(m_tree->root(), 4);
 }
 

@@ -358,13 +358,11 @@ void MainWindow::importMesh()
         if(elefilename.length() > 0 && nodefilename.length() > 0)
         {
             cleaver::TetMesh *mesh =
-                cleaver::TetMesh::createFromNodeElePair(nodefilename, elefilename,true);
+                cleaver::TetMesh::createFromNodeElePair(nodefilename, elefilename,false);
             if(mesh == NULL){
                 std::cerr << "Invalid Mesh" << std::endl;
                 return;
             }
-            else
-                std::cout << "Mesh successfully imported!" << std::endl;
 
 
             mesh->constructFaces();
@@ -495,7 +493,6 @@ void MainWindow::focus(QMdiSubWindow *subwindow)
 
         if(window != NULL)
         {
-            std::cout << "Cleaver Widget has Volume from Window" << std::endl;
             if(window->mesh() != NULL)
                 exportAct->setEnabled(true);
             else

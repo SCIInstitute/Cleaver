@@ -314,8 +314,6 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                     QueueIndex temp_q = make_index(i1,j1,k1);
                     if(exists(temp_q, mesh_bdry) && voxel[i][j][k].mat != voxel[i1][j1][k1].mat)
                     {
-                        if(i==353 && j==272 && k==184)
-                            printf("here\n");
                         double i_star, j_star, k_star;
                         double dist=Newton(volume, make_triple(i,j,k), make_triple(i1,j1,k1), voxel[i][j][k].mat, voxel[i1][j1][k1].mat, i_star, j_star, k_star);
 
@@ -398,7 +396,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
 
 
 
-        printf("\tComputing the distance transform\n"); fflush(stdout);
+//        printf("\tComputing the distance transform\n"); fflush(stdout);
         proceed(mesh_bdry, zeros, 1, 1e6);
 
 
@@ -442,7 +440,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
         }
 
         //Search for discontinuity
-        printf("\tSearching for discontinuity in the distance field\n"); fflush(stdout);
+//        printf("\tSearching for discontinuity in the distance field\n"); fflush(stdout);
         medialaxis.clear();
         for(i=1; i<w; i++)
         {
@@ -614,7 +612,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
         //Thinning (if necessary)
         //Associate the feature size with the with the boundary voxels
         //BSF on the from media axis voxels to boundary voxels
-        printf("\tComputing the feature size at the boundary vertices\n"); fflush(stdout);
+//        printf("\tComputing the feature size at the boundary vertices\n"); fflush(stdout);
         proceed(mesh_feature, medialaxis, 1, 1e6);
 
         vec3 mypadding = m_sampleFactor*m_padding;
@@ -660,7 +658,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
         }
     }
 
-    printf("\tComputing the sizing field in the interior vertices\n"); fflush(stdout);
+//    printf("\tComputing the sizing field in the interior vertices\n"); fflush(stdout);
     //takeTheLog(mesh_padded_feature,zeros);
     proceed(mesh_padded_feature, zeros, speed, 1e6);
     //exponentiate(mesh_padded_feature);

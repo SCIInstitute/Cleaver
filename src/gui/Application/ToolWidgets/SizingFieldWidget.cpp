@@ -122,14 +122,11 @@ void SizingFieldWidget::loadSizingField()
     {
         cleaver::AbstractScalarField* sizingField = loadNRRDFile(fileName.toStdString(), true);
         this->volume->setSizingField(sizingField);
-        std::cout << "Sizing Field Set" << std::endl;
     }
 }
 
 void SizingFieldWidget::computeSizingField()
 {
-    std::cout << "Computing Sizing Field..." << std::flush;
-
     float factor = ui->factorSpinBox->value();
     float speed = 1.0 / ui->lipschitzSpinBox->value();
     float scale = ui->scaleSpinBox->value();
@@ -138,7 +135,7 @@ void SizingFieldWidget::computeSizingField()
 
     cleaver::Timer timer;
     timer.start();
-    cleaver::AbstractScalarField *sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(this->volume, speed, scale, factor, padding, adaptiveSurface, true);
+    cleaver::AbstractScalarField *sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(this->volume, speed, scale, factor, padding, adaptiveSurface, false);
     timer.stop();
 
     std::string sizingFieldName = volume->name() + "-computed-sizing-field";
@@ -148,9 +145,6 @@ void SizingFieldWidget::computeSizingField()
 
     // Add new sizing field to data manager
     MainWindow::dataManager()->addField(sizingField);
-
-    std::cout << "done!" << std::endl;
-    std::cout << "Computed in " << timer.time() << " seconds." << std::endl;
 }
 
 void SizingFieldWidget::updateVolumeList()
@@ -172,7 +166,6 @@ void SizingFieldWidget::volumeSelected(int index)
         ui->computeSizingFieldButton->setEnabled(false);
     }
     else{
-        std::cout << "volume index = " << index << std::endl;
         this->volume = MainWindow::dataManager()->volumes()[index];
         ui->computeSizingFieldButton->setEnabled(true);
     }

@@ -2281,9 +2281,9 @@ bool TetMesh::isValid()
                 more_count++;
         }
     }
-    std::cout << "Faces with 1 adjacent tet  : " << one_count << std::endl;
-    std::cout << "Faces with 2 adjacent tets : " << two_count << std::endl;
-    std::cout << "Faces with 3+ adjacent tets: " << more_count << std::endl;
+//    std::cout << "Faces with 1 adjacent tet  : " << one_count << std::endl;
+//    std::cout << "Faces with 2 adjacent tets : " << two_count << std::endl;
+//    std::cout << "Faces with 3+ adjacent tets: " << more_count << std::endl;
 
     /*
     // now check that there are no null tets stored
@@ -2304,7 +2304,7 @@ bool TetMesh::isValid()
     */
 
     if(more_count == 0){
-        std::cout << "TetMesh IS VALID!" << std::endl;
+//        std::cout << "TetMesh IS VALID!" << std::endl;
         return true;
     }
     else

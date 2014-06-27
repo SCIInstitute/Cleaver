@@ -133,18 +133,20 @@ void CleaverWidget::createRegularMesh()
 {
       MeshWindow *window = MainWindow::instance()->activeWindow();
 
-      if(window != NULL){
+    if(window != NULL){
         //create the default sizing field
         cleaver::Volume *volume = window->volume();
-        std::cout << "Computing Sizing Field..." << std::flush;
 
-        float scale = ui->scalingSpinner->value();
+          float scale = ui->scalingSpinner->value();
+          float multiplier = ui->sizeMultiplierSpinner->value();
+          float lip = ui->lipschitzSpinner->value();
+          int padding = ui->paddingSpinner->value();
 
         cleaver::Timer timer;
         timer.start();
         cleaver::AbstractScalarField *sizingField =
             cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-                volume, 0.2, scale, 1., 0., false, true);
+                volume, lip, scale, multiplier, padding, false, false);
         timer.stop();
 
         std::string sizingFieldName = volume->name() + "-computed-sizing-field";
@@ -154,15 +156,9 @@ void CleaverWidget::createRegularMesh()
 
         // Add new sizing field to data manager
         MainWindow::dataManager()->addField(sizingField);
-
-        std::cout << "done!" << std::endl;
-        std::cout << "Computed in " << timer.time() << " seconds." << std::endl;
         //update the mesher
-        std::cout << "Creating Regular Cleaver Mesh..." << std::endl;
         double al = ui->alphaLongSpinner->value();
         double as = ui->alphaShortSpinner->value();
-        std::cout << "Alpha Long: "<< al << std::endl;
-        std::cout << "Alpha Short: "<< as << std::endl;
         mesher->setAlphas(al,as);
         mesher->setRegular(true);
         mesher->createBackgroundMesh();
@@ -214,9 +210,6 @@ void CleaverWidget::createBackgroundMesh()
 
                 total_volume += volume;
             }
-            std::cout << "expected volume  = " << (double)(100*100*100) << std::endl;
-            std::cout << "total tet volume = " << total_volume << std::endl;
-
             mesher->buildAdjacency();            
 
             mesh->name = "Adaptive-BCC-Mesh";

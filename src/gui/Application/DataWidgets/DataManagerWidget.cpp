@@ -105,8 +105,6 @@ void DataManagerWidget::updateGroupWidgets()
 
 void DataManagerWidget::updateList()
 {
-    std::cout << "Updating Data List" << std::endl;
-
     // make copies of the old maps
     VolumeMap tmp_volume_map = this->volumeMap;
     FieldMap  tmp_field_map = this->fieldMap;
@@ -178,7 +176,6 @@ void DataManagerWidget::updateList()
             tmp_volume_map.erase(it);
         }
         else{
-            std::cout << "Created New" << std::endl;
             volumeWidget = new VolumeDataWidget(volume, this);
         }
 
@@ -209,12 +206,10 @@ void DataManagerWidget::updateList()
         MeshMap::iterator it = tmp_mesh_map.find(reinterpret_cast<ulong>(mesh));
         if (it != tmp_mesh_map.end())
         {
-            std::cout << "Found Existing" << std::endl;
             meshWidget = it->second;
             tmp_mesh_map.erase(it);
         }
         else{
-            std::cout << "Created New" << std::endl;
             meshWidget = new MeshDataWidget(mesh, this);
         }
 

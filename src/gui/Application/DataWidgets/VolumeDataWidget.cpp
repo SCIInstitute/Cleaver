@@ -238,8 +238,6 @@ void VolumeDataWidget::updateMaterialsWidgets()
         MaterialMap::iterator iter = tmp_material_map.find(reinterpret_cast<ulong>(field));
         if (iter != tmp_material_map.end())
         {
-            std::cout << "Found existing" << std::endl;
-
             // found existing
             materialWidget = iter->second;
 
@@ -250,7 +248,6 @@ void VolumeDataWidget::updateMaterialsWidgets()
             tmp_material_map.erase(iter);
         }
         else{
-            std::cout << "Creating new material widget" << std::endl;
 
             // create a material widget
             materialWidget = new MiniFieldWidget(field, this);
@@ -289,7 +286,6 @@ void VolumeDataWidget::updateMaterialsWidgets()
 
     for(MaterialMap::iterator iter = tmp_material_map.begin(); iter != tmp_material_map.end(); ++iter)
     {
-        std::cout << "Removing a widget" << std::endl;
         MiniFieldWidget *materialWidget = iter->second;
         ui->materialsWidget->layout()->removeWidget(materialWidget);
         delete materialWidget;
@@ -473,10 +469,6 @@ void VolumeDataWidget::mousePressEvent(QMouseEvent *event)
                     MainWindow::dataManager()->update();
                 }
             }
-        }
-        else
-        {
-            std::cout << "Canceled" << std::endl;
         }
     }
 }
