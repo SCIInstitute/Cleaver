@@ -50,7 +50,7 @@ static const double DEFAULT_ALPHA_SHORT = 0.203;
 
 
 bool GRID_WARPING = true;
-bool SPLIT_ACROSS_CELLS = true;
+bool SPLIT_ACROSS_CELLS = false;
 
 const int OctantInverse[8] = {
     7,     // 0,0,0 --> 1,1,1
@@ -2050,7 +2050,7 @@ void CleaverMesher::sampleVolume()
 //=================================
 void CleaverMesher::computeAlphas()
 {
-    m_pimpl->computeAlphas(true,m_regular);
+    m_pimpl->computeAlphas(true,m_regular,m_alpha_long,m_alpha_short);
 }
 
 //=====================================

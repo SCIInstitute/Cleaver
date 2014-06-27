@@ -443,16 +443,17 @@ void VolumeDataWidget::mousePressEvent(QMouseEvent *event)
     else if(event->button() == Qt::RightButton)
     {
         QMenu contextMenu;
-        QAction *deleteAction = contextMenu.addAction("Delete Volume");
+        //QAction *deleteAction = contextMenu.addAction("Delete Volume");
         QAction *renameAction = contextMenu.addAction("Rename Volume");
 
         QAction *selectedItem = contextMenu.exec(mapToGlobal(event->pos()));
         if(selectedItem)
         {
-            if(selectedItem == deleteAction){
-                MainWindow::dataManager()->removeVolume(volume);
-            }
-            else if(selectedItem == renameAction){
+//            if(selectedItem == deleteAction){
+//                MainWindow::dataManager()->removeVolume(volume);
+//            }
+//            else
+            if(selectedItem == renameAction){
 
                 QDialog dialog;
                 dialog.setWindowTitle("Rename Volume");

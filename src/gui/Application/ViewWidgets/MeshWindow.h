@@ -36,7 +36,7 @@ public:
     //-- mutators --
     void setMesh(cleaver::TetMesh *mesh);
     void setVolume(cleaver::Volume *volume);
-    void setAxisVisible(bool value){ m_bShowAxis = value; updateGL();}
+    void setAxisVisible(bool value){ m_bShowAxis = value;}
     void setBBoxVisible(bool value){ m_bShowBBox = value; }
     void setFacesVisible(bool value){ m_bShowFaces = value; }
     void setEdgesVisible(bool value){ m_bShowEdges = value; }
@@ -139,6 +139,7 @@ private:
     void drawFaces();
     void drawEdges();
     void drawCuts();
+    void drawAxis();
     void drawClippingPlane();
     void drawBox(const cleaver::BoundingBox &box);
 

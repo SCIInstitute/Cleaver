@@ -168,12 +168,10 @@ void MeshViewOptionsWidget::scrollingCheckboxClicked(int index)
         case 6:
             window->setSurfacesOnly(ui->showSurfacesCheckbox->isChecked());
             window->updateMesh();
-            window->updateGL();
             break;
         case 7:
             window->setColorByQuality(ui->colorByQualityCheckbox->isChecked());
             window->updateMesh();
-            window->updateGL();
             break;
         }
 

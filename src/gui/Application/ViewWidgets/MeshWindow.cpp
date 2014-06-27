@@ -355,55 +355,16 @@ void MeshWindow::paintGL()
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
     if (m_bShowAxis) {
-        float ratio = (float)m_width / (float)m_height;
-        glPushMatrix();
-        glTranslatef(-4.2*ratio, +4.0, -15);
-        float * tmp = m_Axiscamera->viewMatrix();
-        tmp[14] = tmp[13] = tmp[12] = 0.f;
-        glMultMatrixf(tmp);
         glDisable(GL_LIGHTING);
-        glBegin(GL_LINES);
-        glColor3f(1, 0, 0);
-        glVertex3f(0, 0, 0);
-        glVertex3f(1, 0, 0);
-        
-        glVertex3f(1.2, 0.2, 0);
-        glVertex3f(1.4, -0.2, 0);
-        
-        glVertex3f(1.4, 0.2, 0);
-        glVertex3f(1.2, -0.2, 0);
-        
-        glColor3f(0, 1, 0);
-        glVertex3f(0, 0, 0);
-        glVertex3f(0, 1, 0);
-        
-        glVertex3f(0, 1.2, 0);
-        glVertex3f(0, 1.4, 0);
-        
-        glVertex3f(0, 1.4, 0);
-        glVertex3f(0.1, 1.6, 0);
-        
-        glVertex3f(0, 1.4, 0);
-        glVertex3f(-0.1, 1.6, 0);
-        
-        glColor3f(0, 0, 1);
-        glVertex3f(0, 0, 0);
-        glVertex3f(0, 0, 1);
-        
-        glVertex3f(0, 0.2, 1.4);
-        glVertex3f(0, 0.2, 1.2);
-        
-        glVertex3f(0, 0.2, 1.2);
-        glVertex3f(0, -0.2, 1.4);
-        
-        glVertex3f(0, -0.2, 1.4);
-        glVertex3f(0, -0.2, 1.2);
-        
-        glEnd();
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glLineWidth(2.0);
+        drawAxis();
         glEnable(GL_LIGHTING);
-        glPopMatrix();
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
     }
     
     glMultMatrixf(m_camera->viewMatrix());
@@ -472,7 +433,8 @@ void MeshWindow::paintGL()
     {
         if(m_bShowBBox){
             glColor4f(0.0f, 0.0f, 0.0f, 0.9f);
-
+            
+            glDisable(GL_LIGHTING);
             glEnable(GL_LINE_SMOOTH);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -482,6 +444,7 @@ void MeshWindow::paintGL()
 
             glDisable(GL_LINE_SMOOTH);
             glDisable(GL_BLEND);
+            glEnable(GL_LIGHTING);
         }
     }
 
@@ -1161,7 +1124,76 @@ void MeshWindow::drawBox(const cleaver::BoundingBox &box)
         glVertex3f(0, h, 0);
         glVertex3f(0, h, d);
     glEnd();
+    glPopMatrix();
+}
 
+void MeshWindow::drawAxis()
+{
+    float ratio = (float)m_width / (float)m_height;
+    float tmp2[16];
+    glPushMatrix();
+    
+    glTranslatef(-4.2*ratio, +4.0, -15);
+    if (!m_volume) {
+    float * tmp = m_Axiscamera->viewMatrix();
+        for(int i = 0; i < 16; i++)
+            if (i < 12 || i == 15)
+                tmp2[i] = tmp[i];
+            else
+                tmp2[i] = 0.f;
+        glMultMatrixf(tmp2);
+    } else {
+        QMatrix4x4 mat;
+        QQuaternion q =((TrackballCamera*)m_camera)->rot();
+        q.setX(-q.x());
+        q.setZ(-q.z());
+        mat.rotate(q);
+        mat.rotate(20,QVector3D(1,0,0));
+        mat.rotate(-20,QVector3D(0,1,0));
+        glMultMatrixd(mat.constData());
+    }
+    
+    
+    
+    glBegin(GL_LINES);
+    
+    glColor4f(1.f, 0.f, 0.f,1.f);
+    glVertex3f(0, 0, 0);
+    glVertex3f(1, 0, 0);
+    
+    glVertex3f(1.2, 0.2, 0);
+    glVertex3f(1.4, -0.2, 0);
+    
+    glVertex3f(1.4, 0.2, 0);
+    glVertex3f(1.2, -0.2, 0);
+    
+    glColor4f(0.f, 1.f, 0.f,1.f);
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, 1, 0);
+    
+    glVertex3f(0, 1.2, 0);
+    glVertex3f(0, 1.4, 0);
+    
+    glVertex3f(0, 1.4, 0);
+    glVertex3f(0.1, 1.6, 0);
+    
+    glVertex3f(0, 1.4, 0);
+    glVertex3f(-0.1, 1.6, 0);
+    
+    glColor4f(0.f, 0.f, 1.f,1.f);
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, 0, 1);
+    
+    glVertex3f(0, 0.2, 1.4);
+    glVertex3f(0, 0.2, 1.2);
+    
+    glVertex3f(0, 0.2, 1.2);
+    glVertex3f(0, -0.2, 1.4);
+    
+    glVertex3f(0, -0.2, 1.4);
+    glVertex3f(0, -0.2, 1.2);
+    
+    glEnd();
     glPopMatrix();
 }
 
