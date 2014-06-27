@@ -9,7 +9,18 @@ This distribution comes with both a command-line interface, and a GUI.
 Aknowledgements
 ========
 
-TODO
+<h4>Cleaver - A MultiMaterial Tetrahedral Meshing Library and Application</h4>
+
+The Cleaver Library is based on the 'Lattice Cleaving' algorithm:
+
+<strong>Bronson J., Levine, J., Whitaker R., "Lattice Cleaving: Conforming Tetrahedral Meshes of Multimaterial Domains with Bounded Quality". Proceedings of the 21st International Meshing Roundtable (San Jose, CA, Oct 7-10, 2012)</strong>
+
+The method is theoretically guaranteed to produce valid meshes with bounded dihedral angles, while still conforming to multimaterial material surfaces. Empirically these bounds have been shown to be significant.
+
+<strong>Author: </strong> Jonathan Bronson<br/>
+<strong>Constributor: </strong> Ross Whitaker<br/>
+<strong>Constributor: </strong> Josh Levine<br/>
+<strong>Developer: </strong> Brig Bagley<br/>
 
 Building Cleaver2
 ========
