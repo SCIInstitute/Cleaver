@@ -28,16 +28,20 @@ Cleaver is an Open Source software project that is principally funded through th
 
 Building Cleaver2
 ========
-<h4>Linux, OSX</h4>
-It is often best to build programs outside of the source tree. Inside of Cleaver2:
+It is often best to build programs outside of the source tree. From Cleaver2 directory:
 
+<h4>Linux, OSX</h4>
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
-<code>cmake</code><br/>
+<code>cmake ../src</code><br/>
 <code>make</code><br/>
 
 <h4>Windows</h4>
-TODO
+<code>mkdir build</code><br/>
+<code>cd build</code><br/>
+<code>cmake ../src</code><br/>
+<code>nmake</code><br/>
+
 
 Using Cleaver2
 ========
