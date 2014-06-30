@@ -37,9 +37,10 @@ It is often best to build programs outside of the source tree. From Cleaver2 dir
 <code>make</code><br/>
 
 <h4>Windows</h4>
+You will need to install prerequisites: Git, CMake, Visual Studio 2010. Use git to clone the repository, then execute these commands in the Cleaver2 directory using the Visual Studio 10 (32bit) Command Prompt:
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
-<code>cmake ../src</code><br/>
+<code>cmake -G "NMake Makefiles" ../src</code><br/>
 <code>nmake</code><br/>
 
 
