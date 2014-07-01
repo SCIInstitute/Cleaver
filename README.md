@@ -31,6 +31,8 @@ Building Cleaver2
 It is often best to build programs outside of the source tree. From Cleaver2 directory:
 
 <h4>Linux, OSX</h4>
+You will need to install prerequisites: Git, CMake, Qt5<br/>
+Use git to clone the repository, then execute these commands in the Cleaver2 directory using the Command Prompt:<br/>
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
 <code>cmake ../src</code><br/>
