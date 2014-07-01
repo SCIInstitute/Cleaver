@@ -387,19 +387,21 @@ void MeshWindow::paintGL()
                          m_volume->bounds().center().y,
                          m_volume->bounds().center().z);
         }
-        //else
-        //  glTranslatef(m_mesher->bounds().);
-
-
-        QMatrix4x4 matrix;
-        QMatrix4x4 postmatrix(0.261093f, -0.435186f, -0.861652f, 0,
-                                   -0.0523809f, 0.884911f, -0.462805f, 0,
-                                    0.963891f,  0.165969f,  0.208249f, 0,
-                                    0,         0,         0,  1);
-
-        matrix.rotate(((TrackballCamera*)m_camera)->rot());
-        qMultMatrix(matrix);
-        qMultMatrix(postmatrix.transposed());
+		float tmp2[16];
+		if (!m_volume) {
+		float * tmp = m_Axiscamera->viewMatrix();
+			for(int i = 0; i < 16; i++)
+				if (i < 12 || i == 15)
+					tmp2[i] = tmp[i];
+				else
+					tmp2[i] = 0.f;
+			glMultMatrixf(tmp2);
+		} else {
+			QMatrix4x4 mat;
+			QQuaternion q =((TrackballCamera*)m_camera)->rot();
+			mat.rotate(q);
+			glMultMatrixf(mat.constData());
+		}
 
         if(m_volume){
             glTranslatef(-m_volume->bounds().center().x,
@@ -1157,8 +1159,6 @@ void MeshWindow::drawAxis()
         q.setX(-q.x());
         q.setZ(-q.z());
         mat.rotate(q);
-        mat.rotate(20,QVector3D(1,0,0));
-        mat.rotate(-20,QVector3D(0,1,0));
         glMultMatrixf(mat.constData());
     }
     
