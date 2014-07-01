@@ -94,6 +94,12 @@ void MeshViewOptionsWidget::materialItemChanged(QStandardItem* item)
     window->updateGL();
 }
 
+
+void MeshViewOptionsWidget::setShowCutsCheckboxEnabled(bool b) 
+{ 
+	this->ui->showCutsCheckbox->setEnabled(b); 
+}
+
 void MeshViewOptionsWidget::focus(QMdiSubWindow* subwindow)
 {
     if (subwindow != NULL){

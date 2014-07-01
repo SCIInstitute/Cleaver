@@ -31,6 +31,7 @@ public:
     void createWindow(cleaver::Volume *volume, const QString &title);
     void createWindow(cleaver::TetMesh  *mesh, const QString &title);
     MeshWindow* activeWindow() const;
+	void enableMeshedVolumeOptions();
     
 signals:
     

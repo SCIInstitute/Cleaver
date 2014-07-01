@@ -370,7 +370,7 @@ void MainWindow::importMesh()
             mesh->imported = true;
 
             MainWindow::instance()->createWindow(mesh, QString("New Mesh"));
-
+		MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
             m_dataManager->addMesh(mesh);
         }
     }
@@ -554,6 +554,12 @@ void MainWindow::createWindow(cleaver::Volume *volume, const QString &title)
 
         m_workspace->setActiveSubWindow(sw);
     }
+}
+
+void MainWindow::enableMeshedVolumeOptions() {
+	
+	MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(true);
+	MainWindow::instance()->exportAct->setEnabled(true);
 }
 
 void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)

@@ -49,6 +49,7 @@ public slots:
 
     void addMaterialsItem(const QString &name, const QVariant &faceVisible, const QVariant &cellVisible);
     void materialItemChanged(QStandardItem* item);
+	void setShowCutsCheckboxEnabled(bool b);
 
 private:
     Ui::MeshViewOptionsWidget *ui;

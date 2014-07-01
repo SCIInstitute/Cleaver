@@ -123,6 +123,7 @@ void CleaverWidget::createMesh()
         window->updateGL();
 
         update();
+		MainWindow::instance()->enableMeshedVolumeOptions();
     }
 }
 
@@ -183,6 +184,7 @@ void CleaverWidget::createRegularMesh()
         window->updateGL();
 
         update();
+		MainWindow::instance()->enableMeshedVolumeOptions();
     }
 }
 //=========================================
