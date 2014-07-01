@@ -4,9 +4,6 @@
 // enable vertex buffer includes
 #define GL_GLEXT_PROTOTYPES
 
-#if defined(WIN32)
-#include <GL/glew.h>
-#endif
 
 #include <QGLWidget>
 #include <Cleaver/CleaverMesher.h>
@@ -14,6 +11,9 @@
 #include <Cleaver/Volume.h>
 #include "Camera.h"
 #include <QMatrix4x4>
+#if defined(WIN32)
+#include <GL/glext.h>
+#endif
 
 enum StarMode { NoStar, VertexStar, EdgeStar, FaceStar };
 enum CameraType { Target, Trackball };

@@ -3,6 +3,12 @@
 
 #include <QtGui>
 #include <QMainWindow>
+#include <QMdiArea>
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
+#include <QFileDialog>
+#include <QMessageBox>
 #include "ViewWidgets/MeshWindow.h"
 #include "ViewWidgets/MeshViewOptionsWidget.h"
 #include "ToolWidgets/CleaverWidget.h"

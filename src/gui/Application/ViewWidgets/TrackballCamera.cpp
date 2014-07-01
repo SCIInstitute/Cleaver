@@ -204,8 +204,8 @@ void TrackballCamera::zoom(float dz)
 
 void TrackballCamera::pan(float dx, float dy)
 {
-    m_eye += 0.05*(dx*m_right + dy*m_up);
-    m_target += 0.05*(dx*m_right + dy*m_up);
+    m_eye += 0.05f*(dx*m_right + dy*m_up);
+    m_target += 0.05f*(dx*m_right + dy*m_up);
     computeViewMatrix();
 }
 

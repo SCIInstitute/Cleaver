@@ -2,39 +2,37 @@ PROJECT(cleaver-gui)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-# Find QT4, OpenGL
-FIND_PACKAGE(Qt4 QUIET)
-FIND_PACKAGE(OpenGL QUIET)
-
-if(NOT QT4_FOUND)
-
-
-    #MESSAGE(STATUS "QT_LIBRARY_DIR = ${QT_LIBRARY_DIR}")
-    #MESSAGE(STATUS "QT_INCLUDE_DIR = ${QT_INCLUDE_DIR}")
-    #MESSAGE(STATUS "QT_MOC_EXECUTABLE  = ${QT_MOC_EXECUTABLE}")
-    #MESSAGE(STATUS "QT_UIC_EXECUTABLE = ${QT_UIC_EXECUTABLE}")
-    #MESSAGE(STATUS "QT_RCC_EXECUTABLE = ${QT_RCC_EXECUTABLE}")
-    #MESSAGE(STATUS "QT_QTCORE_LIBRARY = ${QT_QTCORE_LIBRARY}")
-
-    MESSAGE(STATUS "Unable to find Qt4. Cannot build Cleaver GUI")
-    return()
-endif()
-
 if(WIN32)
-  FIND_PACKAGE(GLEW)
+  cmake_policy(SET CMP0020 OLD)
 endif()
+
+# Find QT5, OpenGL
+FIND_PACKAGE(OpenGL QUIET)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+
+#headers
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
+include_directories(${Qt5OpenGL_INCLUDE_DIRS})
+include_directories(${Qt5Core_INCLUDE_DIRS})
+include_directories(${Qt5Gui_INCLUDE_DIRS})
+include_directories(${GLEXT_INCLUDE_DIR})
+
+#defines
+add_definitions(${Qt5Widgets_DEFINITIONS})
+add_definitions(${Qt5OpenGL_DEFINITIONS})
+add_definitions(${Qt5Core_DEFINITIONS})
+add_definitions(${Qt5Gui_DEFINITIONS})
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 OPTION(BUILD_CLEAVER_APP "Build Cleaver GUI App (REQUIRES TEEM)" ON)
 
 # Ensure GUI and OpenGL Work
-SET( QT_USE_QTGUI TRUE )
-SET( QT_USE_QTOPENGL TRUE )
-SET( QT_USE_THREAD TRUE )
-SET( QT_USE_QTXML TRUE )
 ADD_DEFINITIONS(-DTETLIBRARY)
-
-# Qt Includes
-INCLUDE( ${QT_USE_FILE} )
 
 SET( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
@@ -59,40 +57,6 @@ FILE(GLOB vert ./Application/Shaders/*.vert)
 FILE(GLOB frag ./Application/Shaders/*.frag)
 FILE(GLOB vf_h ./Application/Shaders/*.h)
 
-#MACRO(compile_shader arg1 arg2)
-#    GET_FILENAME_COMPONENT(shader_path ${arg1} ABSOLUTE)
-#    GET_FILENAME_COMPONENT(shader_name ${arg1} NAME_WE)
-#    GET_FILENAME_COMPONENT(shader_ext ${arg1} EXT)
-#    SET(shader_file "${shader_name}${shader_ext}")
-#    if(shader_ext STREQUAL ".vert")
-#        SET(${arg2} "${shader_name}_vert.h")
-#        ADD_CUSTOM_COMMAND(
-#            OUTPUT  ${arg2}
-#            #MESSAGE(STATUS "Compiling ${arg1} into ${arg2}")
-#            COMMAND ${CMAKE_COMMAND} -E copy ${arg1} ${CMAKE_CURRENT_SOURCE_DIR}/${shader_file}
-#            COMMAND xxd -i ${shader_file} ${arg2}
-#            DEPENDS ${arg1}
-#        )
-#    elseif(shader_ext STREQUAL ".frag")
-#        SET(${arg2} "${shader_name}_frag.h")
-#        ADD_CUSTOM_COMMAND(
-#            OUTPUT  ${arg2}
-#            COMMAND ${CMAKE_COMMAND} -E copy ${arg1} ${CMAKE_CURRENT_SOURCE_DIR}/${shader_file}
-#            COMMAND xxd -i ${shader_file} ${arg2}
-#            DEPENDS ${arg1}
-#        )
-#    else()
-#        MESSAGE(STATUS "invalid shader given to function Compile_Shader()")
-#    endif()
-#ENDMACRO()
-
-#COMPILE_SHADER("default.vert" default_vertex_shader)
-#MESSAGE(STATUS "default_shader = ${default_vertex_shader}")
-
-#COMPILE_SHADER("default.frag" default_fragment_shader)
-#MESSAGE(STATUS "default_shader = ${default_fragment_shader}")
-
-
 ADD_CUSTOM_COMMAND(
     OUTPUT  default_vert.h
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Application/Shaders/default.vert ${CMAKE_CURRENT_SOURCE_DIR}/default.vert
@@ -110,21 +74,52 @@ ADD_CUSTOM_COMMAND(
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ./)
 
 # Generate QT Stuff
-QT4_WRAP_UI(UI_SRC ${Forms_UIS})
-QT4_WRAP_CPP(MOC_SRC ${moc_hdrs})
-QT4_ADD_RESOURCES(RCC_SRC ${RCC_FILES})
-
-
+QT5_WRAP_UI(UI_SRC ${Forms_UIS})
+QT5_ADD_RESOURCES(RESOURCE_FILES ${RCC_FILES})
 
 ADD_CUSTOM_TARGET(comp_shaders
                   DEPENDS ${default_vertex_shader} ${default_fragment_shader})
 
 ADD_EXECUTABLE(cleaver-gui ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
 
+IF(WIN32) # Check if we are on Windows
+  if(MSVC) # Check if we are using the Visual Studio compiler
+    set_target_properties(cleaver-gui PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:\"mainCRTStartup\"")
+  elseif(CMAKE_COMPILER_IS_GNUCXX)
+    # SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows") # Not tested
+  else()
+    message(SEND_ERROR "You are using an unsupported Windows compiler! (Not MSVC or GCC)")
+  endif()
+ENDIF()
+ 
 if(WIN32)
-TARGET_LINK_LIBRARIES(cleaver-gui cleaver nrrd2cleaver teem synthetic ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${GLEW_LIBRARIES} )
+TARGET_LINK_LIBRARIES(cleaver-gui 
+                      cleaver 
+                      nrrd2cleaver 
+                      teem 
+                      synthetic 
+                      ${OPENGL_LIBRARIES} 
+                      ${QT_LIBRARIES} 
+                      Qt5::Widgets
+                      Qt5::OpenGL
+                      Qt5::Core
+                      Qt5::Gui
+                      ${GLEXT_LIBRARY}
+                      ${QT_QTMAIN_LIBRARY}
+                      )
 else()
-TARGET_LINK_LIBRARIES(cleaver-gui cleaver nrrd2cleaver teem synthetic ${OPTIONAL_LIBS} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} )
+TARGET_LINK_LIBRARIES(cleaver-gui 
+                      cleaver 
+                      nrrd2cleaver 
+                      teem 
+                      synthetic 
+                      ${OPENGL_LIBRARIES} 
+                      ${QT_LIBRARIES} 
+                      Qt5::Widgets
+                      Qt5::OpenGL
+                      Qt5::Core
+                      Qt5::Gui
+                      ${OPTIONAL_LIBS})
 endif()
 
 ADD_DEPENDENCIES(cleaver-gui comp_shaders)

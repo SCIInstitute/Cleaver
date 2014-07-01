@@ -14,6 +14,7 @@
 #include "Shaders/Shaders.h"
 #include <QMatrix4x4>
 #include "MainWindow.h"
+#include <boost/math/special_functions/fpclassify.hpp>
 
 
 #ifndef M_PI
@@ -103,15 +104,13 @@ void MeshWindow::loadView()
 {
     std::cout << "Loading View from file" << std::endl;
 
-    qreal matrix[16];
+    float matrix[16];
     std::ifstream file("camera.dat", std::ios::in | std::ios::binary);
 
     file.read((char*)matrix, 16*sizeof(qreal));
-
-//    for(int i=0; i < 16; i++){
-//        std::cout << "loading[" << i << "] = " << matrix[i] << std::endl;
-//    }
-    m_savedViewMatrix = QMatrix4x4(matrix).transposed();
+	
+	QMatrix4x4 mat(matrix);
+    m_savedViewMatrix = mat.transposed();
 
     m_bLoadedView = true;
     this->updateGL();
@@ -199,9 +198,9 @@ void MeshWindow::initializeShaders()
 
 void MeshWindow::initializeGL()
 {
-    #if defined(WIN32)
-    glewInit();
-    #endif
+    //#if defined(WIN32)
+    //glewInit();
+    //#endif
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -331,11 +330,7 @@ static inline void qMultMatrix(const QMatrix4x4 &mat)
 #endif
     else
     {
-        GLfloat fmat[16];
-        qreal const *r = mat.constData();
-        for (int i = 0; i < 16; ++i)
-            fmat[i] = r[i];
-        glMultMatrixf(fmat);
+        glMultMatrixf(mat.constData());
     }
 }
 
@@ -356,7 +351,7 @@ void MeshWindow::paintGL()
     float glmat[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, glmat);
     for(size_t i = 0; i < 16; i++) {
-        if(isnan(glmat[i])) {
+		if(boost::math::isnan(glmat[i])) {
             std::cout << "Recovering from a NaN matrix error..." << std::endl;
             if (m_volume) {
                 m_camera->reset();
@@ -397,9 +392,9 @@ void MeshWindow::paintGL()
 
 
         QMatrix4x4 matrix;
-        QMatrix4x4 postmatrix(0.261093, -0.435186, -0.861652, 0,
-                                   -0.0523809, 0.884911, -0.462805, 0,
-                                    0.963891,  0.165969,  0.208249, 0,
+        QMatrix4x4 postmatrix(0.261093f, -0.435186f, -0.861652f, 0,
+                                   -0.0523809f, 0.884911f, -0.462805f, 0,
+                                    0.963891f,  0.165969f,  0.208249f, 0,
                                     0,         0,         0,  1);
 
         matrix.rotate(((TrackballCamera*)m_camera)->rot());
@@ -418,7 +413,7 @@ void MeshWindow::paintGL()
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
-        glMultMatrixd(m_savedViewMatrix.data());
+        glMultMatrixf(m_savedViewMatrix.data());
     }
 
     /*
@@ -1164,7 +1159,7 @@ void MeshWindow::drawAxis()
         mat.rotate(q);
         mat.rotate(20,QVector3D(1,0,0));
         mat.rotate(-20,QVector3D(0,1,0));
-        glMultMatrixd(mat.constData());
+        glMultMatrixf(mat.constData());
     }
     
     
@@ -1175,37 +1170,37 @@ void MeshWindow::drawAxis()
     glVertex3f(0, 0, 0);
     glVertex3f(1, 0, 0);
     
-    glVertex3f(1.2, 0.2, 0);
-    glVertex3f(1.4, -0.2, 0);
+    glVertex3f(1.2f, 0.2f, 0);
+    glVertex3f(1.4f, -0.2f, 0);
     
-    glVertex3f(1.4, 0.2, 0);
-    glVertex3f(1.2, -0.2, 0);
+    glVertex3f(1.4f, 0.2f, 0);
+    glVertex3f(1.2f, -0.2f, 0);
     
     glColor4f(0.f, 1.f, 0.f,1.f);
     glVertex3f(0, 0, 0);
     glVertex3f(0, 1, 0);
     
-    glVertex3f(0, 1.2, 0);
-    glVertex3f(0, 1.4, 0);
+    glVertex3f(0, 1.2f, 0);
+    glVertex3f(0, 1.4f, 0);
     
-    glVertex3f(0, 1.4, 0);
-    glVertex3f(0.1, 1.6, 0);
+    glVertex3f(0, 1.4f, 0);
+    glVertex3f(0.1f, 1.6f, 0);
     
-    glVertex3f(0, 1.4, 0);
-    glVertex3f(-0.1, 1.6, 0);
+    glVertex3f(0, 1.4f, 0);
+    glVertex3f(-0.1f, 1.6f, 0);
     
     glColor4f(0.f, 0.f, 1.f,1.f);
     glVertex3f(0, 0, 0);
     glVertex3f(0, 0, 1);
     
-    glVertex3f(0, 0.2, 1.4);
-    glVertex3f(0, 0.2, 1.2);
+    glVertex3f(0, 0.2f, 1.4f);
+    glVertex3f(0, 0.2f, 1.2f);
     
-    glVertex3f(0, 0.2, 1.2);
-    glVertex3f(0, -0.2, 1.4);
+    glVertex3f(0, 0.2f, 1.2f);
+    glVertex3f(0, -0.2f, 1.4f);
     
-    glVertex3f(0, -0.2, 1.4);
-    glVertex3f(0, -0.2, 1.2);
+    glVertex3f(0, -0.2f, 1.4f);
+    glVertex3f(0, -0.2f, 1.2f);
     
     glEnd();
     glPopMatrix();

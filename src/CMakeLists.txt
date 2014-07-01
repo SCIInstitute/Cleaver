@@ -36,10 +36,53 @@
 #-----------------------------------------------------------------------------
 
 PROJECT(CLEAVER2)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+# Global CMake options
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CMAKE_BUILD_TYPE Release)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+
+if(MSVC)
+  #static compile
+  add_definitions(-DMSVC_RUNTIME=static -D_CRT_SECURE_NO_WARNINGS)
+
+  # Default to statically-linked runtime.
+  if("${MSVC_RUNTIME}" STREQUAL "")
+    set(MSVC_RUNTIME "static")
+  endif()
+  # Set compiler options.
+  set(variables
+    CMAKE_C_FLAGS_DEBUG
+    CMAKE_C_FLAGS_MINSIZEREL
+    CMAKE_C_FLAGS_RELEASE
+    CMAKE_C_FLAGS_RELWITHDEBINFO
+    CMAKE_CXX_FLAGS_DEBUG
+    CMAKE_CXX_FLAGS_MINSIZEREL
+    CMAKE_CXX_FLAGS_RELEASE
+    CMAKE_CXX_FLAGS_RELWITHDEBINFO
+  )
+  if(${MSVC_RUNTIME} STREQUAL "static")
+    message(STATUS
+      "MSVC -> forcing use of statically-linked runtime."
+    )
+    foreach(variable ${variables})
+      if(${variable} MATCHES "/MD")
+        string(REGEX REPLACE "/MD" "/MT" ${variable} "${${variable}}")
+      endif()
+    endforeach()
+  else()
+    message(STATUS
+      "MSVC -> forcing use of dynamically-linked runtime."
+    )
+    foreach(variable ${variables})
+      if(${variable} MATCHES "/MT")
+        string(REGEX REPLACE "/MT" "/MD" ${variable} "${${variable}}")
+      endif()
+    endforeach()
+  endif()
+endif()
 
 # Build Cleaver Library (no dependencies)
 ADD_SUBDIRECTORY(lib/cleaver)
