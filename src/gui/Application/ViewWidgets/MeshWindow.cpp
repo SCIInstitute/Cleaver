@@ -110,14 +110,19 @@ void MeshWindow::loadView()
 {
     std::cout << "Loading View from file" << std::endl;
 
+#ifdef USING_QT5
     float matrix[16];
     std::ifstream file("camera.dat", std::ios::in | std::ios::binary);
-
-    file.read((char*)matrix, 16*sizeof(qreal));
-	
+    
+    file.read((char*)matrix, 16*sizeof(float));
 	QMatrix4x4 mat(matrix);
     m_savedViewMatrix = mat.transposed();
-
+#else
+    qreal matrix[16];
+    std::ifstream file("camera.dat", std::ios::in | std::ios::binary);
+    file.read((char*)matrix, 16*sizeof(qreal));
+    m_savedViewMatrix = QMatrix4x4(matrix).transposed();
+#endif
     m_bLoadedView = true;
     this->updateGL();
 }
@@ -337,7 +342,15 @@ static inline void qMultMatrix(const QMatrix4x4 &mat)
 #endif
     else
     {
+#ifdef USING_QT5
         glMultMatrixf(mat.constData());
+#else
+        GLfloat fmat[16];
+        qreal const *r = mat.constData();
+        for (int i = 0; i < 16; ++i)
+            fmat[i] = r[i];
+        glMultMatrixf(fmat);
+#endif
     }
 }
 
@@ -407,7 +420,11 @@ void MeshWindow::paintGL()
 			QMatrix4x4 mat;
 			QQuaternion q =((TrackballCamera*)m_camera)->rot();
 			mat.rotate(q);
+#ifdef USING_QT5
 			glMultMatrixf(mat.constData());
+#else
+			glMultMatrixd(mat.constData());
+#endif
 		}
 
         if(m_volume){
@@ -421,8 +438,11 @@ void MeshWindow::paintGL()
     if(m_bLoadedView){
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-
+#ifdef USING_QT5
         glMultMatrixf(m_savedViewMatrix.data());
+#else
+        glMultMatrixd(m_savedViewMatrix.data());
+#endif
     }
 
     /*
@@ -1166,7 +1186,11 @@ void MeshWindow::drawAxis()
         q.setX(-q.x());
         q.setZ(-q.z());
         mat.rotate(q);
+#ifdef USING_QT5
         glMultMatrixf(mat.constData());
+#else
+        glMultMatrixd(mat.constData());
+#endif
     }
     
     

@@ -12,7 +12,11 @@
 #include "Camera.h"
 #include <QMatrix4x4>
 #if defined(WIN32)
+#ifdef USING_QT5
 #include <GL/glext.h>
+#else
+#include <GL/glew.h>
+#endif
 #endif
 
 enum StarMode { NoStar, VertexStar, EdgeStar, FaceStar };
