@@ -40,7 +40,7 @@ Use git to clone the repository, then execute these commands in the Cleaver2 dir
 NOTE: You may need to run ccmake ../src to set the locations of some of the Qt5 components (i.e. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
 
 <h4>Windows</h4>
-You will need to install prerequisites: Git, CMake, glext (<link>http://sourceforge.net/projects/glextwin32/</link>), Qt4 -OR- Qt5, Visual Studio 2010. <br/>
+You will need to install prerequisites: Git, CMake, Qt4 and glew (<link>http://glew.sourceforge.net/</link>), -OR- Qt5 and glext (<link>http://sourceforge.net/projects/glextwin32/</link>), Visual Studio 2010. <br/>
 Use git to clone the repository, then execute these commands in the Cleaver2 directory using the Visual Studio 10 (32bit) Command Prompt:<br/>
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
