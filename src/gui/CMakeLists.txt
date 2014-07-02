@@ -55,6 +55,7 @@ elseif(${QT_VERSION} MATCHES "4")
 
    # Qt Includes
    INCLUDE( ${QT_USE_FILE} )
+   include_directories(${GLEW_INCLUDE_DIR})
 else()
    message(FATAL_ERROR "Cannot build with specified Qt Version")
 endif()

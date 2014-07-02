@@ -4,6 +4,11 @@
 // enable vertex buffer includes
 #define GL_GLEXT_PROTOTYPES
 
+#if defined(WIN32)
+#ifndef USING_QT5
+#include <GL/glew.h>
+#endif
+#endif
 
 #include <QGLWidget>
 #include <Cleaver/CleaverMesher.h>
@@ -14,8 +19,6 @@
 #if defined(WIN32)
 #ifdef USING_QT5
 #include <GL/glext.h>
-#else
-#include <GL/glew.h>
 #endif
 #endif
 
