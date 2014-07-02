@@ -40,11 +40,14 @@ Use git to clone the repository, then execute these commands in the Cleaver2 dir
 NOTE: You may need to run ccmake ../src to set the locations of some of the Qt5 components (i.e. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
 
 <h4>Windows</h4>
-You will need to install prerequisites: Git, CMake, glext (<link>http://sourceforge.net/projects/glextwin32/</link>), Qt5, Visual Studio 2010. <br/>
+You will need to install prerequisites: Git, CMake, glext (<link>http://sourceforge.net/projects/glextwin32/</link>), Qt4 -OR- Qt5, Visual Studio 2010. <br/>
 Use git to clone the repository, then execute these commands in the Cleaver2 directory using the Visual Studio 10 (32bit) Command Prompt:<br/>
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
-<code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:/glext/glext/lib/glext.lib" -DGLEXT_INCLUDE_DIR="C:/glext/glext/include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  ../src</code><br/>
+<h5>For Qt 4</h5>
+<code>cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32\glew32.lib" -DGLEW_INCLUDE_DIR="C:\glew\glew-1.10.0\include" -DQT_QMAKE_EXECUTABLE="C:\Qt\4.8.5\bin\qmake.exe" -DQT_VERSION="4" ..\src</code><br/>
+<h5>For Qt 5</h5>
+<code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src</code><br/>
 <code>nmake</code><br/>
 NOTE: The paths in the CMake command assume you have installed glext and Qt5 in these locations.
 
