@@ -32,6 +32,8 @@ public:
     void saveView();
     void loadView();
     void updateMesh();
+    
+    QSize sizeHint() const;
 
     //-- mutators --
     void setMesh(cleaver::TetMesh *mesh);

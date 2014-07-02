@@ -61,13 +61,19 @@ MeshWindow::MeshWindow(QObject *parent) :
     init = false;
 
     initializeOptions();
-    initializeCamera();    
+    initializeCamera();
 }
 
 MeshWindow::~MeshWindow()
 {
     delete m_camera;
     delete m_Axiscamera;
+}
+
+
+QSize MeshWindow::sizeHint() const
+{
+    return this->maximumSize();
 }
 
 void MeshWindow::setDefaultOptions()
@@ -147,7 +153,8 @@ void MeshWindow::initializeOptions()
     m_currentFace = 0;
     m_shrinkscale = 0.0;
     //m_vertexData = NULL;
-
+    
+    this->resize(this->maximumSize());
 }
 
 void MeshWindow::initializeCamera()
