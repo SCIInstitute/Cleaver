@@ -37,6 +37,7 @@ Use git to clone the repository, then execute these commands in the Cleaver2 dir
 <code>cd build</code><br/>
 <code>cmake ../src</code><br/>
 <code>make</code><br/>
+NOTE: You may need to run ccmake ../src to set the locations of some of the Qt5 components (i.e. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
 
 <h4>Windows</h4>
 You will need to install prerequisites: Git, CMake, glext (<link>http://sourceforge.net/projects/glextwin32/</link>), Qt5, Visual Studio 2010. <br/>
@@ -45,6 +46,7 @@ Use git to clone the repository, then execute these commands in the Cleaver2 dir
 <code>cd build</code><br/>
 <code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:/glext/glext/lib/glext.lib" -DGLEXT_INCLUDE_DIR="C:/glext/glext/include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  ../src</code><br/>
 <code>nmake</code><br/>
+NOTE: The paths in the CMake command assume you have installed glext and Qt5 in these locations.
 
 
 Using Cleaver2
