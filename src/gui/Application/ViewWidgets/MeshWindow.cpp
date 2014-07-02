@@ -420,6 +420,8 @@ void MeshWindow::paintGL()
 			QMatrix4x4 mat;
 			QQuaternion q =((TrackballCamera*)m_camera)->rot();
 			mat.rotate(q);
+            mat.rotate(-30,1,0,0);
+            mat.rotate(-10,0,1,0);
 #ifdef USING_QT5
 			glMultMatrixf(mat.constData());
 #else
@@ -489,7 +491,7 @@ void MeshWindow::paintGL()
     if(m_mesh){
         if(m_bShowEdges)
             drawEdges();
-        if(m_bShowCuts)
+        if(m_bShowCuts && m_volume)
             drawCuts();
 
         glLineWidth(3.0f);
@@ -519,12 +521,8 @@ void MeshWindow::paintGL()
     default: break;
     }
 
-
     if(m_bShowViolationPolytopes)
         drawViolationPolytopesForVertices();
-
-    if(m_bShowCuts)
-        drawCuts();
 
     if(m_bClipping && m_bShowClippingPlane)
         drawClippingPlane();
@@ -1186,6 +1184,8 @@ void MeshWindow::drawAxis()
         q.setX(-q.x());
         q.setZ(-q.z());
         mat.rotate(q);
+        mat.rotate(30,1,0,0);
+        mat.rotate(-10,0,1,0);
 #ifdef USING_QT5
         glMultMatrixf(mat.constData());
 #else
