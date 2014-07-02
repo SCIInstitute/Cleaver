@@ -31,13 +31,13 @@ Building Cleaver2
 It is often best to build programs outside of the source tree. From Cleaver2 directory:
 
 <h4>Linux, OSX</h4>
-You will need to install prerequisites: Git, CMake, Qt5<br/>
+You will need to install prerequisites: Git, CMake, Qt4 -OR- Qt5<br/>
 Use git to clone the repository, then execute these commands in the Cleaver2 directory using the Command Prompt:<br/>
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
 <code>cmake ../src</code><br/>
 <code>make</code><br/>
-NOTE: You may need to run ccmake ../src to set the locations of some of the Qt5 components (i.e. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
+NOTE: You may need to run ccmake ../src to set the locations of some of the Qt4/Qt5 components (i.e. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
 
 <h4>Windows</h4>
 You will need to install prerequisites: Git, CMake, Qt4 and glew (<link>http://glew.sourceforge.net/</link>), -OR- Qt5 and glext (<link>http://sourceforge.net/projects/glextwin32/</link>), Visual Studio 2010. <br/>
@@ -49,7 +49,7 @@ Use git to clone the repository, then execute these commands in the Cleaver2 dir
 <h5>For Qt 5</h5>
 <code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src</code><br/>
 <code>nmake</code><br/>
-NOTE: The paths in the CMake command assume you have installed glext and Qt5 in these locations.
+NOTE: The paths in the CMake command assume you have installed glew/glext and Qt4/Qt5 in these locations, respectively.
 
 
 Using Cleaver2
