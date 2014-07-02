@@ -1,5 +1,4 @@
 #include "MeshWindow.h"
-#include "TargetCamera.h"
 #include "TrackballCamera.h"
 #include <Cleaver/BoundingBox.h>
 #include <Cleaver/vec3.h>
@@ -59,6 +58,8 @@ MeshWindow::MeshWindow(QObject *parent) :
     m_volume = NULL;
     m_mesher = NULL;
     init = false;
+    m_zoom = 1.f;
+    m_x_trans = m_y_trans = 0.f;
 
     initializeOptions();
     initializeCamera();
@@ -67,7 +68,6 @@ MeshWindow::MeshWindow(QObject *parent) :
 MeshWindow::~MeshWindow()
 {
     delete m_camera;
-    delete m_Axiscamera;
 }
 
 
@@ -84,7 +84,8 @@ void MeshWindow::setDefaultOptions()
 void MeshWindow::resetView()
 {
     m_camera->reset();
-    m_Axiscamera->reset();
+    m_zoom = 1.0f;
+    m_x_trans = m_y_trans = 0.f;
     this->updateGL();
 }
 
@@ -148,9 +149,6 @@ void MeshWindow::initializeOptions()
     memcpy(m_4fvBBoxColor, DefaultBBoxColor, 4*sizeof(float));
     memcpy(m_4fvCutsColor, DefaultCutsColor, 4*sizeof(float));
 
-    //m_cameraType = Target;
-    m_cameraType = Trackball;
-
     // for adjacency visualization and debugging
     m_starmode = NoStar;
     m_currentVertex = 0;
@@ -164,14 +162,7 @@ void MeshWindow::initializeOptions()
 
 void MeshWindow::initializeCamera()
 {
-    if(m_cameraType == Target) {
-        m_camera = new TargetCamera();
-        m_Axiscamera = new TargetCamera();
-    }
-    else if(m_cameraType == Trackball) {
-        m_camera = new TrackballCamera();
-        m_Axiscamera = new TargetCamera();
-    }
+    m_camera = new TrackballCamera();
 }
 
 void MeshWindow::initializeShaders()
@@ -253,41 +244,9 @@ void MeshWindow::resizeGL(int w, int h)
     GLdouble right = top*aspectRatio;
     GLdouble left  = -right;
 
-    if(m_cameraType == Trackball) {
-        ((TrackballCamera*)m_camera)->setBallSize(w, h);
-        ((TrackballCamera*)m_Axiscamera)->setBallSize(w, h);
-    }
+    ((TrackballCamera*)m_camera)->setBallSize(w, h);
 
     glFrustum(left, right, bottom, top, zNear, zFar);
-
-    //--------------------------------------------
-    // Achieves same as calling glFrustrum()
-    //--------------------------------------------
-    /*
-    float projectionMatrix[16];
-    GLdouble A = (right + left) / (right - left);
-    GLdouble B = (top + bottom) / (top - bottom);
-    GLdouble C = -(zFar + zNear)   / (zFar - zNear);
-    GLdouble D = -(2*zFar*zNear)   / (zFar - zNear);
-    projectionMatrix[0] = 2*zNear/(right - left);
-    projectionMatrix[1] = 0;
-    projectionMatrix[2] = 0;
-    projectionMatrix[3] = 0;
-    projectionMatrix[4] = 0;
-    projectionMatrix[5] = 2*zNear/(top-bottom);
-    projectionMatrix[6] = 0;
-    projectionMatrix[7] = 0;
-    projectionMatrix[8] = A;
-    projectionMatrix[9] = B;
-    projectionMatrix[10] = C;
-    projectionMatrix[11] = -1;
-    projectionMatrix[12] = 0;
-    projectionMatrix[13] = 0;
-    projectionMatrix[14] = D;
-    projectionMatrix[15] = 0;
-    glMultMatrixf(projectionMatrix);
-    */
-    //--------------------------------------------
 
 }
 
@@ -332,28 +291,6 @@ void printMatrix(float *matrix)
     std::cout << matrix[12] << " " << matrix[13] << " " << matrix[14] << " " << matrix[15] << std::endl;
 }
 
-static inline void qMultMatrix(const QMatrix4x4 &mat)
-{
-    if (sizeof(qreal) == sizeof(GLfloat))
-        glMultMatrixf((GLfloat*)mat.constData());
-#ifndef QT_OPENGL_ES
-    else if (sizeof(qreal) == sizeof(GLdouble))
-        glMultMatrixd((GLdouble*)mat.constData());
-#endif
-    else
-    {
-#ifdef USING_QT5
-        glMultMatrixf(mat.constData());
-#else
-        GLfloat fmat[16];
-        qreal const *r = mat.constData();
-        for (int i = 0; i < 16; ++i)
-            fmat[i] = r[i];
-        glMultMatrixf(fmat);
-#endif
-    }
-}
-
 void MeshWindow::paintGL()
 {
     #ifdef WIN32
@@ -373,11 +310,7 @@ void MeshWindow::paintGL()
     for(size_t i = 0; i < 16; i++) {
 		if(boost::math::isnan(glmat[i])) {
             std::cout << "Recovering from a NaN matrix error..." << std::endl;
-            if (m_volume) {
-                m_camera->reset();
-            } else {
-                m_Axiscamera->reset();
-            }
+            m_camera->reset();
             break;
         }
     }
@@ -396,47 +329,31 @@ void MeshWindow::paintGL()
         glDisable(GL_BLEND);
     }
     
-    glMultMatrixf(m_camera->viewMatrix());
-    static float rot = 0.1f;
-    rot += 0.5f;
-
-    if(m_cameraType == Trackball)
-    {
-        if(m_volume){
-            glTranslatef(m_volume->bounds().center().x,
-                         m_volume->bounds().center().y,
-                         m_volume->bounds().center().z);
-        }
-		float tmp2[16];
-		if (!m_volume) {
-		float * tmp = m_Axiscamera->viewMatrix();
-			for(int i = 0; i < 16; i++)
-				if (i < 12 || i == 15)
-					tmp2[i] = tmp[i];
-				else
-					tmp2[i] = 0.f;
-			glMultMatrixf(tmp2);
-		} else {
-			QMatrix4x4 mat;
-			QQuaternion q =((TrackballCamera*)m_camera)->rot();
-			mat.rotate(q);
-            mat.rotate(-30,1,0,0);
-            mat.rotate(-10,0,1,0);
+    cleaver::BoundingBox bb;
+    QMatrix4x4 mat;
+    QQuaternion q =((TrackballCamera*)m_camera)->rot();
+    if(m_volume)
+        bb = m_volume->bounds();
+    else
+        bb = m_mesh->bounds;
+    q.setX(-q.x());
+    q.setZ(-q.z());
+    mat.rotate(q);
+    mat.rotate(30,1,0,0);
+    mat.rotate(-10,0,1,0);
+    glTranslatef(0,0, -3);
+    glTranslatef(m_x_trans,m_y_trans,0);
+    float scale = std::max(bb.size.x,std::max(bb.size.y,bb.size.z));
+    scale = 1./scale;
+    glScalef(scale,scale,scale);
+    glScalef(m_zoom,m_zoom,m_zoom);
 #ifdef USING_QT5
-			glMultMatrixf(mat.constData());
+    glMultMatrixf(mat.constData());
 #else
-			glMultMatrixd(mat.constData());
+    glMultMatrixd(mat.constData());
 #endif
-		}
-
-        if(m_volume){
-            glTranslatef(-m_volume->bounds().center().x,
-                         -m_volume->bounds().center().y,
-                         -m_volume->bounds().center().z);
-        }
-
-    }
-
+    glTranslatef(-bb.center().x, -bb.center().y, -bb.center().z);
+    
     if(m_bLoadedView){
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -447,53 +364,30 @@ void MeshWindow::paintGL()
 #endif
     }
 
-    /*
-    GLfloat projectionMatrix[16];
-    GLfloat modelViewMatrix[16];
-    glGetFloatv(GL_PROJECTION_MATRIX, (GLfloat*)projectionMatrix);
-    glGetFloatv(GL_MODELVIEW_MATRIX, modelViewMatrix);
-
-    std::cout << "Actual Projection Matrix: " << std::endl;
-    printMatrix(projectionMatrix);
-
-    std::cout << "Actual ModelView Matrix: " << std::endl;
-    printMatrix(modelViewMatrix);
-    */
-
-    if(m_mesh)
-    {
-        if(m_bShowFaces)
-            drawFaces();
-
-        if(m_bShowCuts)
-            drawCuts();    
-    }
-
-    if(m_volume)
-    {
-        if(m_bShowBBox){
-            glColor4f(0.0f, 0.0f, 0.0f, 0.9f);
-            
-            glDisable(GL_LIGHTING);
-            glEnable(GL_LINE_SMOOTH);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glLineWidth(2.0);
-
-            drawBox(m_volume->bounds());
-
-            glDisable(GL_LINE_SMOOTH);
-            glDisable(GL_BLEND);
-            glEnable(GL_LIGHTING);
-        }
+    if(m_bShowBBox){
+        glColor4f(0.0f, 0.0f, 0.0f, 0.9f);
+    
+        glDisable(GL_LIGHTING);
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glLineWidth(2.0);
+        drawBox(bb);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+        glEnable(GL_LIGHTING);
     }
 
     if(m_mesh){
-        if(m_bShowEdges)
-            drawEdges();
+        if(m_bShowFaces)
+            drawFaces();
+            
         if(m_bShowCuts && m_volume)
             drawCuts();
-
+            
+        if(m_bShowEdges)
+            drawEdges();
+        
         glLineWidth(3.0f);
         glColor3f(0.0f, 0.0f, 0.0f);
         glBegin(GL_LINES);
@@ -526,8 +420,6 @@ void MeshWindow::paintGL()
 
     if(m_bClipping && m_bShowClippingPlane)
         drawClippingPlane();
-
-    // done MeshWindow::paintGL()
 }
 
 void MeshWindow::drawVertexStar(int v)
@@ -544,35 +436,6 @@ void MeshWindow::drawVertexStar(int v)
     //std::vector<Cleaver::Tet*> tetlist = m_mesh->tetsAroundVertex(vertex);
 
     glDisable(GL_LIGHTING);
-
-    /*
-    glBegin(GL_LINES);
-    for(int t=0; t < tetlist.size(); t++)
-    {
-        for(int i=0; i < 4; i++){
-            for(int j=i+1; j < 4; j++){
-                Cleaver::vec3 v1 = tetlist[t]->verts[i]->pos();
-                Cleaver::vec3 v2 = tetlist[t]->verts[j]->pos();
-
-                if(tetlist[t]->verts[i] == vertex)
-                    glColor3f(0.5f, 0.8f, 0.5f);
-                else
-                    glColor3f(0.0f, 0.0f, 0.0f);
-
-                glVertex3f(v1.x, v1.y, v1.z);
-
-                if(tetlist[t]->verts[j] == vertex)
-                    glColor3f(0.5f, 0.8f, 0.5f);
-                else
-                    glColor3f(0.0f, 0.0f, 0.0f);
-
-                glVertex3f(v2.x, v2.y, v2.z);
-            }
-        }
-
-    }
-    glEnd();
-    */
 
 
     //--- Draw Faces Around Vertex ---
@@ -1109,12 +972,13 @@ void MeshWindow::drawClippingPlane()
 
 void MeshWindow::drawBox(const cleaver::BoundingBox &box)
 {
-    float x = box.origin.x;
-    float y = box.origin.y;
-    float z = box.origin.z;
-    float w = box.size.x;
-    float h = box.size.y;
-    float d = box.size.z;
+    float e = 0.01f;
+    float x = box.origin.x-e;
+    float y = box.origin.y-e;
+    float z = box.origin.z-e;
+    float w = box.size.x+2*e;
+    float h = box.size.y+2*e;
+    float d = box.size.z+2*e;
 
     glPushMatrix();
     glTranslatef(x,y,z);
@@ -1166,32 +1030,21 @@ void MeshWindow::drawBox(const cleaver::BoundingBox &box)
 void MeshWindow::drawAxis()
 {
     float ratio = (float)m_width / (float)m_height;
-    float tmp2[16];
     glPushMatrix();
     
     glTranslatef(-4.2*ratio, +4.0, -15);
-    if (!m_volume) {
-    float * tmp = m_Axiscamera->viewMatrix();
-        for(int i = 0; i < 16; i++)
-            if (i < 12 || i == 15)
-                tmp2[i] = tmp[i];
-            else
-                tmp2[i] = 0.f;
-        glMultMatrixf(tmp2);
-    } else {
-        QMatrix4x4 mat;
-        QQuaternion q =((TrackballCamera*)m_camera)->rot();
-        q.setX(-q.x());
-        q.setZ(-q.z());
-        mat.rotate(q);
-        mat.rotate(30,1,0,0);
-        mat.rotate(-10,0,1,0);
+    QMatrix4x4 mat;
+    QQuaternion q =((TrackballCamera*)m_camera)->rot();
+    q.setX(-q.x());
+    q.setZ(-q.z());
+    mat.rotate(q);
+    mat.rotate(30,1,0,0);
+    mat.rotate(-10,0,1,0);
 #ifdef USING_QT5
-        glMultMatrixf(mat.constData());
+    glMultMatrixf(mat.constData());
 #else
-        glMultMatrixd(mat.constData());
+    glMultMatrixd(mat.constData());
 #endif
-    }
     
     
     
@@ -1266,18 +1119,12 @@ void MeshWindow::mouseMoveEvent(QMouseEvent *event)
 
     if(buttonstate == Qt::RightButton){
         m_camera->pan((m_prev_x - event->x()), (event->y() - m_prev_y));
+        m_x_trans += (float)(event->x() - m_prev_x)*0.001f;
+        m_y_trans -= (float)(event->y() - m_prev_y)*0.001f;
     }
     else if(buttonstate == Qt::LeftButton){
-        if(m_cameraType == Target) {
-            m_camera->rotate((m_prev_x - event->x()), (event->y() - m_prev_y));
-            m_Axiscamera->rotate((m_prev_x - event->x()), (event->y() - m_prev_y));
-        }
-        else if(m_cameraType == Trackball) {
-            ((TrackballCamera*)m_camera)->
-            rotateBetween(QVector2D(m_prev_x, m_prev_y), QVector2D(event->x(), event->y()));
-            ((TrackballCamera*)m_Axiscamera)->
-            rotateBetween(QVector2D(m_prev_x, m_prev_y), QVector2D(event->x(), event->y()));
-        }
+        ((TrackballCamera*)m_camera)->
+        rotateBetween(QVector2D(m_prev_x, m_prev_y), QVector2D(event->x(), event->y()));
     }
 
     m_prev_x = event->x();
@@ -1403,6 +1250,8 @@ void MeshWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MeshWindow::wheelEvent(QWheelEvent *event)
 {
+    m_zoom = event->delta()>0?m_zoom*1.05f:m_zoom/1.05f;
+    m_zoom = std::max(m_zoom,0.000001f);
     if(ctrl_down){
         m_shrinkscale -= 0.0001f*event->delta();
         m_shrinkscale = std::max(m_shrinkscale, 0.0f);
@@ -1436,16 +1285,8 @@ void MeshWindow::setMesh(cleaver::TetMesh *mesh)
             m_bMaterialCellLock.push_back(false);
         }
     }
-    
-//    std::cout << "NUM MATERIALS IN MESH: " << m_bMaterialFaceLock.size() << std::endl;
-   // MainWindow::instance()->focus((QMdiSubWindow*)this->parentWidget());
-    if(m_cameraType == Target && m_volume == NULL){
-        ((TargetCamera*)m_camera)->setTargetBounds(mesh->bounds);
-        ((TargetCamera*)m_Axiscamera)->setTargetBounds(mesh->bounds);
-    }
 
     m_camera->reset();
-    m_Axiscamera->reset();
 
     if(init){
         update_vbos();
@@ -1470,18 +1311,8 @@ void MeshWindow::setVolume(cleaver::Volume *volume)
         m_bMaterialFaceLock.push_back(false);
         m_bMaterialCellLock.push_back(false);
     }
-//    std::cout << "NUM MATERIALS IN VOLUME: " << m_bMaterialFaceLock.size() << std::endl;
-
-    if(m_cameraType == Target) {
-        ((TargetCamera*)m_camera)->setTargetBounds(m_volume->bounds());
-        ((TargetCamera*)m_Axiscamera)->setTargetBounds(m_volume->bounds());
-    }
-    else if(m_cameraType == Trackball) {
-        ((TrackballCamera*)m_camera)->setTargetBounds(m_volume->bounds());
-        ((TrackballCamera*)m_Axiscamera)->setTargetBounds(m_volume->bounds());
-    }
+    ((TrackballCamera*)m_camera)->setTargetBounds(m_volume->bounds());
     m_camera->reset();
-    m_Axiscamera->reset();
     updateGL();
 }
 
@@ -2106,53 +1937,6 @@ cleaver::vec3 matrixVector(float A[16], const cleaver::vec3 &x, float &depth)
     return cleaver::vec3((r[0] / r[3]), r[1] / r[3], r[2] / r[3]);
 }
 
-/*
-void MeshWindow::printModelViewProjection()
-{
-
-    int w = this->width();
-    int h = this->height();
-
-    GLdouble aspectRatio = (GLdouble) w / (float)h;
-    GLdouble zNear = 0.1;
-    GLdouble zFar  = 500.0;
-    GLdouble yFovInDegrees = 45;
-    GLdouble top    = zNear * tan(yFovInDegrees * M_PI / 360.0);
-    GLdouble bottom = -top;
-    GLdouble right = top*aspectRatio;
-    GLdouble left  = -right;
-
-    GLdouble projectionMatrix[16];
-    GLdouble A = (right + left) / (right - left);
-    GLdouble B = (top + bottom) / (top - bottom);
-    GLdouble C = -(zFar + zNear)   / (zFar - zNear);
-    GLdouble D = -(2*zFar*zNear)   / (zFar - zNear);
-    projectionMatrix[0] = 2*zNear/(right - left);
-    projectionMatrix[1] = 0;
-    projectionMatrix[2] = 0;
-    projectionMatrix[3] = 0;
-    projectionMatrix[4] = 0;
-    projectionMatrix[5] = 2*zNear/(top-bottom);
-    projectionMatrix[6] = 0;
-    projectionMatrix[7] = 0;
-    projectionMatrix[8] = A;
-    projectionMatrix[9] = B;
-    projectionMatrix[10] = C;
-    projectionMatrix[11] = -1;
-    projectionMatrix[12] = 0;
-    projectionMatrix[13] = 0;
-    projectionMatrix[14] = D;
-    projectionMatrix[15] = 0;
-
-    float *viewMatrix = m_camera->viewMatrix();
-
-    float viewProjectionMatrix[16];
-    matrixMultiply(viewMatrix, projectionMatrix, viewProjectionMatrix);
-
-    std::cout  << "Projection Matrix: "
-}
-*/
-
 struct triangle{ float x[3], y[3]; float d[3]; QColor color; };
 bool triangle_sort(triangle t1, triangle t2){
 
@@ -2342,39 +2126,22 @@ void MeshWindow::dumpSVGImage(const std::string &filename)
             for(int v=0; v < 3; v++)
             {
                 cleaver::Vertex *v1 = m_mesh->verts[m_mesh->faces[f]->verts[(v+0)%3]];
-                cleaver::Vertex *v2 = m_mesh->verts[m_mesh->faces[f]->verts[(v+1)%3]];
 
                 float depth1;
-                float depth2;
 
                 cleaver::vec3 p1 = matrixVector(viewProjectionMatrix, v1->pos(), depth1);
-                cleaver::vec3 p2 = matrixVector(viewProjectionMatrix, v2->pos(), depth2);
 
                 float x1 = w * (p1.x + 1) / 2;
                 float y1 = h -  h * (p1.y + 1) / 2;
-                //float x2 = w * (p2.x + 1) / 2;
-                //float y2 = h - h * (p2.y + 1) / 2;
-
 
                 tri.x[v] = x1;
                 tri.y[v] = y1;
                 tri.d[v] = depth1;
-
-
-                //ss << "<line x1=\"" << x1 << "\" y1=\"" << y1 << "\" x2=\"" << x2 << "\" y2=\"" << y2 << "\" style=\"stroke: black; stoke-width:2.0\"/>" << std::endl;
-
-                //ss << x1 << "," << y1 << " ";
-
             }
 
-            //std::string color = QColor((int)(0.5*(color1[0]+color2[0])*255), (int)(0.5*(color1[1]+color2[1])*255), (int)(0.5*(color1[2]+color2[2])*255), 255).name();
             tri.color = QColor((int)(0.5*(color1[0]+color2[0])*255), (int)(0.5*(color1[1]+color2[1])*255), (int)(0.5*(color1[2]+color2[2])*255), 255);
 
             triangle_list.push_back(tri);
-
-
-            //ss << "\" style=\"fill:" << color << ";stroke-linejoin:round;stroke:black;stroke-width:" << stroke_width << "\"/>\n" << std::endl;
-
         }
     }
 

@@ -23,8 +23,6 @@
 #endif
 
 enum StarMode { NoStar, VertexStar, EdgeStar, FaceStar };
-enum CameraType { Target, Trackball };
-
 
 class MeshWindow : public QGLWidget
 {
@@ -58,7 +56,6 @@ public:
     void setClipping(bool value){ m_bClipping = value; update_vbos(); }
     void setClippingPlane(float plane[4]){ memcpy(m_4fvClippingPlane, plane, 4*sizeof(float)); if(!m_bShowClippingPlane || m_bSyncedClipping) update_vbos();}
     void setCamera(Camera *camera){ m_camera = camera; }
-    void setCameraType(CameraType type){ m_cameraType = type; initializeCamera(); }
     void setMaterialFaceLock(int m, bool value){ m_bMaterialFaceLock[m] = value; }
     void setMaterialCellLock(int m, bool value){ m_bMaterialCellLock[m] = value; }
 
@@ -93,9 +90,8 @@ private:
     cleaver::Volume  *m_volume;
     cleaver::BoundingBox m_dataBounds;
     Camera *m_camera;
-    Camera *m_Axiscamera;
-    CameraType m_cameraType;
     int m_width, m_height;
+    float m_zoom, m_x_trans, m_y_trans;
 
 
     StarMode m_starmode;

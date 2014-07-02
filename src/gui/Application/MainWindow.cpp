@@ -370,7 +370,7 @@ void MainWindow::importMesh()
             mesh->imported = true;
 
             MainWindow::instance()->createWindow(mesh, QString("New Mesh"));
-		MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
+            MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
             m_dataManager->addMesh(mesh);
         }
     }
@@ -567,7 +567,6 @@ void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)
     if(mesh)
     {
         MeshWindow *window = new MeshWindow(this);
-        window->setCameraType(Target);
         window->setMesh(mesh);
         QMdiSubWindow *sw = m_workspace->addSubWindow(window);
         window->setAttribute(Qt::WA_DeleteOnClose);
