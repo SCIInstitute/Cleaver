@@ -67,6 +67,7 @@ MeshWindow::MeshWindow(QObject *parent) :
 
 MeshWindow::~MeshWindow()
 {
+    emit closed(this);
     delete m_camera;
 }
 
@@ -125,6 +126,8 @@ void MeshWindow::loadView()
     m_savedViewMatrix = QMatrix4x4(matrix).transposed();
 #endif
     m_bLoadedView = true;
+    m_zoom = 1.0f;
+    m_x_trans = m_y_trans = 0.f;
     this->updateGL();
 }
 
@@ -1456,9 +1459,7 @@ void MeshWindow::build_bkgrnd_vbos()
 
         if(num_adj_tets == 1)
             exterior = true;
-
-        if(m_bClipping)
-        {
+        if(m_bClipping)        {
             cleaver::vec3 n(m_4fvClippingPlane[0], m_4fvClippingPlane[1], m_4fvClippingPlane[2]);
             float d = m_4fvClippingPlane[3];
 
@@ -1718,7 +1719,6 @@ void MeshWindow::build_output_vbos()
         }
         if(m1 == m2)
             force = false;
-
         if(m_bClipping)
         {
             cleaver::vec3 n(m_4fvClippingPlane[0], m_4fvClippingPlane[1], m_4fvClippingPlane[2]);

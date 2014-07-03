@@ -80,6 +80,7 @@ public:
 
     
 signals:
+    void closed(MeshWindow* win);
     
 public slots:
 

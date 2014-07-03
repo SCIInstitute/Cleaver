@@ -221,12 +221,16 @@ float Tet::maxAngle()
     return max;
 }
 
-TetMesh::TetMesh() : halfFaces(0), time(0), imported(false)
+TetMesh::TetMesh() : halfFaces(0), imported(false), time(0)
+{
+}
+
+TetMesh::TetMesh(BoundingBox b) : halfFaces(0), imported(false), time(0), bounds(b)
 {
 }
 
 TetMesh::TetMesh(const std::vector<Vertex*> &verts, const std::vector<Tet*> &tets) :
-    verts(verts), tets(tets), halfFaces(0), time(0), imported(false)
+    verts(verts), tets(tets), halfFaces(0),  imported(false), time(0)
 {
     computeBounds();
 }
@@ -1815,6 +1819,20 @@ Tet* TetMesh::createTet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int mate
     //----------------------------
     //  Create Tet + Add to List
     //----------------------------
+    if(!(
+       v1->pos().x <= bounds.maxCorner().x && v1->pos().x >= bounds.minCorner().x &&
+       v1->pos().y <= bounds.maxCorner().y && v1->pos().y >= bounds.minCorner().y &&
+       v1->pos().z <= bounds.maxCorner().z && v1->pos().z >= bounds.minCorner().z &&
+       v2->pos().x <= bounds.maxCorner().x && v2->pos().x >= bounds.minCorner().x &&
+       v2->pos().y <= bounds.maxCorner().y && v2->pos().y >= bounds.minCorner().y &&
+       v2->pos().z <= bounds.maxCorner().z && v2->pos().z >= bounds.minCorner().z &&
+       v3->pos().x <= bounds.maxCorner().x && v3->pos().x >= bounds.minCorner().x &&
+       v3->pos().y <= bounds.maxCorner().y && v3->pos().y >= bounds.minCorner().y &&
+       v3->pos().z <= bounds.maxCorner().z && v3->pos().z >= bounds.minCorner().z &&
+       v4->pos().x <= bounds.maxCorner().x && v4->pos().x >= bounds.minCorner().x &&
+       v4->pos().y <= bounds.maxCorner().y && v4->pos().y >= bounds.minCorner().y &&
+       v4->pos().z <= bounds.maxCorner().z && v4->pos().z >= bounds.minCorner().z))
+        return NULL;
     Tet *tet = new Tet(v1, v2, v3, v4, material);
     tet->tm_index = tets.size();
     tets.push_back(tet);
@@ -1842,10 +1860,10 @@ Tet* TetMesh::createTet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int mate
     //---------------
     // Update Bounds
     //---------------
-    updateBounds(v1);
-    updateBounds(v2);
-    updateBounds(v3);
-    updateBounds(v4);
+//    updateBounds(v1);
+//    updateBounds(v2);
+//    updateBounds(v3);
+//    updateBounds(v4);
 
     return tet;
 }

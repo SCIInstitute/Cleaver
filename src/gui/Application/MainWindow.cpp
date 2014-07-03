@@ -76,10 +76,12 @@ void MainWindow::createActions()
     closeAct = new QAction(tr("&Close"), this);
     connect(closeAct, SIGNAL(triggered()), this, SLOT(closeSubWindow()));
     closeAct->setDisabled(true);
+    closeAct->setShortcut(tr("Ctrl+c"));
 
     closeAllAct = new QAction(tr("Close &All"), this);
     connect(closeAllAct, SIGNAL(triggered()), this, SLOT(closeAllSubWindows()));
     closeAllAct->setDisabled(true);
+    closeAllAct->setShortcut(tr("Ctrl+x"));
 
     exportAct = new QAction(tr("&Export Mesh"), this);
     exportAct->setShortcut(tr("Ctrl+S"));
@@ -432,20 +434,7 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
 
 void MainWindow::subWindowClosed()
 {
-    /*
-    m_iNumOpenWindows--;
-    if(m_iNumOpenWindows == 0){
-        cascadeAct->setDisabled(true);
-        tileAct->setDisabled(true);
-        closeAct->setDisabled(true);
-        closeAllAct->setDisabled(true);
 
-
-        m_volume_info_widget->setVolumeName("");
-        m_optimize_widget->clear();
-        m_meshing_widget->clear();
-    }
-    */
 }
 
 void MainWindow::resetCamera()
@@ -477,12 +466,54 @@ void MainWindow::loadCamera()
 
 void MainWindow::closeSubWindow()
 {
+    MeshWindow *win = activeWindow();
+    if(win && win->mesh()) {
+        m_dataManager->removeMesh(win->mesh());
+    }
+    if(win && win->volume()) {
+        m_dataManager->removeField(win->volume()->getSizingField());
+        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
+            m_dataManager->removeField(win->volume()->getMaterial(i));
+        m_dataManager->removeVolume(win->volume());
+    }
     m_workspace->closeActiveSubWindow();
+    m_iNumOpenWindows--;
+    
+}
+
+void MainWindow::closeSubWindow(MeshWindow *win)
+{
+    if(!win) return;
+    if(win->mesh()) {
+        m_dataManager->removeMesh(win->mesh());
+    }
+    if(win->volume()) {
+        m_dataManager->removeField(win->volume()->getSizingField());
+        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
+            m_dataManager->removeField(win->volume()->getMaterial(i));
+        m_dataManager->removeVolume(win->volume());
+    }
+    m_workspace->closeActiveSubWindow();
+    m_iNumOpenWindows--;
+    
 }
 
 void MainWindow::closeAllSubWindows()
 {
-    m_workspace->closeAllSubWindows();
+    MeshWindow *win = NULL;
+    while((win = activeWindow())) {
+        if(!win) continue;
+        if(win->volume()) {
+            m_dataManager->removeField(win->volume()->getSizingField());
+            for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
+                m_dataManager->removeField(win->volume()->getMaterial(i));
+            m_dataManager->removeVolume(win->volume());
+        } else if(win->mesh()) {
+            m_dataManager->removeMesh(win->mesh());
+        }
+        m_workspace->closeActiveSubWindow();
+        m_iNumOpenWindows--;
+    }
 }
 
 void MainWindow::focus(QMdiSubWindow *subwindow)
@@ -548,7 +579,7 @@ void MainWindow::createWindow(cleaver::Volume *volume, const QString &title)
 
         QAction *windowAct = new QAction(title, window);
         connect(windowAct, SIGNAL(triggered()), window, SLOT(setFocus()));
-        //connect(window, SIGNAL(closed()), m_instance, SLOT(subWindowClosed()));
+        connect(window, SIGNAL(closed(MeshWindow*)), this, SLOT(closeSubWindow(MeshWindow*)));
         m_windowsMenu->addAction(windowAct);
         m_iNumOpenWindows++;
 
@@ -576,7 +607,7 @@ void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)
 
         QAction *windowAct = new QAction(title, window);
         connect(windowAct, SIGNAL(triggered()), window, SLOT(setFocus()));
-        //connect(window, SIGNAL(closed()), m_instance, SLOT(subWindowClosed()));
+        connect(window, SIGNAL(closed(MeshWindow*)), this, SLOT(closeSubWindow(MeshWindow*)));
         m_windowsMenu->addAction(windowAct);
         m_iNumOpenWindows++;
 

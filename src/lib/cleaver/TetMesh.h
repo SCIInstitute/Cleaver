@@ -163,6 +163,7 @@ class TetMesh
 public:
 
     TetMesh();
+    TetMesh(BoundingBox b);
     TetMesh(const std::vector<Vertex*> &verts, const std::vector<Tet*> &tets);
     ~TetMesh();
 

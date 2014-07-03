@@ -44,6 +44,7 @@ public slots:
     void exportMesh(cleaver::TetMesh *mesh = NULL);
     void subWindowClosed();
     void closeSubWindow();
+    void closeSubWindow(MeshWindow *win);
     void closeAllSubWindows();
     void focus(QMdiSubWindow*);
     void about();
