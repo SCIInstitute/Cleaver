@@ -139,15 +139,13 @@ void CleaverWidget::createRegularMesh()
         cleaver::Volume *volume = window->volume();
 
           float scale = ui->scalingSpinner->value();
-          float multiplier = ui->sizeMultiplierSpinner->value();
-          float lip = ui->lipschitzSpinner->value();
           int padding = ui->paddingSpinner->value();
 
         cleaver::Timer timer;
         timer.start();
         cleaver::AbstractScalarField *sizingField =
             cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-                volume, lip, scale, multiplier, padding, false, false);
+                volume, 1.0, scale, 1.0, padding, false, false);
         timer.stop();
 
         std::string sizingFieldName = volume->name() + "-computed-sizing-field";
