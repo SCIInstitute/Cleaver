@@ -375,7 +375,7 @@ int main(int argc,	char* argv[])
             sizing_field_timer.start();
             sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(
                         volume,
-                        (float)lipschitz,
+                        (float)(1.0/lipschitz),
                         (float)scale,
                         (float)multiplier,
                         (int)padding,
