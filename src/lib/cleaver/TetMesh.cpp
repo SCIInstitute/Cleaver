@@ -1819,6 +1819,7 @@ Tet* TetMesh::createTet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int mate
     //----------------------------
     //  Create Tet + Add to List
     //----------------------------
+    /* (JRB) This Code is unnecessary and just adds computational cost.
     if(!(
        v1->pos().x <= bounds.maxCorner().x && v1->pos().x >= bounds.minCorner().x &&
        v1->pos().y <= bounds.maxCorner().y && v1->pos().y >= bounds.minCorner().y &&
@@ -1833,6 +1834,7 @@ Tet* TetMesh::createTet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int mate
        v4->pos().y <= bounds.maxCorner().y && v4->pos().y >= bounds.minCorner().y &&
        v4->pos().z <= bounds.maxCorner().z && v4->pos().z >= bounds.minCorner().z))
         return NULL;
+    */
     Tet *tet = new Tet(v1, v2, v3, v4, material);
     tet->tm_index = tets.size();
     tets.push_back(tet);
@@ -1860,10 +1862,10 @@ Tet* TetMesh::createTet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int mate
     //---------------
     // Update Bounds
     //---------------
-//    updateBounds(v1);
-//    updateBounds(v2);
-//    updateBounds(v3);
-//    updateBounds(v4);
+    updateBounds(v1);
+    updateBounds(v2);
+    updateBounds(v3);
+    updateBounds(v4);
 
     return tet;
 }
