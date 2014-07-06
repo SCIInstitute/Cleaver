@@ -59,8 +59,6 @@ NOTE: If you do not have your development environment paths set up, you can set 
 <h5>For Qt 5</h5>
 <code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src</code><br/>
 <br/>
-<code>nmake</code><br/>
-
 
 Using Cleaver2
 ========
