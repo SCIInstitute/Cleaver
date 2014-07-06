@@ -28,29 +28,38 @@ Cleaver is an Open Source software project that is principally funded through th
 
 Building Cleaver2
 ========
-It is often best to build programs outside of the source tree. From Cleaver2 directory:
+Requirements: Git, CMake, Qt4 -OR- Qt5<br/>
+Suggested:  QtCreator cross-platform IDE<br/>
+We recommend building cleaver outside of the source tree. <br/>
+From Cleaver2 directory:<br/>
 
 <h4>Linux, OSX</h4>
-You will need to install prerequisites: Git, CMake, Qt4 -OR- Qt5<br/>
-Use git to clone the repository, then execute these commands in the Cleaver2 directory using the Command Prompt:<br/>
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
 <code>cmake ../src</code><br/>
-<code>make</code><br/>
-NOTE: You may need to run ccmake ../src to set the locations of some of the Qt4/Qt5 components (i.e. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
+<code>make</code><br/><br/>
+NOTE: You may need to run ccmake ../src to set the locations of some of the components if your environment is not already set up. (e.g. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
 
 <h4>Windows</h4>
-You will need to install prerequisites: Git, CMake, Qt4 and glew (<link>http://glew.sourceforge.net/</link>), -OR- Qt5 and glext (<link>http://sourceforge.net/projects/glextwin32/</link>), Visual Studio 2010. <br/>
-Use git to clone the repository, then execute these commands in the Cleaver2 directory using the Visual Studio 10 (32bit) Command Prompt:<br/>
+Additional requirements for GUI: glew (<link>http://glew.sourceforge.net/</link>) -OR- Qt5 and glext
+(<link>http://sourceforge.net/projects/glextwin32/</link>)<br/>
+From Developer Command Prompt: (e.g.  Visual Studio 10 (32bit)) <br/>
+
 <code>mkdir build</code><br/>
 <code>cd build</code><br/>
+<code>cmake ../src</code><br/>
+<code>nmake</code><br/>
+
+
+
+NOTE: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below:<br/>
+
 <h5>For Qt 4</h5>
 <code>cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32\glew32.lib" -DGLEW_INCLUDE_DIR="C:\glew\glew-1.10.0\include" -DQT_QMAKE_EXECUTABLE="C:\Qt\4.8.5\bin\qmake.exe" -DQT_VERSION="4" ..\src</code><br/>
 <h5>For Qt 5</h5>
 <code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src</code><br/>
 <br/>
 <code>nmake</code><br/>
-NOTE: The paths in the CMake command assume you have installed glew/glext and Qt4/Qt5 in these locations, respectively.
 
 
 Using Cleaver2
