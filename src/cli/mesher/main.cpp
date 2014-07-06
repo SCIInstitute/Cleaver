@@ -180,7 +180,6 @@ int main(int argc,	char* argv[])
         // parse the material field input file names
         if (variables_map.count("material_fields")) {
             material_fields = variables_map["material_fields"].as<std::vector<std::string> >();
-//            int file_count = material_fields.size();
         }
         else{
             std::cout << "Error: At least one material field file must be specified." << std::endl;
@@ -334,6 +333,14 @@ int main(int argc,	char* argv[])
     //-----------------------------------
     cleaver::Timer total_timer;
     total_timer.start();
+
+    if(verbose) {
+      std::cout << " Loading input fields:" << std::endl;
+      for (size_t i=0; i < material_fields.size(); i++) {
+          std::cout << " - " << material_fields[i] << std::endl;
+      }
+    }
+
     std::vector<cleaver::AbstractScalarField*> fields = loadNRRDFiles(material_fields, verbose);
     if(fields.empty()){
         std::cerr << "Failed to load image data. Terminating." << std::endl;
@@ -446,7 +453,7 @@ int main(int argc,	char* argv[])
     // Strip Exterior Tets
     //-----------------------------------------------------------
     if(strip_exterior){
-        cleaver::stripExteriorTets(mesh, volume,verbose);
+        cleaver::stripExteriorTets(mesh, volume, verbose);
     }
 
     //-----------------------------------------------------------
@@ -468,7 +475,7 @@ int main(int argc,	char* argv[])
     double total_time = total_timer.time();
 
     if(verbose) {
-        std::cout << "Experiment Info" << std::endl;
+        std::cout << "Output Info" << std::endl;
         std::cout << "Size: " << volume->size().toString() << std::endl;
         std::cout << "Materials: " << volume->numberOfMaterials() << std::endl;
         std::cout << "Min Dihedral: " << mesh->min_angle << std::endl;
