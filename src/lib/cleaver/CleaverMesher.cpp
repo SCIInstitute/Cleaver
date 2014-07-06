@@ -525,7 +525,7 @@ TetMesh* CleaverMesherImp::createBackgroundMesh(bool verbose)
 
     if(m_bgMesh)
         delete m_bgMesh;
-    m_bgMesh = new TetMesh(m_volume->bounds());
+    m_bgMesh = new TetMesh();
 
     // visit each cell once, ensure
     // vertices are stored
