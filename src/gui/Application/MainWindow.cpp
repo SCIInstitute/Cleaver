@@ -467,15 +467,15 @@ void MainWindow::loadCamera()
 void MainWindow::closeSubWindow()
 {
     MeshWindow *win = activeWindow();
-    if(win && win->mesh()) {
-        m_dataManager->removeMesh(win->mesh());
-    }
-    if(win && win->volume()) {
-        m_dataManager->removeField(win->volume()->getSizingField());
-        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
-            m_dataManager->removeField(win->volume()->getMaterial(i));
-        m_dataManager->removeVolume(win->volume());
-    }
+//    if(win && win->mesh()) {
+//        m_dataManager->removeMesh(win->mesh());
+//    }
+//    if(win && win->volume()) {
+//        m_dataManager->removeField(win->volume()->getSizingField());
+//        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
+//            m_dataManager->removeField(win->volume()->getMaterial(i));
+//        m_dataManager->removeVolume(win->volume());
+//    }
     m_workspace->closeActiveSubWindow();
     m_iNumOpenWindows--;
     
@@ -484,15 +484,15 @@ void MainWindow::closeSubWindow()
 void MainWindow::closeSubWindow(MeshWindow *win)
 {
     if(!win) return;
-    if(win->mesh()) {
-        m_dataManager->removeMesh(win->mesh());
-    }
-    if(win->volume()) {
-        m_dataManager->removeField(win->volume()->getSizingField());
-        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
-            m_dataManager->removeField(win->volume()->getMaterial(i));
-        m_dataManager->removeVolume(win->volume());
-    }
+//    if(win->mesh()) {
+//        m_dataManager->removeMesh(win->mesh());
+//    }
+//    if(win->volume()) {
+//        m_dataManager->removeField(win->volume()->getSizingField());
+//        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
+//            m_dataManager->removeField(win->volume()->getMaterial(i));
+//        m_dataManager->removeVolume(win->volume());
+//    }
     m_workspace->closeActiveSubWindow();
     m_iNumOpenWindows--;
     
@@ -503,14 +503,14 @@ void MainWindow::closeAllSubWindows()
     MeshWindow *win = NULL;
     while((win = activeWindow())) {
         if(!win) continue;
-        if(win->volume()) {
-            m_dataManager->removeField(win->volume()->getSizingField());
-            for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
-                m_dataManager->removeField(win->volume()->getMaterial(i));
-            m_dataManager->removeVolume(win->volume());
-        } else if(win->mesh()) {
-            m_dataManager->removeMesh(win->mesh());
-        }
+//        if(win->volume()) {
+//            m_dataManager->removeField(win->volume()->getSizingField());
+//            for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
+//                m_dataManager->removeField(win->volume()->getMaterial(i));
+//            m_dataManager->removeVolume(win->volume());
+//        } else if(win->mesh()) {
+//            m_dataManager->removeMesh(win->mesh());
+//        }
         m_workspace->closeActiveSubWindow();
         m_iNumOpenWindows--;
     }
