@@ -40,6 +40,7 @@ public slots:
     void updateMeshList();
     void volumeSelected(int index);
     void meshSelected(int index);
+    void resetCheckboxes();
     
 private:
     Ui::CleaverWidget *ui;

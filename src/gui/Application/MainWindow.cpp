@@ -313,6 +313,8 @@ void MainWindow::importVolume()
 
         dataManager()->addVolume(volume);
         createWindow(volume, QString(volumeName.c_str()));
+        
+        m_cleaverWidget->resetCheckboxes();
     }
 }
 

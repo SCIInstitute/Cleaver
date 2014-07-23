@@ -7,6 +7,11 @@
 #include <Cleaver/Timer.h>
 #include <Cleaver/SizingFieldCreator.h>
 #include <iostream>
+#ifdef USING_QT5
+#include <QApplication>
+#else
+#include <QtGui/QApplication>
+#endif
 
 
 CleaverWidget::CleaverWidget(QWidget *parent) :
@@ -56,6 +61,18 @@ void CleaverWidget::clear()
 }
 
 
+void CleaverWidget::resetCheckboxes() {
+    
+    this->ui->backgroundCheck->setChecked(false);
+    this->ui->adjacencyCheck->setChecked(false);
+    this->ui->sampleCheck->setChecked(false);
+    this->ui->alphaCheck->setChecked(false);
+    this->ui->interfaceCheck->setChecked(false);
+    this->ui->generalizeCheck->setChecked(false);
+    this->ui->snapCheck->setChecked(false);
+    this->ui->stencilCheck->setChecked(false);
+}
+
 //=========================================
 // - update()       Updates the Widget
 //
@@ -101,24 +118,40 @@ void CleaverWidget::createMesh()
     MeshWindow *window = MainWindow::instance()->activeWindow();
     if(window != NULL){
         mesher->setRegular(false);
-        mesher->createBackgroundMesh();
-
+        mesher->createBackgroundMesh(true);
+        this->ui->backgroundCheck->setChecked(true);
+        qApp->processEvents();
         window->setMesh(mesher->getBackgroundMesh());
 
-        mesher->buildAdjacency();
-        mesher->sampleVolume();
+        mesher->buildAdjacency(true);
+        this->ui->adjacencyCheck->setChecked(true);
+        qApp->processEvents();
+        this->ui->adjacencyCheck->repaint();
+        mesher->sampleVolume(true);
+        this->ui->sampleCheck->setChecked(true);
+        qApp->processEvents();
         window->updateMesh();
         window->updateGL();
 
-        mesher->computeAlphas();
-        mesher->computeInterfaces();
-        mesher->generalizeTets();
-        mesher->snapsAndWarp();
+        mesher->computeAlphas(true);
+        this->ui->alphaCheck->setChecked(true);
+        qApp->processEvents();
+        mesher->computeInterfaces(true);
+        this->ui->interfaceCheck->setChecked(true);
+        qApp->processEvents();
+        mesher->generalizeTets(true);
+        this->ui->generalizeCheck->setChecked(true);
+        qApp->processEvents();
+        mesher->snapsAndWarp(true);
+        this->ui->snapCheck->setChecked(true);
+        qApp->processEvents();
 
         window->updateMesh();
         window->updateGL();
 
-        mesher->stencilTets();
+        mesher->stencilTets(true);
+        this->ui->stencilCheck->setChecked(true);
+        qApp->processEvents();
         window->updateMesh();
         window->updateGL();
 
@@ -145,7 +178,7 @@ void CleaverWidget::createRegularMesh()
         timer.start();
         cleaver::AbstractScalarField *sizingField =
             cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-                volume, 1.0, scale, 1.0, padding, false, false);
+                volume, 1.0, scale, 1.0, padding, false, true);
         timer.stop();
 
         std::string sizingFieldName = volume->name() + "-computed-sizing-field";
@@ -160,24 +193,40 @@ void CleaverWidget::createRegularMesh()
         double as = ui->alphaShortSpinner->value();
         mesher->setAlphas(al,as);
         mesher->setRegular(true);
-        mesher->createBackgroundMesh();
+        mesher->createBackgroundMesh(true);
+        this->ui->backgroundCheck->setChecked(true);
+        qApp->processEvents();
 
         window->setMesh(mesher->getBackgroundMesh());
+        
+        mesher->buildAdjacency(true);
+        this->ui->adjacencyCheck->setChecked(true);
+        qApp->processEvents();
+        mesher->sampleVolume(true);
+        this->ui->sampleCheck->setChecked(true);
+        qApp->processEvents();
+        window->updateMesh();
+        window->updateGL();
+        
+        mesher->computeAlphas(true);
+        this->ui->alphaCheck->setChecked(true);
+        qApp->processEvents();
+        mesher->computeInterfaces(true);
+        this->ui->interfaceCheck->setChecked(true);
+        qApp->processEvents();
+        mesher->generalizeTets(true);
+        this->ui->generalizeCheck->setChecked(true);
+        qApp->processEvents();
+        mesher->snapsAndWarp(true);
+        this->ui->snapCheck->setChecked(true);
+        qApp->processEvents();
 
-        mesher->buildAdjacency();
-        mesher->sampleVolume();
         window->updateMesh();
         window->updateGL();
 
-        mesher->computeAlphas();
-        mesher->computeInterfaces();
-        mesher->generalizeTets();
-        mesher->snapsAndWarp();
-
-        window->updateMesh();
-        window->updateGL();
-
-        mesher->stencilTets();
+        mesher->stencilTets(true);
+        this->ui->stencilCheck->setChecked(true);
+        qApp->processEvents();
         window->updateMesh();
         window->updateGL();
 

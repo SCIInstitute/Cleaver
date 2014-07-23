@@ -135,7 +135,7 @@ void SizingFieldWidget::computeSizingField()
 
     cleaver::Timer timer;
     timer.start();
-    cleaver::AbstractScalarField *sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(this->volume, speed, scale, factor, padding, adaptiveSurface, false);
+    cleaver::AbstractScalarField *sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(this->volume, speed, scale, factor, padding, adaptiveSurface, true);
     timer.stop();
 
     std::string sizingFieldName = volume->name() + "-computed-sizing-field";
