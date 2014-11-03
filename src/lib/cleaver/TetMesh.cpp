@@ -61,6 +61,14 @@ using namespace std;
 #define PI 3.14159265
 #endif
 
+#ifdef WIN32
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
+
 
 namespace cleaver
 {
@@ -1256,13 +1264,17 @@ void TetMesh::writeInfo(const string &filename, bool verbose)
 //============================================================
 void TetMesh::writeMesh(const std::string &filename, MeshFormat format, bool verbose)
 {
+	
     switch(format) {
       case cleaver::Tetgen:
-        writeNodeEle(filename, verbose);
+			writeNodeEle(filename, verbose);
+			break;
       case cleaver::Scirun:
-        writePtsEle(filename, verbose);
+			writePtsEle(filename, verbose);
+			break;
       case cleaver::Matlab:
-        writeMatlab(filename, verbose);
+			writeMatlab(filename, verbose);
+			break;
       case  cleaver::VTK:
         writeVtkUnstructuredGrid(filename, verbose);
         break;
@@ -1277,9 +1289,84 @@ void TetMesh::writeMesh(const std::string &filename, MeshFormat format, bool ver
 //
 //==================================================================
 void TetMesh::writeVtkUnstructuredGrid(const std::string &filename, bool verbose)
-{
-    std::cerr << "writeVtkUnstructuredGrid() not yet implemented" << std::endl;
-    std::cerr << "file: " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
+{ 
+	std::string path = filename.substr(0,filename.find_last_of("/")+1);
+	std::string name = filename.substr(filename.find_last_of("/")+1,filename.size() - 1);
+	if (path.empty()) {
+		char cCurrentPath[FILENAME_MAX];
+		if(GetCurrentDir(cCurrentPath, sizeof(cCurrentPath))){}
+		cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
+		path = std::string(cCurrentPath) + "/";
+	}
+	// get the number of files/mats
+	std::vector<std::ofstream*> output;
+	std::vector<size_t> numTetsPerMat;
+	for(size_t i = 0; i < this->tets.size(); i++) {
+		size_t label = tets.at(i)->mat_label;
+		if (label + 1 > numTetsPerMat.size())
+			numTetsPerMat.resize(label+1);
+		numTetsPerMat.at(label)++;
+	}
+	size_t num = 0;
+	std::vector<std::string> filenames;
+	while (numTetsPerMat.size() != filenames.size()) {
+		std::stringstream ss;
+		ss << path << name << num++ << ".vtk" ;
+		filenames.push_back(ss.str());
+		std::cout << "\t" << ss.str() << std:: endl;
+	}
+	if(verbose) {
+		std::cout << "Writing VTK mesh files(tets): \n";
+		for(size_t i = 0; i < filenames.size(); i++)
+			std::cout << "\t" << filenames.at(i) << std::endl;
+	}
+	//-----------------------------------
+	//         Write Headers
+	//-----------------------------------
+	for(size_t i=0; i < numTetsPerMat.size(); i++) {
+		output.push_back(new std::ofstream(filenames.at(i).c_str()));
+		*output.at(i) << "# vtk DataFile Version 2.0\n";
+		*output.at(i) << filenames.at(i) << " Tet Mesh\n";
+		*output.at(i) << "ASCII\n";
+		*output.at(i) << "DATASET POLYDATA\n";
+		*output.at(i) << "POINTS " << this->verts.size() << " float\n";
+	}
+	//-----------------------------------
+	//         Write Vertex List
+	//-----------------------------------
+	for(size_t f=0; f < numTetsPerMat.size(); f++) {
+		for(size_t i=0; i < this->verts.size(); i++)
+		{
+			*output.at(f) << this->verts[i]->pos().x << " "
+			<< this->verts[i]->pos().y << " "
+			<< this->verts[i]->pos().z << std::endl;
+		}
+		size_t num_tets = numTetsPerMat.at(f);
+		*output.at(f) << "POLYGONS " << num_tets*4 << " "
+		<< (num_tets*16) <<"\n";
+	}
+	//-----------------------------------
+	//         Write Cell/Face List
+	//-----------------------------------
+	for(size_t f=0; f < this->tets.size(); f++)
+	{
+		Tet* t = this->tets.at(f);
+		
+		size_t v1 = t->verts[0]->tm_v_index;
+		size_t v2 = t->verts[1]->tm_v_index;
+		size_t v3 = t->verts[2]->tm_v_index;
+		size_t v4 = t->verts[3]->tm_v_index;
+		
+		*output.at(t->mat_label) << 3 << " " << v1 <<  " " << v2 << " " << v3 << "\n";
+		*output.at(t->mat_label) << 3 << " " << v2 <<  " " << v3 << " " << v4 << "\n";
+		*output.at(t->mat_label) << 3 << " " << v3 <<  " " << v4 << " " << v1 << "\n";
+		*output.at(t->mat_label) << 3 << " " << v4 <<  " " << v1 << " " << v2 << "\n";
+	}
+	//CLOSE
+	for(size_t i=0; i < numTetsPerMat.size(); i++) {
+		(*output.at(i)).close();
+		delete output.at(i);
+	}
 }
 
 //==================================================================
@@ -1592,7 +1679,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     for(unsigned int i=0; i < tets.size(); i++)
     {
         for(int v=0; v < 4; v++){
-            int32_t index = tets[i]->verts[v]->tm_v_index;
+            int32_t index = tets[i]->verts[v]->tm_v_index + 1;
             file.write((char*)&index, sizeof(int32_t));
         }
     }

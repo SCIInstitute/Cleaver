@@ -66,6 +66,7 @@
 const std::string scirun = "scirun";
 const std::string tetgen = "tetgen";
 const std::string matlab = "matlab";
+const std::string vtk = "vtk";
 
 const std::string kDefaultOutputPath   = "./";
 const std::string kDefaultOutputName   = "output";
@@ -143,8 +144,8 @@ int main(int argc,	char* argv[])
                 ("write_background_mesh", "write background mesh")
                 ("strip_exterior", "strip exterior tetrahedra")
                 ("output_path", po::value<std::string>(), "output path prefix")
-                ("output_name", po::value<std::string>(), "output mesh name")
-                ("output_format", po::value<std::string>(), "output mesh format")
+                ("output_name", po::value<std::string>(), "output mesh name [default 'output']")
+                ("output_format", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtk)")
                 ("strict", "warnings become errors")
         ;
 
@@ -301,6 +302,9 @@ int main(int argc,	char* argv[])
             }
             else if(format_string.compare(matlab) == 0){
                 output_format = cleaver::Matlab;
+            }
+            else if(format_string.compare(vtk) == 0){
+                output_format = cleaver::VTK;
             }
             else{
                 std::cerr << "Error: unsupported output format: " << format_string << std::endl;
@@ -464,10 +468,11 @@ int main(int argc,	char* argv[])
     //-----------------------------------------------------------
     // Write Mesh To File
     //-----------------------------------------------------------    
-    mesh->writeNodeEle(output_path + output_name, verbose, true, false);
-    mesh->writePly(output_path + output_name, verbose);
+	mesh->writeMesh(output_path + output_name, output_format, verbose);
+    //mesh->writeNodeEle(output_path + output_name, verbose, true, false);
+    //mesh->writePly(output_path + output_name, verbose);
     mesh->writeInfo(output_path + output_name, verbose);
-
+	std::cout << "done writing" << std::endl;
     //-----------------------------------------------------------
     // Write Experiment Info to file
     //-----------------------------------------------------------
