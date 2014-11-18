@@ -468,11 +468,8 @@ int main(int argc,	char* argv[])
     //-----------------------------------------------------------
     // Write Mesh To File
     //-----------------------------------------------------------    
-	mesh->writeMesh(output_path + output_name, output_format, verbose);
-    //mesh->writeNodeEle(output_path + output_name, verbose, true, false);
-    //mesh->writePly(output_path + output_name, verbose);
+    mesh->writeMesh(output_path + output_name, output_format, verbose);
     mesh->writeInfo(output_path + output_name, verbose);
-	std::cout << "done writing" << std::endl;
     //-----------------------------------------------------------
     // Write Experiment Info to file
     //-----------------------------------------------------------

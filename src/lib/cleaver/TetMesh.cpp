@@ -1679,7 +1679,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     for(unsigned int i=0; i < tets.size(); i++)
     {
         for(int v=0; v < 4; v++){
-            int32_t index = tets[i]->verts[v]->tm_v_index + 1;
+            int32_t index = tets[i]->verts[v]->tm_v_index;
             file.write((char*)&index, sizeof(int32_t));
         }
     }
