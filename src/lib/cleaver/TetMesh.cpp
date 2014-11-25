@@ -158,28 +158,18 @@ float Tet::minAngle()
 
         face_normals[j] = normal;
     }
-
-
     //now compute the 6 dihedral angles between each pair of faces
-    for (int j=0; j<4; j++) {
+    for (int j=0; j<4; j++) 
         for (int k=j+1; k<4; k++) {
             double dot_product = dot(face_normals[j], face_normals[k]);
-            if (dot_product < -1) {
-                dot_product = -1;
-            } else if (dot_product > 1) {
-                dot_product = 1;
-            }
+            dot_product = std::min(1.,std::max(dot_product,-1.));
 
             double dihedral_angle = 180.0 - acos(dot_product) * 180.0 / PI;
+            dihedral_angle = std::min(180.,std::max(0.,dihedral_angle));
 
             if (dihedral_angle < min)
-            {
-                min = (float)dihedral_angle;
-            }
+                min = static_cast<float>(dihedral_angle);
         }
-    }
-
-
     return min;
 }
 
@@ -205,27 +195,18 @@ float Tet::maxAngle()
 
         face_normals[j] = normal;
     }
-
-
     //now compute the 6 dihedral angles between each pair of faces
-    for (int j=0; j<4; j++) {
+    for (int j=0; j<4; j++) 
         for (int k=j+1; k<4; k++) {
             double dot_product = dot(face_normals[j], face_normals[k]);
-            if (dot_product < -1) {
-                dot_product = -1;
-            } else if (dot_product > 1) {
-                dot_product = 1;
-            }
+            dot_product = std::min(1.,std::max(dot_product,-1.));
 
             double dihedral_angle = 180.0 - acos(dot_product) * 180.0 / PI;
+            dihedral_angle = std::min(180.,std::max(0.,dihedral_angle));
 
             if(dihedral_angle > max)
-            {
                 max = (float)dihedral_angle;
-            }
         }
-    }
-
     return max;
 }
 
