@@ -399,13 +399,13 @@ ENDIF(BUILD_HEX)
 
 #-----------------------------------------------------------------------------
 # For testing
-OPTION(BUILD_TESTING "Enable this to perform testing of Teem" OFF)
-IF(BUILD_TESTING)
+OPTION(BUILD_TEEM_TESTS "Enable this to perform testing of Teem" OFF)
+IF(BUILD_TEEM_TESTS)
   SET(DART_ROOT "" CACHE INTERNAL "" FORCE)
   INCLUDE(CTest)
   ENABLE_TESTING()
   MARK_AS_ADVANCED(TCL_TCLSH)
-ENDIF(BUILD_TESTING)
+ENDIF(BUILD_TEEM_TESTS)
 
 #-----------------------------------------------------------------------------
 # Help outside projects build Teem projects.

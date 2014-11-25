@@ -57,4 +57,13 @@ include_directories(lib/boost)
 ADD_SUBDIRECTORY(cli/mesher)
 ADD_SUBDIRECTORY(cli/sizingfieldcreator)
 ADD_SUBDIRECTORY(gui)
+ADD_SUBDIRECTORY(tests)
+########################################################################
+# All of the testing and test framework options
 
+option(ENABLE_TESTING "Builds and runs all Cleaver2 Tests." OFF)
+if (ENABLE_TESTING)
+  include_directories(tests/include)
+  cxx_executable(sample1_unittest samples gtest_main samples/sample1.cc)
+  add_custom_command(TARGET sample1_unittest POST_BUILD COMMAND sample1_unittest)
+endif()
