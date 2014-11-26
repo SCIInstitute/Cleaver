@@ -22,8 +22,8 @@ macro(fix_default_compiler_settings_)
     # This replacement code is taken from sample in the CMake Wiki at
     # http://www.cmake.org/Wiki/CMake_FAQ#Dynamic_Replace.
     foreach (flag_var
-             CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-             CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
       if (NOT BUILD_SHARED_LIBS AND NOT gtest_force_shared_crt)
         # When Google Test is built as a shared library, it should also use
         # shared runtime libraries.  Otherwise, it may end up with multiple
@@ -194,8 +194,13 @@ find_package(PythonInterp)
 # creates a named C++ test that depends on the given libs and is built
 # from the given source files with the given compiler flags.
 function(cxx_test_with_flags name cxx_flags libs)
-  cxx_executable_with_flags(${name} "${cxx_flags}" "${libs}" ${ARGN})
-  add_test(${name} ${name})
+  cxx_executable_with_flags(${name} "${cxx_default} ${cxx_flags}" "${libs}" ${ARGN})
+  add_test(${name} ${CMAKE_BINARY_DIR}/bin/${name})
+  if(USE_GCOV)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+      setup_target_for_coverage(${PROJECT_NAME}_${name}_coverage ${name} coverage)
+    endif()
+  endif()
 endfunction()
 
 # cxx_test(name libs srcs...)
@@ -222,6 +227,6 @@ function(py_test name)
     # we have to escape $ to delay variable substitution here.
     add_test(${name}
       ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test/${name}.py
-          --build_dir=${CMAKE_CURRENT_BINARY_DIR}/\${CTEST_CONFIGURATION_TYPE})
+      --build_dir=${CMAKE_CURRENT_BINARY_DIR}/\${CTEST_CONFIGURATION_TYPE})
   endif()
 endfunction()
