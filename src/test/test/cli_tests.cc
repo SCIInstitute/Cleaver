@@ -39,7 +39,44 @@
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
 #include "gtest/gtest.h"
-// Tests min/max Angles of regular tet
-TEST(SanityTests, Basic) {
-
+#include <cstdlib>
+#include <cstdio>
+#include <fstream>
+#define _FIELDS " --material_fields "
+#define _FILES  "sphere*.nrrd "
+#define _NAME   " --output_name "
+#define _PATH   " --output_path "
+#define _CLI    "cleaver-cli "
+#define _DIFF   "cmake -E compare_files "
+static std::string data_dir = std::string(TEST_DATA_DIR);
+static std::string command = std::string(BINARY_DIR) + _CLI + " -v ";
+static std::string name = _NAME + std::string("output");
+static std::string path = _PATH + data_dir;
+static std::string input = _FIELDS + data_dir + "input/" +_FILES;
+static const int num_files = 8;
+static std::string files[num_files] = {"background.node", "background.ele",
+  "sizing_field.nrrd", "boundary_field.nrrd", "boundary.nrrd",
+  "feature_field.nrrd", "medial.nrrd", "output.info"};
+// Tests basic IO for CLI
+TEST(CLIRegressionTests, Basic) {
+  //make sure there is a command interpreter
+  ASSERT_TRUE(0!=(std::system(NULL)));
+  //setup the line that calls the command line interface
+  std::string output = " > " + data_dir + "basic_output.txt 2>&1";
+  std::string line = (command + name + path + input + output);
+  //make sure there was no error from the command line
+  ASSERT_EQ(0, std::system(line.c_str()));
+  //move the other generated files in the current dir to the test dir
+  std::system(("mv background* *.nrrd " + data_dir).c_str());
+  //compare all of the files
+  std::string diff(_DIFF);
+  for(size_t i = 0; i < num_files; i++) {
+    ASSERT_EQ(0, std::system((diff + data_dir +
+            files[i] + " " + data_dir +
+            "basic/" + files[i]).c_str()));
+  }
+  //delete the output files from this test
+  std::system(("rm " + data_dir + "*.nrrd " +
+        data_dir + "*.node " + data_dir + "*.txt " +
+        data_dir + "*.ele " + data_dir + "*.info").c_str());
 }
