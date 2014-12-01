@@ -58,7 +58,7 @@ static std::vector<std::string> files;
 // Tests basic IO for CLI
 TEST(CLIRegressionTests, Basic) {
   //make sure there is a command interpreter
-  ASSERT_EQ(0,!(std::system(NULL)));
+  ASSERT_EQ(0,(int)!(std::system(NULL)));
   //add the common files to the list
   files.push_back("background.node");
   files.push_back("background.ele");
