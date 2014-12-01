@@ -17,39 +17,16 @@ include(cmake/internal_utils.cmake)
 config_compiler_and_linker()  # Defined in internal_utils.cmake.
 # Where Google Test's .h files can be found.
 include_directories(
-  ${CLEAVER2_SOURCE_DIR}/gtest/include
-  ${CLEAVER2_SOURCE_DIR}/gtest)
+  ${${PROJECT_NAME}_SOURCE_DIR}/lib/gtest/include
+  ${${PROJECT_NAME}_SOURCE_DIR}/lib/gtest)
 # Where Google Test's libraries can be found.
-link_directories(${gtest_BINARY_DIR}/src)
+link_directories(${gtest_SOURCE_DIR}/src)
 ########################################################################
 # Defines the gtest & gtest_main libraries.  User tests should link
 # with one of them.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
-########################################################################
-# Use gcov for code coverage (useful for seeing test completeness)
-OPTION(USE_GCOV "Enable code coverage for GNUCXX Platforms" OFF)
-if (USE_GCOV)
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    INCLUDE(${PROJECT_SOURCE_DIR}/CodeCoverage.cmake)
-    SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    setup_target_for_coverage(${PROJECT_NAME}_coverage tetmesh_unit_tests coverage)
-  endif()
-endif()
-########################################################################
-# Tests for Cleaver2
-SET(TEST_DATA_DIR ${CLEAVER2_SOURCE_DIR}/gtest/test_data)
-include_directories(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
-link_directories(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
-#tet mesh
-cxx_test(tetmesh_unit_tests gtest_main)
-target_link_libraries(tetmesh_unit_tests cleaver)
-#cli
-#cxx_executable(cli_tests tests/cases gtest_main)
-#target_link_libraries(cli_tests cleaver-cli)
-#ADD_TEST(cli_tests ${CMAKE_BUILD_DIR}/bin/cli_tests)
 ########################################################################
 # Google Test's own tests.
 if (gtest_build_tests)
