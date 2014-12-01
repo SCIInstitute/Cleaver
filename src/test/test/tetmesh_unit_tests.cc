@@ -46,49 +46,48 @@ using namespace cleaver;
 TEST(AngleTests, Regular) {
   //regular 1
   Vertex v1,v2,v3,v4;
-  v1.pos() = vec3(0.,0.,sqrt(2./3.) - .5/sqrt(6.));
-  v2.pos() = vec3(-.5/sqrt(3.),-.5,-.5/sqrt(6.));
-  v3.pos() = vec3(-.5/sqrt(3.),.5,-.5/sqrt(6.));
-  v4.pos() = vec3(1./sqrt(3.),0.,-.5/sqrt(6.));
+  v1.pos() = vec3(0.f,0.f,sqrt(2.f/3.f) - .5f/sqrt(6.f));
+  v2.pos() = vec3(-.5f/sqrt(3.f),-.5f,-.5f/sqrt(6.f));
+  v3.pos() = vec3(-.5f/sqrt(3.f),.5f,-.5f/sqrt(6.f));
+  v4.pos() = vec3(1.f/sqrt(3.f),0.f,-.5f/sqrt(6.f));
   Tet tri(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(70.5288, tri.minAngle());
-  ASSERT_FLOAT_EQ(70.5288, tri.maxAngle());
+  ASSERT_FLOAT_EQ(70.5288f, tri.minAngle());
+  ASSERT_FLOAT_EQ(70.5288f, tri.maxAngle());
   //regular 2
-  float xcord = 1./tan(70.5288);
-  v1.pos() = vec3( 1., 0.,-1./sqrt(2));
-  v2.pos() = vec3(-1., 0.,-1./sqrt(2));
-  v3.pos() = vec3( 0., 1., 1./sqrt(2));
-  v4.pos() = vec3( 0.,-1., 1./sqrt(2));
+  v1.pos() = vec3( 1.f, 0.f,-1.f/sqrt(2.f));
+  v2.pos() = vec3(-1.f, 0.f,-1.f/sqrt(2.f));
+  v3.pos() = vec3( 0.f, 1.f, 1.f/sqrt(2.f));
+  v4.pos() = vec3( 0.f,-1.f, 1.f/sqrt(2.f));
   Tet tri2(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(70.5288, tri2.minAngle());
-  ASSERT_FLOAT_EQ(70.5288, tri2.maxAngle());
+  ASSERT_FLOAT_EQ(70.5288f, tri2.minAngle());
+  ASSERT_FLOAT_EQ(70.5288f, tri2.maxAngle());
 }
 //Tests a right angled tet
 TEST(AngleTests,Right) {
   Vertex v1,v2,v3,v4;
-  v1.pos() = vec3(0.,0.,1.);
-  v2.pos() = vec3(1.,0.,0.);
-  v3.pos() = vec3(0.,1.,0.);
-  v4.pos() = vec3(0.,0.,0.);
+  v1.pos() = vec3(0.f,0.f,1.f);
+  v2.pos() = vec3(1.f,0.f,0.f);
+  v3.pos() = vec3(0.f,1.f,0.f);
+  v4.pos() = vec3(0.f,0.f,0.f);
   Tet tri(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(54.7356103, tri.minAngle());
-  ASSERT_FLOAT_EQ(90.0, tri.maxAngle());
+  ASSERT_FLOAT_EQ(54.7356103f, tri.minAngle());
+  ASSERT_FLOAT_EQ(90.0f, tri.maxAngle());
 }
 //Tests a flat tet
 TEST(AngleTests,Flat) {
   Vertex v1,v2,v3,v4;
-  v1.pos() = vec3(0.25,0.25,.0);
-  v2.pos() = vec3(1.,0.,0.);
-  v3.pos() = vec3(0.,1.,0.);
-  v4.pos() = vec3(0.,0.,0.);
+  v1.pos() = vec3(0.25f,0.25f,.0f);
+  v2.pos() = vec3(1.f,0.f,0.f);
+  v3.pos() = vec3(0.f,1.f,0.f);
+  v4.pos() = vec3(0.f,0.f,0.f);
   Tet tri(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(0., tri.minAngle());
-  ASSERT_FLOAT_EQ(180., tri.maxAngle());
-  v1.pos() = vec3(0.,0.,0.);
-  v2.pos() = vec3(0.,0.,0.);
-  v3.pos() = vec3(0.,0.,0.);
-  v4.pos() = vec3(0.,0.,0.);
+  ASSERT_FLOAT_EQ(0.f, tri.minAngle());
+  ASSERT_FLOAT_EQ(180.f, tri.maxAngle());
+  v1.pos() = vec3(0.f,0.f,0.f);
+  v2.pos() = vec3(0.f,0.f,0.f);
+  v3.pos() = vec3(0.f,0.f,0.f);
+  v4.pos() = vec3(0.f,0.f,0.f);
   Tet tri2(&v1,&v2,&v3,&v4,0);
-  ASSERT_TRUE(tri2.minAngle() == 0. || tri2.minAngle() == 180.);
-  ASSERT_TRUE(tri2.maxAngle() == 0. || tri2.maxAngle() == 180.);
+  ASSERT_TRUE(tri2.minAngle() == 0.f || tri2.minAngle() == 180.f);
+  ASSERT_TRUE(tri2.maxAngle() == 0.f || tri2.maxAngle() == 180.f);
 }
