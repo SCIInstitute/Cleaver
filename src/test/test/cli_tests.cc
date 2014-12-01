@@ -120,7 +120,7 @@ TEST(CLIRegressionTests, Scaling) {
   }
   //delete the output files from this test
   for(size_t i = 0; i < files.size(); i++) {
-  //  std::system(("rm " + data_dir + files[i]).c_str());
+    std::system(("rm " + data_dir + files[i]).c_str());
   }
   //put the list of files back to the common ones
   while (files.size() > 8) files.pop_back();
