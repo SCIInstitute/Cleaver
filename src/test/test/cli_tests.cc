@@ -47,6 +47,13 @@
 #define _PATH   " --output_path "
 #define _CLI    "cleaver-cli "
 #define _DIFF   "cmake -E compare_files "
+#ifdef _WIN32
+#define _MV "move "
+#define _RM "del "
+#else
+#define _MV "mv "
+#define _RM "rm "
+#endif
 static std::string data_dir = std::string(TEST_DATA_DIR);
 static std::string command = std::string(BINARY_DIR) + _CLI + " -v ";
 static std::string name = _NAME + std::string("output");
@@ -82,7 +89,7 @@ TEST(CLIRegressionTests, Basic) {
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
   for(size_t i = 0; i < 7; i++) {
-    std::system(("mv " + files[i] + " " + data_dir).c_str());
+    std::system((_MV + files[i] + " " + data_dir).c_str());
   }
   //compare all of the files
   std::string diff(_DIFF);
@@ -93,7 +100,7 @@ TEST(CLIRegressionTests, Basic) {
   }
   //delete the output files from this test
   for(size_t i = 0; i < files.size(); i++) {
-    std::system(("rm " + data_dir + files[i]).c_str());
+    std::system((_RM + data_dir + files[i]).c_str());
   }
   //put the list of files back to the common ones
   while (files.size() > 8) files.pop_back();
@@ -112,7 +119,7 @@ TEST(CLIRegressionTests, Scaling) {
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
   for(size_t i = 0; i < 7; i++) {
-    std::system(("mv " + files[i] + " " + data_dir).c_str());
+    std::system((_MV + files[i] + " " + data_dir).c_str());
   }
   //compare all of the files
   std::string diff(_DIFF);
@@ -123,7 +130,7 @@ TEST(CLIRegressionTests, Scaling) {
   }
   //delete the output files from this test
   for(size_t i = 0; i < files.size(); i++) {
-    std::system(("rm " + data_dir + files[i]).c_str());
+    std::system((_RM + data_dir + files[i]).c_str());
   }
   //put the list of files back to the common ones
   while (files.size() > 8) files.pop_back();

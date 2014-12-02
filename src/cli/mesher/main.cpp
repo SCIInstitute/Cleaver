@@ -76,7 +76,7 @@ const cleaver::MeshFormat kDefaultOutputFormat = cleaver::Tetgen;
 const double kDefaultAlpha = 0.4;
 const double kDefaultAlphaLong = 0.357;
 const double kDefaultAlphaShort = 0.203;
-const double kDefaultScale = 2.0;
+const double kDefaultScale = 1.0;
 const double kDefaultLipschitz = 0.2;
 const double kDefaultMultiplier = 1.0;
 const int    kDefaultPadding = 0;
@@ -357,7 +357,7 @@ int main(int argc,  char* argv[])
   //-----------------------------------
   // Load background mesh if provided
   //-----------------------------------
-  cleaver::TetMesh *bgMesh;
+  cleaver::TetMesh *bgMesh = NULL;
   if(have_background_mesh) {
     std::string nodeFileName = background_mesh + ".node";
     std::string eleFileName = background_mesh + ".ele";

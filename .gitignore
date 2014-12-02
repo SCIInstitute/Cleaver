@@ -1,3 +1,12 @@
+src/test/test_data/*.nrrd
+src/test/test_data/*.info
+src/test/test_data/*.txt
+src/test/test_data/*.node
+src/test/test_data/*.ele
+src/test/test_data/*.vtk
+src/test/test_data/*.mat
+src/test/test_data/*.pts
+src/test/test_data/*.elem
 *.swp
 WIN32_DLLS
 *.db
