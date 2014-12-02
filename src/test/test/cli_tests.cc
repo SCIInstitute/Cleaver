@@ -43,7 +43,6 @@
 #include <cstdio>
 #include <fstream>
 #define _FIELDS " --material_fields "
-#define _FILES  "sphere1.nrrd sphere2.nrrd sphere3.nrrd sphere4.nrrd "
 #define _NAME   " --output_name "
 #define _PATH   " --output_path "
 #define _CLI    "cleaver-cli "
@@ -52,7 +51,11 @@ static std::string data_dir = std::string(TEST_DATA_DIR);
 static std::string command = std::string(BINARY_DIR) + _CLI + " -v ";
 static std::string name = _NAME + std::string("output");
 static std::string path = _PATH + data_dir;
-static std::string input = _FIELDS + data_dir + "input/" +_FILES;
+static std::string input = _FIELDS +
+data_dir + "input/spheres1.nrrd " +
+data_dir + "input/spheres2.nrrd " +
+data_dir + "input/spheres3.nrrd " +
+data_dir + "input/spheres4.nrrd " ;
 static std::vector<std::string> files;
 
 // Tests basic IO for CLI
