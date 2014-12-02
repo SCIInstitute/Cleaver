@@ -8,7 +8,7 @@ Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
 Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
 Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
 Input Dimensions: 28 x 28 x 28
-Creating sizing field at 2x resolution, with Lipschitz=5, sizingFactor=1, padding=0, adaptive=1
+Creating sizing field at 1x resolution, with Lipschitz=5, sizingFactor=1, padding=0, adaptive=1
 Writing file 'boundary.nrrd'
 Writing file 'boundary_field.nrrd'
 Writing file 'medial.nrrd'
@@ -26,16 +26,16 @@ Computing Triples... done. [94]
 Computing Quadruples... done. [1]
 Generalizing Tets... done.
 Beginning Snapping and Warping...
-preparing to examine 1219 verts
+preparing to examine 1230 verts
 Phase 1 Complete
 Phase 2 Complete
 Phase 3 Complete
 Snapping/warping complete.
 Filling in Stencils...
-repurposed 6036 old tets.
-created 940 new tets.
-vert count: 1427
-tet  count: 6976
+repurposed 6090 old tets.
+created 921 new tets.
+vert count: 1434
+tet  count: 7011
 Worst Angles:
 	min: 7.49352
 	max: 167.421
@@ -48,7 +48,7 @@ Size: [28, 28, 28]
 Materials: 4
 Min Dihedral: 7.49352
 Max Dihedral: 167.421
-Total Time: 8.187 seconds
-Sizing Field Time: 6.489 seconds
-Backound Mesh Time: 0.694 seconds
-Cleaving Time: 0.961 seconds
+Total Time: 1.936 seconds
+Sizing Field Time: 0.783 seconds
+Backound Mesh Time: 0.141 seconds
+Cleaving Time: 0.971 seconds

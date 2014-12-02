@@ -113,7 +113,7 @@ TEST(CLIRegressionTests, Scaling) {
   std::string log = "scaling_output.txt";
   files.push_back(log);
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string scale = " --scale 1.0 ";
+  std::string scale = " --scale 0.5 ";
   std::string line = (command + name + path + scale + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));

@@ -8,7 +8,7 @@ Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
 Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
 Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
 Input Dimensions: 28 x 28 x 28
-Creating sizing field at 1x resolution, with Lipschitz=5, sizingFactor=1, padding=0, adaptive=1
+Creating sizing field at 0.5x resolution, with Lipschitz=5, sizingFactor=1, padding=0, adaptive=1
 Writing file 'boundary.nrrd'
 Writing file 'boundary_field.nrrd'
 Writing file 'medial.nrrd'
@@ -21,24 +21,24 @@ Building Adjacency...constructing bottom up incidences
  done.
 Sampling Volume... done.
 Computing Violation Alphas... done.
-Computing Cuts... done. [1026]
+Computing Cuts... done. [999]
 Computing Triples... done. [94]
 Computing Quadruples... done. [1]
 Generalizing Tets... done.
 Beginning Snapping and Warping...
-preparing to examine 1230 verts
+preparing to examine 1153 verts
 Phase 1 Complete
 Phase 2 Complete
 Phase 3 Complete
 Snapping/warping complete.
 Filling in Stencils...
-repurposed 6090 old tets.
-created 921 new tets.
-vert count: 1434
-tet  count: 7011
+repurposed 5696 old tets.
+created 917 new tets.
+vert count: 1357
+tet  count: 6613
 Worst Angles:
-	min: 7.49352
-	max: 167.421
+	min: 2.62505
+	max: 173.572
  done.
 Writing mesh node file: /home/sci/brig/Cleaver2/src/test/test_data/output.node
 Writing mesh ele file: /home/sci/brig/Cleaver2/src/test/test_data/output.ele
@@ -46,9 +46,9 @@ Writing settings file: /home/sci/brig/Cleaver2/src/test/test_data/output.info
 Output Info
 Size: [28, 28, 28]
 Materials: 4
-Min Dihedral: 7.49352
-Max Dihedral: 167.421
-Total Time: 1.939 seconds
-Sizing Field Time: 0.784 seconds
-Backound Mesh Time: 0.144 seconds
-Cleaving Time: 0.967 seconds
+Min Dihedral: 2.62505
+Max Dihedral: 173.572
+Total Time: 1.151 seconds
+Sizing Field Time: 0.11 seconds
+Backound Mesh Time: 0.07 seconds
+Cleaving Time: 0.931 seconds
