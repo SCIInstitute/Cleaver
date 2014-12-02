@@ -43,7 +43,7 @@
 #include <cstdio>
 #include <fstream>
 #define _FIELDS " --material_fields "
-#define _FILES  "sphere*.nrrd "
+#define _FILES  "sphere1.nrrd sphere2.nrrd sphere3.nrrd sphere4.nrrd "
 #define _NAME   " --output_name "
 #define _PATH   " --output_path "
 #define _CLI    "cleaver-cli "
