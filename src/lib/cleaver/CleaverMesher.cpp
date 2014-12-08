@@ -126,26 +126,13 @@ const int CELL_VERT_COORDS[8][3] = {
 class vec3order{
 public:
 
-    /*
-    bool operator()(const vec3 &a, const vec3 &b)
-    {
-        return
-                ((a.x < b.x) ||
-                 (a.x == b.x && a.y < b.y) ||
-                 (a.x == b.x && a.y == b.y && a.z < b.z));
-    }
-    */
     bool operator()(const vec3 &a, const vec3 &b) const
     {
-        //if(fabs(a.x - 100) < 1E-3 && fabs(b.x - 12.5) < 1E-3)
-        //    std::cout << "here" << std::endl;
 
         bool less = ( less_eps(a.x, b.x) ||
                     (equal_eps(a.x, b.x) &&  less_eps(a.y, b.y)) ||
                     (equal_eps(a.x, b.x) && equal_eps(a.y, b.y)  && less_eps(a.z, b.z)));
 
-        //if(less)
-        //   std::cout << a.toString() << " < " << b.toString() << std::endl;
 
         return less;
     }
@@ -507,18 +494,7 @@ TetMesh* CleaverMesherImp::createBackgroundMesh(bool verbose)
 
     // Create The Octree
     m_tree = createOctree();
-
-    //m_tree = createOctreeBottomUp();
-
-    // Respect Topology
-    //subdivideTreeToTopology();
-    /*
-    std::cout << "pass 2" << endl;
-    subdivideTreeToTopology();
-    std::cout << "pass 3" << endl;
-    subdivideTreeToTopology();
-    */
-
+	
     //conformOctreeToDomain();
     balanceOctreeNew();   // WORKS but looks like we really do need bottom up not top down
                           // A FIX however, is to store only leaves, and prune them as they split
@@ -541,13 +517,6 @@ TetMesh* CleaverMesherImp::createBackgroundMesh(bool verbose)
     // set state
     m_bBackgroundMeshCreated = true;
 
-    // TODO: Actually this can happen even for A Single Material
-    /*
-    if(m_volume->numberOfMaterials() > 2){
-        topologicalCleaving();
-        topologicalCleaving();
-    }
-    */
     m_bgMesh->writeNodeEle("background",verbose,false);
 
     return m_bgMesh;
@@ -575,7 +544,6 @@ void CleaverMesherImp::createBackgroundVerts()
         // Grab Cell and Bounds
         OTCell *cell = q.front();
 
-        //if(cell->celltype != OTCell::Outside){
 
             // if children, queue them instead
             if(cell->children[0]){
@@ -597,7 +565,6 @@ void CleaverMesherImp::createBackgroundVerts()
 
                 center->dual = true;
             }
-        //}
 
         q.pop();
     }
@@ -953,14 +920,6 @@ void CleaverMesherImp::adaptCell(OTCell *cell)
 
     BoundingBox bounds = cell->bounds;
 
-    /*
-    vec3 tx = vec3((bounds.center().x / m_volume->bounds().size.x)*m_sizingField->bounds().size.x,
-                   (bounds.center().y / m_volume->bounds().size.y)*m_sizingField->bounds().size.y,
-                   (bounds.center().z / m_volume->bounds().size.z)*m_sizingField->bounds().size.z);
-
-    float LFS = m_sizingField->valueAt(tx);
-    */
-
     double LFS = m_sizingOracle->getMinLFS(cell->xLocCode, cell->yLocCode, cell->zLocCode, cell->level);
 
     //
@@ -972,19 +931,7 @@ void CleaverMesherImp::adaptCell(OTCell *cell)
     if(cell->hasChildren()){
         for(int i=0; i < 8; i++)
         {
-            /*
-            // if cell is completely outside, done
-            if(cell->children[i]->bounds.minCorner().x > max_x ||
-                    cell->children[i]->bounds.minCorner().y > max_y ||
-                    cell->children[i]->bounds.minCorner().z > max_z)
-            {
-                cell->children[i]->celltype = OTCell::Outside;
-            }
-            */
-
-            //else{
                 adaptCell(cell->children[i]);
-            //}
         }
     }
 }
@@ -2128,8 +2075,6 @@ void CleaverMesherImp::sampleVolume(bool verbose)
         std::cout << " done." << std::endl;
 }
 
-//double alpha_init = 0.4f;  // was 0.2
-
 //================================================
 // - setAlphas()
 //================================================
@@ -2175,146 +2120,6 @@ void CleaverMesherImp::computeAlphas(bool verbose,
         if (regular) half_edge->alpha = half_edge->alpha_length;
     }
 
-    //---------------------------------------------------
-    // make alphas consistent around each vertex (method 0)
-    //---------------------------------------------------
-    /*
-    for(unsigned int v=0; v < m_bgMesh->verts.size(); v++)
-    {
-        Vertex *vertex = m_bgMesh->verts[v];
-
-        std::vector<HalfEdge*> adjEdges = m_bgMesh->edgesAroundVertex(vertex);
-        std::vector<vec3>      viol_points;
-        std::vector<Plane>     viol_planes;
-
-        // loop over adjacent edges and get violation point;
-
-        for(int e=0; e < adjEdges.size(); e++)
-        {
-            // get edge
-            HalfEdge *edge = adjEdges[e];
-
-            // make sure it points out
-            if(edge->vertex == vertex)
-                edge = edge->mate;
-
-            // compute violation point
-            vec3 origin = vertex->pos();
-            vec3 ray = edge->vertex->pos() - origin;
-            vec3 viol_pt = origin + alpha_init*ray;
-
-            // create plane from point and line(normal)
-            Plane plane(viol_pt, ray);
-
-            viol_points.push_back(viol_pt);
-            viol_planes.push_back(plane);
-        }
-
-            //if(viol_point_list.size() < 1000){
-            //    viol_point_list.push_back(e1_viol_pt);
-            //    viol_plane_list.push_back(plane);
-            //}
-
-        for(int e1=0; e1 < adjEdges.size(); e1++)
-        {
-            vec3 e1_viol_pt = viol_points[e1];
-            Plane plane = viol_planes[e1];
-
-           // clip other violations to within this plane
-            for(int e2=0; e2 < adjEdges.size(); e2++)
-            {
-                // skip self
-                if(e1 == e2)
-                    continue;
-
-                vec3 e2_viol_pt = viol_points[e2];
-
-                // if vertex and e2_viol_pt are not on same side of plane
-                // then neighbor edge violation must be clamped.
-                float s1 = plane.n.dot(vertex->pos()) + plane.d;
-                float s2 = plane.n.dot(e2_viol_pt)    + plane.d;
-                if(s1*s1 < 0)
-                {
-                    std::cout << "need to clip an alpha" << std::endl;
-                }
-            }
-        }
-    }
-    */
-
-    //---------------------------------------------------
-    // make alphas consistent around each vertex.
-    // (method 1) : Use min alpha (alpha ball)
-    //---------------------------------------------------
-    /*
-    double max_alpha_ratio_change = 0;
-    double max_alpha_absol_change = 0;
-    for(unsigned int v=0; v < m_bgMesh->verts.size(); v++)
-    {
-        Vertex *vertex = m_bgMesh->verts[v];
-
-        std::vector<HalfEdge*> adjEdges = m_bgMesh->edgesAroundVertex(vertex);
-
-        // obtain minimum length
-        float min_length = 0;
-        for(int e=0; e < adjEdges.size(); e++)
-        {
-            // get edge
-            HalfEdge *edge = adjEdges[e];
-
-            // make sure it points out
-            if(edge->vertex == vertex)
-                edge = edge->mate;
-
-            // compute violation point
-            Cleaver::vec3 origin = vertex->pos();
-            Cleaver::vec3 ray = edge->vertex->pos() - origin;
-
-            float viol_dist = m_alpha_init * length(ray);
-
-            if(viol_dist < min_length || e==0)
-            {
-                min_length = viol_dist;
-            }
-        }
-
-        // scale other adjacents to match min length
-        for(int e=0; e < adjEdges.size(); e++)
-        {
-            // get edge
-            HalfEdge *edge = adjEdges[e];
-
-            // make sure it points out
-            if(edge->vertex == vertex)
-                edge = edge->mate;
-
-            // compute violation point
-            vec3 origin = vertex->pos();
-            vec3 ray = edge->vertex->pos() - origin;
-
-            float alpha = min_length / length(ray);
-            edge->alpha = alpha;
-            edge->alpha_length = min_length;
-
-            float old_dist = m_alpha_init * length(ray);
-            float new_dist = alpha      * length(ray);
-
-            float ratio_change = 1.0 - (new_dist / old_dist);
-            float absol_change = new_dist - old_dist;
-
-            if(ratio_change > max_alpha_ratio_change)
-                max_alpha_ratio_change = ratio_change;
-            if(std::abs(absol_change) > std::abs(max_alpha_absol_change))
-                max_alpha_absol_change = absol_change;
-        }
-    }
-
-    std::cout << std::endl;
-    std::cout << "Max alpha reduction: " << max_alpha_ratio_change*100 << "%" << std::endl;
-    std::cout << "Max dist  reduction: " << max_alpha_absol_change << std::endl;
-
-    std::cout << "Following up with Altitude Fix" << std::endl;
-    */
     computeAlphasAlt();
 
 
@@ -2391,32 +2196,6 @@ void CleaverMesherImp::computeAlphasAlt(bool verbose)
         }
     }
 
-    //-----------------------------------------------
-    // Test If Vertex Ball Intrudes along Altitude
-    //-----------------------------------------------
-
-    // 1. build plane for altitude.
-    //    . formed from 3 pts, 1 on each alpha ball
-    //    . of the other three vertices. these pts
-    //    are the points on the balls closest to the
-    //    current vertex under consideration.
-
-    //vec3 v0;       // current vertex
-    //vec3 v1,v2,v3; // opposite vertices;
-
-    //double v1_alpha, v2_alpha, v3_alpha;
-
-    // get three points on the cutting plane
-    //vec3 p1 = v1_alpha*v0 + (1 - v1_alpha)*v1;
-    //vec3 p2 = v2_alpha*v0 + (1 - v1_alpha)*v2;
-    //vec3 p3 = v3_alpha*v0 + (1 - v1_alpha)*v3;
-
-    // p0 is found by dropping an altitude down onto the
-    // cutting plane, and moving a distance v0_alpha;
-
-    // construct cutting plane from points
-    // Plane cuttingPlane = Plane::throughPoints(p1, p2, p3);
-    //Plane vertexPlane  = Plane(p0, cuttingPlane.n);
 }
 
 //=====================================================
@@ -2594,28 +2373,6 @@ void CleaverMesherImp::computeLagrangePolynomial(const vec3 &p1, const vec3 &p2,
     coefficients[1] = c;
     coefficients[2] = b;
     coefficients[3] = a;
-
-    //----------------------------------------------------------------------------
-    // now do a sanity check, compute the 4 values with the interpolating spline
-    //----------------------------------------------------------------------------
-    /*
-    for(int i=0; i < 4; i++)
-    {
-        double x = p[i].x;
-        double xx = x*x;
-        double xxx = x*xx;
-
-        double y = a*xxx + b*xx + c*x + d;
-
-        if(std::abs(y - p[i].y) > 1E-5){
-            std::cerr << "Interpolation FAILED: " << y << " != " << p[i].y << std::endl;
-        }
-        else if(y != y)
-            std::cerr << "WOOPS!" << std::endl;
-        //else
-        //    std::cerr << y << " == " << p[i].y << std::endl;
-    }
-    */
 }
 
 //=====================================================
@@ -2827,125 +2584,7 @@ void CleaverMesherImp::computeCutForEdge(HalfEdge *edge)
         cut->order() = 1;
         return;
     }
-
-    /*
-    if(v1->dual && v2->dual)
-    {
-        //std::cout << "Computing a cut on a dual edge" << std::endl;
-
-        // first compute cut using v1 cell data
-        bool cell_1_cut = false;
-        vec3 cut1_pos;
-        Vertex *cut1 = NULL;
-        {
-            double tt = 0.4999;
-            vec3 p1 = v1->pos();
-            vec3 p2 = (1-tt)*v1->pos() + tt*v2->pos();
-
-            int a_mat = m_volume->maxAt(p1);
-            int b_mat = m_volume->maxAt(p2);
-
-            if(a_mat != b_mat)
-            {
-                cell_1_cut = true;
-                double a1 = m_volume->valueAt(p1, a_mat);
-                double a2 = m_volume->valueAt(p2, a_mat);
-                double b1 = m_volume->valueAt(p1, b_mat);
-                double b2 = m_volume->valueAt(p2, b_mat);
-                double top = (a1 - b1);
-                double bot = (b2 - a2 + a1 - b1);
-                double t = top / bot;
-
-                cut1 = new Vertex(m_volume->numberOfMaterials());
-                t = std::max(t, 0.0);
-                t = std::min(t, 1.0);
-                cut1->pos() = p1*(1-t) + p2*t;
-
-                cut1->closestGeometry = v1;
-
-                // doesn't really matter which
-                cut1->label = a_mat;
-                cut1->lbls[a_mat] = true;
-                cut1->lbls[b_mat] = true;
-                cut1->order() = 1;
-
-                // check violating condition
-                if (t <= edge->alpha)
-                    cut1->violating = true;
-                else
-                    cut1->violating = false;
-            }
-        }
-
-
-        // next  compute cut using v2 cell data
-        bool cell_2_cut = false;
-        vec3 cut2_pos;
-        Vertex *cut2 = NULL;
-        {
-            double tt = 0.4999;
-            vec3 p1 = v2->pos();
-            vec3 p2 = (1-tt)*v2->pos() + tt*v1->pos();
-
-            int a_mat = m_volume->maxAt(p1);
-            int b_mat = m_volume->maxAt(p2);
-
-            if(a_mat != b_mat)
-            {
-                cell_2_cut = true;
-                double a1 = m_volume->valueAt(p1, a_mat);
-                double a2 = m_volume->valueAt(p2, a_mat);
-                double b1 = m_volume->valueAt(p1, b_mat);
-                double b2 = m_volume->valueAt(p2, b_mat);
-                double top = (a1 - b1);
-                double bot = (b2 - a2 + a1 - b1);
-                double t = top / bot;
-
-                cut2 = new Vertex(m_volume->numberOfMaterials());
-                t = std::max(t, 0.0);
-                t = std::min(t, 1.0);
-                cut2->pos() = p1*(1-t) + p2*t;
-
-                cut2->closestGeometry = v2;
-
-                // doesn't really matter which
-                cut2->label = a_mat;
-                cut2->lbls[a_mat] = true;
-                cut2->lbls[b_mat] = true;
-                cut2->order() = 1;
-
-                // check violating condition
-                if (t <= edge->alpha)
-                    cut2->violating = true;
-                else
-                    cut2->violating = false;
-            }
-        }
-
-        if(cell_1_cut && cell_2_cut){
-            std::cout << "Uh oh, 2 cuts found on a dual edge, must split!" << std::endl;
-
-        }
-        else if(cell_1_cut){
-            // use cell 1 cut location
-            edge->cut = cut1;
-            edge->mate->cut = cut1;
-            delete cut2;
-            return;
-        }
-        else if(cell_2_cut){
-            // use cell 2 cut location
-            edge->cut = cut2;
-            edge->mate->cut = cut2;
-            delete cut1;
-            return;
-        }
-        else{
-            //std::cout << "No cut wtf" << std::endl;
-        }
-    }
-    */
-
+	
     //---- The Following is the STANDARD cut computation code
 
     int a_mat = v1->label;
@@ -2984,367 +2623,7 @@ void CleaverMesherImp::computeCutForEdge(HalfEdge *edge)
     edge->cut = cut;
     edge->mate->cut = cut;
     cut->order() = 1;
-
-    /*
-    {
-        double t1 = 0.000000;
-        double t2 = 0.333333;
-        double t3 = 0.666666;
-        double t4 = 1.000000;
-
-        vec3 x1 = (1-t1)*v1->pos() + t1*v2->pos();
-        vec3 x2 = (1-t2)*v1->pos() + t2*v2->pos();
-        vec3 x3 = (1-t3)*v1->pos() + t3*v2->pos();
-        vec3 x4 = (1-t4)*v1->pos() + t4*v2->pos();
-
-        double y1 = m_volume->valueAt(x1, a_mat) - m_volume->valueAt(x1, b_mat);
-        double y2 = m_volume->valueAt(x2, a_mat) - m_volume->valueAt(x2, b_mat);
-        double y3 = m_volume->valueAt(x3, a_mat) - m_volume->valueAt(x3, b_mat);
-        double y4 = m_volume->valueAt(x4, a_mat) - m_volume->valueAt(x4, b_mat);
-
-        vec3 p1 = vec3(t1, y1, 0.0);
-        vec3 p2 = vec3(t2, y2, 0.0);
-        vec3 p3 = vec3(t3, y3, 0.0);
-        vec3 p4 = vec3(t4, y4, 0.0);
-
-
-        double c[4];             // coefficients (a,b,c,d)
-        double s[3];             // solutions    (roots)
-        int num_roots = 0;
-
-        computeLagrangePolynomial(p1,p2,p3,p4,c);
-
-        if(c[3] == 0)
-            num_roots = SolveQuadric(c, s);
-        else
-            num_roots = SolveCubic(c, s);
-        clipRoots(s, num_roots);
-
-        if(num_roots != 1)
-        {
-            std::cout << "wow, unexpected for this dataset!" << std::endl;
-            std::cout << "roots = [";
-            for(int i=0; i < num_roots; i++)
-                std::cout << s[i] << ((i+1 < num_roots) ? ", " : "] ");
-            std::cout << std::endl;
-
-            std::cout << "Points: ["
-                      << "(" << t1 << "," << y1 << "),"
-                      << "(" << t2 << "," << y2 << "),"
-                      << "(" << t3 << "," << y3 << "),"
-                      << "(" << t4 << "," << y4 << ")]" << std::endl;
-            std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
-                      << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-            //exit(0);
-            badEdges.push_back(v1->pos());
-            badEdges.push_back(v2->pos());
-        }
-
-        double t_ab = s[0];
-        t_ab = std::max(t_ab, 0.0);
-        t_ab = std::min(t_ab, 1.0);
-
-        Vertex *cut = new Vertex(m_volume->numberOfMaterials());
-        cut->pos() = (1-t_ab)*v1->pos() + t_ab*v2->pos();
-
-        if(t_ab < 0.5)
-            cut->closestGeometry = v1;
-        else
-            cut->closestGeometry = v2;
-
-        // doesn't really matter which
-        cut->label = a_mat;
-        cut->lbls[v1->label] = true;
-        cut->lbls[v2->label] = true;
-
-        // check violating condition
-        if ((t_ab <= edge->alpha) || (t_ab >= (1 - edge->mate->alpha)))
-            cut->violating = true;
-        else
-            cut->violating = false;
-
-        edge->cut = cut;
-        edge->mate->cut = cut;
-        cut->order() = 1;
-    }
-    */
-
-
-
-
-    // Now Test If a 3rd material pops up, SANITY CHECK test
-    bool ac_crossing = false;
-    bool bc_crossing = false;
-
-    /*
-    if(m_volume->numberOfMaterials() > 2)
-    {        
-        double t_ac = -1;
-        double t_bc = -1;
-
-        // get 3rd material
-        int c_mat = -1;
-        for(int m=0; m < m_volume->numberOfMaterials(); m++){
-            if(m != a_mat && m != b_mat)
-            {
-                c_mat = m;
-                break;
-            }
-        }
-
-        // compute crossing parameter t_ac (a,c crossing)
-        {
-            double a1 = m_volume->valueAt(v1->pos(), a_mat);
-            double a2 = m_volume->valueAt(v2->pos(), a_mat);
-            double c1 = m_volume->valueAt(v1->pos(), c_mat);
-            double c2 = m_volume->valueAt(v2->pos(), c_mat);
-
-            // since a is definitely maximum on v1, can only
-            // be a crossing if c is greater than a on v2
-            if(c2 > a2)
-            {
-                double top = (a1 - c1);
-                double bot = (c2 - a2 + a1 - c1);
-                double t = top / bot;
-
-                vec3   pos = v1->pos()*(1-t) + v2->pos()*(t);
-                double ac  = a1*(1-t) + a2*(t);
-
-                if(ac >= m_volume->valueAt(pos, b_mat) && t >= 0.0 && t <= 1.0)
-                {
-                    ac_crossing = true;
-                    t_ac = t;
-                }
-            }
-        }
-
-        // compute crossing parameter t_bc (b,c crossing)
-        {
-            double c1 = m_volume->valueAt(v1->pos(), c_mat);
-            double c2 = m_volume->valueAt(v2->pos(), c_mat);
-            double b1 = m_volume->valueAt(v1->pos(), b_mat);
-            double b2 = m_volume->valueAt(v2->pos(), b_mat);
-
-            // since b is definitely maximum on v2, can only
-            // be a crossing if c is greater than b on v1
-            if(c1 > b1)
-            {
-                double top = (c1 - b1);
-                double bot = (b2 - c2 + c1 - b1);
-                double t = top / bot;
-
-                vec3   pos = v1->pos()*(1-t) + v2->pos()*(t);
-                double bc  = c1*(1-t) + c2*(t);
-
-                if(bc >= m_volume->valueAt(pos, a_mat) && t >= 0.0 && t <= 1.0)
-                {
-                    bc_crossing = true;
-                    t_bc = t;
-                }
-            }
-        }
-
-        // if 3rd material pops up, handle it
-        if(ac_crossing && bc_crossing){
-            std::cout << "Sanity FAIL - Computing Multiple Crossings on Edge!" << std::endl;
-            std::cout << "\tv1 = " << v1->pos().toString() << std::endl;
-            std::cout << "\tv2 = " << v2->pos().toString() << std::endl;
-
-            badEdges.push_back(v1->pos());
-            badEdges.push_back(v2->pos());
-        }
-    }
-    */
-
-    /*
-    // Now Test If a 3rd material pops up, SANITY CHECK test
-    if(m_volume->numberOfMaterials() > 2)// && !ac_crossing && bc_crossing)
-    {
-        double t_ac = -1;
-        double t_bc = -1;
-
-        // get 3rd material
-        int c_mat = -1;
-        for(int m=0; m < m_volume->numberOfMaterials(); m++){
-            if(m != a_mat && m != b_mat)
-            {
-                c_mat = m;
-                break;
-            }
-        }
-
-        double t1 = 0.000000;
-        double t2 = 0.333333;
-        double t3 = 0.666666;
-        double t4 = 1.000000;
-
-        vec3 x1 = (1-t1)*v1->pos() + t1*v2->pos();
-        vec3 x2 = (1-t2)*v1->pos() + t2*v2->pos();
-        vec3 x3 = (1-t3)*v1->pos() + t3*v2->pos();
-        vec3 x4 = (1-t4)*v1->pos() + t4*v2->pos();
-
-        // compute crossing parameter t_ac (a,c crossing)
-        {
-            double a1 = m_volume->valueAt(v1->pos(), a_mat);
-            double a2 = m_volume->valueAt(v2->pos(), a_mat);
-            double c1 = m_volume->valueAt(v1->pos(), c_mat);
-            double c2 = m_volume->valueAt(v2->pos(), c_mat);
-
-            // since a is definitely maximum on v1, can only
-            // be a crossing if c is greater than a on v2
-            if(c2 > a2)
-            {
-                double y1 = m_volume->valueAt(x1, a_mat) - m_volume->valueAt(x1, c_mat);
-                double y2 = m_volume->valueAt(x2, a_mat) - m_volume->valueAt(x2, c_mat);
-                double y3 = m_volume->valueAt(x3, a_mat) - m_volume->valueAt(x3, c_mat);
-                double y4 = m_volume->valueAt(x4, a_mat) - m_volume->valueAt(x4, c_mat);
-
-                vec3 p1 = vec3(t1, y1, 0.0);
-                vec3 p2 = vec3(t2, y2, 0.0);
-                vec3 p3 = vec3(t3, y3, 0.0);
-                vec3 p4 = vec3(t4, y4, 0.0);
-
-
-                double c[4];             // coefficients (a,b,c,d)
-                double s[3];             // solutions    (roots)
-                int num_roots = 0;
-
-                computeLagrangePolynomial(p1,p2,p3,p4,c);
-
-                if(c[3] == 0)
-                    num_roots = SolveQuadric(c, s);
-                else
-                    num_roots = SolveCubic(c, s);
-                clipRoots(s, num_roots);
-
-                if(num_roots != 1)
-                {
-                    std::cout << "wow, unexpected for this dataset!" << std::endl;
-                    std::cout << "roots = [";
-                    for(int i=0; i < num_roots; i++)
-                        std::cout << s[i] << ((i+1 < num_roots) ? ", " : "] ");
-                    std::cout << std::endl;
-
-                    std::cout << "Points: ["
-                              << "(" << t1 << "," << y1 << "),"
-                              << "(" << t2 << "," << y2 << "),"
-                              << "(" << t3 << "," << y3 << "),"
-                              << "(" << t4 << "," << y4 << ")]" << std::endl;
-                    std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
-                              << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-                    //exit(0);
-                    badEdges.push_back(v1->pos());
-                    badEdges.push_back(v2->pos());
-                }
-
-                t_ac = s[0];
-
-                vec3 pos = (1-t_ac)*v1->pos() + t_ac*v2->pos();
-
-                double ac = m_volume->valueAt(pos, a_mat);
-                double  b = m_volume->valueAt(pos, b_mat);
-                if(ac >= b && t_ac >= 0.0 && t_ac <= 1.0)
-                {
-                    ac_crossing = true;
-                }
-            }
-        }
-
-        // compute crossing parameter t_bc (b,c crossing)
-        {
-            double c1 = m_volume->valueAt(v1->pos(), c_mat);
-            double c2 = m_volume->valueAt(v2->pos(), c_mat);
-            double b1 = m_volume->valueAt(v1->pos(), b_mat);
-            double b2 = m_volume->valueAt(v2->pos(), b_mat);
-
-            // since b is definitely maximum on v2, can only
-            // be a crossing if c is greater than b on v1
-            if(c1 > b1)
-            {
-                double y1 = m_volume->valueAt(x1, b_mat) - m_volume->valueAt(x1, c_mat);
-                double y2 = m_volume->valueAt(x2, b_mat) - m_volume->valueAt(x2, c_mat);
-                double y3 = m_volume->valueAt(x3, b_mat) - m_volume->valueAt(x3, c_mat);
-                double y4 = m_volume->valueAt(x4, b_mat) - m_volume->valueAt(x4, c_mat);
-
-                vec3 p1 = vec3(t1, y1, 0.0);
-                vec3 p2 = vec3(t2, y2, 0.0);
-                vec3 p3 = vec3(t3, y3, 0.0);
-                vec3 p4 = vec3(t4, y4, 0.0);
-
-
-                double c[4];             // coefficients (a,b,c,d)
-                double s[3];             // solutions    (roots)
-                int num_roots = 0;
-
-                computeLagrangePolynomial(p1,p2,p3,p4,c);
-
-                if(c[3] == 0)
-                    num_roots = SolveQuadric(c, s);
-                else
-                    num_roots = SolveCubic(c, s);
-                clipRoots(s, num_roots);
-
-                if(num_roots != 1)
-                {
-                    std::cout << "wow, unexpected for this dataset!" << std::endl;
-                    std::cout << "roots = [";
-                    for(int i=0; i < num_roots; i++)
-                        std::cout << s[i] << ((i+1 < num_roots) ? ", " : "] ");
-                    std::cout << std::endl;
-
-                    std::cout << "Points: ["
-                              << "(" << t1 << "," << y1 << "),"
-                              << "(" << t2 << "," << y2 << "),"
-                              << "(" << t3 << "," << y3 << "),"
-                              << "(" << t4 << "," << y4 << ")]" << std::endl;
-                    std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
-                              << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-                    //exit(0);
-                    badEdges.push_back(v1->pos());
-                    badEdges.push_back(v2->pos());
-                }
-
-                t_bc = s[0];
-
-                vec3 pos = (1-t_bc)*v1->pos() + t_bc*v2->pos();
-
-                double bc = m_volume->valueAt(pos, b_mat);
-                double  a = m_volume->valueAt(pos, a_mat);
-                if(bc >= a && t_bc >= 0.0 && t_bc <= 1.0)
-                {
-                    bc_crossing = true;
-                }
-            }
-        }
-
-        // if 3rd material pops up, handle it
-        if(ac_crossing && bc_crossing){
-            std::cout << "Improved Sanity FAIL - Computing Multiple Crossings on Edge!" << std::endl;
-            std::cout << "\tv1 = " << v1->pos().toString() << v1->order() << std::endl;
-            std::cout << "\tv2 = " << v2->pos().toString() << v2->order() << std::endl;
-            std::cout << "\tt_ac = " << t_ac << std::endl;
-            std::cout << "\tt_bc = " << t_bc << std::endl;
-
-            badEdges.push_back(v1->pos());
-            badEdges.push_back(v2->pos());
-        }
-    }
-    */
 }
-
-/*
-void construct_plane(const vec3 &p1, const vec3 &p2, const vec3 &p3, float &a, float &b, float &c, float &d)
-{
-    vec3 n = normalize(((p2 - p1).cross(p3 - p1)));
-    a = (float)n.x;
-    b = (float)n.y;
-    c = (float)n.z;
-    d = (float)-n.dot(p1);
-}
-*/
 
 void CleaverMesherImp::computeTopologicalCutForEdge2(HalfEdge *edge)
 {
@@ -3362,8 +2641,6 @@ void CleaverMesherImp::computeTopologicalCutForEdge2(HalfEdge *edge)
     edge->evaluated = true;
     edge->mate->evaluated = true;
 
-    // TODO: Strictly speaking, could still have a material popup, even if the SAME lable.
-    //       REMOVE THIS CHECK WHEN READY
     // do labels differ?
     if(v1->label == v2->label)
         return;
@@ -3852,17 +3129,6 @@ void CleaverMesherImp::computeTripleForFace(HalfFace *face)
     if(face->mate)
         face->mate->evaluated = true;
 
-    //------------------------------------------------------------------------
-    // THIS CODE SHOULD NOT BE HERE - DEBUGGING CODE ONLY - REMOVE IMMEDIATELY (start)
-    //------------------------------------------------------------------------
-    /*
-    if(!face->halfEdges[0] || !face->halfEdges[1] || !face->halfEdges[2])
-        return;
-    */
-    //------------------------------------------------------------------------
-    // THIS CODE SHOULD NOT BE HERE - DEBUGGING CODE ONLY - REMOVE IMMEDIATELY (end)
-    //------------------------------------------------------------------------
-
     // only continue if 3 cuts exist
     if(!face->halfEdges[0]->cut || !face->halfEdges[1]->cut || !face->halfEdges[2]->cut)
         return;
@@ -3941,19 +3207,6 @@ void CleaverMesherImp::computeTripleForFace(HalfFace *face)
 
     if(axis == 1)
     {
-        /*
-        vec3 p1_m1 = vec3(v1->pos().x, m_volume->valueAt(v1->pos(), m1), v1->pos().z);
-        vec3 p2_m1 = vec3(v2->pos().x, m_volume->valueAt(v2->pos(), m1), v2->pos().z);
-        vec3 p3_m1 = vec3(v3->pos().x, m_volume->valueAt(v3->pos(), m1), v3->pos().z);
-
-        vec3 p1_m2 = vec3(v1->pos().x, m_volume->valueAt(v1->pos(), m2), v1->pos().z);
-        vec3 p2_m2 = vec3(v2->pos().x, m_volume->valueAt(v2->pos(), m2), v2->pos().z);
-        vec3 p3_m2 = vec3(v3->pos().x, m_volume->valueAt(v3->pos(), m2), v3->pos().z);
-
-        vec3 p1_m3 = vec3(v1->pos().x, m_volume->valueAt(v1->pos(), m3), v1->pos().z);
-        vec3 p2_m3 = vec3(v2->pos().x, m_volume->valueAt(v2->pos(), m3), v2->pos().z);
-        vec3 p3_m3 = vec3(v3->pos().x, m_volume->valueAt(v3->pos(), m3), v3->pos().z);
-        */
 
         vec3 p1_m1 = vec3(v1->pos().y, m_volume->valueAt(v1->pos(), m1), v1->pos().z);
         vec3 p2_m1 = vec3(v2->pos().y, m_volume->valueAt(v2->pos(), m1), v2->pos().z);
@@ -3967,10 +3220,6 @@ void CleaverMesherImp::computeTripleForFace(HalfFace *face)
         vec3 p2_m3 = vec3(v2->pos().y, m_volume->valueAt(v2->pos(), m3), v2->pos().z);
         vec3 p3_m3 = vec3(v3->pos().y, m_volume->valueAt(v3->pos(), m3), v3->pos().z);
 
-
-        //construct_plane(p1_m1, p2_m1, p3_m1, a1,b1,c1,d1);
-        //construct_plane(p1_m2, p2_m2, p3_m2, a2,b2,c2,d2);
-        //construct_plane(p1_m3, p2_m3, p3_m3, a3,b3,c3,d3);
         Plane plane1 = Plane::throughPoints(p1_m1, p2_m1, p3_m1);
         Plane plane2 = Plane::throughPoints(p1_m2, p2_m2, p3_m2);
         Plane plane3 = Plane::throughPoints(p1_m3, p2_m3, p3_m3);
@@ -4026,9 +3275,6 @@ void CleaverMesherImp::computeTripleForFace(HalfFace *face)
         vec3 p2_m3 = vec3(v2->pos().x, m_volume->valueAt(v2->pos(), m3), v2->pos().z);
         vec3 p3_m3 = vec3(v3->pos().x, m_volume->valueAt(v3->pos(), m3), v3->pos().z);
 
-        //construct_plane(p1_m1, p2_m1, p3_m1, a1,b1,c1,d1);
-        //construct_plane(p1_m2, p2_m2, p3_m2, a2,b2,c2,d2);
-        //construct_plane(p1_m3, p2_m3, p3_m3, a3,b3,c3,d3);
         Plane plane1 = Plane::throughPoints(p1_m1, p2_m1, p3_m1);
         Plane plane2 = Plane::throughPoints(p1_m2, p2_m2, p3_m2);
         Plane plane3 = Plane::throughPoints(p1_m3, p2_m3, p3_m3);
@@ -4062,8 +3308,6 @@ void CleaverMesherImp::computeTripleForFace(HalfFace *face)
         bool success = plane_intersect(v1, v2, v3, origin, ray, result);
         if(!success)
         {
-            //std::cout << "Failed to Project Triple BACK into 3D. Using barycenter: " << std::endl;
-            //result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
             //axis = 3;
             std::cout << "Failed Axis==2, the most likely candidate to succeeed..." << std::endl;
             exit(0);
@@ -4083,10 +3327,6 @@ void CleaverMesherImp::computeTripleForFace(HalfFace *face)
         vec3 p2_m3 = vec3(v2->pos().x, m_volume->valueAt(v2->pos(), m3), v2->pos().y);
         vec3 p3_m3 = vec3(v3->pos().x, m_volume->valueAt(v3->pos(), m3), v3->pos().y);
 
-        //cout << "axis 3" << endl;
-        //construct_plane(p1_m1, p2_m1, p3_m1, a1,b1,c1,d1);
-        //construct_plane(p1_m2, p2_m2, p3_m2, a2,b2,c2,d2);
-        //construct_plane(p1_m3, p2_m3, p3_m3, a3,b3,c3,d3);
         Plane plane1 = Plane::throughPoints(p1_m1, p2_m1, p3_m1);
         Plane plane2 = Plane::throughPoints(p1_m2, p2_m2, p3_m2);
         Plane plane3 = Plane::throughPoints(p1_m3, p2_m3, p3_m3);
@@ -4120,8 +3360,6 @@ void CleaverMesherImp::computeTripleForFace(HalfFace *face)
         bool success = plane_intersect(v1, v2, v3, origin, ray, result);
         if(!success)
         {
-            //std::cout << "Failed to Project Triple BACK into 3D. Using barycenter: " << std::endl;
-            //result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
             std::cout << "Failed Axis==3, the most likely candidate to succeeed..." << std::endl;
             exit(0);
         }
@@ -4455,151 +3693,10 @@ void CleaverMesherImp::computeTopologicalTripleForFace(HalfFace *face)
                 t_bc += 1E-2;
                 edge_with_3_mats->cut->pos() = (1-t_bc)*near->pos() + t_bc*far->pos();
             }
-
-
-            //-------------------------------------------------------------------------
-            // previous logic created missing phantom cuts and then
-            //-------------------------------------------------------------------------
-            // added a triple point
-            // is edge1 missing a cut? if so, create it
-            /*
-            if(!edge_with_1_mats->cut)
-            {
-                Vertex *cut = new Vertex(m_volume->numberOfMaterials());
-                Vertex *v1 = edge_with_1_mats->vertex;
-                Vertex *v2 = edge_with_1_mats->mate->vertex;
-                double tt = 0.5;
-                cut->order() = 1;
-                cut->pos() = v1->pos()*(1-tt) + v2->pos()*tt;
-                cut->phantom = true;
-                cut->label = v1->label;
-                cut->lbls[v1->label] = true;
-
-                edge_with_1_mats->cut = cut;
-                edge_with_1_mats->mate->cut = cut;
-            }
-            */
-
-            // is edge2 missing a cut? If so, create it
-            /*
-            if(!edge_with_2_mats->cut)
-            {
-                Vertex *cut = new Vertex(m_volume->numberOfMaterials());
-                Vertex *v1 = edge_with_2_mats->vertex;
-                Vertex *v2 = edge_with_2_mats->mate->vertex;
-                double tt = 0.5;
-                cut->order() = 1;
-                cut->pos() = v1->pos()*(1-tt) + v2->pos()*tt;
-                cut->phantom = true;
-                cut->label = v1->label;
-                cut->lbls[v1->label] = true;
-
-                edge_with_2_mats->cut = cut;
-                edge_with_2_mats->mate->cut = cut;
-            }
-            */
-
-            //------------------------------------------------------
-            // Now Create The Topological Triple
-            //------------------------------------------------------
-            /*
-            vec3 triple_pos = edge_with_3_mats->cut->pos();
-
-            Vertex *triple = new Vertex(m_volume->numberOfMaterials());
-            triple->pos() = triple_pos;
-            triple->lbls[face->halfEdges[0]->vertex->label] = true;
-            triple->lbls[face->halfEdges[1]->vertex->label] = true;
-            triple->lbls[face->halfEdges[2]->vertex->label] = true;
-            triple->order() = TRIP;
-            triple->violating = false;
-            triple->closestGeometry = NULL;
-            face->triple = triple;
-            if(face->mate)
-                face->mate->triple = triple;
-
-            checkIfTripleViolatesVertices(face);
-            */
         }
 
         return;
 
-        // 3-mate case requires no triple, but does require a phantom cut
-        /*
-        else if(mat_count == 3)
-        {
-
-            //------------------------------------------------
-            // First, determine which edge is the 3-mat edge
-            //------------------------------------------------
-            HalfEdge *edge_with_3_mats = NULL;
-            int e3 = -1;
-
-            for(int e=0; e < 3; e++)
-            {
-                if(face->halfEdges[e]->cut && !face->halfEdges[e]->cut->phantom)
-                {
-                    edge_with_3_mats = face->halfEdges[e];
-                    e3 = e;
-                    break;
-                }
-            }
-
-            // sanity check
-            if(e3 < 0 && top_count > 0){
-                std::cout << "Couldn't find topological crossing edge. Aborting." << std::endl;
-                exit(14);
-            }
-
-            //------------------------------------------------------
-            // check, does a phantom cut exist on either edge yet?
-            // if not, create them both
-            //------------------------------------------------------
-            /*
-            vec3 triple_pos = vec3::zero;
-
-            for(int e=0; e < 3; e++)
-            {
-                if((e != e3) && (!face->halfEdges[e]->cut))
-                {
-                    Vertex *cut = new Vertex(m_volume->numberOfMaterials());
-                    Vertex *v1 = face->halfEdges[e]->vertex;
-                    Vertex *v2 = face->halfEdges[e]->mate->vertex;
-                    double tt = 0.5;
-                    cut->order() = 1;
-                    cut->pos() = v1->pos()*(1-tt) + v2->pos()*tt;
-                    cut->phantom = true;
-                    cut->label = v1->label;
-                    cut->lbls[v1->label] = true;
-
-                    face->halfEdges[e]->cut = cut;
-                    face->halfEdges[e]->mate->cut = cut;
-
-                    triple_pos += 0.5*cut->pos();
-                }
-            }
-
-            //------------------------------------------------------
-            // Now Create The Topological Triple
-            //------------------------------------------------------
-            {
-                Vertex *triple = new Vertex(m_volume->numberOfMaterials());
-                triple->pos() = triple_pos;
-                triple->lbls[face->halfEdges[0]->vertex->label] = true;
-                triple->lbls[face->halfEdges[1]->vertex->label] = true;
-                triple->lbls[face->halfEdges[2]->vertex->label] = true;
-                triple->order() = TRIP;
-                triple->violating = false;
-                triple->closestGeometry = NULL;
-                face->triple = triple;
-                if(face->mate)
-                    face->mate->triple = triple;
-
-                checkIfTripleViolatesVertices(face);
-            }            
-
-            // if not, make one on vertex connected to both edges opposite topological cut
-        }
-        */
 
     }
 }
@@ -5272,136 +4369,6 @@ void CleaverMesherImp::generalizeTets(bool verbose)
             if(tet->quadruple->order() < 0)
                 std::cerr << "GOT YA!" << std::endl;
 
-            /*
-            // begin alternative approach (appears to not work properly)
-            //------------------------------
-            // determine virtual edge cuts
-            //------------------------------
-            for(int e=0; e < 6; e++)
-            {
-                if(edges[e]->cut == NULL)
-                {
-                    // todo, precompute parity or remove from edge storage
-                    bool parity = (edges[e]->vertex->tm_v_index > edges[e]->mate->vertex->tm_v_index);
-                    if(parity){
-                        edges[e]->parity       = true;
-                        edges[e]->cut       = edges[e]->vertex;
-                        edges[e]->mate->cut = edges[e]->vertex;
-                    }
-                    else{
-                        edges[e]->mate->parity = true;
-                        edges[e]->cut       = edges[e]->mate->vertex;
-                        edges[e]->mate->cut = edges[e]->mate->vertex;
-                    }
-                }
-            }
-
-            //------------------------------
-            // determine virtual face cuts
-            //------------------------------
-            for(int f=0; f < 4; f++)
-            {
-                if(faces[f]->triple == NULL)
-                {
-                    HalfEdge *fedges[3];
-                    Vertex   *fverts[3];
-
-                    m_bgMesh->getAdjacencyListsForFace(faces[f], fverts, fedges);
-
-                    int hole_count=0,index=0;
-                    for(int e=0; e < 3; e++)
-                    {
-                        if(fedges[e]->cut->order() == VERT){
-                            hole_count++;
-                            index = e;
-                        }
-                    }
-                    // if 0-cuts, move to highest ranking vert
-                    if(hole_count == 3)
-                    {
-                        int max_count = 0;
-                        for(int v=0; v < 3; v++)
-                        {
-                            if(fverts[v]->tm_v_index > fverts[max_count]->tm_v_index)
-                                max_count = v;
-                        }
-
-                        faces[f]->triple = fverts[max_count];
-                    }
-                    // else look at parity on the zero order edge
-                    else if(hole_count == 1)
-                    {
-                        if(fedges[index]->parity)
-                            faces[f]->triple = fedges[(index+1)%3]->cut;
-                        else
-                            faces[f]->triple = fedges[(index+2)%3]->cut;
-                    }
-                    else{
-                        std::cerr << "Fatal Error: Impossible Cut Count (hole_count = " << hole_count << ")" << std::endl;
-                    }
-                }
-            }
-
-            //------------------------------
-            // determine virtual quadruple
-            //------------------------------
-            if(tet->quadruple == NULL)
-            {              
-                std::map<Vertex*, int> triple_counts;
-                for(int f=0; f < 4; f++)
-                    triple_counts[faces[f]->triple] = 0;
-                for(int f=0; f < 4; f++)
-                    triple_counts[faces[f]->triple] += 1;
-                Vertex *destination = NULL;
-                int max_count = -1;
-                for(std::map<Vertex*,int>::iterator ii=triple_counts.begin(); ii != triple_counts.end(); ++ii)
-                {
-                    if(ii->second > max_count){
-                        max_count = ii->second;
-                        destination = ii->first;
-                    }
-                }                
-
-                tet->quadruple = destination;             
-            }
-            */
-
-            // if 0-cut, move to vertex with most triples (3?)
-            // if 3-cut, move to edge with most triples (2)
-            // if 4-cut, move to edge with most triples (2)
-            // if 5-cut, move to face with both triples on its edges (2)
-            // if 6-cut, there should already exist a quadpoint
-            // Q: Can these rules fit into a single algorithm?
-            // A: Count coinciding triples, take one that repeats most
-
-            /* old code below
-            if(tet->quadruple == NULL)
-            {
-                int hole_count=0,index=0;
-                for(int f=0; f < 4; f++)
-                {
-                    if(faces[f]->triple->order() == VERT){
-                        hole_count++;
-                        index = f;
-                    }
-                }
-                // if 0-triples, move to highest ranking vert
-                if(hole_count == 4)
-                {
-                    int max_count = 0;
-                    for(int v=0; v < 4; v++)
-                    {
-                        if(verts[v]->tm_v_index > verts[max_count]->tm_v_index)
-                            max_count = v;
-                    }
-
-                    tet->quadruple = verts[max_count];
-                }
-                else{
-
-                }
-            }
-            */
         }
     }
 
@@ -5433,7 +4400,6 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
         //------------------------------
         // if no quad, start generalization
         //------------------------------
-        //if(tet && !tet->quadruple)
         {
             // look up generalization
             Vertex *verts[4];
@@ -5491,7 +4457,6 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
                         exit(19);
                         // technically this case should never happen, but if
                         // it does, let's just make a triple point in the center
-                        //faces[f]->triple = e[0]->cut;
                         faces[f]->triple = new Vertex(m_volume->numberOfMaterials());
                         faces[f]->triple->pos() = (1.0/3.0)*(v[0]->pos() + v[1]->pos() + v[2]->pos());
                         faces[f]->triple->order() = TRIP;
@@ -5543,23 +4508,9 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
                                 else
                                     op = en1->mate->vertex;
 
-                                // if both virtual cuts went to vertex
-                                // opposite the edge with real cut, go there
-                                /*
-                                if(en1->cut == op || en2->cut == op)
-                                {
-                                    faces[f]->triple = op;
-                                    if(faces[f]->mate)
-                                        faces[f]->mate->triple = op;
-                                }
-                                // otherwise go to the edge cut
-                                */
-                                //else
-                                {
-                                    faces[f]->triple = e[i]->cut;
-                                    if(faces[f]->mate)
-                                        faces[f]->mate->triple = e[i]->cut;
-                                }
+                                faces[f]->triple = e[i]->cut;
+                                if(faces[f]->mate)
+                                    faces[f]->mate->triple = e[i]->cut;
                                 if(faces[f]->triple == NULL){
                                     std::cerr << "triple block with vcount=2 failed!" << std::endl;
                                     exit(12321);
@@ -5567,7 +4518,6 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
 
                                 break;
                             }
-                        //}
                         }
                         case_is_v2 = true;
                     }
@@ -5607,18 +4557,6 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
                         if(edges[e]->cut && edges[e]->cut->order() == CUT)
                             tet->quadruple = edges[e]->cut;
                     }
-                    // Just make it and see if this finishes
-                    /*
-                    tet->quadruple = new Vertex(m_volume->numberOfMaterials());
-                    tet->quadruple->pos() = (1.0/4.0)*(verts[0]->pos() + verts[1]->pos() + verts[2]->pos() + verts[3]->pos());
-                    tet->quadruple->order() = QUAD;
-                    tet->quadruple->lbls[verts[0]->label] = true;
-                    tet->quadruple->lbls[verts[1]->label] = true;
-                    tet->quadruple->lbls[verts[2]->label] = true;
-                    tet->quadruple->lbls[verts[3]->label] = true;
-                    tet->quadruple->violating = false;
-                    tet->quadruple->closestGeometry = NULL;
-                    */
                 }
                 else if(cut_count == 2)
                 {
@@ -5654,19 +4592,6 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
                         tet->quadruple = faces[0]->triple;
 
                     }
-
-                    // Just make it and see if this finishes
-                    /*
-                    tet->quadruple = new Vertex(m_volume->numberOfMaterials());
-                    tet->quadruple->pos() = (1.0/4.0)*(verts[0]->pos() + verts[1]->pos() + verts[2]->pos() + verts[3]->pos());
-                    tet->quadruple->order() = QUAD;
-                    tet->quadruple->lbls[verts[0]->label] = true;
-                    tet->quadruple->lbls[verts[1]->label] = true;
-                    tet->quadruple->lbls[verts[2]->label] = true;
-                    tet->quadruple->lbls[verts[3]->label] = true;
-                    tet->quadruple->violating = false;
-                    tet->quadruple->closestGeometry = NULL;
-                    */
                 }
                 else if(cut_count == 3)
                 {
@@ -5679,56 +4604,6 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
                         tet->quadruple = faces[1]->triple;
                     else if(faces[2]->triple == faces[3]->triple)
                         tet->quadruple = faces[2]->triple;
-                    else{
-
-                        // Just make it and see if this finishes
-                        /*
-                        tet->quadruple = new Vertex(m_volume->numberOfMaterials());
-                        tet->quadruple->pos() = (1.0/4.0)*(verts[0]->pos() + verts[1]->pos() + verts[2]->pos() + verts[3]->pos());
-                        tet->quadruple->order() = QUAD;
-                        tet->quadruple->lbls[verts[0]->label] = true;
-                        tet->quadruple->lbls[verts[1]->label] = true;
-                        tet->quadruple->lbls[verts[2]->label] = true;
-                        tet->quadruple->lbls[verts[3]->label] = true;
-                        tet->quadruple->violating = false;
-                        tet->quadruple->closestGeometry = NULL;
-                        */
-
-                        // take quadruple to central edge of connected component of cut edges
-                        /*
-                        HalfEdge *pe[3]; int idx=0;
-
-                        for(int e=0; e < 6; e++){
-                            if(edges[e]->cut->order() == CUT)
-                                pe[idx++] = edges[e];
-                        }
-                        for(int e=0; e < 3; e++){
-                            int common_count = 0;
-                            if(pe[e]->vertex == pe[(e+1)%3]->vertex)
-                                common_count++;
-                            if(pe[e]->mate->vertex == pe[(e+1)%3]->vertex)
-                                common_count++;
-                            if(pe[e]->vertex == pe[(e+1)%3]->mate->vertex)
-                                common_count++;
-                            if(pe[e]->mate->vertex == pe[(e+1)%3]->mate->vertex)
-                                common_count++;
-                            if(pe[e]->vertex == pe[(e+2)%3]->vertex)
-                                common_count++;
-                            if(pe[e]->mate->vertex == pe[(e+2)%3]->vertex)
-                                common_count++;
-                            if(pe[e]->vertex == pe[(e+2)%3]->mate->vertex)
-                                common_count++;
-                            if(pe[e]->mate->vertex == pe[(e+2)%3]->mate->vertex)
-                                common_count++;
-
-                            if(common_count == 2){
-                                tet->quadruple = pe[e]->cut;
-                                break;
-                            }
-                        }
-                        */
-                        //
-                    }
                 }
                 else if(cut_count == 4)
                 {
@@ -5793,14 +4668,6 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
             }
 
             if(cut_count == 3){
-                /*
-                std::cerr << "3-cuts: ";
-                for(int e=0; e < 6; e++){
-                    if(edges[e]->cut->order() == CUT)
-                        std::cerr << "c" << e+1 << ", ";
-                }
-                std::cerr << std::endl;
-                */
 
                 bool around_v1 = false;
                 bool around_v2 = false;
@@ -5815,46 +4682,8 @@ void CleaverMesherImp::generalizeTopologicalTets(bool verbose)
                     around_v3 = true;
                 if(edges[2]->cut->order() == CUT && edges[4]->cut->order() == CUT && edges[5]->cut->order() == CUT)
                     around_v4 = true;
+			}
 
-                //if(/*!around_v1 &&*/ !around_v2 && !around_v3 && !around_v4)
-                //    tet->quadruple = NULL;
-            }
-
-            /*
-            if(false && case_is_v2)
-            {
-                if(true && cut_count != 1){
-                    tet->quadruple = NULL;
-                    for(int e=0; e < 6; e++){
-                        if(edges[e]->cut->order() != CUT){
-                            edges[e]->cut = NULL;
-                            edges[e]->mate->cut = NULL;
-                        }
-                    }
-                    for(int f=0; f < 4; f++){
-                        if(faces[f]->triple->order() != TRIP){
-                            faces[f]->triple = NULL;
-                            if(faces[f]->mate)
-                                faces[f]->mate->triple = NULL;
-                        }
-                    }
-
-                }
-                else{
-                    std::cerr << "2 virtual cuts on face case: " << std::endl;
-                    std::cerr << "v1, v2, v3, v4, ";
-                    for(int e=0; e < 6; e++){
-                        if(edges[e]->cut->order() == CUT)
-                            std::cerr << "c" << e+1 << ", ";
-                    }
-                    for(int f=0; f < 4; f++){
-                        if(faces[f]->triple && faces[f]->triple->order() == TRIP)
-                            std::cerr << "t" << t+1 << ", ";
-                    }
-                    std::cerr << std::endl;
-                }
-            }
-            */
 
 
             if(tet->quadruple == NULL)
@@ -6499,22 +5328,6 @@ void CleaverMesherImp::snapAndWarpForViolatedVertex(Vertex *vertex)
             part_faces[f]->triple->pos_next() = projectTriple(part_faces[f], q, vertex, warp_point);
             conformTriple(part_faces[f], vertex, warp_point);
         }
-
-        // Sanity Check for NaN
-        /*
-        if(part_faces[f]->triple->pos_next() != part_faces[f]->triple->pos_next())
-        {
-            std::cerr << "Fatal Error:  Triplepoint set to NaN: Failed to project triple using InnerTet." << std::endl;
-            exit(1445);
-        }
-
-        // Sanity Check for Zero
-        if(part_faces[f]->triple->pos_next() == vec3::zero)
-        {
-            std::cerr << "Fatal Error:  Triplepoint set to vec3::zero == (0,0,0)" << std::endl;
-            exit(1452);
-        }
-        */
     }
 
 
@@ -7867,14 +6680,6 @@ void CleaverMesherImp::stencilBackgroundTets(bool verbose)
             }
 
         }
-
-        // sanity check
-        /*
-        for(int v=0; v < 4; v++){
-            if(tet->verts[v]->tm_v_index < 0)
-                std::cerr << "WTF!!" << std::endl;
-        }
-        */
     }
 
 
