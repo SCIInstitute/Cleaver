@@ -123,7 +123,7 @@ IF(Teem_ZLIB)
   ELSE(ZLIB_FOUND)
     # We need to set this as a cache variable, so that it will show up as
     # being turned off in the cache.
-    MESSAGE(SEND_ERROR "Turning off Teem_ZLIB, because it wasn't found.")
+    MESSAGE(WARNING "Turning off Teem_ZLIB, because it wasn't found.")
     SET(Teem_ZLIB OFF CACHE BOOL "Build Teem with support for gzip compression." FORCE)
   ENDIF(ZLIB_FOUND)
 
@@ -136,7 +136,7 @@ IF(Teem_ZLIB)
     ELSE(PNG_FOUND)
       # We need to set this as a cache variable, so that it will show up as
       # being turned off in the cache.
-      MESSAGE(SEND_ERROR "Turning off Teem_PNG, because it wasn't found.")
+      MESSAGE(WARNING "Turning off Teem_PNG, because it wasn't found.")
       SET(Teem_PNG OFF CACHE BOOL "Build Teem with support for PNG images." FORCE)
     ENDIF(PNG_FOUND)
   ENDIF(Teem_PNG)
@@ -156,7 +156,7 @@ IF(Teem_BZIP2)
   ELSE(BZ2_FOUND)
     # We need to set this as a cache variable, so that it will show up as
     # being turned off in the cache.
-    MESSAGE(SEND_ERROR "Turning off Teem_BZIP2, because it wasn't found.")
+    MESSAGE(WARNING "Turning off Teem_BZIP2, because it wasn't found.")
     SET(Teem_BZIP2 OFF CACHE BOOL "Build Teem with support for bzip compression." FORCE)
   ENDIF(BZ2_FOUND)
 ENDIF(Teem_BZIP2)
@@ -170,7 +170,7 @@ IF(Teem_PTHREAD)
   ELSE(CMAKE_USE_PTHREADS_INIT)
     # We need to set this as a cache variable, so that it will show up as
     # being turned off in the cache.
-    MESSAGE(SEND_ERROR "Turning off Teem_PTHREAD, because it wasn't found.")
+    MESSAGE(WARNING "Turning off Teem_PTHREAD, because it wasn't found.")
     SET(Teem_PTHREAD OFF CACHE BOOL "Build Teem with pthread library support." FORCE)
     SET(Teem_PTHREAD OFF)
   ENDIF(CMAKE_USE_PTHREADS_INIT)
@@ -189,7 +189,7 @@ IF(Teem_LEVMAR)
   ELSE(LEVMAR_FOUND)
     # We need to set this as a cache variable, so that it will show up as
     # being turned off in the cache.
-    MESSAGE(SEND_ERROR "Turning off Teem_LEVMAR, because it wasn't found.")
+    MESSAGE(WARNING "Turning off Teem_LEVMAR, because it wasn't found.")
     SET(Teem_LEVMAR OFF CACHE BOOL "Build Teem with levmar library support." FORCE)
   ENDIF(LEVMAR_FOUND)
 ENDIF(Teem_LEVMAR)
