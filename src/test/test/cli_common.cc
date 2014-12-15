@@ -38,27 +38,18 @@
 //  //  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
-#include "gtest/gtest.h"
-#include <cstdlib>
-#include <cstdio>
-#include <fstream>
-#include <cmath>
-#define _FIELDS " --material_fields "
-#define _NAME   " --output_name "
-#define _PATH   " --output_path "
-#define _CLI    "cleaver-cli "
-static std::string diff = std::string("diff -wB ");
-static std::string data_dir = std::string(TEST_DATA_DIR);
-static std::string command = std::string(BINARY_DIR) + _CLI + " -v ";
-static std::string name = _NAME + std::string("output");
-static std::string path = _PATH + data_dir;
-static std::string input = _FIELDS +
+#include "cli_common.h"
+std::string diff = std::string("diff -wB ");
+std::string data_dir = std::string(TEST_DATA_DIR);
+std::string command = std::string(BINARY_DIR) + _CLI + " -v ";
+std::string name = _NAME + std::string("output");
+std::string path = _PATH + data_dir;
+std::string input = _FIELDS +
 data_dir + "input/spheres1.nrrd " +
 data_dir + "input/spheres2.nrrd " +
 data_dir + "input/spheres3.nrrd " +
 data_dir + "input/spheres4.nrrd " ;
-static const size_t num_files = 7;
-static std::string files[num_files] = {
+std::string files[num_files] = {
   "background.node",
   "background.ele",
   "sizing_field.nrrd",
@@ -134,64 +125,4 @@ void compareNodeFiles(const std::string a, const std::string b) {
       ASSERT_FLOAT_EQ(tmp,tmp2);
     }
   }
-}
-
-// Tests basic IO for CLI
-TEST(CLIRegressionTests, Basic) {
-  //make sure there is a command interpreter
-  ASSERT_EQ(0,(int)!(std::system(NULL)));
-  //setup the line that calls the command line interface
-  std::string log = "basic_output.txt";
-  std::string output = " > " + data_dir + log + " 2>&1";
-  std::string line = (command + name + path + input + output);
-  //make sure there was no error from the command line
-  ASSERT_EQ(0, std::system(line.c_str()));
-  //move the other generated files in the current dir to the test dir
-  for(size_t i = 0; i < num_files; i++) {
-    std::system(("mv " + files[i] + " " + data_dir).c_str());
-  }
-  //compare all of the related files
-  EXPECT_NO_FATAL_FAILURE(compareNodeFiles(
-        data_dir + "basic/output.node",
-        data_dir + "output.node"));
-  EXPECT_NO_FATAL_FAILURE(compareEleFiles(
-        data_dir + "basic/output.ele",
-        data_dir + "output.ele"));
-  //delete the output files from this test
-  for(size_t i = 0; i < num_files; i++) {
-    std::system(("rm " + data_dir + files[i]).c_str());
-  }
-  std::system(("rm " + data_dir + "output.info").c_str());
-  std::system(("rm " + data_dir + "output.node").c_str());
-  std::system(("rm " + data_dir + "output.ele").c_str());
-  std::system(("rm " + data_dir + log).c_str());
-}
-// Tests scaling IO for CLI
-TEST(CLIRegressionTests, Scaling) {
-  //setup the line that calls the command line interface
-  std::string log = "scaling_output.txt";
-  std::string output = " > " + data_dir + log + " 2>&1";
-  std::string scale = " --scale 0.5 ";
-  std::string line = (command + name + path + scale + input + output);
-  //make sure there was no error from the command line
-  ASSERT_EQ(0, std::system(line.c_str()));
-  //move the other generated files in the current dir to the test dir
-  for(size_t i = 0; i < num_files; i++) {
-    std::system(("mv " + files[i] + " " + data_dir).c_str());
-  }
-  //compare all of the related files
-  EXPECT_NO_FATAL_FAILURE(compareNodeFiles(
-        data_dir + "scaling/output.node",
-        data_dir + "output.node"));
-  EXPECT_NO_FATAL_FAILURE(compareEleFiles(
-        data_dir + "scaling/output.ele",
-        data_dir + "output.ele"));
-  //delete the output files from this test
-  for(size_t i = 0; i < num_files; i++) {
-    std::system(("rm " + data_dir + files[i]).c_str());
-  }
-  std::system(("rm " + data_dir + "output.info").c_str());
-  std::system(("rm " + data_dir + "output.node").c_str());
-  std::system(("rm " + data_dir + "output.ele").c_str());
-  std::system(("rm " + data_dir + log).c_str());
 }

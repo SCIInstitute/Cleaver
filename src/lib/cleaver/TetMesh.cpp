@@ -1188,7 +1188,7 @@ void TetMesh::computeAngles()
                   if(max == 180){
 
                       t->flagged = true;
-
+                      std::cout << "ERROR, TET #: " << i << std::endl;
                       std::cout << "bad tet, vert orders { "
                                 << t->verts[0]->order() << ", "
                                 << t->verts[1]->order() << ", "

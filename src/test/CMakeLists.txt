@@ -10,4 +10,6 @@ add_definitions(-DTEST_DATA_DIR="${CLEAVER2_SOURCE_DIR}/test/test_data/")
 cxx_test(tetmesh_unit_tests gtest_main)
 target_link_libraries(tetmesh_unit_tests cleaver)
 #cli
-cxx_test(cli_tests gtest_main)
+cxx_test(cli_basic gtest_main test/cli_common.cc)
+cxx_test(cli_scale gtest_main test/cli_common.cc)
+cxx_test(cli_alpha gtest_main test/cli_common.cc)
