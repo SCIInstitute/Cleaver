@@ -517,8 +517,6 @@ TetMesh* CleaverMesherImp::createBackgroundMesh(bool verbose)
     // set state
     m_bBackgroundMeshCreated = true;
 
-    m_bgMesh->writeNodeEle("background",verbose,false);
-
     return m_bgMesh;
 }
 
@@ -1949,13 +1947,14 @@ Octree* CleaverMesher::getTree() const
 //========================================
 // - createBackgroundMesh()
 //========================================
-void CleaverMesher::createBackgroundMesh(bool verbose)
+TetMesh* CleaverMesher::createBackgroundMesh(bool verbose)
 {
     cleaver::Timer timer;
     timer.start();
-    m_pimpl->createBackgroundMesh(verbose);
+    TetMesh* m = m_pimpl->createBackgroundMesh(verbose);
     timer.stop();
     setBackgroundTime(timer.time());
+    return m;
 }
 
 void CleaverMesher::setBackgroundMesh(TetMesh *m)

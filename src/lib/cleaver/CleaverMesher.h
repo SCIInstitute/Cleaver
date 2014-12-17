@@ -35,7 +35,7 @@ public:
     // Functions for development ONLY.
     // Remove after completion.
     //================================    
-    void createBackgroundMesh(bool verbose = false);
+    TetMesh* createBackgroundMesh(bool verbose = false);
     void setBackgroundMesh(TetMesh *);
     void buildAdjacency(bool verbose = false);
     void sampleVolume(bool verbose = false);

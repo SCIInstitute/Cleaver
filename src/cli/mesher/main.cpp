@@ -103,9 +103,7 @@ int main(int argc,  char* argv[])
   bool have_sizing_field = false;
   bool have_background_mesh = false;
   bool write_background_mesh = false;
-  //bool improve_mesh = false;
   bool strict = false;
-  bool accelerate = false;
   bool strip_exterior = false;
   enum cleaver::MeshType mesh_mode = cleaver::Structured;
   cleaver::MeshFormat output_format = kDefaultOutputFormat;
@@ -126,7 +124,7 @@ int main(int argc,  char* argv[])
       ("version", "display version information")
       ("material_fields", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
       ("background_mesh", po::value<std::string>(), "input background mesh")
-      ("mesh_mode", po::value<std::string>(), "background mesh mode")
+      ("mesh_mode", po::value<std::string>(), "background mesh mode (structured [default], regular)")
       //("mesh_improve", "improve background quality")
       ("alpha", po::value<double>(), "initial alpha value")
       ("alpha_short", po::value<double>(), "alpha short value for regular mesh_mode")
@@ -136,7 +134,6 @@ int main(int argc,  char* argv[])
       ("multiplier", po::value<double>(), "sizing field multiplier")
       ("scale", po::value<double>(), "sizing field scale")
       ("padding", po::value<int>(), "volume padding")
-      ("accelerate", "use acceleration structure")
       ("write_background_mesh", "write background mesh")
       ("strip_exterior", "strip exterior tetrahedra")
       ("output_path", po::value<std::string>(), "output path prefix")
@@ -168,10 +165,6 @@ int main(int argc,  char* argv[])
 
     if (variables_map.count("strict")) {
       strict = true;
-    }
-
-    if (variables_map.count("accelerate")) {
-      accelerate = true;
     }
 
     // parse the material field input file names
@@ -410,12 +403,12 @@ int main(int argc,  char* argv[])
     case cleaver::Regular:
       mesher.setAlphas(alpha_long,alpha_short);
       mesher.setRegular(true);
-      mesher.createBackgroundMesh(verbose);
+      bgMesh = mesher.createBackgroundMesh(verbose);
       break;
     default:
     case cleaver::Structured:
       mesher.setRegular(false);
-      mesher.createBackgroundMesh(verbose);
+      bgMesh = mesher.createBackgroundMesh(verbose);
       break;
     }
     background_timer.stop();
@@ -447,13 +440,6 @@ int main(int argc,  char* argv[])
   cleaving_time = cleaving_timer.time();
 
   cleaver::TetMesh *mesh = mesher.getTetMesh();
-
-  //-----------------------------------------------------------
-  // Improve mesh quality
-  //-----------------------------------------------------------
-  //if(improve_mesh){
-  //  cleaver::improveMesh(mesh, volume, verbose);
-  //}
 
   //-----------------------------------------------------------
   // Strip Exterior Tets

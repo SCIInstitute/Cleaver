@@ -50,8 +50,6 @@ data_dir + "input/spheres2.nrrd " +
 data_dir + "input/spheres3.nrrd " +
 data_dir + "input/spheres4.nrrd " ;
 std::string files[num_files] = {
-  "background.node",
-  "background.ele",
   "sizing_field.nrrd",
   "boundary_field.nrrd",
   "boundary.nrrd",
