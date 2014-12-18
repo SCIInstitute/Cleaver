@@ -1,0 +1,47 @@
+ Loading input fields:
+ - /home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres1.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log
+Trouble Reading File: /home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log : [nrrd] nrrdLoad: fopen("/home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log","rb") failed: No such file or directory
+
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres1.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
+Error, file 1 # dims don't match.
+Error, file 0 dimensions don't match.
+Error, file 1 does not contain expected number of elements
+Expected: 1
+Found:    21952
+Failed to load image data. Terminating.
+Error: At least one material field file must be specified.
+Error: both sizing field and grading parameter provided.
+Error: both sizing field and multiplier parameter provided.
+Error: both sizing field and scale parameter provided.
+Error: both background mesh and sizing field provided.
+Error: invalid background mesh mode: unknown
+Valid Modes: [regular] [structured] 
+Error: unsupported output format: unknown
+Error: unrecognised option '--badthing'
+ Loading input fields:
+ - /home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres1.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log
+Trouble Reading File: /home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log : [nrrd] nrrdLoad: fopen("/home/sci/brig/Cleaver2/src/test/test_data/basic/basic_output.log","rb") failed: No such file or directory
+
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres1.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
+Error, file 1 # dims don't match.
+Error, file 0 dimensions don't match.
+Error, file 1 does not contain expected number of elements
+Expected: 1
+Found:    21952
+Failed to load image data. Terminating.
