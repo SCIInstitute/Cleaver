@@ -47,8 +47,8 @@ TEST(CLIRegressionTests, Padding) {
   //setup the line that calls the command line interface
   std::string log = "padding_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string scale = " --padding 2 --write_background_mesh ";
-  std::string line = (command + name + path + scale + input + output);
+  std::string option = " --padding 2 --write_background_mesh ";
+  std::string line = (command + name + path + option + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir

@@ -47,8 +47,8 @@ TEST(CLIRegressionTests, Regular) {
   //setup the line that calls the command line interface
   std::string log = "regular_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string scale = " --mesh_mode regular --scale 0.25";
-  std::string line = (command + name + path + scale + input + output);
+  std::string option = " --mesh_mode regular --scale 0.25";
+  std::string line = (command + name + path + option + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
