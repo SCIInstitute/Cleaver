@@ -124,3 +124,41 @@ void compareNodeFiles(const std::string a, const std::string b) {
     }
   }
 }
+
+void compareVTKFiles(const std::string a, const std::string b) {
+  ASSERT_FALSE(a == b);
+  std::ifstream test(b.c_str(),std::ifstream::in),
+    ans(a.c_str(),std::ifstream::in);
+  int point_count0, poly_count0;
+  int point_count1, poly_count1;
+  char line[512];
+  for(int i = 0; i < 4; i++) {
+    test.getline(line,512);
+    ans.getline(line,512);
+  }
+  test.getline(line,512);
+  sscanf(line,"POINTS %d float",&point_count0);
+  ans.getline(line,512);
+  sscanf(line,"POINTS %d float",&point_count1);
+  ASSERT_EQ(point_count0,point_count1);
+  for (int i = 0; i < point_count0; i++) {
+    float tmp = 0.f, tmp2 = 0.f;
+    for(size_t j = 0; j < 3; j++) {
+      test >> tmp; ans >> tmp2;
+      ASSERT_FLOAT_EQ(tmp,tmp2);
+    }
+  }
+  test.getline(line,512);
+  ans.getline(line,512);
+  test.getline(line,512);
+  sscanf(line,"POLYGONS %d %d",&point_count0,&poly_count0);
+  ans.getline(line,512);
+  sscanf(line,"POLYGONS %d %d",&point_count1,&poly_count1);
+  ASSERT_EQ(point_count0,point_count1);
+  ASSERT_EQ(poly_count0,poly_count1);
+  for (int i = 0; i < poly_count0; i++) {
+    size_t num0 = 0, num1 = 0;
+    test >> num0; ans >> num1;
+    ASSERT_EQ(num0,num1);
+  }
+}

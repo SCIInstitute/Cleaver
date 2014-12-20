@@ -38,26 +38,28 @@
 //  //  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
-#include "gtest/gtest.h"
-#include <cstdlib>
-#include <cstdio>
-#include <fstream>
-#include <cmath>
-#define _FIELDS " --material_fields "
-#define _NAME   " --output_name "
-#define _PATH   " --output_path "
-#define _CLI    "cleaver-cli "
-#define num_files 5
-extern std::string diff; 
-extern std::string data_dir; 
-extern std::string command; 
-extern std::string name; 
-extern std::string path; 
-extern std::string input; 
-extern std::string files[num_files]; 
+#include "cli_common.h"
 
-void compareEleFiles(const std::string a, const std::string b);
-
-void compareNodeFiles(const std::string a, const std::string b);
-
-void compareVTKFiles(const std::string a, const std::string b) ;
+// Tests scaling IO for CLI
+TEST(CLIRegressionTests, Sizing) {
+  //make sure there is a command interpreter
+  ASSERT_EQ(0,(int)!(std::system(NULL)));
+  //setup the line that calls the command line interface
+  std::string log = "sizing_output.txt";
+  std::string output = " > " + data_dir + log + " 2>&1";
+  std::string option = " --sizing_field  " + data_dir + "scaling/sizing_field.nrrd ";
+  std::string line = (command + name + path + option + input + output);
+  //make sure there was no error from the command line
+  ASSERT_EQ(0, std::system(line.c_str()));
+  //compare all of the related files
+  EXPECT_NO_FATAL_FAILURE(compareNodeFiles(
+        data_dir + "scaling/output.node",
+        data_dir + "output.node"));
+  EXPECT_NO_FATAL_FAILURE(compareEleFiles(
+        data_dir + "scaling/output.ele",
+        data_dir + "output.ele"));
+  std::system(("rm " + data_dir + "output.info").c_str());
+  std::system(("rm " + data_dir + "output.node").c_str());
+  std::system(("rm " + data_dir + "output.ele").c_str());
+  std::system(("rm " + data_dir + log).c_str());
+}

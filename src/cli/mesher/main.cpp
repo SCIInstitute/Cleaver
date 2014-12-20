@@ -354,7 +354,12 @@ int main(int argc,  char* argv[])
   if(have_background_mesh) {
     std::string nodeFileName = background_mesh + ".node";
     std::string eleFileName = background_mesh + ".ele";
+    if (verbose) {
+      std::cout << "Loading background mesh: \n\t" << nodeFileName
+        << "\n\t" << eleFileName << std::endl;
+    }
     bgMesh =  cleaver::TetMesh::createFromNodeElePair(nodeFileName, eleFileName);
+    mesher.setBackgroundMesh(bgMesh);
   }
   //-----------------------------------
   // otherwise take steps to compute one
