@@ -282,6 +282,188 @@ void TetMesh::updateBounds(Vertex *vertex)
 
     bounds = BoundingBox(mincorner, maxcorner - mincorner);
 }
+    
+float TetMesh::getDeterminant(float m[16]) {
+    float data_[16];
+    data_[0] =
+    m[5]  * m[10] * m[15] -
+    m[5]  * m[11] * m[14] -
+    m[9]  * m[6]  * m[15] +
+    m[9]  * m[7]  * m[14] +
+    m[13] * m[6]  * m[11] -
+    m[13] * m[7]  * m[10];
+    
+    data_[4] = -
+    m[4]  * m[10] * m[15] +
+    m[4]  * m[11] * m[14] +
+    m[8]  * m[6]  * m[15] -
+    m[8]  * m[7]  * m[14] -
+    m[12] * m[6]  * m[11] +
+    m[12] * m[7]  * m[10];
+    
+    data_[8] =
+    m[4]  * m[9] * m[15] -
+    m[4]  * m[11] * m[13] -
+    m[8]  * m[5] * m[15] +
+    m[8]  * m[7] * m[13] +
+    m[12] * m[5] * m[11] -
+    m[12] * m[7] * m[9];
+    
+    data_[12] = -
+    m[4]  * m[9] * m[14] +
+    m[4]  * m[10] * m[13] +
+    m[8]  * m[5] * m[14] -
+    m[8]  * m[6] * m[13] -
+    m[12] * m[5] * m[10] +
+    m[12] * m[6] * m[9];
+    
+    data_[1] = -
+    m[1]  * m[10] * m[15] +
+    m[1]  * m[11] * m[14] +
+    m[9]  * m[2] * m[15] -
+    m[9]  * m[3] * m[14] -
+    m[13] * m[2] * m[11] +
+    m[13] * m[3] * m[10];
+    
+    data_[5] =
+    m[0]  * m[10] * m[15] -
+    m[0]  * m[11] * m[14] -
+    m[8]  * m[2] * m[15] +
+    m[8]  * m[3] * m[14] +
+    m[12] * m[2] * m[11] -
+    m[12] * m[3] * m[10];
+    
+    data_[9] = -
+    m[0]  * m[9] * m[15] +
+    m[0]  * m[11] * m[13] +
+    m[8]  * m[1] * m[15] -
+    m[8]  * m[3] * m[13] -
+    m[12] * m[1] * m[11] +
+    m[12] * m[3] * m[9];
+    
+    data_[13] =
+    m[0]  * m[9] * m[14] -
+    m[0]  * m[10] * m[13] -
+    m[8]  * m[1] * m[14] +
+    m[8]  * m[2] * m[13] +
+    m[12] * m[1] * m[10] -
+    m[12] * m[2] * m[9];
+    
+    data_[2] =
+    m[1]  * m[6] * m[15] -
+    m[1]  * m[7] * m[14] -
+    m[5]  * m[2] * m[15] +
+    m[5]  * m[3] * m[14] +
+    m[13] * m[2] * m[7] -
+    m[13] * m[3] * m[6];
+    
+    data_[6] = -
+    m[0]  * m[6] * m[15] +
+    m[0]  * m[7] * m[14] +
+    m[4]  * m[2] * m[15] -
+    m[4]  * m[3] * m[14] -
+    m[12] * m[2] * m[7] +
+    m[12] * m[3] * m[6];
+    
+    data_[10] =
+    m[0]  * m[5] * m[15] -
+    m[0]  * m[7] * m[13] -
+    m[4]  * m[1] * m[15] +
+    m[4]  * m[3] * m[13] +
+    m[12] * m[1] * m[7] -
+    m[12] * m[3] * m[5];
+    
+    data_[14] = -
+    m[0]  * m[5] * m[14] +
+    m[0]  * m[6] * m[13] +
+    m[4]  * m[1] * m[14] -
+    m[4]  * m[2] * m[13] -
+    m[12] * m[1] * m[6] +
+    m[12] * m[2] * m[5];
+    
+    data_[3] = -
+    m[1] * m[6] * m[11] +
+    m[1] * m[7] * m[10] +
+    m[5] * m[2] * m[11] -
+    m[5] * m[3] * m[10] -
+    m[9] * m[2] * m[7] +
+    m[9] * m[3] * m[6];
+    
+    data_[7] =
+    m[0] * m[6] * m[11] -
+    m[0] * m[7] * m[10] -
+    m[4] * m[2] * m[11] +
+    m[4] * m[3] * m[10] +
+    m[8] * m[2] * m[7] -
+    m[8] * m[3] * m[6];
+    
+    data_[11] = -
+    m[0] * m[5] * m[11] +
+    m[0] * m[7] * m[9] +
+    m[4] * m[1] * m[11] -
+    m[4] * m[3] * m[9] -
+    m[8] * m[1] * m[7] +
+    m[8] * m[3] * m[5];
+    
+    data_[15] =
+    m[0] * m[5] * m[10] -
+    m[0] * m[6] * m[9] -
+    m[4] * m[1] * m[10] +
+    m[4] * m[2] * m[9] +
+    m[8] * m[1] * m[6] -
+    m[8] * m[2] * m[5];
+    
+    return m[0] * data_[0] + m[1] *
+    data_[4] + m[2] *
+    data_[8] + m[3] * data_[12];
+}
+    
+float TetMesh::getJacobian(Tet* tet) {
+    float mat[16] = {
+        1,1,1,1,
+        0,1,0,0,
+        0,0,1,0,
+        0,0,0,1};
+    for (size_t i = 0; i < 4; i++) {
+        mat[i+4] = tet->verts[i]->pos().x;
+        mat[i+8] = tet->verts[i]->pos().y;
+        mat[i+12] = tet->verts[i]->pos().z;
+    }
+    return getDeterminant(mat) / 6.f;
+}
+    
+size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
+    float epsilon = 1e-9f;
+    size_t beforeCount = tets.size();
+    size_t count = 0;
+        
+    // loop over all tets in the mesh
+    std::vector<Tet*>::iterator iter = tets.begin();
+    while(iter != tets.end()) {
+        Tet *tet = *iter;
+        float jacobian = getJacobian(tet);
+        if (jacobian < 0.f) {
+            Vertex* tmp = tet->verts[2];
+            tet->verts[2] = tet->verts[3];
+            tet->verts[3] = tmp;
+            count++;
+        }
+        if(tet->maxAngle() == 180.f ||
+           tet->minAngle() == 0.f   ||
+           std::abs(jacobian) < epsilon)
+            iter = removeTet(iter);
+        else
+            iter++;
+    }
+    
+    size_t afterCount = tets.size();
+    if (verbose) {
+        std::cout << "Removed " << (beforeCount - afterCount)
+        << " flat tets." << std::endl;
+        std::cout << "Fixed " << count << " negative Jacobians." << std::endl;
+    }
+    return count;
+}
 
 //===================================================
 // writeOff()

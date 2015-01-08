@@ -88,6 +88,7 @@ namespace po = boost::program_options;
 int main(int argc,  char* argv[])
 {
   bool verbose = false;
+  bool fix_tets = false;
   std::vector<std::string> material_fields;
   std::string sizing_field;
   std::string background_mesh;
@@ -135,6 +136,7 @@ int main(int argc,  char* argv[])
       ("scale", po::value<double>(), "sizing field scale")
       ("padding", po::value<int>(), "volume padding")
       ("write_background_mesh", "write background mesh")
+      ("fix_jacobians_remove_flat_tets", "Remove near-flat tets and ensure positive Jacobians.")
       ("strip_exterior", "strip exterior tetrahedra")
       ("output_path", po::value<std::string>(), "output path prefix")
       ("output_name", po::value<std::string>(), "output mesh name [default 'output']")
@@ -223,7 +225,7 @@ int main(int argc,  char* argv[])
     if (variables_map.count("padding")) {
       padding = variables_map["padding"].as<int>();
     }
-
+    fix_tets = variables_map.count("fix_jacobians_remove_flat_tets");
 
     if (variables_map.count("alpha")) {
       alpha = variables_map["alpha"].as<double>();
@@ -457,6 +459,10 @@ int main(int argc,  char* argv[])
   // Compute Quality If Havn't Already
   //-----------------------------------------------------------
   mesh->computeAngles();
+  //-----------------------------------------------------------
+  // Remove bad tets and fix jacobians if requested.
+  //-----------------------------------------------------------
+  if (fix_tets) mesh->removeFlatTetsAndFixJacobians(verbose);
 
   //-----------------------------------------------------------
   // Write Mesh To File
