@@ -1,0 +1,51 @@
+ Loading input fields:
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres1.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
+ - /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres1.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres2.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres3.nrrd
+Reading File: /home/sci/brig/Cleaver2/src/test/test_data/input/spheres4.nrrd
+Input Dimensions: 28 x 28 x 28
+Creating sizing field at 1x resolution, with Lipschitz=5, sizingFactor=1, padding=0, adaptive=1
+Writing file 'boundary.nrrd'
+Writing file 'boundary_field.nrrd'
+Writing file 'medial.nrrd'
+Writing file 'feature_field.nrrd'
+Sizing Field Creating! Returning it..
+Creating Octree Mesh...
+Building Adjacency...constructing bottom up incidences
+ done.
+Sampling Volume... done.
+Computing Violation Alphas... done.
+Computing Cuts... done. [1026]
+Computing Triples... done. [94]
+Computing Quadruples... done. [1]
+Generalizing Tets... done.
+Beginning Snapping and Warping...
+preparing to examine 1230 verts
+Phase 1 Complete
+Phase 2 Complete
+Phase 3 Complete
+Snapping/warping complete.
+Filling in Stencils...
+repurposed 6090 old tets.
+created 921 new tets.
+vert count: 1434
+tet  count: 7011
+Worst Angles:
+	min: 7.49352
+	max: 167.421
+ done.
+Writing mesh matlab file: /home/sci/brig/Cleaver2/src/test/test_data/output.mat
+Writing settings file: /home/sci/brig/Cleaver2/src/test/test_data/output.info
+Output Info
+Size: [28, 28, 28]
+Materials: 4
+Min Dihedral: 7.49352
+Max Dihedral: 167.421
+Total Time: 1.983 seconds
+Sizing Field Time: 0.789 seconds
+Backound Mesh Time: 0.118 seconds
+Cleaving Time: 0.979 seconds
