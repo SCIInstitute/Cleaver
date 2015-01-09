@@ -225,7 +225,7 @@ int main(int argc,  char* argv[])
     if (variables_map.count("padding")) {
       padding = variables_map["padding"].as<int>();
     }
-    fix_tets = variables_map.count("fix_jacobians_remove_flat_tets");
+    fix_tets = variables_map.count("fix_jacobians_remove_flat_tets")==0?false:true;
 
     if (variables_map.count("alpha")) {
       alpha = variables_map["alpha"].as<double>();

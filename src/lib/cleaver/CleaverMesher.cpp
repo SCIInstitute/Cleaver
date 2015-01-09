@@ -2109,7 +2109,7 @@ void CleaverMesherImp::computeAlphas(bool verbose,
     {
         HalfEdge *half_edge = (*edge_iter).second;
         if (regular) {
-          half_edge->alpha = half_edge->m_long_edge?alp_long:alp_short;
+          half_edge->alpha = (float)(half_edge->m_long_edge?alp_long:alp_short);
         } else {
           half_edge->alpha = (float)m_alpha_init;
         }

@@ -52,6 +52,7 @@
 #include <set>
 #include <algorithm>
 #include <exception>
+#include <stdint.h>
 #include "Util.h"
 #include "Matlab.h"
 
@@ -329,9 +330,9 @@ float TetMesh::getJacobian(Tet* tet) {
         0,0,1,0,
         0,0,0,1};
     for (size_t i = 0; i < 4; i++) {
-        mat[i+4] = tet->verts[i]->pos().x;
-        mat[i+8] = tet->verts[i]->pos().y;
-        mat[i+12] = tet->verts[i]->pos().z;
+        mat[i+4] = (float)tet->verts[i]->pos().x;
+        mat[i+8] = (float)tet->verts[i]->pos().y;
+        mat[i+12] = (float)tet->verts[i]->pos().z;
     }
     return getDeterminant(mat) / 6.f;
 }
@@ -340,11 +341,9 @@ size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
     float epsilon = 1e-9f;
     size_t beforeCount = tets.size();
     size_t count = 0;
-        
     // loop over all tets in the mesh
-    std::vector<Tet*>::iterator iter = tets.begin();
-    while(iter != tets.end()) {
-        Tet *tet = *iter;
+    for(size_t i = 0; i < tets.size(); i++) {
+        Tet* tet = tets.at(i);
         float jacobian = getJacobian(tet);
         if (jacobian < 0.f) {
             Vertex* tmp = tet->verts[2];
@@ -354,10 +353,8 @@ size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
         }
         if(tet->maxAngle() == 180.f ||
            tet->minAngle() == 0.f   ||
-           std::abs(jacobian) < epsilon)
-            iter = removeTet(iter);
-        else
-            iter++;
+           std::abs(jacobian) < epsilon) 
+             removeTet(i);
     }
     
     size_t afterCount = tets.size();
@@ -1444,7 +1441,9 @@ void TetMesh::writeVtkUnstructuredGrid(const std::string &filename, bool verbose
 //==================================================================
 void TetMesh::writeMatlab(const std::string &filename, bool verbose)
 {
-    #ifndef _WIN32
+#ifdef _WIN32
+#define float_t float
+#endif
     //-------------------------------
     //         Create File
     //-------------------------------
@@ -1502,7 +1501,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     int32_t totalSize = 0;
 
     // save location, when total size known, come back and fill it in
-    long totalSizeAddress = file.tellp();
+    long totalSizeAddress = (long)file.tellp();
     totalSizeAddress += sizeof(int32_t);
 
 
@@ -1603,7 +1602,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     int32_t nodeType = miMATRIX;
     int32_t nodeSize = 0;
 
-    long nodeSizeAddress = file.tellp();
+    long nodeSizeAddress = (long)file.tellp();
     nodeSizeAddress += sizeof(int32_t);
 
     file.write((char*)&nodeType, sizeof(int32_t));
@@ -1665,9 +1664,9 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
 
     for(unsigned int i=0; i < verts.size(); i++)
     {
-        float_t x = verts[i]->pos().x;
-        float_t y = verts[i]->pos().y;
-        float_t z = verts[i]->pos().z;
+        float_t x = (float_t)verts[i]->pos().x;
+        float_t y = (float_t)verts[i]->pos().y;
+        float_t z = (float_t)verts[i]->pos().z;
 
         file.write((char*)&x, sizeof(float_t));
         file.write((char*)&y, sizeof(float_t));
@@ -1675,7 +1674,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     }
     if(nodePadding)
         file.write((char*)zeros, nodePadding);
-    long nodeEndAddress = file.tellp();
+    long nodeEndAddress = (long)file.tellp();
 
     //-------------------------------
     //         Write .cell
@@ -1683,7 +1682,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     int32_t cellType = miMATRIX;
     int32_t cellSize = 0;
 
-    long cellSizeAddress = file.tellp();
+    long cellSizeAddress = (long)file.tellp();
     cellSizeAddress += sizeof(int32_t);
 
     file.write((char*)&cellType, sizeof(int32_t));
@@ -1752,7 +1751,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     }
     if(cellPadding)
         file.write((char*)zeros, cellPadding);
-    long cellEndAddress = file.tellp();
+    long cellEndAddress = (long)file.tellp();
 
     //----------------------------------
     //         Write .field
@@ -1760,7 +1759,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     int32_t fieldType = miMATRIX;
     int32_t fieldSize = 0;
 
-    long fieldSizeAddress = file.tellp();
+    long fieldSizeAddress = (long)file.tellp();
     fieldSizeAddress += sizeof(int32_t);
 
     file.write((char*)&fieldType, sizeof(int32_t));
@@ -1827,7 +1826,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     }
     if(fieldPadding)
         file.write(zeros, fieldPadding);
-    long fieldEndAddress = file.tellp();
+    long fieldEndAddress = (long)file.tellp();
 
 
     //-------------------------------
@@ -1836,7 +1835,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     int32_t atType = miMATRIX;
     int32_t atSize = 0;
 
-    long atSizeAddress = file.tellp();
+    long atSizeAddress = (long)file.tellp();
     atSizeAddress += sizeof(int32_t);
 
     file.write((char*)&atType, sizeof(int32_t));
@@ -1901,8 +1900,8 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
 
     if(atPadding)
         file.write((char*)zeros, atPadding);
-    long atEndAddress = file.tellp();
-    long fileEndAddress = file.tellp();
+    long atEndAddress = (long)file.tellp();
+    long fileEndAddress = (long)file.tellp();
 
     //-------------------------------
     //  Finally, Compute Sizes and
@@ -1934,8 +1933,6 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     //-------------------------------
     file.flush();
     file.close();
-
-    #endif
 }
 
 //===================================================
@@ -3089,6 +3086,11 @@ std::vector<Tet*>::iterator TetMesh::removeTet(std::vector<Tet*>::iterator iter)
 //-----------------------------
 void TetMesh::removeTet(int t)
 {
+    int i = 0;
+    std::vector<Tet*>::iterator iter = tets.begin();
+    while(iter != tets.end() && i < t) { i++; ++iter; }
+    if (iter != tets.end())
+       removeTet(iter);
 
 }
 

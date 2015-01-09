@@ -91,20 +91,21 @@ TEST(AngleTests,Flat) {
   ASSERT_TRUE(tri2.minAngle() == 0.f || tri2.minAngle() == 180.f);
   ASSERT_TRUE(tri2.maxAngle() == 0.f || tri2.maxAngle() == 180.f);
 }
-
-//tests remove flat tets.
-TEST(Tetmesh, RemoveFlat) {
+//test determinant
+TEST(Tetmesh, Determinant) {
+  //get determinant of a right tet
   TetMesh t;
   Vertex v1,v2,v3,v4;
-  v1.pos() = vec3(0.25f,0.25f,.0f);
-  v2.pos() = vec3(1.f,0.f,0.f);
-  v3.pos() = vec3(0.f,1.f,0.f);
-  v4.pos() = vec3(0.f,0.f,0.f);
-  Tet tet(&v1,&v2,&v3,&v4,0);
-  ASSERT_EQ(t.removeFlatTetsAndFixJacobians(true),0);
-  t.tets.push_back(&tet);
-  ASSERT_EQ(t.removeFlatTetsAndFixJacobians(true),1);
-  ASSERT_EQ(t.tets.size(),0);
+  v1.pos() = vec3( 1.f, 0.f,-1.f/sqrt(2.f));
+  v2.pos() = vec3(-1.f, 0.f,-1.f/sqrt(2.f));
+  v3.pos() = vec3( 0.f, 1.f, 1.f/sqrt(2.f));
+  v4.pos() = vec3( 0.f,-1.f, 1.f/sqrt(2.f));
+  Tet *tet = new Tet(&v1,&v2,&v3,&v4,0);
+  t.tets.push_back(tet);
+  float m[16] = {1,1,1,1,1, -1, 0,0, 0,0, 1,-1, 
+    -1/sqrt(2.f),-1/sqrt(2.f),1/sqrt(2.f),1/sqrt(2.f)};
+  ASSERT_FLOAT_EQ(t.getDeterminant(m),-5.65685424f);
+  ASSERT_FLOAT_EQ(t.getDeterminant(m)/6.f,t.getJacobian(tet));
 }
 //test jacobian
 TEST(Tetmesh, Jacobian) {
@@ -141,20 +142,24 @@ TEST(Tetmesh, Jacobian) {
   t.tets.push_back(tet);
   ASSERT_TRUE(t.getJacobian(tet) > 0);
 }
-
-//test determinant
-TEST(Tetmesh, Determinant) {
-  //get determinant of a right tet
+//tests remove flat tets.
+TEST(Tetmesh, RemoveFlat) {
   TetMesh t;
   Vertex v1,v2,v3,v4;
-  v1.pos() = vec3( 1.f, 0.f,-1.f/sqrt(2.f));
-  v2.pos() = vec3(-1.f, 0.f,-1.f/sqrt(2.f));
-  v3.pos() = vec3( 0.f, 1.f, 1.f/sqrt(2.f));
-  v4.pos() = vec3( 0.f,-1.f, 1.f/sqrt(2.f));
-  Tet *tet = new Tet(&v1,&v2,&v3,&v4,0);
+  v1.pos() = vec3(0.25f,0.25f,.0f);
+  v2.pos() = vec3(1.f,0.f,0.f);
+  v3.pos() = vec3(0.f,1.f,0.f);
+  v4.pos() = vec3(0.f,0.f,0.f);
+  Tet* tet = new Tet(&v1,&v2,&v3,&v4,0);
+  ASSERT_EQ(t.removeFlatTetsAndFixJacobians(true),0);
+  Vertex v5,v6,v7,v8;
+  v5.pos() = vec3(0.f,0.f,1.f);
+  v6.pos() = vec3(1.f,0.f,0.f);
+  v7.pos() = vec3(0.f,1.f,0.f);
+  v8.pos() = vec3(0.f,0.f,0.f);
+  Tet* tet2 = new Tet(&v5,&v6,&v7,&v8,0);
+  t.tets.push_back(tet2);
   t.tets.push_back(tet);
-  float m[16] = {1,1,1,1,1, -1, 0,0, 0,0, 1,-1, 
-    -1/sqrt(2),-1/sqrt(2),1/sqrt(2),1/sqrt(2)};
-  ASSERT_FLOAT_EQ(t.getDeterminant(m),-5.65685424);
-  ASSERT_FLOAT_EQ(t.getDeterminant(m)/6.f,t.getJacobian(tet));
+  ASSERT_EQ(t.removeFlatTetsAndFixJacobians(true),1);
+  ASSERT_EQ(t.tets.size(),1);
 }
