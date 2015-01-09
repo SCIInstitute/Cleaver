@@ -39,7 +39,11 @@ _nrrdEncodingRaw_read(FILE *file, void *data, size_t elementNum,
 
   bsize = nrrdElementSize(nrrd)*elementNum;
   if (nio->format->usesDIO) {
+#ifdef WIN32
+    fd = _fileno(file);
+#else
     fd = fileno(file);
+#endif
     dio = airDioTest(fd, data, bsize);
   } else {
     fd = -1;
@@ -100,7 +104,11 @@ _nrrdEncodingRaw_write(FILE *file, const void *data, size_t elementNum,
   
   bsize = nrrdElementSize(nrrd)*elementNum;
   if (nio->format->usesDIO) {
+#ifdef WIN32
+    fd = _fileno(file);
+#else
     fd = fileno(file);
+#endif
     dio = airDioTest(fd, data, bsize);
   } else {
     fd = -1;

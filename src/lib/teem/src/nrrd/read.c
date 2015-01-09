@@ -202,7 +202,11 @@ _nrrdCalloc(Nrrd *nrrd, NrrdIoState *nio, FILE *file) {
        there's no other error checking to do here */
   } else {
     nrrd->data = airFree(nrrd->data);
+#ifdef WIN32
+    fd = file ? _fileno(file) : -1;
+#else
     fd = file ? fileno(file) : -1;
+#endif
     if (nrrdEncodingRaw == nio->encoding 
         && -1 != fd
         && airNoDio_okay == airDioTest(fd, NULL, needDataSize)) {
