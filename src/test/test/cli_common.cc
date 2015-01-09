@@ -86,6 +86,8 @@ void compareEleFiles(const std::string a, const std::string b) {
       ASSERT_EQ(tmp,tmp2);
     }
   }
+  test.close();
+  ans.close();
 }
 
 void compareNodeFiles(const std::string a, const std::string b) {
@@ -123,6 +125,8 @@ void compareNodeFiles(const std::string a, const std::string b) {
       ASSERT_FLOAT_EQ(tmp,tmp2);
     }
   }
+  test.close();
+  ans.close();
 }
 
 void compareVTKFiles(const std::string a, const std::string b) {
@@ -161,4 +165,32 @@ void compareVTKFiles(const std::string a, const std::string b) {
     test >> num0; ans >> num1;
     ASSERT_EQ(num0,num1);
   }
+  test.close();
+  ans.close();
+}
+
+void comparePtsFiles(const std::string a, const std::string b) {
+  ASSERT_FALSE(a == b);
+  std::ifstream test(b.c_str(),std::ifstream::in),
+    ans(a.c_str(),std::ifstream::in);
+  float tmp1, tmp2;
+  while(!test.eof() && !ans.eof()) {
+    test >> tmp1 ; ans >> tmp2;
+      ASSERT_FLOAT_EQ(tmp1,tmp2);
+  }
+  test.close();
+  ans.close();
+}
+
+void compareElemFiles(const std::string a, const std::string b) {
+  ASSERT_FALSE(a == b);
+  std::ifstream test(b.c_str(),std::ifstream::in),
+    ans(a.c_str(),std::ifstream::in);
+  int tmp1, tmp2;
+  while(!test.eof() && !ans.eof()) {
+    test >> tmp1 ; ans >> tmp2;
+      ASSERT_EQ(tmp1,tmp2);
+  }
+  test.close();
+  ans.close();
 }

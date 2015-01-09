@@ -366,7 +366,7 @@ size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
         << " flat tets." << std::endl;
         std::cout << "Fixed " << count << " negative Jacobians." << std::endl;
     }
-    return count;
+    return beforeCount - afterCount;
 }
 
 //===================================================
@@ -850,10 +850,10 @@ void TetMesh::writeNodeEle(const string &filename, bool verbose, bool include_ma
 
 
 //===================================================
-// writeOff()
+// writePtsEle()
 //
 // Public method that writes the mesh
-// in the TetGen node/ele file format.
+// in the SciRun pts/ele file format.
 //===================================================
 void TetMesh::writePtsEle(const std::string &filename, bool verbose)
 {
