@@ -55,6 +55,7 @@
 #include <stdint.h>
 #include "Util.h"
 #include "Matlab.h"
+#include "Status.h"
 
 using namespace std;
 
@@ -341,6 +342,7 @@ size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
     float epsilon = 1e-9f;
     size_t beforeCount = tets.size();
     size_t count = 0;
+    Status s(tets.size());
     // loop over all tets in the mesh
     for(size_t i = 0; i < tets.size(); i++) {
         Tet* tet = tets.at(i);
@@ -355,7 +357,11 @@ size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
            tet->minAngle() == 0.f   ||
            std::abs(jacobian) < epsilon) 
              removeTet(i);
+        if (verbose)
+          s.printStatus();
     }
+    if (verbose)
+      s.done();
     
     size_t afterCount = tets.size();
     if (verbose) {
@@ -1225,8 +1231,10 @@ void TetMesh::computeAngles()
 {
     double min = 180;
     double max = 0;
+    Status status(this->tets.size());
     for (unsigned int i=0; i < this->tets.size(); i++)
     {
+        status.printStatus();
         Tet *t = this->tets[i];
 
         //each tet has 6 dihedral angles between pairs of faces
@@ -1295,6 +1303,7 @@ void TetMesh::computeAngles()
            }
         }
     }
+    status.done();
 
     min_angle = min;
     max_angle = max;
@@ -1456,6 +1465,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
         std::cerr << "Failed to create file." << std::endl;
         return;
     }
+    Status status(verts.size() + 2*tets.size());
 
     //--------------------------------------------------------------
     //        Write Header (128 bytes)
@@ -1664,6 +1674,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
 
     for(unsigned int i=0; i < verts.size(); i++)
     {
+        if (verbose) status.printStatus();
         float_t x = (float_t)verts[i]->pos().x;
         float_t y = (float_t)verts[i]->pos().y;
         float_t z = (float_t)verts[i]->pos().z;
@@ -1744,6 +1755,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
 
     for(unsigned int i=0; i < tets.size(); i++)
     {
+        if (verbose) status.printStatus();
         for(int v=0; v < 4; v++){
             int32_t index = tets[i]->verts[v]->tm_v_index;
             file.write((char*)&index, sizeof(int32_t));
@@ -1821,6 +1833,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
 
     for(unsigned int i=0; i < tets.size(); i++)
     {
+        if (verbose) status.printStatus();
         unsigned char m = tets[i]->mat_label;
         file.write((char*)&m, sizeof(int8_t));
     }
@@ -1933,6 +1946,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     //-------------------------------
     file.flush();
     file.close();
+    if (verbose) status.done();
 }
 
 //===================================================

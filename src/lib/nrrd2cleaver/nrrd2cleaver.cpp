@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <Cleaver/ScalarField.h>
+#include <Cleaver/Status.h>
 
 using namespace cleaver;
 using namespace std;
@@ -249,6 +250,8 @@ std::vector<AbstractScalarField*> loadNRRDFiles(const std::vector<std::string> &
     //----------------------------------------
     //  Deferred  Data Load/Copy
     //----------------------------------------
+    if (verbose) std::cout << "Loading into memory..." << std::endl;
+    Status status(filenames.size() * (d-2*p) * (w-2*p) * (h-2*p));
     for(unsigned int f=0; f < filenames.size(); f++)
     {
         // load nrrd data, reading memory into data array
@@ -270,6 +273,8 @@ std::vector<AbstractScalarField*> loadNRRDFiles(const std::vector<std::string> &
             for(int j=p; j < h-p; j++){
                 for(int i=p; i < w-p; i++){
                     ((FloatField*)fields[f])->data()[i + j*w + k*w*h] = lup(nins[f]->data, s++);
+                    if (verbose) 
+                      status.printStatus();
                 }
             }
         }
@@ -293,12 +298,15 @@ std::vector<AbstractScalarField*> loadNRRDFiles(const std::vector<std::string> &
         // free local copy
         nrrdNuke(nins[f]);
     }
+    status.done();
 
     //----------------------------------------------
     //      Copy Boundary Values If Necessary
     //----------------------------------------------
     if(pad)
     {
+      status = Status(d * w * h);
+      if(verbose) std::cout << "Adjust for padding..."  << std::endl; 
         // set 'outside' material small everywhere except exterior
         for(int k=0; k < d; k++){
             for(int j=0; j < h; j++){
@@ -321,9 +329,11 @@ std::vector<AbstractScalarField*> loadNRRDFiles(const std::vector<std::string> &
                         // set 'outside' material very small
                         ((FloatField*)fields[m-1])->data()[i + j*w + k*w*h] = REALLY_SMALL;
                     }
+                    if (verbose) status.printStatus();
                 }
             }
         }
+        status.done();
     }
 
     return fields;

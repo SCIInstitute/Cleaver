@@ -10,6 +10,7 @@
 #include "Timer.h"
 #include "SizingFieldCreator.h"
 #include "SizingFieldOracle.h"
+#include "Status.h"
 #include "vec3.h"
 #include <queue>
 #include <stack>
@@ -2046,9 +2047,11 @@ void CleaverMesherImp::sampleVolume(bool verbose)
     if(verbose)
         std::cout << "Sampling Volume..." << std::flush;
 
+    Status status(m_bgMesh->verts.size());
     // Sample Each Background Vertex
     for(unsigned int v=0; v < m_bgMesh->verts.size(); v++)
     {
+        if (verbose) status.printStatus();
         // Get Vertex
         cleaver::Vertex *vertex = m_bgMesh->verts[v];
 
@@ -2064,7 +2067,7 @@ void CleaverMesherImp::sampleVolume(bool verbose)
             vertex->isExterior = false;
         }
     }
-
+    if (verbose) status.done();
     m_bgMesh->material_count = m_volume->numberOfMaterials();
 
     // set state
@@ -4204,8 +4207,10 @@ void CleaverMesherImp::generalizeTets(bool verbose)
     //--------------------------------------
     // (For Now, Looping over ALL tets)
 
+    Status status(m_bgMesh->tets.size());
     for(unsigned int t=0; t < m_bgMesh->tets.size(); t++)
     {
+        if (verbose) status.printStatus();
         cleaver::Tet *tet = m_bgMesh->tets[t];
 
         //------------------------------
@@ -4370,6 +4375,7 @@ void CleaverMesherImp::generalizeTets(bool verbose)
 
         }
     }
+    if (verbose) status.done();
 
     // set state
     m_bGeneralized = true;
@@ -4772,11 +4778,14 @@ void CleaverMesherImp::snapAndWarpVertexViolations(bool verbose)
     //---------------------------------------------------
     if(verbose)
         std::cout << "preparing to examine " << m_bgMesh->verts.size() << " verts" << std::endl;
+    Status status(m_bgMesh->verts.size());
     for(unsigned int v=0; v < m_bgMesh->verts.size(); v++)
     {
+      if (verbose) status.printStatus();
         Vertex *vertex = m_bgMesh->verts[v];            // TODO: add check for vertex->hasAdjacentCuts
         snapAndWarpForViolatedVertex(vertex);           //       to reduce workload significantly.
     }
+    if (verbose) status.done();
     if(verbose)
         std::cout << "Phase 1 Complete" << std::endl;
 }
@@ -5970,8 +5979,10 @@ void CleaverMesherImp::snapAndWarpEdgeViolations(bool verbose)
     //  Check for edge violations
     //---------------------------------------------------
     // first check triples violating edges
+    Status status(m_bgMesh->tets.size()*5 + m_bgMesh->halfEdges.size());
     for(unsigned int f=0; f < 4*m_bgMesh->tets.size(); f++)
     {
+        if (verbose) status.printStatus();
         cleaver::HalfFace *face = &m_bgMesh->halfFaces[f];
 
         if(face->triple && face->triple->order() == TRIP)
@@ -5980,6 +5991,7 @@ void CleaverMesherImp::snapAndWarpEdgeViolations(bool verbose)
     // then check quadruples violating edges
     for(unsigned int t=0; t < m_bgMesh->tets.size(); t++)
     {
+        if (verbose) status.printStatus();
         cleaver::Tet *tet = m_bgMesh->tets[t];
         if(tet->quadruple && tet->quadruple->order() == QUAD)
             checkIfQuadrupleViolatesEdges(tet);
@@ -5993,10 +6005,12 @@ void CleaverMesherImp::snapAndWarpEdgeViolations(bool verbose)
     // reset evaluation flag, so we can use to avoid duplicates
     while(edgesIter != m_bgMesh->halfEdges.end())
     {
+        if (verbose) status.printStatus();
         HalfEdge *edge = (*edgesIter).second;    // TODO: add  redundancy checks
         snapAndWarpForViolatedEdge(edge);        //           to reduce workload.
         edgesIter++;
     }
+    if (verbose) status.done();
     if(verbose)
         std::cout << "Phase 2 Complete" << std::endl;
 }
@@ -6042,11 +6056,14 @@ void CleaverMesherImp::snapAndWarpFaceViolations(bool verbose)
     //---------------------------------------------------
     //  Apply snapping to all remaining face-triples
     //---------------------------------------------------
+    Status status (4*m_bgMesh->tets.size());
     for(unsigned int f=0; f < 4*m_bgMesh->tets.size(); f++)
     {
+        if (verbose) status.printStatus();
         HalfFace *face = &m_bgMesh->halfFaces[f];  // TODO: add  redundancy checks
         snapAndWarpForViolatedFace(face);         //           to reduce workload.
     }
+    if (verbose) status.done();
     if(verbose)
         std::cout << "Phase 3 Complete" << std::endl;
 }
@@ -6449,8 +6466,10 @@ void CleaverMesherImp::stencilBackgroundTets(bool verbose)
         std::cout << "Filling in Stencils..." << std::endl;
 
     // be safe, and remove ALL old adjacency info on tets
+    Status status(m_bgMesh->verts.size() + m_bgMesh->tets.size());
     for(unsigned int v=0; v < m_bgMesh->verts.size(); v++)
     {
+        if (verbose) status.printStatus();
         Vertex *vertex = m_bgMesh->verts[v];
         vertex->tets.clear();
         vertex->tm_v_index = -1;
@@ -6471,6 +6490,7 @@ void CleaverMesherImp::stencilBackgroundTets(bool verbose)
     //-------------------------------
     for(size_t t=0; t < m_bgMesh->tets.size(); t++)
     {
+        if (verbose) status.printStatus();
         // ----------------------------------------
         // Grab Handle to Current Background Tet
         // ----------------------------------------
@@ -6680,6 +6700,7 @@ void CleaverMesherImp::stencilBackgroundTets(bool verbose)
 
         }
     }
+    if (verbose) status.done();
 
 
     // mesh is now 'done'

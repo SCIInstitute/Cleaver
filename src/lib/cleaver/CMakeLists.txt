@@ -66,6 +66,7 @@ SET(Cleaver_API_HEADER_FILES
     BoundingBox.h
     vec3.h
     Timer.h
+    Status.h
     )
 
 ADD_DEFINITIONS(-DTETLIBRARY)

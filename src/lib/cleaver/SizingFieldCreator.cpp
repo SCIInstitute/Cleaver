@@ -52,6 +52,7 @@
 #include "vec3.h"
 #include "Octree.h"
 #include "BoundingBox.h"
+#include "Status.h"
 
 using namespace std;
 
@@ -271,6 +272,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
     mesh_bdry.init(w,h,d);
     mesh_feature.init(w,h,d);
 
+    Status status(w*d*h);
     for(k=0; k<d; k++)
     {
         for(j=0; j<h; j++)
@@ -292,9 +294,13 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                     }
                 }
                 voxel[i][j][k].mat=dom;
+                if (verbose) status.printStatus();
             }
         }
     }
+    if (verbose) status.done();
+    if (verbose) std::cout << "Finding boundary vertices..." << std::endl;
+    if (verbose) status = Status(w*h*d*6);
 
     //Find Boundary Vertices
     for(i=0; i<w; i++)
@@ -330,10 +336,12 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                         if(dist<mesh_bdry.dist[i][j][k])
                             mesh_bdry.dist[i][j][k]=dist;
                     }
+                    if (verbose) status.printStatus();
                 }
             }
         }
     }
+    if (verbose) status.done();
 
     if(!adaptiveSurface)
     {
@@ -374,6 +382,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
             nrrd_file << "encoding: raw" << std::endl;
             nrrd_file << std::endl;
 
+            if (verbose) status = Status(h*w*d);
             // write data portion
             for(int k=0; k < d; k++)
             {
@@ -383,6 +392,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                     {
                         float val = (float)mesh_bdry.dist[i][j][k];
                         nrrd_file.write((char*)&val, sizeof(float));
+                        if (verbose) status.printStatus();
                         //if(val<1)
                         //    cout<<i<<" "<<j<<" "<<k<<" "<<dist[i][j][k]<<endl;
                     }
@@ -392,11 +402,10 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
             nrrd_file.close();
         }
 
+        if (verbose) status.done();
 
 
-
-
-//        printf("\tComputing the distance transform\n"); fflush(stdout);
+        if (verbose) printf("\tComputing the distance transform\n"); 
         proceed(mesh_bdry, zeros, 1, 1e6);
 
 
@@ -421,6 +430,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
             nrrd_file << "encoding: raw" << std::endl;
             nrrd_file << std::endl;
 
+            if (verbose) status = Status(h*w*d);
             // write data portion
             for(int k=0; k < d; k++)
             {
@@ -430,6 +440,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                     {
                         float val = (float)mesh_bdry.dist[i][j][k];
                         nrrd_file.write((char*)&val, sizeof(float));
+                        if (verbose) status.printStatus();
                         //if(val<1)
                         //    cout<<i<<" "<<j<<" "<<k<<" "<<dist[i][j][k]<<endl;
                     }
@@ -438,16 +449,20 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
 
             nrrd_file.close();
         }
+        if (verbose) status.done();
 
         //Search for discontinuity
-//        printf("\tSearching for discontinuity in the distance field\n"); fflush(stdout);
+        if (verbose)
+          printf("\tSearching for discontinuity in the distance field\n"); 
         medialaxis.clear();
+        if (verbose) status = Status((h-1)*(w-1)*(d-1) + (h-3)*(w-3)*(d-3));
         for(i=1; i<w; i++)
         {
             for(j=1; j<h; j++)
             {
                 for(k=1; k<d; k++)
                 {
+                    if (verbose) status.printStatus();
                     a=mesh_bdry.dist[i][j][k];
                     //if(i==236 && j==179 && k==229)
                     //    cout<<i<<" "<<j<<" "<<k<<" "<<a<<endl;
@@ -504,6 +519,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
             {
                 for(k=1; k<d-2; k++)
                 {
+                    if (verbose) status.printStatus();
                     if(myBdry[i][j][k])
                         continue;
                     a=mesh_bdry.dist[i][j][k];
@@ -569,6 +585,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                 }
             }
         }
+        if (verbose) status.done();
 
         filename = "medial.nrrd";
         if (m_verbose)
@@ -591,6 +608,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
             nrrd_file << "encoding: raw" << std::endl;
             nrrd_file << std::endl;
 
+            if (verbose) status = Status(w*h*d);
             // write data portion
             for(int k=0; k < d; k++)
             {
@@ -600,6 +618,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                     {
                         float val = (float)mesh_feature.dist[i][j][k];
                         nrrd_file.write((char*)&val, sizeof(float));
+                        if (verbose) status.printStatus();
                         //if(val<1)
                         //    cout<<i<<" "<<j<<" "<<k<<" "<<dist[i][j][k]<<endl;
                     }
@@ -608,11 +627,12 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
 
             nrrd_file.close();
         }
+        if (verbose) status.done();
 
         //Thinning (if necessary)
         //Associate the feature size with the with the boundary voxels
         //BSF on the from media axis voxels to boundary voxels
-//        printf("\tComputing the feature size at the boundary vertices\n"); fflush(stdout);
+        if (verbose) printf("\tComputing the feature size at the boundary vertices\n"); 
         proceed(mesh_feature, medialaxis, 1, 1e6);
 
         vec3 mypadding = m_sampleFactor*m_padding;
@@ -640,6 +660,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
             nrrd_file << "encoding: raw" << std::endl;
             nrrd_file << std::endl;
 
+            if (verbose) status = Status(w*h*d);
             // write data portion
             for(int k=0; k < d; k++)
             {
@@ -649,6 +670,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                     {
                         float val = (float)mesh_feature.dist[i][j][k];
                         nrrd_file.write((char*)&val, sizeof(float));
+                        if (verbose) status.printStatus();
                         //if(val<1)
                         //    cout<<i<<" "<<j<<" "<<k<<" "<<dist[i][j][k]<<endl;
                     }
@@ -659,7 +681,9 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
         }
     }
 
-//    printf("\tComputing the sizing field in the interior vertices\n"); fflush(stdout);
+    if (verbose) status.done();
+    if (verbose) 
+      printf("\tComputing the sizing field in the interior vertices\n"); 
     //takeTheLog(mesh_padded_feature,zeros);
     proceed(mesh_padded_feature, zeros, speed, 1e6);
     //exponentiate(mesh_padded_feature);
@@ -676,6 +700,7 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
         int h = mesh_padded_feature.dist[0].size();
         int d = mesh_padded_feature.dist[0][0].size();
 
+        if (verbose) status = Status(w*h*d);
         for(int k=0; k < d; k++)
         {
             for(int j=0; j < h; j++)
@@ -683,10 +708,12 @@ SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed, float 
                 for(int i=0; i < w; i++)
                 {
                     mesh_padded_feature.dist[i][j][k] *= m_sizingFactor;
+                    if (verbose) status.printStatus();
                 }
             }
         }
     }
+    if (verbose) status.done();
 }
 
 SizingFieldCreator::~SizingFieldCreator()
