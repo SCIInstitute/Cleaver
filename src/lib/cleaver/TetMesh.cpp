@@ -339,6 +339,8 @@ float TetMesh::getJacobian(Tet* tet) {
 }
     
 size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
+    if (verbose) std::cout << 
+      "Fixing Jacobians & Removing bad tets..." << std::endl;
     float epsilon = 1e-9f;
     size_t beforeCount = tets.size();
     size_t count = 0;
