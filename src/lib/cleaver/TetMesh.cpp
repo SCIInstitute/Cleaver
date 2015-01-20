@@ -341,24 +341,28 @@ float TetMesh::getJacobian(Tet* tet) {
 size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
     if (verbose) std::cout << 
       "Fixing Jacobians & Removing bad tets..." << std::endl;
-    float epsilon = 1e-9f;
-    size_t beforeCount = tets.size();
+    float epsilon = 1e-12f;
     size_t count = 0;
+    size_t beforeCount = tets.size();
     Status s(tets.size());
+    std::vector<Tet*>::iterator iter = tets.begin();
     // loop over all tets in the mesh
-    for(size_t i = 0; i < tets.size(); i++) {
-        Tet* tet = tets.at(i);
-        float jacobian = getJacobian(tet);
-        if (jacobian < 0.f) {
-            Vertex* tmp = tet->verts[2];
-            tet->verts[2] = tet->verts[3];
-            tet->verts[3] = tmp;
-            count++;
-        }
+    while(iter != tets.end()) {
+        Tet* tet = *iter;
+        float jacobian = 0.f;
         if(tet->maxAngle() == 180.f ||
            tet->minAngle() == 0.f   ||
-           std::abs(jacobian) < epsilon) 
-             removeTet(i);
+           std::abs((jacobian = getJacobian(tet))) < epsilon) 
+             iter = removeTet(iter);
+        else {
+          if (jacobian < 0.f) {
+              Vertex* tmp = tet->verts[2];
+              tet->verts[2] = tet->verts[3];
+              tet->verts[3] = tmp;
+              count++;
+          }
+          iter++;
+        }
         if (verbose)
           s.printStatus();
     }
