@@ -92,3 +92,8 @@ For a list of command line tool options.
       --output_name arg        output mesh name
       --output_format arg      output mesh format
       --strict                 warnings become errors
+Known Issues
+========
+
+ * On larger data sets with a potentially high number of quadruple points (> 3 material fields), some functions are not implemented that ensure valid tets and meshes, causing bad tets in the final output. This code is being implemented now for a future release.
+ * The wind up order for tets may be incorrect for jacobian calculations. This may or may not be fixed in the future. There is a flag in the command line interface that re-orders vertices at the end of meshing if this is important for your output. 
