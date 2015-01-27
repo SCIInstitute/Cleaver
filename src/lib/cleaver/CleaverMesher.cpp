@@ -4205,31 +4205,147 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
     vec3 q  = quadruple->pos();
 
     // check edge1, using edges e2,e3, e4,e6
-    {
-        float t1;
-        float n1;
-        float q1;
-        double d1;
+    if(!quadruple->violating){
+        float t1 = edges[1]->alphaForVertex(verts[0]);   // e2
+        float t2 = edges[2]->alphaForVertex(verts[0]);   // e3
+        vec3 c1 = (1 - t1)*v1 + t1*v3;
+        vec3 c2 = (1 - t2)*v1 + t2*v4;
+        vec3 n1 = normalize(cross(c1 - v2, c2 - v2));
+        float q1 = q - v2;
+        double d1 = dot(n1, q1);
+
+        float t3 = edges[3]->alphaForVertex(verts[1]);   // e4
+        float t4 = edges[5]->alphaForVertex(verts[1]);   // e6
+        vec3 c3 = (1 - t3)*v2  + t3*v3;
+        vec3 c4 = (1 - t4)*v2  + t4*v4;
+        vec3 n2 = normalize(cross(c4 - v1, c3 - v1));
+        float q2 = q - v1;
+        double d2 = dot(n2, q2);
+
+        if(d1 > 0 && d2 > 0) {
+            quadruple->violating = true;
+            quadruple->closestGeometry = edges[0];
+        }
     }
+
     // check edge2, using edges e1,e3, e4,e5
-    {
+    if(!quadruple->violating){
+        float t1 = edges[0]->alphaForVertex(verts[0]);  // e1
+        float t2 = edges[2]->alphaForVertex(verts[0]);  // e3
+        vec3 c1 = (1 - t1)*v1 + t1*v2;
+        vec3 c2 = (1 - t2)*v1 + t2*v4;
+        vec3 n1 = normalize(cross(c2 - v3, c1 - v3));
+        float q1 = q - v3;
+        double d1 = dot(n1, q1);
 
+        float t3 = edges[3]->alphaForVertex(verts[2]);  // e4
+        float t4 = edges[4]->alphaForVertex(verts[2]);  // e5
+        vec3 c3 = (1 - t3)*v3 + t3*v2;
+        vec3 c4 = (1 - t4)*v3 + t4*v4;
+        vec3 n2 = normalize(cross(c3 - v1, c4 - v1));
+        float q2 = q - v1;
+        double d2 = dot(n2, q2);
+
+        if(d1 > 0 && d2 > 0) {
+            quadruple->violating = true;
+            quadruple->closestGeometry = edges[1];
+        }
     }
+
     // check edge3, using edges e1,e2, e5,e6
-    {
+    if(!quadruple->violating){
+        float t1 = edges[0]->alphaForVertex(verts[0]); // e1
+        float t2 = edges[1]->alphaForVertex(verts[0]); // e2
+        vec3 c1 = (1 - t1)*v1 + t1*v2;
+        vec3 c2 = (1 - t2)*v1 + t2*v3;
+        float n1 = normalize(cross(c2 - v4, c1 - v4));
+        float q1 = q - v4;
+        double d1 = dot(n1, q1);
 
+        float t3 = edges[5]->alphaForVertex(verts[3]); // e6
+        float t4 = edges[4]->alphaForVertex(verts[3]); // e5
+        vec3 c3 = (1 - t3)*v4 + t3*v2;
+        vec3 c4 = (1 - t4)*v4 + t4*v3;
+        float n2 = normalize(cross(c4 - v1), c3 - v1);
+        float q2 = q - v1;
+        double d2 = dot(n2, q2);
+
+        if(d1 > 0 && d2 > 0) {
+            quadruple->violating = true;
+            quadruple->closestGeometry = edges[2];
+        }
     }
+
     // check edge4, using edges e1,e6, e2,e5
-    {
+    if(!quadruple->violating){
+        float t1 = edges[0]->alphaForVertex(verts[1]); // e1
+        float t2 = edges[5]->alphaForVertex(verts[1]); // e6
+        vec3 c1 = (1 - t1)*v2 + t1*v1;
+        vec3 c2 = (1 - t2)*v2 + t2*v4;
+        vec3 n1 = normalize(cross(c1 - v3, c2 - v3));
+        vec3 q1 = q - v3;
+        double d1 = dot(n1, q1);
 
+        float t3 = edges[1]->alphaForVertex(verts[2]); // e2
+        float t4 = edges[4]->alphaForVertex(verts[2]); // e5
+        vec3 c3 = (1 - t3)*v3 + t3*v1;
+        vec3 c4 = (1 - t4)*v3 + t4*v4;
+        vec3 n2 = normalize(cross(c4 - v2, c3 - v2));
+        vec3 q2 = q - v2;
+        double d2 = dot(n2, q2);
+
+        if(d1 > 0 && d2 > 0) {
+            quadruple->violating = true;
+            quadruple->closestGeometry = edges[3];
+        }
     }
+
     // check edge5, using edges e2,e4, e3,e6
-    {
+    if(!quadruple->violating){
+        float t1 = edges[1]->alphaForVertex(verts[2]); // e2
+        float t2 = edges[3]->alphaForVertex(verts[2]); // e4
+        vec3 c1 = (1 - t3)*v3 + t3*v1;
+        vec3 c2 = (1 - t4)*v3 + t4*v2;
+        vec3 n1 = normalize(cross(c1 - v4, c2 - v4));
+        vec3 q1 = q - v4;
+        double d1 = dot(n1, q1);
 
+        float t3 = edges[2]->alphaForVertex(verts[3]); // e3
+        float t4 = edges[5]->alphaForVertex(verts[3]); // e6
+        vec3 c3 = (1 - t1)*v4 + t1*v1;
+        vec3 c4 = (1 - t2)*v4 + t2*v2;
+        vec3 n2 = normalize(cross(c4 - v3, c3 - v3));
+        vec3 q2 = q - v3;
+        double d2 = dot(n2, q2);
+
+        if(d1 > 0 && d2 > 0) {
+            quadruple->violating = true;
+            quadruple->closestGeometry = edges[4];
+        }
     }
-    // check edge6, using edges e1,e4, e3, e5
-    {
 
+    // check edge6, using edges e1,e4, e3, e5
+    if(!quadruple->violating){
+        float t1 = edges[0]->alphaForVertex(verts[1]); // e1
+        float t2 = edges[3]->alphaForVertex(verts[1]); // e4
+        vec3 c1 = (1 - t1)*v2 + t1*v1;
+        vec3 c2 = (1 - t2)*v2 + t2*v3;
+        vec3 n1 = normalize(cross(c2 - v4, c1 - v4));
+        vec3 q1 = q - v4;
+        double d1 = dot(n1, q1);
+
+        float t3 = edges[2]->alphaForVertex(verts[3]); // e3
+        float t4 = edges[4]->alphaForVertex(verts[3]); // e5
+        vec3 c3 = (1 - t3)*v4 + t3*v1;
+        vec3 c4 = (1 - t4)*v4 + t4*v3;
+        vec3 n2 = normalize(cross(c3 - v2, c4 - v2));
+        vec3 q2 = q - v2;
+        double d2 = dot(n2, q2);
+
+        if(d1 > 0 && d2 > 0) {
+            quadruple->violating = true;
+            quadruple->closestGeometry = edges[5];
+        }
     }
 }
 
