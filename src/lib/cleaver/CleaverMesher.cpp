@@ -3918,6 +3918,10 @@ void CleaverMesherImp::checkIfTripleViolatesVertices(HalfFace *face)
 //===============================================================
 void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
 {
+    // Return immediately if quadruple doesn't exist
+    if(!tet->quadruple || tet->quadruple->order() != QUAD)
+        return;
+
     Vertex *quad = tet->quadruple;
     quad->violating = false;
 
@@ -4181,7 +4185,52 @@ void CleaverMesherImp::checkIfTripleViolatesEdges(HalfFace *face)
 //---------------------------------------------------------------
 void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
 {
+    // Return immediately if quadruple doesn't exist
+    if(!tet->quadruple || tet->quadruple->order() != QUAD)
+        return;
 
+    Vertex *quadruple = tet->quadruple;
+    quadruple->violating = false;
+
+    Vertex   *verts[VERTS_PER_TET];
+    HalfEdge *edges[EDGES_PER_TET];
+    HalfFace *faces[FACES_PER_TET];
+
+    m_bgMesh->getAdjacencyListsForTet(tet, verts, edges, faces);
+
+    vec3 v1 = verts[0]->pos();
+    vec3 v2 = verts[1]->pos();
+    vec3 v3 = verts[2]->pos();
+    vec3 v4 = verts[3]->pos();
+    vec3 q  = quadruple->pos();
+
+    // check edge1, using edges e2,e3, e4,e6
+    {
+        float t1;
+        float n1;
+        float q1;
+        double d1;
+    }
+    // check edge2, using edges e1,e3, e4,e5
+    {
+
+    }
+    // check edge3, using edges e1,e2, e5,e6
+    {
+
+    }
+    // check edge4, using edges e1,e6, e2,e5
+    {
+
+    }
+    // check edge5, using edges e2,e4, e3,e6
+    {
+
+    }
+    // check edge6, using edges e1,e4, e3, e5
+    {
+
+    }
 }
 
 //---------------------------------------------------------------
@@ -4189,6 +4238,42 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
 //---------------------------------------------------------------
 void CleaverMesherImp::checkIfQuadrupleViolatesFaces(Tet *tet)
 {
+    // Return immediately if quadruple doesn't exist
+    if(!tet->quadruple || tet->quadruple->order() != QUAD)
+        return;
+
+    Vertex *quadruple = tet->quadruple;
+    quadruple->violating = false;
+
+    Vertex   *verts[VERTS_PER_TET];
+    HalfEdge *edges[EDGES_PER_TET];
+    HalfFace *faces[FACES_PER_TET];
+
+    m_bgMesh->getAdjacencyListsForTet(tet, verts, edges, faces);
+
+    vec3 v1 = verts[0]->pos();
+    vec3 v2 = verts[1]->pos();
+    vec3 v3 = verts[2]->pos();
+    vec3 v4 = verts[3]->pos();
+    vec3 q  = quadruple->pos();
+
+
+    // check face1, using edges e3, e5, e6
+    {
+
+    }
+    // check face2, using edges e1, e4, e6
+    {
+
+    }
+    // check face3, using edges e2, e4, e5
+    {
+
+    }
+    // check face4, using edges, e1, e2, e3
+    {
+
+    }
 
 }
 
