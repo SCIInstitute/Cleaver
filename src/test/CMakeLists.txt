@@ -27,3 +27,7 @@ cxx_test(cli_vtk gtest_main test/cli_common.cc)
 cxx_test(cli_jacobian gtest_main test/cli_common.cc)
 cxx_test(cli_scirun gtest_main test/cli_common.cc)
 cxx_test(cli_matlab gtest_main test/cli_common.cc)
+
+
+add_executable(cleaver_unit_tests cleaver/CleaverMesherTests.cpp)
+target_link_libraries(cleaver_unit_tests gtest gtest_main cleaver)

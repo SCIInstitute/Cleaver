@@ -1,4 +1,5 @@
 #include "CleaverMesher.h"
+#include "CleaverMesherImpl.h"
 #include "StencilTable.h"
 #include "TetMesh.h"
 #include "Octree.h"
@@ -28,22 +29,7 @@ void clipRoots(double s[3], int &num_roots);
 
 namespace cleaver
 {
-#ifndef NULL
-#define NULL 0
-#endif
 
-#define VERT 0
-#define CUT  1
-#define TRIP 2
-#define QUAD 3
-
-#define VERTS_PER_FACE 3
-#define EDGES_PER_FACE 3
-#define  TETS_PER_FACE 2
-
-#define VERTS_PER_TET 4
-#define EDGES_PER_TET 6
-#define FACES_PER_TET 4
 
 
 static const double DEFAULT_ALPHA_LONG  = 0.357;
@@ -124,172 +110,8 @@ const int CELL_VERT_COORDS[8][3] = {
    {0,1,1},   // upper front left
 };
 
-class vec3order{
-public:
-
-    bool operator()(const vec3 &a, const vec3 &b) const
-    {
-
-        bool less = ( less_eps(a.x, b.x) ||
-                    (equal_eps(a.x, b.x) &&  less_eps(a.y, b.y)) ||
-                    (equal_eps(a.x, b.x) && equal_eps(a.y, b.y)  && less_eps(a.z, b.z)));
-
-
-        return less;
-    }
-
-private:
-
-    double equal_eps(double x, double y) const
-    {
-        double tol = std::max(x,y)*eps;
-
-        if(fabs(x-y) <= tol)
-            return true;
-        else
-            return false;
-    }
-
-    double less_eps(double x, double y) const
-    {
-        double tol = std::max(x,y)*eps;
-
-        if(fabs(x-y) <= tol)
-            return false;
-        else
-            return (x < y);
-    }
-    static double eps;
-};
 
 double vec3order::eps = 1E-8;
-
-
-
-class CleaverMesherImp
-{
-public:
-    CleaverMesherImp();
-    ~CleaverMesherImp();
-    ScalarField<float>* createSizingField();
-    Octree* createOctree();
-    Octree* createOctreeBottomUp();
-    void resetCellsAroundPos(const vec3 &pos);
-    void resetPosForCell(OTCell *cell);
-    std::vector<OTCell*> cellsAroundPos(const vec3 &pos);
-    vec3 truePosOfPos(const vec3 &pos);
-    bool posWasWarped(const vec3 &pos);
-    bool checkSafetyBetween(const vec3 &v1_orig, const vec3 &v2_orig, bool v1_warpable = true, bool v2_warpable = true);
-    void createWarpedVertices(OTCell *cell);
-    void makeCellRespectTopology(OTCell *cell);
-    void subdivideTreeToTopology();
-    void conformCellToDomain(OTCell *cell);
-    void conformOctreeToDomain();
-    void balanceOctree();
-    void balanceOctreeNew();
-    void altBalanceOctree();
-    void createBackgroundVerts();
-    void createBackgroundTets();
-    void topologicalCleaving();
-    void resetMeshProperties();
-    TetMesh* createBackgroundMesh(bool verbose = false);
-    void setBackgroundMesh(TetMesh*);
-    void adaptCell(OTCell *cell);
-
-    void createVisualizationTets(OTCell *cell);
-    TetMesh* createVisualizationBackgroundMesh();
-    Vertex* vertexForPosition(const vec3 &pos, bool create=true);
-    vec3    warpForPosition(const vec3 &position);
-    void setWarpForPosition(const vec3 &position, const vec3 &warp);
-
-    void computeLagrangePolynomial(const vec3 &p1, const vec3 &p2, const vec3 &p3, const vec3 &p4, double coefficients[4]);
-    void computeTopologicalInterfaces(bool verbose = false);
-    void computeTopologicalCutForEdge(HalfEdge *edge);
-    void computeTopologicalCutForEdge2(HalfEdge *edge);
-    void computeTopologicalTripleForFace(HalfFace *face);
-    void computeTopologicalQuadrupleForTet(Tet *tet);
-    void generalizeTopologicalTets(bool verbose = false);
-
-    void buildAdjacency(bool verbose = false);
-    void sampleVolume(bool verbose = false);
-    void computeAlphas(bool verbose = false,
-                       bool regular = false,
-                       double alp_long = 0.4,
-                       double alp_short = 0.4);
-    void computeAlphasAlt(bool verbose = false);
-    void computeInterfaces(bool verbose = false);
-    void computeCutForEdge(HalfEdge *edge);
-    void computeTripleForFace(HalfFace *face);
-    void computeTripleForFace2(HalfFace *face);
-    void computeQuadrupleForTet(Tet* tet);
-    void generalizeTets(bool verbose = false);
-    void snapAndWarpViolations(bool verbose = false);
-    void stencilBackgroundTets(bool verbose = false);
-
-    void snapAndWarpVertexViolations(bool verbose = false);
-    void snapAndWarpEdgeViolations(bool verbose = false);
-    void snapAndWarpFaceViolations(bool verbose = false);
-
-    void snapAndWarpForViolatedVertex(Vertex *vertex);
-    void snapAndWarpForViolatedEdge(HalfEdge *edge);
-    void snapAndWarpForViolatedFace(HalfFace *face);
-
-    void conformQuadruple(Tet *tet, Vertex *warpVertex, const vec3 &warpPt);
-    void conformTriple(HalfFace *face, Vertex *warpVertex, const vec3 &warpPt);
-
-    void checkIfCutViolatesVertices(HalfEdge *edge);
-    void checkIfTripleViolatesVertices(HalfFace *face);
-    void checkIfQuadrupleViolatesVertices(Tet *tet);
-
-    void checkIfTripleViolatesEdges(HalfFace *face);  // to write and use
-    void checkIfQuadrupleViolatesEdges(Tet *tet);     // to write and use
-    void checkIfQuadrupleViolatesFaces(Tet *tet);     // to write and use
-
-    void snapCutForEdgeToVertex(HalfEdge *edge, Vertex* vertex);
-    void snapTripleForFaceToVertex(HalfFace *face, Vertex* vertex);
-    void snapQuadrupleForTetToVertex(Tet *tet, Vertex* vertex);
-
-    void snapTripleForFaceToCut(HalfFace *face, Vertex *cut);
-    void snapQuadrupleForTetToCut(Tet *tet, Vertex *cut);
-    void snapQuadrupleForTetToEdge(Tet *tet, HalfEdge *edge);
-    void snapQuadrupleForTetToTriple(Tet *tet, Vertex *triple);
-
-    void resolveDegeneraciesAroundVertex(Vertex *vertex);
-    void resolveDegeneraciesAroundEdge(HalfEdge *edge);
-
-    Tet* getInnerTet(HalfEdge *edge, Vertex *warpVertex, const vec3 &warpPt);
-    Tet* getInnerTet(HalfFace *face, Vertex *warpVertex, const vec3 &warpPt);
-    vec3 projectCut(HalfEdge *edge, Tet *tet, Vertex *warpVertex, const vec3 &warpPt);
-    vec3 projectTriple(HalfFace *face, Vertex *quadruple, Vertex *warpVertex, const vec3 &warpPt);
-
-
-    // -- algorithm state --
-    bool m_bBackgroundMeshCreated;
-    bool m_bAdjacencyBuilt;
-    bool m_bSamplingDone;
-    bool m_bAlphasComputed;
-    bool m_bInterfacesComputed;
-    bool m_bGeneralized;
-    bool m_bSnapsAndWarpsDone;
-    bool m_bStencilsDone;
-    bool m_bComplete;
-
-    double m_sizing_field_time;
-    double m_background_time;
-    double m_cleaving_time;
-
-    CleaverMesher::TopologyMode m_topologyMode;
-  	double m_alpha_init;
-
-    Volume *m_volume;
-    AbstractScalarField *m_sizingField;
-    SizingFieldOracle   *m_sizingOracle;
-    Octree *m_tree;
-    TetMesh *m_bgMesh;
-    TetMesh *m_mesh;
-    std::map<vec3, Vertex*, vec3order> m_vertex_tracker;
-    std::map<vec3,    vec3, vec3order> m_warp_tracker;
-};
 
 CleaverMesherImp::CleaverMesherImp()
 {
@@ -3957,13 +3779,13 @@ void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
         vec3  q3 = q - ev3;                                        // quadruple in locall coordinate fram
         double d3 = dot(n3, q3);                                   // distance from quad to plane
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quad->violating = true;
             quad->closestGeometry = verts[0];
         }
     }
 
-      // check v2 - using edges e1(v1), e4(v3), e6(v4)
+      // check v2 - using edges e1(v1), e4(v3), e5(v4)
     if(!quad->violating){
         float t1 = edges[0]->alphaForVertex(verts[1]);
         vec3 ev1 = (1 - t1)*v2 + t1*v1;
@@ -3971,7 +3793,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
         vec3  q1 = q - ev1;
         double d1 = dot(n1, q1);
 
-        float t2 = edges[5]->alphaForVertex(verts[1]);
+        float t2 = edges[4]->alphaForVertex(verts[1]);
         vec3 ev2 = (1 - t2)*v2 + t2*v4;
         vec3  n2 = normalize(cross(v3 - ev2, v1 - ev2));
         vec3  q2 = q - ev2;
@@ -3983,13 +3805,13 @@ void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
         vec3  q3 = q - ev3;
         double d3 = dot(n3, q3);
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quad->violating = true;
             quad->closestGeometry = verts[1];
         }
     }
 
-    // check v3 - using edges e2, e4, e5
+    // check v3 - using edges e2, e4, e6
     if(!quad->violating){
         double t1 = edges[1]->alphaForVertex(verts[2]);
         vec3 ev1 = (1 - t1)*v3  + t1*v1;
@@ -3997,7 +3819,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
         vec3  q1 = q - ev1;
         double d1 = dot(n1, q1);
 
-        double t2 = edges[4]->alphaForVertex(verts[2]);
+        double t2 = edges[5]->alphaForVertex(verts[2]);
         vec3 ev2 = (1 - t2)*v3  + t2*v4;
         vec3  n2 = normalize(cross(v1 - ev2, v2 - ev2));
         vec3  q2 = q - ev2;
@@ -4009,7 +3831,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
         vec3  q3 = q - ev3;
         double d3 = dot(n3, q3);
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quad->violating = true;
             quad->closestGeometry = verts[2];
         }
@@ -4023,19 +3845,19 @@ void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
         vec3  q1 = q - ev1;
         double d1 = dot(n1, q1);
 
-        double t2 = edges[4]->alphaForVertex(verts[3]);
+        double t2 = edges[5]->alphaForVertex(verts[3]);
         vec3 ev2 = (1 - t2)*v4  + t2*v3;
         vec3  n2 = normalize(cross(v2 - ev2, v1 - ev2));
         vec3  q2 = q - ev2;
         double d2 = dot(n2, q2);
 
-        double t3 = edges[5]->alphaForVertex(verts[3]);
+        double t3 = edges[4]->alphaForVertex(verts[3]);
         vec3 ev3 = (1 - t3)*v4 + t3*v2;
         vec3  n3 = normalize(cross(v1 - ev3, v3 - ev3));
         vec3  q3 = q - ev3;
         double d3 = dot(n3, q3);
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quad->violating = true;
             quad->closestGeometry = verts[3];
         }
@@ -4204,7 +4026,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
     vec3 v4 = verts[3]->pos();
     vec3 q  = quadruple->pos();
 
-    // check edge1, using edges e2,e3, e4,e6
+    // check edge1, using edges e2,e3, e4,e5
     if(!quadruple->violating){
         float t1 = edges[1]->alphaForVertex(verts[0]);   // e2
         float t2 = edges[2]->alphaForVertex(verts[0]);   // e3
@@ -4215,7 +4037,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         double d1 = dot(n1, q1);
 
         float t3 = edges[3]->alphaForVertex(verts[1]);   // e4
-        float t4 = edges[5]->alphaForVertex(verts[1]);   // e6
+        float t4 = edges[4]->alphaForVertex(verts[1]);   // e6
         vec3 c3 = (1 - t3)*v2  + t3*v3;
         vec3 c4 = (1 - t4)*v2  + t4*v4;
         vec3 n2 = normalize(cross(c4 - v1, c3 - v1));
@@ -4228,7 +4050,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         }
     }
 
-    // check edge2, using edges e1,e3, e4,e5
+    // check edge2, using edges e1,e3, e4,e6
     if(!quadruple->violating){
         float t1 = edges[0]->alphaForVertex(verts[0]);  // e1
         float t2 = edges[2]->alphaForVertex(verts[0]);  // e3
@@ -4239,7 +4061,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         double d1 = dot(n1, q1);
 
         float t3 = edges[3]->alphaForVertex(verts[2]);  // e4
-        float t4 = edges[4]->alphaForVertex(verts[2]);  // e5
+        float t4 = edges[5]->alphaForVertex(verts[2]);  // e5
         vec3 c3 = (1 - t3)*v3 + t3*v2;
         vec3 c4 = (1 - t4)*v3 + t4*v4;
         vec3 n2 = normalize(cross(c3 - v1, c4 - v1));
@@ -4258,12 +4080,12 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         float t2 = edges[1]->alphaForVertex(verts[0]); // e2
         vec3 c1 = (1 - t1)*v1 + t1*v2;
         vec3 c2 = (1 - t2)*v1 + t2*v3;
-        vec3 n1 = normalize(cross(c2 - v4, c1 - v4));
+        vec3 n1 = normalize(cross(c1 - v4, c2 - v4));
         vec3 q1 = q - v4;
         double d1 = dot(n1, q1);
 
-        float t3 = edges[5]->alphaForVertex(verts[3]); // e6
-        float t4 = edges[4]->alphaForVertex(verts[3]); // e5
+        float t3 = edges[4]->alphaForVertex(verts[3]); // e5
+        float t4 = edges[5]->alphaForVertex(verts[3]); // e6
         vec3 c3 = (1 - t3)*v4 + t3*v2;
         vec3 c4 = (1 - t4)*v4 + t4*v3;
         vec3 n2 = normalize(cross(c4 - v1, c3 - v1));
@@ -4276,10 +4098,10 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         }
     }
 
-    // check edge4, using edges e1,e6, e2,e5
+    // check edge4, using edges e1,e5, e2,e6
     if(!quadruple->violating){
         float t1 = edges[0]->alphaForVertex(verts[1]); // e1
-        float t2 = edges[5]->alphaForVertex(verts[1]); // e6
+        float t2 = edges[4]->alphaForVertex(verts[1]); // e5
         vec3 c1 = (1 - t1)*v2 + t1*v1;
         vec3 c2 = (1 - t2)*v2 + t2*v4;
         vec3 n1 = normalize(cross(c1 - v3, c2 - v3));
@@ -4287,7 +4109,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         double d1 = dot(n1, q1);
 
         float t3 = edges[1]->alphaForVertex(verts[2]); // e2
-        float t4 = edges[4]->alphaForVertex(verts[2]); // e5
+        float t4 = edges[5]->alphaForVertex(verts[2]); // e5
         vec3 c3 = (1 - t3)*v3 + t3*v1;
         vec3 c4 = (1 - t4)*v3 + t4*v4;
         vec3 n2 = normalize(cross(c4 - v2, c3 - v2));
@@ -4300,31 +4122,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         }
     }
 
-    // check edge5, using edges e2,e4, e3,e6
-    if(!quadruple->violating){
-        float t1 = edges[1]->alphaForVertex(verts[2]); // e2
-        float t2 = edges[3]->alphaForVertex(verts[2]); // e4
-        vec3 c1 = (1 - t1)*v3 + t1*v1;
-        vec3 c2 = (1 - t2)*v3 + t2*v2;
-        vec3 n1 = normalize(cross(c1 - v4, c2 - v4));
-        vec3 q1 = q - v4;
-        double d1 = dot(n1, q1);
-
-        float t3 = edges[2]->alphaForVertex(verts[3]); // e3
-        float t4 = edges[5]->alphaForVertex(verts[3]); // e6
-        vec3 c3 = (1 - t3)*v4 + t3*v1;
-        vec3 c4 = (1 - t4)*v4 + t4*v2;
-        vec3 n2 = normalize(cross(c4 - v3, c3 - v3));
-        vec3 q2 = q - v3;
-        double d2 = dot(n2, q2);
-
-        if(d1 > 0 && d2 > 0) {
-            quadruple->violating = true;
-            quadruple->closestGeometry = edges[4];
-        }
-    }
-
-    // check edge6, using edges e1,e4, e3, e5
+    // check edge5, using edges e1,e4, e3, e6
     if(!quadruple->violating){
         float t1 = edges[0]->alphaForVertex(verts[1]); // e1
         float t2 = edges[3]->alphaForVertex(verts[1]); // e4
@@ -4335,11 +4133,35 @@ void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
         double d1 = dot(n1, q1);
 
         float t3 = edges[2]->alphaForVertex(verts[3]); // e3
-        float t4 = edges[4]->alphaForVertex(verts[3]); // e5
+        float t4 = edges[5]->alphaForVertex(verts[3]); // e6
         vec3 c3 = (1 - t3)*v4 + t3*v1;
         vec3 c4 = (1 - t4)*v4 + t4*v3;
         vec3 n2 = normalize(cross(c3 - v2, c4 - v2));
         vec3 q2 = q - v2;
+        double d2 = dot(n2, q2);
+
+        if(d1 > 0 && d2 > 0) {
+            quadruple->violating = true;
+            quadruple->closestGeometry = edges[4];
+        }
+    }
+
+    // check edge6, using edges e2,e4, e3,e5
+    if(!quadruple->violating){
+        float t1 = edges[1]->alphaForVertex(verts[2]); // e2
+        float t2 = edges[3]->alphaForVertex(verts[2]); // e4
+        vec3 c1 = (1 - t1)*v3 + t1*v1;
+        vec3 c2 = (1 - t2)*v3 + t2*v2;
+        vec3 n1 = normalize(cross(c1 - v4, c2 - v4));
+        vec3 q1 = q - v4;
+        double d1 = dot(n1, q1);
+
+        float t3 = edges[2]->alphaForVertex(verts[3]); // e3
+        float t4 = edges[4]->alphaForVertex(verts[3]); // e5
+        vec3 c3 = (1 - t3)*v4 + t3*v1;
+        vec3 c4 = (1 - t4)*v4 + t4*v2;
+        vec3 n2 = normalize(cross(c4 - v3, c3 - v3));
+        vec3 q2 = q - v3;
         double d2 = dot(n2, q2);
 
         if(d1 > 0 && d2 > 0) {
@@ -4376,8 +4198,8 @@ void CleaverMesherImp::checkIfQuadrupleViolatesFaces(Tet *tet)
     // check face1, using edges e3, e5, e6
     if(!quadruple->violating){
         float t1 = edges[2]->alphaForVertex(verts[0]);
-        float t2 = edges[5]->alphaForVertex(verts[1]);
-        float t3 = edges[4]->alphaForVertex(verts[2]);
+        float t2 = edges[4]->alphaForVertex(verts[1]);
+        float t3 = edges[5]->alphaForVertex(verts[2]);
 
         vec3 c1 = (1 - t1)*v1 + t1*v4;
         vec3 c2 = (1 - t2)*v2 + t2*v4;
@@ -4395,7 +4217,7 @@ void CleaverMesherImp::checkIfQuadrupleViolatesFaces(Tet *tet)
         double d2 = dot(n2, q2);
         double d3 = dot(n3, q3);
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quadruple->violating = true;
             quadruple->closestGeometry = faces[0];
         }
@@ -4422,12 +4244,12 @@ void CleaverMesherImp::checkIfQuadrupleViolatesFaces(Tet *tet)
         double d2 = dot(n2, q2);
         double d3 = dot(n3, q3);
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quadruple->violating = true;
-            quadruple->closestGeometry = faces[0];
+            quadruple->closestGeometry = faces[1];
         }
     }
-    // check face3, using edges e2, e4, e5
+    // check face3, using edges e2, e4, e6
     if(!quadruple->violating){
         float t1 = edges[1]->alphaForVertex(verts[0]);
         float t2 = edges[3]->alphaForVertex(verts[1]);
@@ -4449,9 +4271,9 @@ void CleaverMesherImp::checkIfQuadrupleViolatesFaces(Tet *tet)
         double d2 = dot(n2, q2);
         double d3 = dot(n3, q3);
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quadruple->violating = true;
-            quadruple->closestGeometry = faces[0];
+            quadruple->closestGeometry = faces[2];
         }
     }
     // check face4, using edges, e1, e2, e3
@@ -4476,9 +4298,9 @@ void CleaverMesherImp::checkIfQuadrupleViolatesFaces(Tet *tet)
         double d2 = dot(n2, q2);
         double d3 = dot(n3, q3);
 
-        if(d1 < 0 && d2 < 0 && d3 < 0){
+        if(d1 > 0 && d2 > 0 && d3 > 0){
             quadruple->violating = true;
-            quadruple->closestGeometry = faces[0];
+            quadruple->closestGeometry = faces[3];
         }
     }
 }

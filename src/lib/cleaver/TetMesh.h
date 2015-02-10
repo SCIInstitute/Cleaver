@@ -232,7 +232,7 @@ public:
 
 public:
     // Adjacency Queries
-    void getAdjacencyListsForFace(HalfFace *face, Vertex *verts[3], HalfEdge *edges[3]);
+    static void getAdjacencyListsForFace(HalfFace *face, Vertex *verts[3], HalfEdge *edges[3]);
     void getAdjacencyListsForTet(Tet *tet, Vertex *verts[4], HalfEdge *edges[6], HalfFace *faces[4]);
     void getRightHandedVertexList(Tet *tet, Vertex *verts[15]);
 
