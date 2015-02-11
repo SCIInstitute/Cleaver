@@ -29,5 +29,8 @@ cxx_test(cli_scirun gtest_main test/cli_common.cc)
 cxx_test(cli_matlab gtest_main test/cli_common.cc)
 
 
-add_executable(cleaver_unit_tests cleaver/CleaverMesherTests.cpp)
+add_executable(cleaver_unit_tests
+  cleaver/CleaverMesher_tests.cpp
+  cleaver/vec3_tests.cpp)
+
 target_link_libraries(cleaver_unit_tests gtest gtest_main cleaver)
