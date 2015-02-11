@@ -28,7 +28,7 @@ cxx_test(cli_jacobian gtest_main test/cli_common.cc)
 cxx_test(cli_scirun gtest_main test/cli_common.cc)
 cxx_test(cli_matlab gtest_main test/cli_common.cc)
 
-
+# cleaver unit tests
 add_executable(cleaver_unit_tests
   cleaver/CleaverMesher_tests.cpp
   cleaver/vec3_tests.cpp)
