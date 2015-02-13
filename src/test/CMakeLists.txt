@@ -29,8 +29,9 @@ cxx_test(cli_scirun gtest_main test/cli_common.cc)
 cxx_test(cli_matlab gtest_main test/cli_common.cc)
 
 # cleaver unit tests
-add_executable(cleaver_unit_tests
-  cleaver/CleaverMesher_tests.cpp
-  cleaver/vec3_tests.cpp)
+cxx_test(mesher_unit_tests gtest_main)
+target_link_libraries(mesher_unit_tests cleaver)
 
-target_link_libraries(cleaver_unit_tests gtest gtest_main cleaver)
+#vec3 unit tests
+cxx_test(vec3_unit_tests gtest_main)
+target_link_libraries(vec3_unit_tests cleaver)
