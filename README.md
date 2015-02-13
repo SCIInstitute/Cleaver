@@ -22,8 +22,9 @@ Cleaver is an Open Source software project that is principally funded through th
 "This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545."
 
 <strong>Author: </strong> Jonathan Bronson<br/>
-<strong>Constributor: </strong> Ross Whitaker<br/>
-<strong>Constributor: </strong> Josh Levine<br/>
+<strong>Contributor: </strong> Ross Whitaker<br/>
+<strong>Contributor: </strong> Josh Levine<br/>
+<strong>Contributor: </strong> Shankar Sastry<br/>
 <strong>Developer: </strong> Brig Bagley<br/>
 
 Building Cleaver2
