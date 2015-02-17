@@ -84,16 +84,36 @@ public:
     }
 
     // helper functions
-    bool incidentToVertex(Vertex *v){
+    bool incidentToVertex(Vertex *v) {
         return(vertex == v || mate->vertex == v);
     }
-    float alphaForVertex(Vertex *v){
+
+    float alphaForVertex(Vertex *v) {
         if(vertex == v)
             return mate->alpha;
         else if(mate->vertex == v)
             return alpha;
         else
             return 0.0f;
+    }
+
+    float edgeLength() {
+        return length(vertex->pos() - mate->vertex->pos());
+    }
+
+    float alphaLengthForVertex(Vertex *v) {
+        float alpha = alphaForVertex(v);
+        return alpha*edgeLength();
+    }
+
+    void setAlphaLengthForVertex(Vertex *v, float alpha_length) {
+
+        float alpha = alpha_length / edgeLength();
+
+        if(vertex == v)
+            mate->alpha = alpha;
+        else if(mate->vertex == v)
+            this->alpha = alpha;
     }
 };
 

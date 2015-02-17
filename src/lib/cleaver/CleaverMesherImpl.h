@@ -115,7 +115,11 @@ public:
                        bool regular = false,
                        double alp_long = 0.4,
                        double alp_short = 0.4);
-    void computeAlphasAlt(bool verbose = false);
+    void computeAlphasSafely(bool verbose = false);
+    void makeTetAlphaSafe(Tet *tet);
+    void updateAlphaLengthAroundVertex(Vertex *vertex, float alpha_length);
+    float computeSafeAlphaLength(Tet *tet, int v);
+
     void computeInterfaces(bool verbose = false);
     void computeCutForEdge(HalfEdge *edge);
     void computeTripleForFace(HalfFace *face);

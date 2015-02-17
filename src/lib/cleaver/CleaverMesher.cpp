@@ -1924,7 +1924,6 @@ void CleaverMesherImp::computeAlphas(bool verbose,
     // set state
     m_bAlphasComputed = true;
 
-
     //---------------------------------------------------
     // set alpha_init for all edges in background mesh
     //---------------------------------------------------
@@ -1934,92 +1933,99 @@ void CleaverMesherImp::computeAlphas(bool verbose,
     {
         HalfEdge *half_edge = (*edge_iter).second;
         if (regular) {
-          half_edge->alpha = (float)(half_edge->m_long_edge?alp_long:alp_short);
+          half_edge->alpha = (float)(half_edge->m_long_edge ? alp_long : alp_short);
         } else {
           half_edge->alpha = (float)m_alpha_init;
         }
-        half_edge->alpha_length = (float)
-            (half_edge->alpha*length(half_edge->vertex->pos() -
-                                     half_edge->mate->vertex->pos()));
-        if (regular) half_edge->alpha = half_edge->alpha_length;
+        half_edge->alpha_length = (float)(half_edge->alpha*length(half_edge->vertex->pos() - half_edge->mate->vertex->pos()));
+
+        if (regular) {
+            half_edge->alpha = half_edge->alpha_length;
+        }
     }
 
-    computeAlphasAlt();
-
+    computeAlphasSafely(verbose);
 
     if(verbose)
         std::cout << " done." << std::endl;
 }
 
-void CleaverMesherImp::computeAlphasAlt(bool verbose)
+
+//=============================================================
+// - computeSafeAlphaLength()
+//=============================================================
+float CleaverMesherImp::computeSafeAlphaLength(Tet *tet, int v)
 {
-    // visit each tet
-    for(unsigned int t=0; t < m_bgMesh->tets.size(); t++)
+    double xi = std::max(0.0, std::min(0.5 - m_alpha_init, 0.5));
+
+    // construct normal plane
+    Vertex *verts[3];   int idx = 0;
+    for (int vid=0; vid < 4; vid++)
     {
-        Tet *tet = m_bgMesh->tets[t];
-
-        // look at all 4 altitudes
-        for(unsigned int vidx=0; vidx < VERTS_PER_TET; vidx++)
-        {
-            Vertex *verts[4];
-            verts[0] = tet->verts[(vidx+0)%4];
-            verts[1] = tet->verts[(vidx+1)%4];
-            verts[2] = tet->verts[(vidx+2)%4];
-            verts[3] = tet->verts[(vidx+3)%4];
-
-            vec3 v0 = verts[0]->pos();
-            vec3 v1 = verts[1]->pos();
-            vec3 v2 = verts[2]->pos();
-            vec3 v3 = verts[3]->pos();
-
-            // construct plane from opposite vertices
-            Plane plane = Plane::throughPoints(v1,v2,v3);
-            vec3 n = plane.n;
-
-            // q_proj = q - dot(q - p, n) * n;
-            vec3 proj = v0 - dot(v0 - v1, n) * n;
-
-            // fix normal orientation if necessary..
-            float alpha_length[4];
-            alpha_length[0] = verts[0]->halfEdges[0]->alpha_length;
-            alpha_length[1] = verts[1]->halfEdges[0]->alpha_length;
-            alpha_length[2] = verts[2]->halfEdges[0]->alpha_length;
-            alpha_length[3] = verts[3]->halfEdges[0]->alpha_length;
-
-            // construct altitude vector
-            vec3 alt = proj - v0;
-            float req_length = (float)(m_alpha_init*length(alt));
-
-            // if alphaballs are too large, restrict alpha lengths for adj edges
-            for(int v=0; v < 4; v++)
-            {
-                if(alpha_length[v] > req_length)
-                {
-                    std::vector<HalfEdge*> adjEdges = m_bgMesh->edgesAroundVertex(verts[v]);
-                    // scale other adjacents to match length
-                    for(size_t e=0; e < adjEdges.size(); e++)
-                    {
-                        // get edge
-                        HalfEdge *edge = adjEdges[e];
-                        edge->alpha_length = req_length;
-
-                        // make sure it points out
-                        if(edge->vertex == verts[3])  // TODO(JRB): Evaluate if this works properly...
-                            edge = edge->mate;
-
-                        // compute violation point
-                        vec3 origin = verts[v]->pos();
-                        vec3 ray = edge->vertex->pos() - origin;
-
-                        float alpha = (float)(req_length / length(ray));
-                        edge->alpha = alpha;
-                        edge->alpha_length = req_length;
-                    }
-                }
-            }
-        }
+        if (vid == v)
+            continue;
+        verts[idx++] = tet->verts[vid];
     }
 
+    Plane plane = Plane::throughPoints(verts[0]->pos(),
+                                       verts[1]->pos(),
+                                       verts[2]->pos());
+    vec3 n = normalize(plane.n);
+
+    vec3 ray = tet->verts[v]->pos() - verts[0]->pos();
+    double altitude = std::abs(dot(n, ray));
+    double safe_length = (0.5 - xi)*altitude;
+
+    return safe_length;
+}
+
+
+//=============================================================
+// - updateAlphaLengthAroundVertex()
+//=============================================================
+void CleaverMesherImp::updateAlphaLengthAroundVertex(Vertex *vertex, float alpha_length)
+{
+    std::vector<HalfEdge*> adj_edges = m_bgMesh->edgesAroundVertex(vertex);
+
+    for(size_t e=0; e < adj_edges.size(); e++)
+    {
+        HalfEdge *edge = adj_edges[e];
+        if (alpha_length < edge->alphaLengthForVertex(vertex))
+        {
+            edge->setAlphaLengthForVertex(vertex, alpha_length);
+        }
+    }
+}
+
+//================================================
+// - makeTetAlphaSafe ()
+//================================================
+void CleaverMesherImp::makeTetAlphaSafe(Tet *tet)
+{
+    // make each Vertex safe
+    for (int v=0; v < VERTS_PER_TET; v++)
+    {
+      // determine safe alpha
+      float safe_alpha_length = computeSafeAlphaLength(tet, v);
+
+      // set safe alpha for all edges around vertex
+      updateAlphaLengthAroundVertex(tet->verts[v], safe_alpha_length);
+      updateAlphaLengthAroundVertex(tet->verts[(v+1)%4], safe_alpha_length);
+      updateAlphaLengthAroundVertex(tet->verts[(v+2)%4], safe_alpha_length);
+      updateAlphaLengthAroundVertex(tet->verts[(v+3)%4], safe_alpha_length);
+    }
+}
+
+//================================================
+// - computeAlphasSafely ()
+//================================================
+void CleaverMesherImp::computeAlphasSafely(bool verbose)
+{
+    // make each tet safe
+    for (size_t t=0; t < m_bgMesh->tets.size(); t++)
+    {
+        makeTetAlphaSafe(m_bgMesh->tets[t]);
+    }
 }
 
 //=====================================================
