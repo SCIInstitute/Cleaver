@@ -142,24 +142,3 @@ TEST(Tetmesh, Jacobian) {
   t.tets.push_back(tet);
   ASSERT_TRUE(t.getJacobian(tet) > 0);
 }
-//tests remove flat tets.
-TEST(Tetmesh, RemoveFlat) {
-  TetMesh t;
-  Vertex v1,v2,v3,v4;
-  v1.pos() = vec3(0.25f,0.25f,.0f);
-  v2.pos() = vec3(1.f,0.f,0.f);
-  v3.pos() = vec3(0.f,1.f,0.f);
-  v4.pos() = vec3(0.f,0.f,0.f);
-  Tet* tet = new Tet(&v1,&v2,&v3,&v4,0);
-  ASSERT_EQ(t.removeFlatTetsAndFixJacobians(true),0);
-  Vertex v5,v6,v7,v8;
-  v5.pos() = vec3(0.f,0.f,1.f);
-  v6.pos() = vec3(1.f,0.f,0.f);
-  v7.pos() = vec3(0.f,1.f,0.f);
-  v8.pos() = vec3(0.f,0.f,0.f);
-  Tet* tet2 = new Tet(&v5,&v6,&v7,&v8,0);
-  t.tets.push_back(tet2);
-  t.tets.push_back(tet);
-  ASSERT_EQ(t.removeFlatTetsAndFixJacobians(true),1);
-  ASSERT_EQ(t.tets.size(),1);
-}

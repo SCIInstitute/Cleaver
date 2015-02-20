@@ -338,44 +338,33 @@ float TetMesh::getJacobian(Tet* tet) {
     return getDeterminant(mat) / 6.f;
 }
     
-size_t TetMesh::removeFlatTetsAndFixJacobians(bool verbose) {
+size_t TetMesh::fixJacobians(bool verbose) {
     if (verbose) std::cout << 
-      "Fixing Jacobians & Removing bad tets..." << std::endl;
-    float epsilon = 1e-12f;
+      "Fixing Jacobians..." << std::endl;
     size_t count = 0;
-    size_t beforeCount = tets.size();
     Status s(tets.size());
     std::vector<Tet*>::iterator iter = tets.begin();
     // loop over all tets in the mesh
     while(iter != tets.end()) {
         Tet* tet = *iter;
-        float jacobian = 0.f;
-        if(tet->maxAngle() == 180.f ||
-           tet->minAngle() == 0.f   ||
-           std::abs((jacobian = getJacobian(tet))) < epsilon) 
-             iter = removeTet(iter);
-        else {
-          if (jacobian < 0.f) {
+        float jacobian =  getJacobian(tet);
+        if (jacobian < 0.f) {
               Vertex* tmp = tet->verts[2];
               tet->verts[2] = tet->verts[3];
               tet->verts[3] = tmp;
               count++;
-          }
-          iter++;
         }
+        iter++;
         if (verbose)
           s.printStatus();
     }
     if (verbose)
       s.done();
     
-    size_t afterCount = tets.size();
     if (verbose) {
-        std::cout << "Removed " << (beforeCount - afterCount)
-        << " flat tets." << std::endl;
         std::cout << "Fixed " << count << " negative Jacobians." << std::endl;
     }
-    return beforeCount - afterCount;
+    return count;
 }
 
 //===================================================

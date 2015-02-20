@@ -169,7 +169,7 @@ public:
     
     float getDeterminant(float m[16]);
     float getJacobian(Tet* tet);
-    size_t removeFlatTetsAndFixJacobians(bool verbose);
+    size_t fixJacobians(bool verbose);
 
     Tet* createTet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int material);
     void removeTet(int t);

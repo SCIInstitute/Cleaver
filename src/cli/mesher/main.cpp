@@ -135,7 +135,7 @@ int main(int argc,  char* argv[])
       ("scale,c", po::value<double>(), "sizing field scale")
       ("padding,p", po::value<int>(), "volume padding")
       ("write_background_mesh,w", "write background mesh")
-      ("fix_jacobians_remove_flat_tets,j", "Remove near-flat tets and ensure positive Jacobians.")
+      ("fix_jacobians,j", "Ensure positive Jacobians.")
       ("strip_exterior,e", "strip exterior tetrahedra")
       ("output_path,o", po::value<std::string>(), "output path prefix")
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
@@ -224,7 +224,7 @@ int main(int argc,  char* argv[])
     if (variables_map.count("padding")) {
       padding = variables_map["padding"].as<int>();
     }
-    fix_tets = variables_map.count("fix_jacobians_remove_flat_tets")==0?false:true;
+    fix_tets = variables_map.count("fix_jacobians")==0?false:true;
 
     if (variables_map.count("alpha")) {
       alpha = variables_map["alpha"].as<double>();
@@ -459,9 +459,9 @@ int main(int argc,  char* argv[])
   //-----------------------------------------------------------
   mesh->computeAngles();
   //-----------------------------------------------------------
-  // Remove bad tets and fix jacobians if requested.
+  // Fix jacobians if requested.
   //-----------------------------------------------------------
-  if (fix_tets) mesh->removeFlatTetsAndFixJacobians(verbose);
+  if (fix_tets) mesh->fixJacobians(verbose);
 
   //-----------------------------------------------------------
   // Write Mesh To File
