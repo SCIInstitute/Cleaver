@@ -210,7 +210,7 @@ endfunction()
 # test/name.cc is already implicitly included in the source file list.
 function(cxx_test name libs)
   cxx_test_with_flags("${name}" "${cxx_default}" "${libs}"
-    "test/${name}.cc" ${ARGN})
+    "${name}.cc" ${ARGN})
 endfunction()
 
 # py_test(name)
