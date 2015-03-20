@@ -285,70 +285,22 @@ void TetMesh::updateBounds(Vertex *vertex)
     bounds = BoundingBox(mincorner, maxcorner - mincorner);
 }
     
-float TetMesh::getDeterminant(float m[16]) {
-    float d0, d4, d8, d12;
-    d0 =
-    m[5]  * m[10] * m[15] -
-    m[5]  * m[11] * m[14] -
-    m[9]  * m[6]  * m[15] +
-    m[9]  * m[7]  * m[14] +
-    m[13] * m[6]  * m[11] -
-    m[13] * m[7]  * m[10];
-    
-    d4 = -
-    m[4]  * m[10] * m[15] +
-    m[4]  * m[11] * m[14] +
-    m[8]  * m[6]  * m[15] -
-    m[8]  * m[7]  * m[14] -
-    m[12] * m[6]  * m[11] +
-    m[12] * m[7]  * m[10];
-    
-    d8 =
-    m[4]  * m[9] * m[15] -
-    m[4]  * m[11] * m[13] -
-    m[8]  * m[5] * m[15] +
-    m[8]  * m[7] * m[13] +
-    m[12] * m[5] * m[11] -
-    m[12] * m[7] * m[9];
-    
-    d12 = -
-    m[4]  * m[9] * m[14] +
-    m[4]  * m[10] * m[13] +
-    m[8]  * m[5] * m[14] -
-    m[8]  * m[6] * m[13] -
-    m[12] * m[5] * m[10] +
-    m[12] * m[6] * m[9];
-    
-    return m[0] * d0 + m[1] *
-    d4 + m[2] *
-    d8 + m[3] * d12;
-}
-    
-float TetMesh::getJacobian(Tet* tet) {
-    float mat[16] = {
-        1,1,1,1,
-        0,1,0,0,
-        0,0,1,0,
-        0,0,0,1};
-    for (size_t i = 0; i < 4; i++) {
-        mat[i+4] = (float)tet->verts[i]->pos().x;
-        mat[i+8] = (float)tet->verts[i]->pos().y;
-        mat[i+12] = (float)tet->verts[i]->pos().z;
-    }
-    return getDeterminant(mat) / 6.f;
-}
-    
-size_t TetMesh::fixJacobians(bool verbose) {
+size_t TetMesh::fixVertexWindup(bool verbose) {
     if (verbose) std::cout << 
-      "Fixing Jacobians..." << std::endl;
+      "Fixing Vertex wind-up..." << std::endl;
     size_t count = 0;
     Status s(tets.size());
     std::vector<Tet*>::iterator iter = tets.begin();
     // loop over all tets in the mesh
     while(iter != tets.end()) {
         Tet* tet = *iter;
-        float jacobian =  getJacobian(tet);
-        if (jacobian < 0.f) {
+        vec3 v1 = tet->verts[0]->pos();
+        vec3 v2 = tet->verts[1]->pos();
+        vec3 v3 = tet->verts[2]->pos();
+        vec3 v4 = tet->verts[3]->pos();
+        //check the wind up.
+        if ((v4 - v1).dot((v2 - v1).cross(v3 - v1)) < 0.f) {
+              //re-order since v4 is on the wrong side.
               Vertex* tmp = tet->verts[2];
               tet->verts[2] = tet->verts[3];
               tet->verts[3] = tmp;
@@ -362,7 +314,7 @@ size_t TetMesh::fixJacobians(bool verbose) {
       s.done();
     
     if (verbose) {
-        std::cout << "Fixed " << count << " negative Jacobians." << std::endl;
+        std::cout << "Fixed " << count << " Tet vertex wind-ups." << std::endl;
     }
     return count;
 }

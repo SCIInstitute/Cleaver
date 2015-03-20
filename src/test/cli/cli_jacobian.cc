@@ -47,7 +47,7 @@ TEST(CLIRegressionTests, Jacobian) {
   //setup the line that calls the command line interface
   std::string log = "jacobian_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string option = " --fix_jacobians ";
+  std::string option = " --fix_tet_windup ";
   std::string line = (command + name + path + option + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
