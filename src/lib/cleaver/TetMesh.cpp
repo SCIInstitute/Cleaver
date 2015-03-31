@@ -1451,8 +1451,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     //          5 - Field Names         numberOfFields * FieldNameLength;
     //          6 - Node Field
     //          7 - Cell Field
-    //          8 - FieldAt Field
-    //          9 - Field Field
+    //          8 - Field Field
     //----------------------------------------------------------
     int32_t mainType  = miMATRIX;
     int32_t totalSize = 0;
@@ -1528,7 +1527,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     //  Write Field Names
     //---------------------------------------------
     int32_t fieldNamesType = miINT8;
-    int32_t fieldNamesSize = 8*4;
+    int32_t fieldNamesSize = 8*3;
 
     file.write((char*)&fieldNamesType, sizeof(int32_t));
     file.write((char*)&fieldNamesSize, sizeof(int32_t));
@@ -1542,10 +1541,6 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     memset(zeros, 0, 32);
 
     strcpy(zeros, "field");
-    file.write(zeros, 8*sizeof(char));
-    memset(zeros, 0, 32);
-
-    strcpy(zeros, "fieldat");
     file.write(zeros, 8*sizeof(char));
     memset(zeros, 0, 32);
 
@@ -1704,7 +1699,7 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     {
         if (verbose) status.printStatus();
         for(int v=0; v < 4; v++){
-            int32_t index = tets[i]->verts[v]->tm_v_index;
+            int32_t index = tets[i]->verts[v]->tm_v_index + 1;
             file.write((char*)&index, sizeof(int32_t));
         }
     }
@@ -1787,80 +1782,6 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     if(fieldPadding)
         file.write(zeros, fieldPadding);
     long fieldEndAddress = (long)file.tellp();
-
-
-    //-------------------------------
-    //         Write .fieldat
-    //-------------------------------
-    int32_t atType = miMATRIX;
-    int32_t atSize = 0;
-
-    long atSizeAddress = (long)file.tellp();
-    atSizeAddress += sizeof(int32_t);
-
-    file.write((char*)&atType, sizeof(int32_t));
-    file.write((char*)&atSize, sizeof(int32_t));
-
-    //--------------------------------
-    //  Write At Array flags
-    //
-    //   bytes 1 - 2  : undefined (2 bytes)
-    //   byte  3      : flags  (1 byte)
-    //   byte  4      : class  (1 byte)
-    //   bytes 5 - 8  : undefined (4 bytes)
-    //--------------------------------
-    int32_t atFlagsType = miUINT32;
-    int32_t atFlagsSize = 8;
-
-    file.write((char*)&atFlagsType, sizeof(int32_t));
-    file.write((char*)&atFlagsSize, sizeof(int32_t));
-
-    int8_t atFlagsByte = 0;
-    int8_t atClassByte = mxCHAR_CLASS;
-
-    file.write((char*)&atClassByte, sizeof(int8_t));
-    file.write((char*)&atFlagsByte, sizeof(int8_t));
-    file.write(zeros, 2);
-    file.write(zeros, 4);
-
-    //---------------------------------------------
-    //   Write 'At' Dimensions Array
-    //---------------------------------------------
-    std::string fieldAtString = "cell";
-    int32_t atDimensionType = miINT32;
-    int32_t atDimensionSize = 8;
-    int32_t atDimensionRows = 1;
-    int32_t atDimensionCols = fieldAtString.length();
-
-    file.write((char*)&atDimensionType, sizeof(int32_t));
-    file.write((char*)&atDimensionSize, sizeof(int32_t));
-    file.write((char*)&atDimensionRows, sizeof(int32_t));
-    file.write((char*)&atDimensionCols, sizeof(int32_t));
-
-    //---------------------------------------------
-    //     Write 'At' Array Name SubElement
-    //---------------------------------------------
-    int32_t atArrayNameType = miINT8;
-    int32_t atArrayNameSize = 0;
-
-    file.write((char*)&atArrayNameType, sizeof(int32_t));
-    file.write((char*)&atArrayNameSize, sizeof(int32_t));
-
-    //----------------------------------------------
-    //     Write 'At' Pr Array Data SubElement
-    //----------------------------------------------
-    int32_t atDataType = miUTF8;
-    int32_t atDataSize = fieldAtString.length();
-    int32_t atPadding = (8 - (atDataSize % 8)) % 8;
-
-    file.write((char*)&atDataType, sizeof(int32_t));
-    file.write((char*)&atDataSize, sizeof(int32_t));
-
-    file.write((char*)fieldAtString.c_str(), fieldAtString.length());
-
-    if(atPadding)
-        file.write((char*)zeros, atPadding);
-    long atEndAddress = (long)file.tellp();
     long fileEndAddress = (long)file.tellp();
 
     //-------------------------------
@@ -1871,7 +1792,6 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
     nodeSize  = nodeEndAddress -  (nodeSizeAddress  + sizeof(int32_t));
     cellSize  = cellEndAddress -  (cellSizeAddress  + sizeof(int32_t));
     fieldSize = fieldEndAddress - (fieldSizeAddress + sizeof(int32_t));
-    atSize = atEndAddress - (atSizeAddress + sizeof(int32_t));
 
     file.seekp(totalSizeAddress);
     file.write((char*)&totalSize, sizeof(int32_t));
@@ -1884,9 +1804,6 @@ void TetMesh::writeMatlab(const std::string &filename, bool verbose)
 
     file.seekp(fieldSizeAddress);
     file.write((char*)&fieldSize, sizeof(int32_t));
-
-    file.seekp(atSizeAddress);
-    file.write((char*)&atSize,    sizeof(int32_t));
 
     //-------------------------------
     //   Done
