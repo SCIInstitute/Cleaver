@@ -39,7 +39,10 @@ From Cleaver2 directory:<br/>
 <code>cd build</code><br/>
 <code>cmake ../src</code><br/>
 <code>make</code><br/><br/>
-NOTE: You may need to run ccmake ../src to set the locations of some of the components if your environment is not already set up. (e.g. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
+NOTE: You may need to set your Qt build variables:
+```c++
+cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" -DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
+```
 
 <h4>Windows</h4>
 Additional requirements for GUI: glew (<link>http://glew.sourceforge.net/</link>) -OR- Qt5 and glext
