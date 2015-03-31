@@ -100,4 +100,4 @@ Known Issues
 ========
 
  * On larger data sets with a potentially high number of quadruple points (> 3 material fields), some functions are not implemented that ensure valid tets and meshes, causing bad tets in the final output. This code is being implemented now for a future release.
- * Qt4 is known to have issue on OpenSuse 12.3. If this is the case for you, try using Qt5.
+ * Qt4 is known to sometimes crash on volume loading on OpenSuse 12.3. If this is the case for you, try using Qt5.
