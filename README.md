@@ -35,12 +35,17 @@ We recommend building cleaver outside of the source tree. <br/>
 From Cleaver2 directory:<br/>
 
 <h4>Linux, OSX</h4>
-<code>mkdir build</code><br/>
-<code>cd build</code><br/>
-<code>cmake ../src</code><br/>
-<code>make</code><br/><br/>
-NOTE: You may need to set your Qt build variables:
-```c++
+
+```bash
+mkdir build
+cd build
+cmake ../src
+make
+```
+
+**NOTE**: You may need to set your Qt build variables:
+
+```bash
 cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" -DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
 ```
 
@@ -49,20 +54,24 @@ Additional requirements for GUI: glew (<link>http://glew.sourceforge.net/</link>
 (<link>http://sourceforge.net/projects/glextwin32/</link>)<br/>
 From Developer Command Prompt: (e.g.  Visual Studio 10 (32bit)) <br/>
 
-<code>mkdir build</code><br/>
-<code>cd build</code><br/>
-<code>cmake ../src</code><br/>
-<code>nmake</code><br/>
+```bash
+mkdir build
+cd build
+cmake ../src
+nmake
+```
 
 
-
-NOTE: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below:<br/>
+**NOTE**: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below:<br/>
 
 <h5>For Qt 4</h5>
-<code>cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32\glew32.lib" -DGLEW_INCLUDE_DIR="C:\glew\glew-1.10.0\include" -DQT_QMAKE_EXECUTABLE="C:\Qt\4.8.5\bin\qmake.exe" -DQT_VERSION="4" ..\src</code><br/>
+```bash
+cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32\glew32.lib" -DGLEW_INCLUDE_DIR="C:\glew\glew-1.10.0\include" -DQT_QMAKE_EXECUTABLE="C:\Qt\4.8.5\bin\qmake.exe" -DQT_VERSION="4" ..\src
+```
 <h5>For Qt 5</h5>
-<code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src</code><br/>
-<br/>
+```bash
+cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src
+```
 
 Using Cleaver2
 ========
@@ -72,7 +81,7 @@ Or, for the command line tool:<br/>
 <code> bin/cleaver-cli --help</code><br/>
 For a list of command line tool options.
 
-
+```bash
     Command line flags:
       -h [ --help ]            display help message
       -v [ --verbose ]         enable verbose output
@@ -96,6 +105,7 @@ For a list of command line tool options.
       --output_name arg        output mesh name
       --output_format arg      output mesh format
       --strict                 warnings become errors
+```
 Known Issues
 ========
 
