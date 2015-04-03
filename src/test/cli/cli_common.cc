@@ -38,6 +38,7 @@
 //  //  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
+#include <stdint.h>
 #include "cli_common.h"
 std::string diff = std::string("diff -wB ");
 std::string data_dir = std::string(TEST_DATA_DIR);
@@ -203,6 +204,9 @@ void testValue(std::ifstream &a, std::ifstream &b, T &value) {
   ASSERT_EQ(test,ans);
   value = ans;
 }
+#ifdef _WIN32
+#define float_t float
+#endif
 
 void testValueFloat(std::ifstream &a, std::ifstream &b) {
   float_t test,ans;     
@@ -270,14 +274,13 @@ void compareMatFiles(const std::string a, const std::string b) {
   for(size_t i = 0; i < 4; i++)
     testValue(test,ans,my_word);
   //get the node values xyz * node_size
-  float_t my_float;
-  for(size_t i = 0; i < num_verts * 3; i++) {
+  for(int32_t i = 0; i < num_verts * 3; i++) {
     testValueFloat(test,ans);
   }
   //possible padding
   int32_t data_size = 3 * num_verts * sizeof(float_t);
   int32_t padding = (8 - (data_size % 8)) % 8;
-  for(size_t i = 0; i < padding; i++)
+  for(int32_t i = 0; i < padding; i++)
     testValue(test,ans,my_byte);
   //now the cell data
   //get the next 4 words
@@ -296,12 +299,12 @@ void compareMatFiles(const std::string a, const std::string b) {
   for(size_t i = 0; i < 4; i++)
     testValue(test,ans,my_word);
   //get the cell values ... 4 indicies
-  for(size_t i = 0; i < num_cells * 4; i++)
+  for(int32_t i = 0; i < num_cells * 4; i++)
     testValue(test,ans,my_word);
   //possible padding
   data_size = 4 * num_cells * sizeof(int32_t);
   padding = (8 - (data_size % 8)) % 8;
-  for(size_t i = 0; i < padding; i++)
+  for(int32_t i = 0; i < padding; i++)
     testValue(test,ans,my_byte);
   //now we're at the field field...
   //get the next 4 words
@@ -315,12 +318,12 @@ void compareMatFiles(const std::string a, const std::string b) {
     testValue(test,ans,my_word);
   //now we're actually starting the data reading
   //get the cell field mat values ...
-  for(size_t i = 0; i < num_cells; i++)
+  for(int32_t i = 0; i < num_cells; i++)
     testValue(test,ans,my_byte);
   //possible padding
   data_size = num_cells * sizeof(int8_t);
   padding = (8 - (data_size % 8)) % 8;
-  for(size_t i = 0; i < padding; i++)
+  for(int32_t i = 0; i < padding; i++)
     testValue(test,ans,my_byte);
   //that's all folks!
   test.close();
