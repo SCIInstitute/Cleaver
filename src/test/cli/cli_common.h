@@ -57,9 +57,8 @@ extern std::string input;
 extern std::string files[num_files]; 
 
 void compareEleFiles(const std::string a, const std::string b);
-
 void compareNodeFiles(const std::string a, const std::string b);
-
 void compareVTKFiles(const std::string a, const std::string b) ;
 void comparePtsFiles(const std::string a, const std::string b) ;
 void compareElemFiles(const std::string a, const std::string b) ;
+void compareMatFiles(const std::string a, const std::string b) ;

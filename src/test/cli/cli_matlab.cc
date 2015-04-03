@@ -45,7 +45,7 @@ TEST(CLIRegressionTests, MATLAB) {
   //setup the line that calls the command line interface
   std::string log = "matlab_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string line = (command + name + path + 
+  std::string line = (command + name + path +
       " --output_format matlab " + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
@@ -53,10 +53,10 @@ TEST(CLIRegressionTests, MATLAB) {
   for(size_t i = 0; i < num_files; i++) {
     std::system(("mv " + files[i] + " " + data_dir).c_str());
   }
-  line = "diff " + data_dir + "matlab/output.mat " 
-    + data_dir +  "output.mat";
-  ASSERT_EQ(0,std::system(line.c_str()));
-
+  //compare all of the related files
+  EXPECT_NO_FATAL_FAILURE(compareMatFiles(
+        data_dir + "matlab/output.mat",
+        data_dir + "output.mat"));
   //delete the output files from this test
   for(size_t i = 0; i < num_files; i++) {
     std::system(("rm " + data_dir + files[i]).c_str());

@@ -176,7 +176,7 @@ void comparePtsFiles(const std::string a, const std::string b) {
   float tmp1, tmp2;
   while(!test.eof() && !ans.eof()) {
     test >> tmp1 ; ans >> tmp2;
-      ASSERT_FLOAT_EQ(tmp1,tmp2);
+    ASSERT_FLOAT_EQ(tmp1,tmp2);
   }
   test.close();
   ans.close();
@@ -189,8 +189,140 @@ void compareElemFiles(const std::string a, const std::string b) {
   int tmp1, tmp2;
   while(!test.eof() && !ans.eof()) {
     test >> tmp1 ; ans >> tmp2;
-      ASSERT_EQ(tmp1,tmp2);
+    ASSERT_EQ(tmp1,tmp2);
   }
+  test.close();
+  ans.close();
+}
+
+template<typename T>
+void testValue(std::ifstream &a, std::ifstream &b, T &value) {
+  T test,ans;
+  a.read((char*)&test,sizeof(T));
+  b.read((char*)&ans,sizeof(T));
+  ASSERT_EQ(test,ans);
+  value = ans;
+}
+
+void testValueFloat(std::ifstream &a, std::ifstream &b) {
+  float_t test,ans;     
+  a.read((char*)&test,sizeof(float_t));
+  b.read((char*)&ans,sizeof(float_t));
+  ASSERT_FLOAT_EQ(test,ans);
+}
+
+void compareMatFiles(const std::string a, const std::string b) {
+  ASSERT_FALSE(a == b);
+  std::ifstream test(b.c_str(),std::ifstream::in),
+    ans(a.c_str(),std::ifstream::in);
+  //consume the descrip buffer. don't care.
+  char desc[116];
+  test.read(desc,116); ans.read(desc,116);
+  //check the offset
+  char my_byte;
+  for (size_t i = 0; i < 8; i++)
+    testValue(test,ans,my_byte);
+  //check the version
+  int16_t my_short;
+  testValue(test,ans,my_short);
+  //check the endianness
+  testValue(test,ans,my_short);
+  //get the maintype and totalsize
+  int32_t totalSize;
+  testValue(test,ans,totalSize);
+  testValue(test,ans,totalSize);
+  //get the flags
+  int32_t my_word;
+  testValue(test,ans,my_word);
+  testValue(test,ans,my_word);
+  //get the next eight bytes
+  for(size_t i = 0; i < 8; i++)
+    testValue(test,ans,my_byte);
+  //get the next six words
+  for(size_t i = 0; i < 6; i++)
+    testValue(test,ans,my_word);
+  //get the next eight bytes
+  for(size_t i = 0; i < 8; i++)
+    testValue(test,ans,my_byte);
+  //get the next two shorts
+  for(size_t i = 0; i < 2; i++)
+    testValue(test,ans,my_short);
+  //get the next three words
+  for(size_t i = 0; i < 3; i++)
+    testValue(test,ans,my_word);
+  //get the next 24 bytes
+  for(size_t i = 0; i < 24; i++)
+    testValue(test,ans,my_byte);
+  //the node info reading starts here.
+  //get the next 4 words
+  for(size_t i = 0; i < 4; i++)
+    testValue(test,ans,my_word);
+  //get the next eight bytes
+  for(size_t i = 0; i < 8; i++)
+    testValue(test,ans,my_byte);
+  //get the next 3 words
+  for(size_t i = 0; i < 3; i++)
+    testValue(test,ans,my_word);
+  //now we're actually starting the data reading
+  int32_t num_verts;
+  testValue(test,ans,num_verts);
+  //get the next 4 words
+  for(size_t i = 0; i < 4; i++)
+    testValue(test,ans,my_word);
+  //get the node values xyz * node_size
+  float_t my_float;
+  for(size_t i = 0; i < num_verts * 3; i++) {
+    testValueFloat(test,ans);
+  }
+  //possible padding
+  int32_t data_size = 3 * num_verts * sizeof(float_t);
+  int32_t padding = (8 - (data_size % 8)) % 8;
+  for(size_t i = 0; i < padding; i++)
+    testValue(test,ans,my_byte);
+  //now the cell data
+  //get the next 4 words
+  for(size_t i = 0; i < 4; i++)
+    testValue(test,ans,my_word);
+  //get the next eight bytes
+  for(size_t i = 0; i < 8; i++)
+    testValue(test,ans,my_byte);
+  //get the next 3 words
+  for(size_t i = 0; i < 3; i++)
+    testValue(test,ans,my_word);
+  //now we're actually starting the data reading
+  int32_t num_cells;
+  testValue(test,ans, num_cells);
+  //get the next 4 words
+  for(size_t i = 0; i < 4; i++)
+    testValue(test,ans,my_word);
+  //get the cell values ... 4 indicies
+  for(size_t i = 0; i < num_cells * 4; i++)
+    testValue(test,ans,my_word);
+  //possible padding
+  data_size = 4 * num_cells * sizeof(int32_t);
+  padding = (8 - (data_size % 8)) % 8;
+  for(size_t i = 0; i < padding; i++)
+    testValue(test,ans,my_byte);
+  //now we're at the field field...
+  //get the next 4 words
+  for(size_t i = 0; i < 4; i++)
+    testValue(test,ans,my_word);
+  //get the next eight bytes
+  for(size_t i = 0; i < 8; i++)
+    testValue(test,ans,my_byte);
+  //get the next 8 words
+  for(size_t i = 0; i < 8; i++)
+    testValue(test,ans,my_word);
+  //now we're actually starting the data reading
+  //get the cell field mat values ...
+  for(size_t i = 0; i < num_cells; i++)
+    testValue(test,ans,my_byte);
+  //possible padding
+  data_size = num_cells * sizeof(int8_t);
+  padding = (8 - (data_size % 8)) % 8;
+  for(size_t i = 0; i < padding; i++)
+    testValue(test,ans,my_byte);
+  //that's all folks!
   test.close();
   ans.close();
 }
