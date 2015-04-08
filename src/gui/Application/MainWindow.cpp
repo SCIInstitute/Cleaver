@@ -408,7 +408,7 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
 
     QString ext;
     QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"), QDir::currentPath() + (std::string("/") + mesh->name).c_str(), tr("Tetgen (*.node);;Surface PLY (*.ply);;Matlab (*.mat)"), &selectedFilter);
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"), QDir::currentPath() + (std::string("/") + mesh->name).c_str(), tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat)"), &selectedFilter);
 
 
     QString filter1("Tetgen (*.node)");
