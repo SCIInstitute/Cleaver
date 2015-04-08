@@ -2,6 +2,12 @@ PROJECT(cleaver-gui)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+add_definitions(-DCLEAVER_VERSION_MAJOR="2")
+add_definitions(-DCLEAVER_VERSION_MINOR="1")
+if(WIN32)
+	add_definitions(-DWIN32_ICON_FILE="${CMAKE_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.ico")
+endif()
+
 set(QT_VERSION 4 CACHE PATH "Choose between 4 or 5")
 
 FIND_PACKAGE(OpenGL QUIET)
@@ -143,6 +149,7 @@ if(${QT_VERSION} MATCHES "5")
          Qt5::OpenGL
          Qt5::Core
          Qt5::Gui
+		 Qt5::WinMain
          ${GLEXT_LIBRARY}
          ${QT_QTMAIN_LIBRARY}
          )
@@ -166,6 +173,12 @@ elseif(${QT_VERSION} MATCHES "4")
    else()
       TARGET_LINK_LIBRARIES(cleaver-gui cleaver nrrd2cleaver teem synthetic ${OPTIONAL_LIBS} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} )
    endif()
+endif()
+
+if(WIN32)
+	if(MSVC)
+		set_target_properties(cleaver-gui PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+	endif()
 endif()
 
 ADD_DEPENDENCIES(cleaver-gui comp_shaders)

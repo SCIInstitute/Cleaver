@@ -46,6 +46,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+IF(COMMAND cmake_policy)
+    CMAKE_POLICY(SET CMP0040 NEW)
+    CMAKE_POLICY(SET CMP0043 NEW)
+ENDIF(COMMAND cmake_policy)
+
 # Build Cleaver Library (no dependencies)
 ADD_SUBDIRECTORY(lib/cleaver)
 ADD_SUBDIRECTORY(lib/synthetic)
