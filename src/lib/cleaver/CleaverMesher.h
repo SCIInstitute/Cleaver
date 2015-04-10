@@ -44,6 +44,7 @@ public:
     void generalizeTets(bool verbose = false);
     void snapsAndWarp(bool verbose = false);
     void stencilTets(bool verbose = false);
+    size_t fixVertexWindup(bool verbose = false);
 
     //================================
     // State Getters.
