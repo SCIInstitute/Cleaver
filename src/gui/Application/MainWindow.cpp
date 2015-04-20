@@ -4,6 +4,8 @@
 #include <Cleaver/ConstantField.h>
 #include <Cleaver/InverseField.h>
 #include <nrrd2cleaver/nrrd2cleaver.h>
+#include <cstdio>
+#include <fstream>
 
 MainWindow* MainWindow::m_instance = NULL;
 
@@ -39,8 +41,22 @@ MainWindow::MainWindow(const QString &title)
     connect(m_workspace, SIGNAL(subWindowActivated(QMdiSubWindow*)), m_sizingFieldWidget, SLOT(focus(QMdiSubWindow*)));
     connect(m_workspace, SIGNAL(subWindowActivated(QMdiSubWindow*)), m_dataManagerWidget, SLOT(focus(QMdiSubWindow*)));
     m_iNumOpenWindows = 0;
+
+	exePath_ = QFileInfo( QCoreApplication::applicationFilePath()).path().toStdString();
+
+	std::ifstream path(exePath_ + "/.path");
+	if(path.is_open()) {
+		path >> lastPath_;
+		path.close();
+	}
+
 }
 
+MainWindow::~MainWindow() {
+	std::ofstream path(exePath_ + "/.path");
+	path << lastPath_;
+	path.close();
+}
 
 void MainWindow::createDockWindows()
 {
@@ -88,6 +104,11 @@ void MainWindow::createActions()
     exportAct->setDisabled(true);
     connect(exportAct, SIGNAL(triggered()), this, SLOT(exportMesh()));
 
+    /*exportAct2 = new QAction(tr("&Export Field"), this); //TODO do we want this?
+    exportAct2->setShortcut(tr("Ctrl+n"));
+    exportAct2->setDisabled(true);
+    connect(exportAct2, SIGNAL(triggered()), this, SLOT(exportField()));*/
+
 
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
@@ -126,30 +147,7 @@ void MainWindow::createActions()
 
     sizingFieldAction = m_sizingFieldWidget->toggleViewAction();
     sizingFieldAction->setCheckable(true);
-
-
-    /*
-    cameraActGroup = new QActionGroup(this);
-    perspectiveViewAct = new QAction("Perspective View", this);
-    orthographicViewAct = new QAction("Orthographic View", this);
-    perspectiveViewAct->setCheckable(true);
-    perspectiveViewAct->setChecked(true);
-    orthographicViewAct->setCheckable(true);
-    cameraActGroup->addAction(perspectiveViewAct);
-    cameraActGroup->addAction(orthographicViewAct);
-    */
-
-    // Windows Menu Actions
-    /*
-    cascadeAct = new QAction(tr("Cascade Windows"), this);
-    cascadeAct->setDisabled(true);
-    connect(cascadeAct, SIGNAL(triggered()), m_workspace, SLOT(cascadeSubWindows()));
-
-    tileAct = new QAction(tr("Tile Windows"), this);
-    tileAct->setDisabled(true);
-    connect(tileAct, SIGNAL(triggered()), m_workspace, SLOT(tileSubWindows()));
-    */
-
+	
     // About Menu Actions
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the About box"));
@@ -174,6 +172,7 @@ void MainWindow::createMenus()
     m_fileMenu->addAction(importMeshAct);
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(exportAct);
+    //m_fileMenu->addAction(exportAct2);
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(closeAct);
     m_fileMenu->addAction(closeAllAct);
@@ -277,10 +276,14 @@ void MainWindow::computeMeshAngles()
 
 void MainWindow::importVolume()
 {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Select Indicator Functions"), QDir::currentPath(), tr("NRRD (*.nrrd)"));
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Select Indicator Functions"), 
+		QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
 
     if(!fileNames.isEmpty())
     {
+		std::string file1 = (*fileNames.begin()).toStdString();
+		int pos = file1.find_last_of('/');
+		lastPath_ = file1.substr(0,pos);
         std::vector<std::string> inputs;
 
         for(int i=0; i < fileNames.size(); i++){
@@ -326,10 +329,14 @@ void MainWindow::importSizingField()
 
     cleaver::Volume *volume = window->volume();
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"), QDir::currentPath(), tr("NRRD (*.nrrd)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"), 
+		QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
 
     if(!fileName.isEmpty())
     {
+		std::string file1 = QString((*fileName.begin())).toStdString();
+		int pos = file1.find_last_of('/');
+		lastPath_ = file1.substr(0,pos);
         cleaver::AbstractScalarField* sizingField = loadNRRDFile(fileName.toStdString(), true);
         volume->setSizingField(sizingField);
         std::cout << "Sizing Field Set" << std::endl;
@@ -338,8 +345,16 @@ void MainWindow::importSizingField()
 
 void MainWindow::importMesh()
 {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Import Tetgen Mesh"), QDir::currentPath(), tr("Tetgen Mesh (*.node *.ele)"));
-
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Import Tetgen Mesh"), 
+		QString::fromStdString(lastPath_), tr("Tetgen Mesh (*.node *.ele)"));
+	if (fileNames.size() == 1) {
+		//try to correct only 1 file added, either .node or .ele
+		std::string f = fileNames.at(0).toStdString();
+		f = f.substr(0,f.find_last_of("."));
+		fileNames.clear();
+		fileNames.push_back(QString::fromStdString(f + ".node"));
+		fileNames.push_back(QString::fromStdString(f + ".ele"));
+	}
     if(fileNames.size() == 2)
     {
         std::string elefilename;
@@ -377,7 +392,12 @@ void MainWindow::importMesh()
             MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
             m_dataManager->addMesh(mesh);
         }
-    }
+    } 
+	if (!fileNames.empty()) {
+		std::string file1 = (*fileNames.begin()).toStdString();
+		int pos = file1.find_last_of('/');
+		lastPath_ = file1.substr(0,pos);
+	}
 }
 
 
@@ -389,11 +409,16 @@ void MainWindow::exportField(cleaver::FloatField *field)
 
     QString ext;
     QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"), QDir::currentPath() + (std::string("/") + field->name()).c_str(), tr("NRRD (*.nrrd);"), &selectedFilter);
+	std::string name = field->name() == "" ? "Untitled" : field->name();
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Field As"), 
+		(lastPath_ + "/" + name).c_str(), tr("NRRD (*.nrrd);"), &selectedFilter);
 
     QString filter1("NRRD (*.nrrd)");
 
     saveNRRDFile(field, std::string(fileName.toLatin1()));
+	std::string file1 = fileName.toStdString();
+	int pos = file1.find_last_of('/');
+	lastPath_ = file1.substr(0,pos);
 }
 
 void MainWindow::exportMesh(cleaver::TetMesh *mesh)
@@ -408,7 +433,10 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
 
     QString ext;
     QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"), QDir::currentPath() + (std::string("/") + mesh->name).c_str(), tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat)"), &selectedFilter);
+	std::string name = mesh->name == "" ? "Untitled" : mesh->name;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"), 
+		(lastPath_ + "/" + name).c_str(), 
+		tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat)"), &selectedFilter);
 
 
     QString filter1("Tetgen (*.node)");
@@ -431,7 +459,10 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
     else if(selectedFilter == filter4){
         mesh->writeMatlab(f, true);
     }
-
+	
+	std::string file1 = fileName.toStdString();
+	int pos = file1.find_last_of('/');
+	lastPath_ = file1.substr(0,pos);
 }
 
 void MainWindow::subWindowClosed()
@@ -526,10 +557,13 @@ void MainWindow::focus(QMdiSubWindow *subwindow)
 
         if(window != NULL)
         {
-            if(window->mesh() != NULL)
+            if(window->mesh() != NULL) {
                 exportAct->setEnabled(true);
-            else
+                //exportAct2->setEnabled(true);
+			}else {
                 exportAct->setEnabled(false);
+                //exportAct2->setEnabled(false);
+			}
 
             importSizingFieldAct->setEnabled(true);
             resetCameraAct->setEnabled(true);
@@ -593,6 +627,7 @@ void MainWindow::enableMeshedVolumeOptions() {
 	
 	MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(true);
 	MainWindow::instance()->exportAct->setEnabled(true);
+	//MainWindow::instance()->exportAct2->setEnabled(true);
 }
 
 void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)
