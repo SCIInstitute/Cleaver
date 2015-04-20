@@ -44,7 +44,7 @@ MainWindow::MainWindow(const QString &title)
 
 	exePath_ = QFileInfo( QCoreApplication::applicationFilePath()).path().toStdString();
 
-	std::ifstream path(exePath_ + "/.path");
+	std::ifstream path((exePath_ + "/.path").c_str());
 	if(path.is_open()) {
 		path >> lastPath_;
 		path.close();
@@ -53,7 +53,7 @@ MainWindow::MainWindow(const QString &title)
 }
 
 MainWindow::~MainWindow() {
-	std::ofstream path(exePath_ + "/.path");
+	std::ofstream path((exePath_ + "/.path").c_str());
 	path << lastPath_;
 	path.close();
 }
@@ -416,9 +416,11 @@ void MainWindow::exportField(cleaver::FloatField *field)
     QString filter1("NRRD (*.nrrd)");
 
     saveNRRDFile(field, std::string(fileName.toLatin1()));
-	std::string file1 = fileName.toStdString();
-	int pos = file1.find_last_of('/');
-	lastPath_ = file1.substr(0,pos);
+	if (fileName != "") {
+        std::string file1 = fileName.toStdString();
+        int pos = file1.find_last_of('/');
+        lastPath_ = file1.substr(0,pos);
+    }
 }
 
 void MainWindow::exportMesh(cleaver::TetMesh *mesh)
@@ -459,10 +461,11 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
     else if(selectedFilter == filter4){
         mesh->writeMatlab(f, true);
     }
-	
-	std::string file1 = fileName.toStdString();
-	int pos = file1.find_last_of('/');
-	lastPath_ = file1.substr(0,pos);
+	if (fileName != "") {
+        std::string file1 = fileName.toStdString();
+        int pos = file1.find_last_of('/');
+        lastPath_ = file1.substr(0,pos);
+    }
 }
 
 void MainWindow::subWindowClosed()
