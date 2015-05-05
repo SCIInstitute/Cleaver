@@ -57,6 +57,14 @@ include_directories(lib/boost)
 
 ADD_SUBDIRECTORY(cli/sizingfieldcreator)
 include(lib/Segmentation/FindSCIRun4.cmake)
+# platform specific calls
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+  add_definitions(-DLINUX)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  add_definitions(-DDARWIN)
+elseif(CMAKE_SYSTEM_NAME_MATCHES "Windows")
+  add_definitions(-DWIN32)
+endif()
 ADD_SUBDIRECTORY(cli/mesher)
 ADD_SUBDIRECTORY(gui)
 

@@ -329,6 +329,25 @@ int main(int argc,  char* argv[])
   total_timer.start();
   bool add_inverse = false;
 
+  // get the current executable directory. 
+  std::string exe_path;
+  char str[512];
+  int sz = sizeof(str);
+#ifdef WIN32
+#include <Winbase.h>
+  GetModuleFileName(NULL,str,sz);
+#endif
+#ifdef LINUX
+#include <unistd.h>
+  readlink("/proc/self/exe",str,sz);
+#endif
+#ifdef DARWIN
+#include <mach-o/dyld.h>
+  _NSGetExecutablePath(str,&sz);
+#endif
+  exe_path = std::string(str);
+  exe_path = exe_path.substr(0,exe_path.find_last_of("/"));
+
   if(material_fields.empty()){
     std::cerr << "No material fields or segmentation files provided. Terminating." 
       << std::endl;
@@ -336,7 +355,7 @@ int main(int argc,  char* argv[])
   }
   else if(material_fields.size() == 1) {
     if(USE_BIOMESH_SEGMENTATION) {
-      std::system((std::string(TOOL_BINARY_DIR) + "/unu minmax " +
+      std::system((exe_path + "/unu minmax " +
             material_fields.at(0) + " > tmp").c_str());
       std::ifstream in("tmp");
       int first, second;
@@ -357,10 +376,10 @@ int main(int argc,  char* argv[])
         //std::system(("mkdir " + output_dir).c_str());
         //create the python file that the scripts need to create the fields.
         //copy template file
-        std::system(("cat " + std::string(TOOL_BINARY_DIR) + "/ConfigTemplate.py > " +
-              std::string(TOOL_BINARY_DIR) + "/ConfigUse.py ").c_str());
+        std::system(("cat " + exe_path + "/ConfigTemplate.py > " +
+              exe_path + "/ConfigUse.py ").c_str());
         //add "mats" "mat_names" "model_output_path" "model_input_file"
-        std::ofstream out((std::string(TOOL_BINARY_DIR) +
+        std::ofstream out((exe_path +
               "/ConfigUse.py").c_str(),std::ios::app);
         out << "model_input_file=\"" << material_fields[0] << "\"" << std::endl;
         out << "model_output_path=\"" << output_dir << "\"" << std::endl;
@@ -372,9 +391,9 @@ int main(int argc,  char* argv[])
           out << "'" << ((char)('a' + i)) << "'" << ((i+1)==total_mats?")\n":", ");
         out.close();
         //call the python script to make the fields
-        std::string cmmd = "python " + std::string(TOOL_BINARY_DIR) +
-          "/BuildMesh.py -s1:2 --binary-path " + std::string(TOOL_BINARY_DIR)
-          + " " + std::string(TOOL_BINARY_DIR) + "/ConfigUse.py";
+        std::string cmmd = "python " + exe_path +
+          "/BuildMesh.py -s1:2 --binary-path " + exe_path
+          + " " + exe_path + "/ConfigUse.py";
         std::cout << "Calling BuildMesh.py: " << cmmd << std::endl;
         std::system(cmmd.c_str());
         //delete all of the unneeded files.
