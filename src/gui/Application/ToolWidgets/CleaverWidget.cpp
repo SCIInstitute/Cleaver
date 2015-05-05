@@ -150,6 +150,8 @@ void CleaverWidget::createMesh()
         window->updateGL();
 
         mesher->stencilTets(true);
+		if (this->ui->fixJacobianCheckBox->isChecked())
+			mesher->fixVertexWindup(true);
         this->ui->stencilCheck->setChecked(true);
         qApp->processEvents();
         window->updateMesh();
@@ -225,6 +227,8 @@ void CleaverWidget::createRegularMesh()
         window->updateGL();
 
         mesher->stencilTets(true);
+		if (this->ui->fixJacobianCheckBox->isChecked())
+			mesher->fixVertexWindup(true);
         this->ui->stencilCheck->setChecked(true);
         qApp->processEvents();
         window->updateMesh();

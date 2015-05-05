@@ -39,16 +39,14 @@
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
 #include "cli_common.h"
-
-// Tests jacobian fixes IO for CLI
-TEST(CLIRegressionTests, Jacobian) {
+TEST(CLIRegressionTests, MATLAB) {
   //make sure there is a command interpreter
   ASSERT_EQ(0,(int)!(std::system(NULL)));
   //setup the line that calls the command line interface
-  std::string log = "jacobian_output.txt";
+  std::string log = "matlab_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string option = " --fix_jacobians_remove_flat_tets ";
-  std::string line = (command + name + path + option + input + output);
+  std::string line = (command + name + path +
+      " --output_format matlab " + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
@@ -56,18 +54,14 @@ TEST(CLIRegressionTests, Jacobian) {
     std::system(("mv " + files[i] + " " + data_dir).c_str());
   }
   //compare all of the related files
-  EXPECT_NO_FATAL_FAILURE(compareNodeFiles(
-        data_dir + "jacobian/output.node",
-        data_dir + "output.node"));
-  EXPECT_NO_FATAL_FAILURE(compareEleFiles(
-        data_dir + "jacobian/output.ele",
-        data_dir + "output.ele"));
+  EXPECT_NO_FATAL_FAILURE(compareMatFiles(
+        data_dir + "matlab/output.mat",
+        data_dir + "output.mat"));
   //delete the output files from this test
   for(size_t i = 0; i < num_files; i++) {
     std::system(("rm " + data_dir + files[i]).c_str());
   }
   std::system(("rm " + data_dir + "output.info").c_str());
-  std::system(("rm " + data_dir + "output.node").c_str());
-  std::system(("rm " + data_dir + "output.ele").c_str());
+  std::system(("rm " + data_dir + "output.mat").c_str());
   std::system(("rm " + data_dir + log).c_str());
 }

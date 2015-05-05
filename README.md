@@ -22,8 +22,9 @@ Cleaver is an Open Source software project that is principally funded through th
 "This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545."
 
 <strong>Author: </strong> Jonathan Bronson<br/>
-<strong>Constributor: </strong> Ross Whitaker<br/>
-<strong>Constributor: </strong> Josh Levine<br/>
+<strong>Contributor: </strong> Ross Whitaker<br/>
+<strong>Contributor: </strong> Josh Levine<br/>
+<strong>Contributor: </strong> Shankar Sastry<br/>
 <strong>Developer: </strong> Brig Bagley<br/>
 
 Building Cleaver2
@@ -34,31 +35,43 @@ We recommend building cleaver outside of the source tree. <br/>
 From Cleaver2 directory:<br/>
 
 <h4>Linux, OSX</h4>
-<code>mkdir build</code><br/>
-<code>cd build</code><br/>
-<code>cmake ../src</code><br/>
-<code>make</code><br/><br/>
-NOTE: You may need to run ccmake ../src to set the locations of some of the components if your environment is not already set up. (e.g. Qt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets").
+
+```bash
+mkdir build
+cd build
+cmake ../src
+make
+```
+
+**NOTE**: You may need to set your Qt build variables:
+
+```bash
+cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" -DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
+```
 
 <h4>Windows</h4>
 Additional requirements for GUI: glew (<link>http://glew.sourceforge.net/</link>) -OR- Qt5 and glext
 (<link>http://sourceforge.net/projects/glextwin32/</link>)<br/>
 From Developer Command Prompt: (e.g.  Visual Studio 10 (32bit)) <br/>
 
-<code>mkdir build</code><br/>
-<code>cd build</code><br/>
-<code>cmake ../src</code><br/>
-<code>nmake</code><br/>
+```bash
+mkdir build
+cd build
+cmake ../src
+nmake
+```
 
 
-
-NOTE: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below:<br/>
+**NOTE**: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below:<br/>
 
 <h5>For Qt 4</h5>
-<code>cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32\glew32.lib" -DGLEW_INCLUDE_DIR="C:\glew\glew-1.10.0\include" -DQT_QMAKE_EXECUTABLE="C:\Qt\4.8.5\bin\qmake.exe" -DQT_VERSION="4" ..\src</code><br/>
+```bash
+cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32\glew32.lib" -DGLEW_INCLUDE_DIR="C:\glew\glew-1.10.0\include" -DQT_QMAKE_EXECUTABLE="C:\Qt\4.8.5\bin\qmake.exe" -DQT_VERSION="4" ..\src
+```
 <h5>For Qt 5</h5>
-<code>cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src</code><br/>
-<br/>
+```bash
+cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src
+```
 
 Using Cleaver2
 ========
@@ -68,7 +81,7 @@ Or, for the command line tool:<br/>
 <code> bin/cleaver-cli --help</code><br/>
 For a list of command line tool options.
 
-
+```bash
     Command line flags:
       -h [ --help ]            display help message
       -v [ --verbose ]         enable verbose output
@@ -92,8 +105,24 @@ For a list of command line tool options.
       --output_name arg        output mesh name
       --output_format arg      output mesh format
       --strict                 warnings become errors
+```
+
+Testing
+==============
+The repo comes with a set of regression tests to see if recent changes break expected results. To build the tests, you will need to set <code>BUILD_TESTING</code> to "ON" in either <code>ccmake</code> or when calling CMake:
+
+```c++
+cmake -DBUILD_TESTING=ON ../src
+```
+<h4>Windows</h4>
+The gtest library included in the repo needs to be built with forced shared libraries on Windows, so use the following:
+
+```c++
+cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON ../src
+```
+Be sure to include all other necessary CMake definitions as annotated above.
+
 Known Issues
 ========
 
- * On larger data sets with a potentially high number of quadruple points (> 3 material fields), some functions are not implemented that ensure valid tets and meshes, causing bad tets in the final output. This code is being implemented now for a future release.
- * The wind up order for tets may be incorrect for jacobian calculations. This may or may not be fixed in the future. There is a flag in the command line interface that re-orders vertices at the end of meshing if this is important for your output. 
+ * On larger data sets with a potentially high number of quadruple points (> 3 material fields), some functions are failing to ensure valid tets and meshes, causing bad tets in the final output. This code is being debugged now for a future release.

@@ -184,6 +184,10 @@ void CleaverMesher::createTetMesh(bool verbose)
     m_pimpl->stencilBackgroundTets(verbose);
 }
 
+size_t CleaverMesher::fixVertexWindup(bool verbose) {
+	return m_pimpl->m_mesh->fixVertexWindup(verbose);
+}
+
 TetMesh* CleaverMesher::getBackgroundMesh() const
 {
     return m_pimpl->m_bgMesh;

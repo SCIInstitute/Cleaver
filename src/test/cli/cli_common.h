@@ -38,30 +38,27 @@
 //  //  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
-#include "cli_common.h"
-TEST(CLIRegressionTests, MATLAB) {
-  //make sure there is a command interpreter
-  ASSERT_EQ(0,(int)!(std::system(NULL)));
-  //setup the line that calls the command line interface
-  std::string log = "matlab_output.txt";
-  std::string output = " > " + data_dir + log + " 2>&1";
-  std::string line = (command + name + path + 
-      " --output_format matlab " + input + output);
-  //make sure there was no error from the command line
-  ASSERT_EQ(0, std::system(line.c_str()));
-  //move the other generated files in the current dir to the test dir
-  for(size_t i = 0; i < num_files; i++) {
-    std::system(("mv " + files[i] + " " + data_dir).c_str());
-  }
-  line = "diff " + data_dir + "matlab/output.mat " 
-    + data_dir +  "output.mat";
-  ASSERT_EQ(0,std::system(line.c_str()));
+#include "gtest/gtest.h"
+#include <cstdlib>
+#include <cstdio>
+#include <fstream>
+#include <cmath>
+#define _FIELDS " --material_fields "
+#define _NAME   " --output_name "
+#define _PATH   " --output_path "
+#define _CLI    "cleaver-cli "
+#define num_files 5
+extern std::string diff; 
+extern std::string data_dir; 
+extern std::string command; 
+extern std::string name; 
+extern std::string path; 
+extern std::string input; 
+extern std::string files[num_files]; 
 
-  //delete the output files from this test
-  for(size_t i = 0; i < num_files; i++) {
-    std::system(("rm " + data_dir + files[i]).c_str());
-  }
-  std::system(("rm " + data_dir + "output.info").c_str());
-  std::system(("rm " + data_dir + "output.mat").c_str());
-  std::system(("rm " + data_dir + log).c_str());
-}
+void compareEleFiles(const std::string a, const std::string b);
+void compareNodeFiles(const std::string a, const std::string b);
+void compareVTKFiles(const std::string a, const std::string b) ;
+void comparePtsFiles(const std::string a, const std::string b) ;
+void compareElemFiles(const std::string a, const std::string b) ;
+void compareMatFiles(const std::string a, const std::string b) ;

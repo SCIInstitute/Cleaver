@@ -23,6 +23,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     MainWindow(const QString &title);
+    ~MainWindow();
     explicit MainWindow(QWidget *parent = 0);
 
     static MainWindow* instance(){ return m_instance; }
@@ -86,6 +87,7 @@ private:
     QAction *exitAct;
 
     QAction *exportAct;
+    //QAction *exportAct2;
 
     // Edit Menu Actions
     QAction *removeExternalTetsAct;
@@ -118,6 +120,7 @@ private:
 
 
     int m_iNumOpenWindows;
+	std::string lastPath_, exePath_;
 };
 
 #endif // MAINWINDOW_H
