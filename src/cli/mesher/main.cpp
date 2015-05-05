@@ -327,6 +327,82 @@ int main(int argc,  char* argv[])
   //-----------------------------------
   cleaver::Timer total_timer;
   total_timer.start();
+  bool add_inverse = false;
+
+  if(material_fields.empty()){
+    std::cerr << "Failed to load image data. Terminating." << std::endl;
+    return 10;
+  }
+  else if(material_fields.size() == 1) {
+    if(USE_BIOMESH_SEGMENTATION) {
+      std::system((std::string(TOOL_BINARY_DIR) + "/unu minmax " +
+            material_fields.at(0) + " > tmp").c_str());
+      std::ifstream in("tmp");
+      int first, second;
+      std::string tmp;
+      in >> tmp >> first >> tmp >> second;
+      in.close();
+      std::ifstream nrrd(material_fields.at(0).c_str());
+      nrrd >> tmp;
+      nrrd.close();
+      if (tmp == "NRRD0001" || (second - first) == 0)
+        add_inverse = true;
+      else if (tmp == "NRRD0004") {
+        int total_mats = second - first + 1;
+        std::cout << "This is a segmentation file. " << std::endl;
+        //create an output folder by this file for the new fields.
+        std::string output_dir = material_fields[0].substr(0,
+            material_fields[0].find_last_of("/")) + "/material_fields" ;
+        //std::system(("mkdir " + output_dir).c_str());
+        //create the python file that the scripts need to create the fields.
+        //copy template file
+        std::system(("cat " + std::string(TOOL_BINARY_DIR) + "/ConfigTemplate.py > " +
+              std::string(TOOL_BINARY_DIR) + "/ConfigUse.py ").c_str());
+        //add "mats" "mat_names" "model_output_path" "model_input_file"
+        std::ofstream out((std::string(TOOL_BINARY_DIR) +
+              "/ConfigUse.py").c_str(),std::ios::app);
+        out << "model_input_file=\"" << material_fields[0] << "\"" << std::endl;
+        out << "model_output_path=\"" << output_dir << "\"" << std::endl;
+        out << "mats = (";
+        for(int i = 0; i < total_mats; i++)
+          out << i << ((i+1)==total_mats?")\n":", ");
+        out << "mat_names = (";
+        for(int i = 0; i < total_mats; i++)
+          out << "'" << ((char)('a' + i)) << "'" << ((i+1)==total_mats?")\n":", ");
+        out.close();
+        //call the python script to make the fields
+        std::string cmmd = "python " + std::string(TOOL_BINARY_DIR) +
+          "/BuildMesh.py -s1:2 --binary-path " + std::string(TOOL_BINARY_DIR)
+          + " " + std::string(TOOL_BINARY_DIR) + "/ConfigUse.py";
+        std::cout << "Calling BuildMesh.py: " << cmmd << std::endl;
+        std::system(cmmd.c_str());
+        //delete all of the unneeded files.
+        std::system(("rm " + output_dir + "/*.log").c_str());
+        std::system(("rm " + output_dir + "/*.txt").c_str());
+        std::system(("rm " + output_dir + "/*.fld").c_str());
+        std::system(("rm " + output_dir + "/*.raw").c_str());
+        std::system(("rm " + output_dir + "/*.tight.nrrd").c_str());
+        std::system(("rm " + output_dir + "/*corrected.nrrd").c_str());
+        std::system(("rm " + output_dir + "/*solo.nrrd").c_str());
+        std::system(("rm " + output_dir + "/*lut.nrrd").c_str());
+        std::system(("rm " + output_dir + "/*unorient.nrrd").c_str());
+        std::system(("rm " + output_dir + "/*.tf").c_str());
+        std::system(("rm " + output_dir + "/*labelmap.nrrd").c_str());
+        material_fields.clear();
+        for(int i = 0; i < total_mats; i++)
+          material_fields.push_back(output_dir + std::string("/")
+              + ((char)('a' + i)) +
+              std::string(".tight_transformed.nrrd"));
+
+      }
+      else {
+        std::cerr << "Cleaver cannot mesh this volume file." << std::endl;
+        return 1;
+      }
+    } else {
+      add_inverse = true;
+    }
+  }
 
   if(verbose) {
     std::cout << " Loading input fields:" << std::endl;
@@ -335,14 +411,11 @@ int main(int argc,  char* argv[])
     }
   }
 
-  std::vector<cleaver::AbstractScalarField*> fields = loadNRRDFiles(material_fields, verbose);
-  if(fields.empty()){
-    std::cerr << "Failed to load image data. Terminating." << std::endl;
-    return 10;
-  }
-  else if(fields.size() == 1) {
+  std::vector<cleaver::AbstractScalarField*> fields =
+    loadNRRDFiles(material_fields, verbose);
+
+  if (add_inverse)
     fields.push_back(new cleaver::InverseScalarField(fields[0]));
-  }
 
   cleaver::Volume *volume = new cleaver::Volume(fields);
   cleaver::CleaverMesher mesher(volume);

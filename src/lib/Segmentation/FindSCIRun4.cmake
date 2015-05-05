@@ -49,16 +49,19 @@ else()
     ${SCIRun4_BINARY_DIR}/ConvertNrrdToField*
     ${SCIRun4_BINARY_DIR}/ExtractIsosurface*
     ${SCIRun4_BINARY_DIR}/JoinFields*
+    ${SCIRun4_BINARY_DIR}/morphsmooth*
     ${SCIRun4_BINARY_DIR}/TransformFieldWithTransform*
     ${SCIRun4_BINARY_DIR}/UnorientNrrdAndGetTransform*
     ${SCIRun4_BINARY_DIR}/ComputeTightenedLabels*
     ${SCIRun4_FEMESHER_DIR}/BuildMesh.py
     ${SCIRun4_FEMESHER_DIR}/MakeSoloNrrd.py
     ${SCIRun4_FEMESHER_DIR}/Utils.py
-    ComputeMaterialBoundry.py
+    ${CMAKE_SOURCE_DIR}/lib/Segmentation/*.py
     )
   foreach(file ${SEGMENTATION_DEPS})
     file( COPY ${file} DESTINATION ${CMAKE_BINARY_DIR}/bin)
+    message (STATUS "copied ${file}")
   endforeach()
   add_definitions(-DUSE_BIOMESH_SEGMENTATION)
+  add_definitions(-DTOOL_BINARY_DIR="${CMAKE_BINARY_DIR}/bin")
 endif()

@@ -55,11 +55,11 @@ ADD_SUBDIRECTORY(lib/nrrd2cleaver)
 
 include_directories(lib/boost)
 
-ADD_SUBDIRECTORY(cli/mesher)
 ADD_SUBDIRECTORY(cli/sizingfieldcreator)
+include(lib/Segmentation/FindSCIRun4.cmake)
+ADD_SUBDIRECTORY(cli/mesher)
 ADD_SUBDIRECTORY(gui)
 
-include(lib/Segmentation/FindSCIRun4.cmake)
 ########################################################################
 # All of the testing and test framework options
 INCLUDE(CTest)
