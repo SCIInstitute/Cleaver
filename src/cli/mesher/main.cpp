@@ -330,7 +330,8 @@ int main(int argc,  char* argv[])
   bool add_inverse = false;
 
   if(material_fields.empty()){
-    std::cerr << "Failed to load image data. Terminating." << std::endl;
+    std::cerr << "No material fields or segmentation files provided. Terminating." 
+      << std::endl;
     return 10;
   }
   else if(material_fields.size() == 1) {
@@ -413,8 +414,10 @@ int main(int argc,  char* argv[])
 
   std::vector<cleaver::AbstractScalarField*> fields =
     loadNRRDFiles(material_fields, verbose);
-
-  if (add_inverse)
+  if (fields.empty()) {
+    std::cerr << "Failed to load image data. Terminating." << std::endl;
+    return 10;
+  } else if (add_inverse)
     fields.push_back(new cleaver::InverseScalarField(fields[0]));
 
   cleaver::Volume *volume = new cleaver::Volume(fields);
