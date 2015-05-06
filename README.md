@@ -30,6 +30,7 @@ Cleaver is an Open Source software project that is principally funded through th
 Building Cleaver2
 ========
 Requirements: Git, CMake, Qt4 -OR- Qt5<br/>
+Optional Requirements: SCIRun4 (For segmentation tools)
 Suggested:  QtCreator cross-platform IDE<br/>
 We recommend building cleaver outside of the source tree. <br/>
 From Cleaver2 directory:<br/>
@@ -72,6 +73,12 @@ cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32
 ```bash
 cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src
 ```
+
+**NOTE**: To include Segmentation Tools in your build, you must set your SCIRun4 directory:<br/>
+```bash
+cmake -DSCIRun4_DIR="/Path/To/SCIRun" ../src
+```
+<br/>
 
 Using Cleaver2
 ========
