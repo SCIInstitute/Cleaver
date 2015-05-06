@@ -47,6 +47,7 @@
 #include <Cleaver/SizingFieldCreator.h>
 #include <Cleaver/Timer.h>
 #include <nrrd2cleaver/nrrd2cleaver.h>
+#include <SegmentationTools.h>
 
 #include <boost/program_options.hpp>
 
@@ -329,93 +330,19 @@ int main(int argc,  char* argv[])
   total_timer.start();
   bool add_inverse = false;
 
-  // get the current executable directory. 
-  std::string exe_path;
-  char str[512];
-  int sz = sizeof(str);
-#ifdef WIN32
-#include <Winbase.h>
-  GetModuleFileName(NULL,str,sz);
-#endif
-#ifdef LINUX
-#include <unistd.h>
-  readlink("/proc/self/exe",str,sz);
-#endif
-#ifdef DARWIN
-#include <mach-o/dyld.h>
-  _NSGetExecutablePath(str,&sz);
-#endif
-  exe_path = std::string(str);
-  exe_path = exe_path.substr(0,exe_path.find_last_of("/"));
-
   if(material_fields.empty()){
-    std::cerr << "No material fields or segmentation files provided. Terminating." 
+    std::cerr << "No material fields or segmentation files provided. Terminating."
       << std::endl;
     return 10;
   }
   else if(material_fields.size() == 1) {
     if(USE_BIOMESH_SEGMENTATION) {
-      std::system((exe_path + "/unu minmax " +
-            material_fields.at(0) + " > tmp").c_str());
-      std::ifstream in("tmp");
-      int first, second;
-      std::string tmp;
-      in >> tmp >> first >> tmp >> second;
-      in.close();
-      std::ifstream nrrd(material_fields.at(0).c_str());
-      nrrd >> tmp;
-      nrrd.close();
-      if (tmp == "NRRD0001" || (second - first) == 0)
+      std::string tmp = SegmentationTools::getNRRDType(material_fields[0]);
+      if (tmp == "NRRD0001")
         add_inverse = true;
       else if (tmp == "NRRD0004") {
-        int total_mats = second - first + 1;
-        std::cout << "This is a segmentation file. " << std::endl;
-        //create an output folder by this file for the new fields.
-        std::string output_dir = material_fields[0].substr(0,
-            material_fields[0].find_last_of("/")) + "/material_fields" ;
-        //std::system(("mkdir " + output_dir).c_str());
-        //create the python file that the scripts need to create the fields.
-        //copy template file
-        std::system(("cat " + exe_path + "/ConfigTemplate.py > " +
-              exe_path + "/ConfigUse.py ").c_str());
-        //add "mats" "mat_names" "model_output_path" "model_input_file"
-        std::ofstream out((exe_path +
-              "/ConfigUse.py").c_str(),std::ios::app);
-        out << "model_input_file=\"" << material_fields[0] << "\"" << std::endl;
-        out << "model_output_path=\"" << output_dir << "\"" << std::endl;
-        out << "mats = (";
-        for(int i = 0; i < total_mats; i++)
-          out << i << ((i+1)==total_mats?")\n":", ");
-        out << "mat_names = (";
-        for(int i = 0; i < total_mats; i++)
-          out << "'" << ((char)('a' + i)) << "'" << ((i+1)==total_mats?")\n":", ");
-        out.close();
-        //call the python script to make the fields
-        std::string cmmd = "python " + exe_path +
-          "/BuildMesh.py -s1:2 --binary-path " + exe_path
-          + " " + exe_path + "/ConfigUse.py";
-        std::cout << "Calling BuildMesh.py: " << cmmd << std::endl;
-        std::system(cmmd.c_str());
-        //delete all of the unneeded files.
-        std::system(("rm " + output_dir + "/*.log").c_str());
-        std::system(("rm " + output_dir + "/*.txt").c_str());
-        std::system(("rm " + output_dir + "/*.fld").c_str());
-        std::system(("rm " + output_dir + "/*.raw").c_str());
-        std::system(("rm " + output_dir + "/*.tight.nrrd").c_str());
-        std::system(("rm " + output_dir + "/*corrected.nrrd").c_str());
-        std::system(("rm " + output_dir + "/*solo.nrrd").c_str());
-        std::system(("rm " + output_dir + "/*lut.nrrd").c_str());
-        std::system(("rm " + output_dir + "/*unorient.nrrd").c_str());
-        std::system(("rm " + output_dir + "/*.tf").c_str());
-        std::system(("rm " + output_dir + "/*labelmap.nrrd").c_str());
-        material_fields.clear();
-        for(int i = 0; i < total_mats; i++)
-          material_fields.push_back(output_dir + std::string("/")
-              + ((char)('a' + i)) +
-              std::string(".tight_transformed.nrrd"));
-
-      }
-      else {
+        SegmentationTools::createIndicatorFunctions(material_fields);
+      } else {
         std::cerr << "Cleaver cannot mesh this volume file." << std::endl;
         return 1;
       }

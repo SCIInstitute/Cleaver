@@ -39,12 +39,13 @@ if (NOT SCIRun4_DIR)
   SET(SCIRun4_DIR SCIRun4_DIR_NOTFOUND CACHE PATH "Install location for SCIRun4")
   message(WARNING "SCIRun4 directory not found. Segmentation Tools Disabled.")
 else()
+  #copy the binaries from SCIRun to Cleaver binary dir
   SET(SCIRun4_DIR "${SCIRun4_DIR}/SCIRun")
   message(STATUS "SCIRun4 found at: ${SCIRun4_DIR}")
   SET(SCIRun4_BINARY_DIR "${SCIRun4_DIR}/bin")
   SET(SCIRun4_FEMESHER_DIR "${SCIRun4_DIR}/bin/FEMesher")
 
-  FILE(GLOB SEGMENTATION_DEPS 
+  FILE(GLOB SEGMENTATION_DEPS
     ${SCIRun4_BINARY_DIR}/ConvertFieldToNrrd*
     ${SCIRun4_BINARY_DIR}/ConvertNrrdToField*
     ${SCIRun4_BINARY_DIR}/ExtractIsosurface*
@@ -60,8 +61,17 @@ else()
     )
   foreach(file ${SEGMENTATION_DEPS})
     file( COPY ${file} DESTINATION ${CMAKE_BINARY_DIR}/bin)
-    message (STATUS "copied ${file}")
   endforeach()
+  # add definitions for Cleaver applications to determine whether to use tools
   add_definitions(-DUSE_BIOMESH_SEGMENTATION)
-  add_definitions(-DTOOL_BINARY_DIR="${CMAKE_BINARY_DIR}/bin")
+  # platform specific calls
+  if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    add_definitions(-DLINUX)
+  elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    add_definitions(-DDARWIN)
+  elseif(CMAKE_SYSTEM_NAME_MATCHES "Windows")
+    add_definitions(-DWIN32)
+  endif()
+  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/Segmentation)
+  include_directories(${CMAKE_SOURCE_DIR}/lib/Segmentation)
 endif()
