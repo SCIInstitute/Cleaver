@@ -29,6 +29,7 @@
 
 #include <SegmentationTools.h>
 #include <cstdio>
+#include <iostream>
 #include <fstream>
 #include <vector>
 #if WIN32
@@ -85,10 +86,11 @@ namespace SegmentationTools {
   void createIndicatorFunctions(std::vector<std::string> &files) {
     std::string exe_path = getExecutablePath();
     int total_mats = SegmentationTools::getNumMats(files[0]);
+    std::string vol_name = files[0].substr(0,files[0].find_last_of("."));
+    vol_name = vol_name.substr(vol_name.find_last_of("/")+1,std::string::npos);
     //create an output folder by this file for the new fields.
     std::string output_dir = files[0].substr(0,
-        files[0].find_last_of("/")) + "/material_fields" ;
-    //std::system(("mkdir " + output_dir).c_str());
+        files[0].find_last_of("/")) + "/" + vol_name + "_material_fields" ;
     //create the python file that the scripts need to create the fields.
     //copy template file
     std::system(("cat " + exe_path + "/ConfigTemplate.py > " +
@@ -103,7 +105,7 @@ namespace SegmentationTools {
       out << i << ((i+1)==total_mats?")\n":", ");
     out << "mat_names = (";
     for(int i = 0; i < total_mats; i++)
-      out << "'" << ((char)('a' + i)) << "'" << ((i+1)==total_mats?")\n":", ");
+      out << "'" << vol_name << i << "'" << ((i+1)==total_mats?")\n":", ");
     out.close();
     //call the python script to make the fields
     std::string cmmd = "python " + exe_path +
@@ -126,7 +128,7 @@ namespace SegmentationTools {
     files.clear();
     for(int i = 0; i < total_mats; i++)
       files.push_back(output_dir + std::string("/")
-          + ((char)('a' + i)) +
+          + vol_name + ((char)('0' + i)) +
           std::string(".tight_transformed.nrrd"));
   }
 }

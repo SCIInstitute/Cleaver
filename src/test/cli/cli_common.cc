@@ -45,6 +45,8 @@ std::string data_dir = std::string(TEST_DATA_DIR);
 std::string command = std::string(BINARY_DIR) + _CLI + " -v ";
 std::string name = _NAME + std::string("output");
 std::string path = _PATH + data_dir;
+std::string seg_input = _FIELDS +
+data_dir + "input/mickey.nrrd " ;
 std::string input = _FIELDS +
 data_dir + "input/spheres1.nrrd " +
 data_dir + "input/spheres2.nrrd " +
