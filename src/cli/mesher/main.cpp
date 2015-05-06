@@ -47,7 +47,9 @@
 #include <Cleaver/SizingFieldCreator.h>
 #include <Cleaver/Timer.h>
 #include <nrrd2cleaver/nrrd2cleaver.h>
+#if USE_BIOMESH_SEGMENTATION
 #include <SegmentationTools.h>
+#endif
 
 #include <boost/program_options.hpp>
 
@@ -336,19 +338,19 @@ int main(int argc,  char* argv[])
     return 10;
   }
   else if(material_fields.size() == 1) {
-    if(USE_BIOMESH_SEGMENTATION) {
-      std::string tmp = SegmentationTools::getNRRDType(material_fields[0]);
-      if (tmp == "NRRD0001")
-        add_inverse = true;
-      else if (tmp == "NRRD0004") {
-        SegmentationTools::createIndicatorFunctions(material_fields);
-      } else {
-        std::cerr << "Cleaver cannot mesh this volume file." << std::endl;
-        return 1;
-      }
-    } else {
+#if USE_BIOMESH_SEGMENTATION
+    std::string tmp = SegmentationTools::getNRRDType(material_fields[0]);
+    if (tmp == "NRRD0001")
       add_inverse = true;
+    else if (tmp == "NRRD0004") {
+      SegmentationTools::createIndicatorFunctions(material_fields);
+    } else {
+      std::cerr << "Cleaver cannot mesh this volume file." << std::endl;
+      return 1;
     }
+#else
+    add_inverse = true;
+#endif
   }
 
   if(verbose) {

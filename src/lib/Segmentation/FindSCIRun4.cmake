@@ -26,25 +26,53 @@
 
 #try to search for SCIRun4 somewhere
 
-find_path(SCIRun4_DIR
-  NAMES SCIRun
-  PATHS $ENV{HOME}
+find_file(SCIRun4_DIR
+  NAMES
+  SCIRun
+  SCIRun4
+  PATHS
+  $ENV{HOME}
   "C:/"
   $ENV{HOME}/Documents
-  $ENV{HOME}/Documents/Tools
   )
 
+SET(SCIRun4_BINARY_DIR "${SCIRun4_DIR}/bin")
+SET(SCIRun4_FEMESHER_DIR "${SCIRun4_DIR}/bin/FEMesher")
+SET(required_deps
+  ConvertFieldToNrrd
+  ConvertNrrdToField
+  ExtractIsosurface
+  JoinFields
+  morphsmooth
+  TransformFieldWithTransform
+  UnorientNrrdAndGetTransform
+  ComputeTightenedLabels
+  BuildMesh.py
+  MakeSoloNrrd.py
+  Utils.py
+  )
+foreach (file ${required_deps})
+  find_file(${file}-dependency
+    NAMES
+    ${file}
+    ${file}.exe
+    PATHS
+    ${SCIRun4_BINARY_DIR}
+    ${SCIRun4_FEMESHER_DIR}
+    NO_DEFAULT_PATH
+    )
+  if (${${file}-dependency} MATCHES "${file}-dependency-NOTFOUND")
+    set(SCIRun4_DIR "SCIRun4_DIR-NOTFOUND" CACHE PATH "SCIRun4 directory" FORCE)
+  endif()
+  unset(${file}-dependency CACHE)
+endforeach()
 
-if (NOT SCIRun4_DIR)
-  SET(SCIRun4_DIR SCIRun4_DIR_NOTFOUND CACHE PATH "Install location for SCIRun4")
+if (${SCIRun4_DIR} MATCHES "SCIRun4_DIR-NOTFOUND")
   message(WARNING "SCIRun4 directory not found. Segmentation Tools Disabled.")
+  message(STATUS "Please set SCIRun4_DIR in CMake for Segmentation Tools.")
 else()
   #copy the binaries from SCIRun to Cleaver binary dir
-  SET(SCIRun4_DIR "${SCIRun4_DIR}/SCIRun")
   message(STATUS "SCIRun4 found at: ${SCIRun4_DIR}")
-  SET(SCIRun4_BINARY_DIR "${SCIRun4_DIR}/bin")
-  SET(SCIRun4_FEMESHER_DIR "${SCIRun4_DIR}/bin/FEMesher")
-
   FILE(GLOB SEGMENTATION_DEPS
     ${SCIRun4_BINARY_DIR}/ConvertFieldToNrrd*
     ${SCIRun4_BINARY_DIR}/ConvertNrrdToField*
@@ -74,4 +102,5 @@ else()
   endif()
   add_subdirectory(${CMAKE_SOURCE_DIR}/lib/Segmentation)
   include_directories(${CMAKE_SOURCE_DIR}/lib/Segmentation)
+  set(SEGMENTATION_TOOLS_LIBS "${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}seg_tools${CMAKE_STATIC_LIBRARY_SUFFIX}")
 endif()

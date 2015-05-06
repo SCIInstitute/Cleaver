@@ -13,4 +13,10 @@ FILE(GLOB hdrs *.h   )
 
 ADD_EXECUTABLE(cleaver-cli ${srcs} ${hdrs})
 
-TARGET_LINK_LIBRARIES(cleaver-cli cleaver nrrd2cleaver teem boostparts SEGMENTATION_TOOLS_LIB)
+TARGET_LINK_LIBRARIES(cleaver-cli 
+  cleaver 
+  nrrd2cleaver 
+  teem 
+  boostparts 
+  ${SEGMENTATION_TOOLS_LIBS}
+  )
