@@ -82,6 +82,7 @@ else()
     ${SCIRun4_BINARY_DIR}/TransformFieldWithTransform*
     ${SCIRun4_BINARY_DIR}/UnorientNrrdAndGetTransform*
     ${SCIRun4_BINARY_DIR}/ComputeTightenedLabels*
+    ${SCIRun4_BINARY_DIR}/*.dll
     ${SCIRun4_FEMESHER_DIR}/BuildMesh.py
     ${SCIRun4_FEMESHER_DIR}/MakeSoloNrrd.py
     ${SCIRun4_FEMESHER_DIR}/Utils.py
@@ -97,7 +98,7 @@ else()
     add_definitions(-DLINUX)
   elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     add_definitions(-DDARWIN)
-  elseif(CMAKE_SYSTEM_NAME_MATCHES "Windows")
+  elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
     add_definitions(-DWIN32)
   endif()
   add_subdirectory(${CMAKE_SOURCE_DIR}/lib/Segmentation)
