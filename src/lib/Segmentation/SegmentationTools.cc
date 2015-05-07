@@ -46,7 +46,7 @@ namespace SegmentationTools {
     // get the current executable directory.
     std::string exe_path;
     char str[512];
-    int sz = sizeof(str);
+    uint32_t sz = sizeof(str);
 #if WIN32
     GetModuleFileName(NULL,str,sz);
 #elif LINUX
