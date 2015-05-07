@@ -18,5 +18,7 @@ TARGET_LINK_LIBRARIES(cleaver-cli
   nrrd2cleaver 
   teem 
   boostparts 
-  ${SEGMENTATION_TOOLS_LIBS}
   )
+if (USE_SEGMENTATION_TOOLS)
+  target_link_libraries(cleaver-cli seg_tools)
+endif()

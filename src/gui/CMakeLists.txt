@@ -152,7 +152,6 @@ if(${QT_VERSION} MATCHES "5")
       Qt5::WinMain
       ${GLEXT_LIBRARY}
       ${QT_QTMAIN_LIBRARY}
-      ${SEGMENTATION_TOOLS_LIBS}
       )
   else()
     TARGET_LINK_LIBRARIES(cleaver-gui
@@ -166,7 +165,6 @@ if(${QT_VERSION} MATCHES "5")
       Qt5::OpenGL
       Qt5::Core
       Qt5::Gui
-      ${SEGMENTATION_TOOLS_LIBS}
       ${OPTIONAL_LIBS})
   endif()
 elseif(${QT_VERSION} MATCHES "4")
@@ -179,7 +177,6 @@ elseif(${QT_VERSION} MATCHES "4")
       ${OPENGL_LIBRARIES}
       ${QT_LIBRARIES}
       ${GLEW_LIBRARIES}
-      ${SEGMENTATION_TOOLS_LIBS}
       )
   else()
     TARGET_LINK_LIBRARIES(cleaver-gui
@@ -190,7 +187,6 @@ elseif(${QT_VERSION} MATCHES "4")
       ${OPTIONAL_LIBS}
       ${OPENGL_LIBRARIES}
       ${QT_LIBRARIES}
-      ${SEGMENTATION_TOOLS_LIBS}
       )
   endif()
 endif()
@@ -202,3 +198,6 @@ if(WIN32)
 endif()
 
 ADD_DEPENDENCIES(cleaver-gui comp_shaders)
+if (USE_SEGMENTATION_TOOLS)
+  target_link_libraries(cleaver-gui seg_tools)
+endif()

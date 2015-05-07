@@ -66,6 +66,8 @@ namespace SegmentationTools {
     readlink("/proc/self/exe",str,sz);
 #elif DARWIN
     _NSGetExecutablePath(str,&sz);
+    std::string tmp(str);
+    str[tmp.rfind("bin/")+4] = '\0';
 #endif
     exe_path = std::string(str);
     return exe_path.substr(0,exe_path.find_last_of("/"));

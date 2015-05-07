@@ -103,5 +103,21 @@ else()
   endif()
   add_subdirectory(${CMAKE_SOURCE_DIR}/lib/Segmentation)
   include_directories(${CMAKE_SOURCE_DIR}/lib/Segmentation)
-  set(SEGMENTATION_TOOLS_LIBS "${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}seg_tools${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  set(USE_SEGMENTATION_TOOLS ON)
+  #MSVC/XCode put executables in Release/Debug folders. try copying unu to bin folder.
+  SET(possible_unu_files
+    ${CMAKE_BINARY_DIR}/bin/Release/unu
+    ${CMAKE_BINARY_DIR}/bin/Release/unu.exe
+    ${CMAKE_BINARY_DIR}/bin/Debug/unu
+    ${CMAKE_BINARY_DIR}/bin/Debug/unu.exe
+    ${CMAKE_BINARY_DIR}/bin/RelWithDebInfo/unu
+    ${CMAKE_BINARY_DIR}/bin/RelWithDebInfo/unu.exe
+    ${CMAKE_BINARY_DIR}/bin/MinSizeRel/unu
+    ${CMAKE_BINARY_DIR}/bin/MinSizeRel/unu.exe
+    )
+    foreach(file ${possible_unu_files})
+      if (EXISTS ${file})
+        file(COPY ${file} DESTINATION ${CMAKE_BINARY_DIR}/bin)
+      endif()
+    endforeach()
 endif()
