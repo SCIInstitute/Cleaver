@@ -32,6 +32,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <stdint.h>
 #if WIN32
 #include <Windows.h>
 #define RM_CMMD " del /s /q "
