@@ -340,12 +340,12 @@ int main(int argc,  char* argv[])
   else if(material_fields.size() == 1) {
 #if USE_BIOMESH_SEGMENTATION
     std::string tmp = SegmentationTools::getNRRDType(material_fields[0]);
-    if (tmp == "NRRD0001")
+    if (tmp == "NRRD0001" || tmp == "NRRD0005")
       add_inverse = true;
     else if (tmp == "NRRD0004") {
       SegmentationTools::createIndicatorFunctions(material_fields);
     } else {
-      std::cerr << "Cleaver cannot mesh this volume file." << std::endl;
+      std::cerr << "Cleaver cannot mesh this volume file: " << tmp << std::endl;
       return 1;
     }
 #else

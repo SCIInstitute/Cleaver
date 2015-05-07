@@ -304,7 +304,7 @@ void MainWindow::importVolume()
     else if(inputs.size() == 1) {
 #if USE_BIOMESH_SEGMENTATION
       std::string tmp = SegmentationTools::getNRRDType(inputs[0]);
-      if (tmp == "NRRD0001")
+      if (tmp == "NRRD0001" || tmp == "NRRD0005")
         add_inverse = true;
       else if (tmp == "NRRD0004") {
         SegmentationTools::createIndicatorFunctions(inputs);
