@@ -33,11 +33,20 @@
 #include <fstream>
 #include <vector>
 #if WIN32
-#include <Winbase.h>
+#include <Windows.h>
+#define RM_CMMD " del /s /q "
+#define CAT_CMMD " type "
+#define SLASH "\\"
 #elif LINUX
 #include <unistd.h>
+#define RM_CMMD " rm -rf "
+#define CAT_CMMD " cat "
+#define SLASH "/"
 #elif DARWIN
 #include <mach-o/dyld.h>
+#define RM_CMMD " rm -rf "
+#define CAT_CMMD " cat "
+#define SLASH "/"
 #endif
 
 namespace SegmentationTools {
@@ -48,7 +57,10 @@ namespace SegmentationTools {
     char str[512];
     int sz = sizeof(str);
 #if WIN32
-    GetModuleFileName(NULL,str,sz);
+    HMODULE hModule = GetModuleHandleW(NULL);
+    GetModuleFileName(hModule,str,sz);
+    for(int i = 0; i < sz; i++)
+      if (str[i] == '\\') str[i] = '/';
 #elif LINUX
     readlink("/proc/self/exe",str,sz);
 #elif DARWIN
@@ -68,13 +80,18 @@ namespace SegmentationTools {
 
   int getNumMats(std::string file) {
     std::string exe_path = getExecutablePath();
-    std::string unu_cmmd = 
+    std::string unu_cmmd =
 #if WIN32
       "/unu.exe minmax ";
 #else
     "/unu minmax ";
 #endif
-    std::system((exe_path + unu_cmmd + file + " > tmp").c_str());
+    std::string cmmd = exe_path + unu_cmmd + file + " > tmp";
+#if WIN32
+    for(size_t i = 0; i < cmmd.size(); i++)
+      if (cmmd[i] == '/') cmmd[i] = '\\';
+#endif
+    std::system(cmmd.c_str());
     std::ifstream in("tmp");
     int first, second;
     std::string tmp;
@@ -84,6 +101,10 @@ namespace SegmentationTools {
   }
 
   void createIndicatorFunctions(std::vector<std::string> &files) {
+    //ensure we are using the right slashes for this section.
+    for (size_t i = 0; i < files[0].size(); i++)
+      if (files[0][i] == '\\')
+        files[0][i] = '/';
     std::string exe_path = getExecutablePath();
     int total_mats = SegmentationTools::getNumMats(files[0]);
     std::string vol_name = files[0].substr(0,files[0].find_last_of("."));
@@ -93,11 +114,15 @@ namespace SegmentationTools {
         files[0].find_last_of("/")) + "/" + vol_name + "_material_fields" ;
     //create the python file that the scripts need to create the fields.
     //copy template file
-    std::system(("cat " + exe_path + "/ConfigTemplate.py > " +
-          exe_path + "/ConfigUse.py ").c_str());
+    std::string cmmd = CAT_CMMD + exe_path + "/ConfigTemplate.py > " +
+      exe_path + "/ConfigUse.py ";
+#if WIN32
+    for(size_t i = 0; i < cmmd.size(); i++)
+      if (cmmd[i] == '/') cmmd[i] = '\\';
+#endif
+    std::system(cmmd.c_str());
     //add "mats" "mat_names" "model_output_path" "model_input_file"
-    std::ofstream out((exe_path +
-          "/ConfigUse.py").c_str(),std::ios::app);
+    std::ofstream out((exe_path + "/ConfigUse.py").c_str(),std::ios::app);
     out << "model_input_file=\"" << files[0] << "\"" << std::endl;
     out << "model_output_path=\"" << output_dir << "\"" << std::endl;
     out << "mats = (";
@@ -108,27 +133,36 @@ namespace SegmentationTools {
       out << "'" << vol_name << i << "'" << ((i+1)==total_mats?")\n":", ");
     out.close();
     //call the python script to make the fields
-    std::string cmmd = "python " + exe_path +
+    cmmd = "python " + exe_path +
       "/BuildMesh.py -s1:2 --binary-path " + exe_path
       + " " + exe_path + "/ConfigUse.py";
+#if WIN32
+    for(size_t i = 0; i < cmmd.size(); i++)
+      if (cmmd[i] == '/') cmmd[i] = '\\';
+#endif
     std::system(cmmd.c_str());
     //delete all of the unneeded files.
-    std::system(("rm -f " + output_dir + "/*.log").c_str());
-    std::system(("rm -f " + output_dir + "/*.txt").c_str());
-    std::system(("rm -f " + output_dir + "/*.fld").c_str());
-    std::system(("rm -f " + output_dir + "/*.raw").c_str());
-    std::system(("rm -f " + output_dir + "/*.tight.nrrd").c_str());
-    std::system(("rm -f " + output_dir + "/*corrected.nrrd").c_str());
-    std::system(("rm -f " + output_dir + "/*solo.nrrd").c_str());
-    std::system(("rm -f " + output_dir + "/*lut.nrrd").c_str());
-    std::system(("rm -f " + output_dir + "/*unorient.nrrd").c_str());
-    std::system(("rm -f " + output_dir + "/*.tf").c_str());
-    std::system(("rm -f " + output_dir + "/*labelmap.nrrd").c_str());
-    std::system("rm -f tmp");
+    cmmd = RM_CMMD + output_dir + "/";
+#if WIN32
+    for(size_t i = 0; i < cmmd.size(); i++)
+      if (cmmd[i] == '/') cmmd[i] = '\\';
+#endif
+    std::system((cmmd + "*.log").c_str());
+    std::system((cmmd + "*.txt").c_str());
+    std::system((cmmd + "*.fld").c_str());
+    std::system((cmmd + "*.raw").c_str());
+    std::system((cmmd + "*.tight.nrrd").c_str());
+    std::system((cmmd + "*corrected.nrrd").c_str());
+    std::system((cmmd + "*solo.nrrd").c_str());
+    std::system((cmmd + "*lut.nrrd").c_str());
+    std::system((cmmd + "*unorient.nrrd").c_str());
+    std::system((cmmd + "*.tf").c_str());
+    std::system((cmmd + "*labelmap.nrrd").c_str());
+    std::system((RM_CMMD + std::string("tmp")).c_str());
     files.clear();
     for(int i = 0; i < total_mats; i++)
-      files.push_back(output_dir + std::string("/")
-          + vol_name + ((char)('0' + i)) +
+      files.push_back(output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
           std::string(".tight_transformed.nrrd"));
   }
 }
