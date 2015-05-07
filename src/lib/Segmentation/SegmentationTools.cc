@@ -62,6 +62,8 @@ namespace SegmentationTools {
     GetModuleFileName(hModule,str,sz);
     for(int i = 0; i < sz; i++)
       if (str[i] == '\\') str[i] = '/';
+    std::string tmp(str);
+    str[tmp.rfind("bin/")+4] = '\0';
 #elif LINUX
     readlink("/proc/self/exe",str,sz);
 #elif DARWIN
