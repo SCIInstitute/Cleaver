@@ -79,6 +79,7 @@ cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEX
 cmake -DSCIRun4_DIR="/Path/To/SCIRun" ../src
 ```
 <br/>
+**NOTE**: Since the segmentation tools make system calls, it is important that you provide the full path to the segmentation file (not a relative path).<br/>
 
 Using Cleaver2
 ========
