@@ -51,6 +51,10 @@ TEST(CLIRegressionTests, Background) {
   std::string line = (command + name + path + option + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
+  //move the other generated files in the current dir to the test dir
+  for(size_t i = 0; i < num_files; i++) {
+    system_execute(MV_CMMD,files[i] + " " + data_dir);
+  }
   //compare all of the related files
   EXPECT_NO_FATAL_FAILURE(compareNodeFiles(
         data_dir + "scaling/output.node",
@@ -58,8 +62,8 @@ TEST(CLIRegressionTests, Background) {
   EXPECT_NO_FATAL_FAILURE(compareEleFiles(
         data_dir + "scaling/output.ele",
         data_dir + "output.ele"));
-  std::system(("rm " + data_dir + "output.info").c_str());
-  std::system(("rm " + data_dir + "output.node").c_str());
-  std::system(("rm " + data_dir + "output.ele").c_str());
-  std::system(("rm " + data_dir + log).c_str());
+  system_execute(RM_CMMD,data_dir + "output.info");
+  system_execute(RM_CMMD,data_dir + "output.node");
+  system_execute(RM_CMMD,data_dir + "output.ele");
+  system_execute(RM_CMMD,data_dir + log);
 }

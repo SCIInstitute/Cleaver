@@ -37,17 +37,14 @@
 #include <Windows.h>
 #define RM_CMMD " del /s /q "
 #define CAT_CMMD " type "
-#define SLASH "\\"
 #elif LINUX
 #include <unistd.h>
 #define RM_CMMD " rm -rf "
 #define CAT_CMMD " cat "
-#define SLASH "/"
 #elif DARWIN
 #include <mach-o/dyld.h>
 #define RM_CMMD " rm -rf "
 #define CAT_CMMD " cat "
-#define SLASH "/"
 #endif
 
 namespace SegmentationTools {
@@ -60,7 +57,7 @@ namespace SegmentationTools {
 #if WIN32
     HMODULE hModule = GetModuleHandleW(NULL);
     GetModuleFileName(hModule,str,sz);
-    for(int i = 0; i < sz; i++)
+    for(size_t i = 0; i < sz; i++)
       if (str[i] == '\\') str[i] = '/';
     std::string tmp(str);
     str[tmp.rfind("bin/")+4] = '\0';

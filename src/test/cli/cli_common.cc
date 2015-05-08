@@ -59,6 +59,19 @@ std::string files[num_files] = {
   "feature_field.nrrd",
   "medial.nrrd"};
 
+void system_execute(const std::string cmmd, const std::string args) {
+	std::string new_args;
+#if WIN32
+	for(size_t i = 0; i < args.size(); i++) 
+		if (args[i] == '/') new_args = new_args + "\\";
+		else new_args = new_args + args[i];
+#else
+	new_args = args;
+#endif
+	std::system((cmmd + new_args).c_str());
+}
+
+
 void compareEleFiles(const std::string a, const std::string b) {
   ASSERT_FALSE(a == b);
   std::ifstream test(b.c_str(),std::ifstream::in),

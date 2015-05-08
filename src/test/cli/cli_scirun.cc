@@ -51,7 +51,7 @@ TEST(CLIRegressionTests, SCIRun) {
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
   for(size_t i = 0; i < num_files; i++) {
-    std::system(("mv " + files[i] + " " + data_dir).c_str());
+    system_execute(MV_CMMD,files[i] + " " + data_dir);
   }
   //compare all of the related files
   EXPECT_NO_FATAL_FAILURE(comparePtsFiles(
@@ -64,12 +64,12 @@ TEST(CLIRegressionTests, SCIRun) {
         data_dir + "scirun/output.txt",
         data_dir + "output.txt"));
   //delete the output files from this test
-  for(size_t i = 0; i < num_files; i++) {
-    std::system(("rm " + data_dir + files[i]).c_str());
+  for(size_t i = 0; i < num_files - 4; i++) {
+    system_execute(RM_CMMD,data_dir + files[i]);
   }
-  std::system(("rm " + data_dir + "output.elem").c_str());
-  std::system(("rm " + data_dir + "output.pts").c_str());
-  std::system(("rm " + data_dir + "output.txt").c_str());
-  std::system(("rm " + data_dir + "output.info").c_str());
-  std::system(("rm " + data_dir + log).c_str());
+  system_execute(RM_CMMD,data_dir + "output.info");
+  system_execute(RM_CMMD,data_dir + "output.pts");
+  system_execute(RM_CMMD,data_dir + "output.elem");
+  system_execute(RM_CMMD,data_dir + "output.txt");
+  system_execute(RM_CMMD,data_dir + log);
 }

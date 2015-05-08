@@ -96,5 +96,5 @@ TEST(CLIRegressionTests, RegularStrict) {
     "basic/basic_output.log " + input;
   line = (command + option + output);
   EXPECT_EQ(10 * _MUL , std::system(line.c_str()));
-  std::system(("rm " + data_dir + log).c_str());
+  system_execute(RM_CMMD,data_dir + log);
 }
