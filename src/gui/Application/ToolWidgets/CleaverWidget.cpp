@@ -9,6 +9,7 @@
 #include <iostream>
 #ifdef USING_QT5
 #include <QApplication>
+#include <QProgressDialog>
 #else
 #include <QtGui/QApplication>
 #endif
@@ -117,32 +118,42 @@ void CleaverWidget::createMesh()
 {
     MeshWindow *window = MainWindow::instance()->activeWindow();
     if(window != NULL){
+		QProgressDialog status(QString("Meshing Indicator Functions..."),QString(),0,100, this);
+		status.show();
+		status.setWindowModality(Qt::WindowModal);
         mesher->setRegular(false);
         mesher->createBackgroundMesh(true);
+		status.setValue(10);
         this->ui->backgroundCheck->setChecked(true);
         qApp->processEvents();
         window->setMesh(mesher->getBackgroundMesh());
 
         mesher->buildAdjacency(true);
+		status.setValue(20);
         this->ui->adjacencyCheck->setChecked(true);
         qApp->processEvents();
         this->ui->adjacencyCheck->repaint();
         mesher->sampleVolume(true);
+		status.setValue(30);
         this->ui->sampleCheck->setChecked(true);
         qApp->processEvents();
         window->updateMesh();
         window->updateGL();
 
         mesher->computeAlphas(true);
+		status.setValue(40);
         this->ui->alphaCheck->setChecked(true);
         qApp->processEvents();
         mesher->computeInterfaces(true);
+		status.setValue(50);
         this->ui->interfaceCheck->setChecked(true);
         qApp->processEvents();
         mesher->generalizeTets(true);
+		status.setValue(60);
         this->ui->generalizeCheck->setChecked(true);
         qApp->processEvents();
         mesher->snapsAndWarp(true);
+		status.setValue(70);
         this->ui->snapCheck->setChecked(true);
         qApp->processEvents();
 
@@ -150,8 +161,10 @@ void CleaverWidget::createMesh()
         window->updateGL();
 
         mesher->stencilTets(true);
+		status.setValue(80);
 		if (this->ui->fixJacobianCheckBox->isChecked())
 			mesher->fixVertexWindup(true);
+		status.setValue(90);
         this->ui->stencilCheck->setChecked(true);
         qApp->processEvents();
         window->updateMesh();
@@ -159,6 +172,7 @@ void CleaverWidget::createMesh()
 
         update();
 		MainWindow::instance()->enableMeshedVolumeOptions();
+		status.setValue(100);
     }
 }
 
@@ -170,6 +184,9 @@ void CleaverWidget::createRegularMesh()
       MeshWindow *window = MainWindow::instance()->activeWindow();
 
     if(window != NULL){
+		QProgressDialog status(QString("Meshing Indicator Functions..."),QString(),0,100, this);
+		status.show();
+		status.setWindowModality(Qt::WindowModal);
         //create the default sizing field
         cleaver::Volume *volume = window->volume();
 
@@ -194,32 +211,41 @@ void CleaverWidget::createRegularMesh()
         double al = ui->alphaLongSpinner->value();
         double as = ui->alphaShortSpinner->value();
         mesher->setAlphas(al,as);
+		status.setValue(5);
         mesher->setRegular(true);
+		status.setValue(10);
         mesher->createBackgroundMesh(true);
+		status.setValue(15);
         this->ui->backgroundCheck->setChecked(true);
         qApp->processEvents();
 
         window->setMesh(mesher->getBackgroundMesh());
         
         mesher->buildAdjacency(true);
+		status.setValue(20);
         this->ui->adjacencyCheck->setChecked(true);
         qApp->processEvents();
         mesher->sampleVolume(true);
+		status.setValue(30);
         this->ui->sampleCheck->setChecked(true);
         qApp->processEvents();
         window->updateMesh();
         window->updateGL();
         
         mesher->computeAlphas(true);
+		status.setValue(40);
         this->ui->alphaCheck->setChecked(true);
         qApp->processEvents();
         mesher->computeInterfaces(true);
+		status.setValue(50);
         this->ui->interfaceCheck->setChecked(true);
         qApp->processEvents();
         mesher->generalizeTets(true);
+		status.setValue(60);
         this->ui->generalizeCheck->setChecked(true);
         qApp->processEvents();
         mesher->snapsAndWarp(true);
+		status.setValue(70);
         this->ui->snapCheck->setChecked(true);
         qApp->processEvents();
 
@@ -227,8 +253,10 @@ void CleaverWidget::createRegularMesh()
         window->updateGL();
 
         mesher->stencilTets(true);
+		status.setValue(80);
 		if (this->ui->fixJacobianCheckBox->isChecked())
 			mesher->fixVertexWindup(true);
+		status.setValue(90);
         this->ui->stencilCheck->setChecked(true);
         qApp->processEvents();
         window->updateMesh();
@@ -236,6 +264,7 @@ void CleaverWidget::createRegularMesh()
 
         update();
 		MainWindow::instance()->enableMeshedVolumeOptions();
+		status.setValue(100);
     }
 }
 //=========================================

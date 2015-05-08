@@ -2,6 +2,7 @@
 #include "ui_SizingFieldWidget.h"
 #include "MainWindow.h"
 #include <QFileDialog>
+#include <QProgressDialog>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -132,12 +133,18 @@ void SizingFieldWidget::computeSizingField()
     float scale = ui->scaleSpinBox->value();
     int padding = ui->paddingSpinBox->value();
     bool adaptiveSurface = QString::compare(ui->surfaceComboBox->currentText(), QString("constant"), Qt::CaseInsensitive) == 0 ? false : true;
-
+	
+	QProgressDialog status(QString("Computing Sizing Field..."),QString(),0,100, this);
+	status.show();
+	status.setWindowModality(Qt::WindowModal);
     cleaver::Timer timer;
     timer.start();
+	status.setValue(10);
+    QApplication::processEvents();
     cleaver::AbstractScalarField *sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(this->volume, speed, scale, factor, padding, adaptiveSurface, true);
     timer.stop();
-
+	status.setValue(50);
+    QApplication::processEvents();
     std::string sizingFieldName = volume->name() + "-computed-sizing-field";
     sizingField->setName(sizingFieldName);
     this->volume->setSizingField(sizingField);
@@ -145,6 +152,7 @@ void SizingFieldWidget::computeSizingField()
 
     // Add new sizing field to data manager
     MainWindow::dataManager()->addField(sizingField);
+	status.setValue(100);
 }
 
 void SizingFieldWidget::updateVolumeList()

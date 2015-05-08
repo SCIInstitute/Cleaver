@@ -6,6 +6,8 @@
 #include <nrrd2cleaver/nrrd2cleaver.h>
 #include <cstdio>
 #include <fstream>
+#include <QProgressDialog>
+#include <QApplication>
 #if USE_BIOMESH_SEGMENTATION
 #include <SegmentationTools.h>
 #endif
@@ -307,7 +309,13 @@ void MainWindow::importVolume()
       if (tmp == "NRRD0001" || tmp == "NRRD0005")
         add_inverse = true;
       else if (tmp == "NRRD0004") {
+	    QProgressDialog status(QString("Converting Segmentation to Indicator Functions..."),QString(),0,100, this);
+		status.show();
+		status.setWindowModality(Qt::WindowModal);
+		status.setValue(50);
+		QApplication::processEvents();
         SegmentationTools::createIndicatorFunctions(inputs);
+		status.setValue(100);
       } else {
         std::cerr << "Cleaver cannot mesh this volume file." << std::endl;
         return;
@@ -316,14 +324,21 @@ void MainWindow::importVolume()
       add_inverse = true;
 #endif
     }
-
+	
+	QProgressDialog status(QString("Loading Indicator Functions..."),QString(),0,100, this);
+	status.show();
+	status.setWindowModality(Qt::WindowModal);
     std::cout << " Loading input fields:" << std::endl;
     for (size_t i=0; i < inputs.size(); i++) {
       std::cout << " - " << inputs[i] << std::endl;
     }
+	status.setValue(5);
+	QApplication::processEvents();
 
     std::vector<cleaver::AbstractScalarField*> fields =
       loadNRRDFiles(inputs, true);
+	status.setValue(70);
+	QApplication::processEvents();
     if (fields.empty()) {
       std::cerr << "Failed to load image data. Terminating." << std::endl;
       return;
@@ -331,6 +346,8 @@ void MainWindow::importVolume()
       fields.push_back(new cleaver::InverseScalarField(fields[0]));
       fields.back()->setName(fields[0]->name() + "-inverse");
     }
+	status.setValue(90);
+	QApplication::processEvents();
     // Add Fields to Data Manager
     for(size_t f=0; f < fields.size(); f++){
       dataManager()->addField(fields[f]);
@@ -344,11 +361,14 @@ void MainWindow::importVolume()
       volumeName += std::string(" ") + QString::number(v).toStdString();
     }
     volume->setName(volumeName);
+	status.setValue(95);
+	QApplication::processEvents();
 
     dataManager()->addVolume(volume);
     createWindow(volume, QString(volumeName.c_str()));
 
     m_cleaverWidget->resetCheckboxes();
+	status.setValue(100);
   }
 }
 
