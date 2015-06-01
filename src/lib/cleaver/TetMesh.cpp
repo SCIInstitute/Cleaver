@@ -1336,6 +1336,7 @@ namespace cleaver
     //-----------------------------------
     //         Write Cell/Face List
     //-----------------------------------
+	// \todo make writing background optional
 	output << "CELLS " << this->tets.size() << " " << this->tets.size()*5 << "\n";
     for(size_t f=0; f < this->tets.size(); f++)
     {
@@ -1354,8 +1355,10 @@ namespace cleaver
 		Tet* t = this->tets.at(f);
 		output << 10 << "\n";
 	}
-	output << "\n";
 
+	//-----------------------------------
+	//         Write Labels
+	//-----------------------------------
 	output << "CELL_DATA " << this->tets.size() << "\n";
 	output << "SCALARS labels int 1\n";
 	output << "LOOKUP_TABLE default\n";
@@ -1364,8 +1367,8 @@ namespace cleaver
 		Tet* t = this->tets.at(f);
 		output << (int)t->mat_label << "\n";
 	}
-	output << "\n";
 
+	// \todo make optional
 	output << "POINT_DATA " << this->verts.size() << "\n";
 	output << "SCALARS labels int 1\n";
 	output << "LOOKUP_TABLE default\n";
