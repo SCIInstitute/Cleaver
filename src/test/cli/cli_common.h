@@ -58,7 +58,7 @@
 #define RMDIR_CMMD " rm -rf "
 #define CAT_CMMD " cat "
 #define MV_CMMD " mv "
-#elif DARWIN
+#elif DARWIN || APPLE
 #define RM_CMMD " rm "
 #define RMDIR_CMMD " rm -rf "
 #define CAT_CMMD " cat "
