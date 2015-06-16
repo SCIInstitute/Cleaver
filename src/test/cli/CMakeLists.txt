@@ -1,4 +1,7 @@
 ########################################################################
+if (APPLE)
+   add_definitions(-DAPPLE)
+endif()
 
 # Tests for cli
 include_directories(${CLEAVER2_SOURCE_DIR}/lib/gtest)
