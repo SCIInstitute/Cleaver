@@ -9,20 +9,20 @@ This distribution comes with both a command-line interface, and a GUI.
 <br/>
 Table of Contents
 ========
-- [Cleaver2](#cleaver2)
-	- [Aknowledgements](#aknowledgements)
-	- [Building](#building)<br/>
-			- [Linux, OSX](#linux-osx)<br/>
-			- [Windows](#windows)<br/>
-				- [Qt 4](#for-qt-4)<br/>
-				- [Qt 5](#for-qt-5)<br/>
-	- [Running](#running)
-		- [Command line Tool](#command-line-tool)
-		- [Graphical Interface](#graphical-interface)
-		- [Cleaver Library](#cleaver-library)
-	- [Testing](#testing)<br/>
-			- [Windows](#testing)<br/>
-	- [Known Issues](#known-issues)<br/>
+
+- [Aknowledgements](#aknowledgements)
+- [Building](#building)<br/>
+		- [Linux, OSX](#linux-osx)<br/>
+		- [Windows](#windows)<br/>
+			- [Qt 4](#for-qt-4)<br/>
+			- [Qt 5](#for-qt-5)<br/>
+- [Running](#running)
+	- [Command line Tool](#command-line-tool)
+	- [Graphical Interface](#graphical-interface)
+	- [Cleaver Library](#cleaver-library)
+- [Testing](#testing)<br/>
+		- [Windows](#testing)<br/>
+- [Known Issues](#known-issues)<br/>
 
 Aknowledgements
 ========
