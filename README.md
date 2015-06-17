@@ -6,7 +6,25 @@ The method is theoretically guaranteed to produce valid meshes with bounded dihe
 
 This is the open-source repository for Cleaver2, a tetrahedral meshing tool. 
 This distribution comes with both a command-line interface, and a GUI.
-
+<br/>
+Table of Contents
+========
+- [Cleaver2](#cleaver2)
+	- [Aknowledgements](#aknowledgements)
+	- [Building](#building)<br/>
+			- [Linux, OSX](#linux-osx)<br/>
+			- [Windows](#windows)<br/>
+				- [Qt 4](#for-qt-4)<br/>
+				- [Qt 5](#for-qt-5)<br/>
+	- [Running](#running)
+		- [Command line Tool](#command-line-tool)
+		- [Graphical Interface](#graphical-interface)
+		- [Cleaver Library](#cleaver-library)
+	- [Testing](#testing)
+			- [Windows](#windows)
+	- [Known Issues](#known-issues)
+<br/>
+<br/>
 <h3>Aknowledgements</h3>
 The Cleaver Library is based on the 'Lattice Cleaving' algorithm:
 
