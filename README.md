@@ -20,12 +20,12 @@ Table of Contents
 		- [Command line Tool](#command-line-tool)
 		- [Graphical Interface](#graphical-interface)
 		- [Cleaver Library](#cleaver-library)
-	- [Testing](#testing)
-			- [Windows](#windows)
-	- [Known Issues](#known-issues)
-<br/>
-<br/>
-<h3>Aknowledgements</h3>
+	- [Testing](#testing)<br/>
+			- [Windows](#testing)<br/>
+	- [Known Issues](#known-issues)<br/>
+
+Aknowledgements
+========
 The Cleaver Library is based on the 'Lattice Cleaving' algorithm:
 
 <strong>Bronson J., Levine, J., Whitaker R., "Lattice Cleaving: Conforming Tetrahedral Meshes of Multimaterial Domains with Bounded Quality". Proceedings of the 21st International Meshing Roundtable (San Jose, CA, Oct 7-10, 2012)</strong>
