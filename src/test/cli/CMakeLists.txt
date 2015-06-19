@@ -1,6 +1,10 @@
 ########################################################################
-if (APPLE)
-   add_definitions(-DAPPLE)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_definitions(-DAPPLE)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  add_definitions(-DWIN32)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  add_definitions(-DLINUX)
 endif()
 
 # Tests for cli
@@ -26,8 +30,8 @@ cxx_test(cli_vtk gtest_main cli_common.cc)
 cxx_test(cli_jacobian gtest_main cli_common.cc)
 cxx_test(cli_scirun gtest_main cli_common.cc)
 cxx_test(cli_matlab gtest_main cli_common.cc)
-#only build this if the tools exist. Windows has a slightly different result, 
+#only build this if the tools exist. Windows has a slightly different result,
 #so this test will just fail, and will be excluded on WIN32
 if (USE_SEGMENTATION_TOOLS AND NOT WIN32)
-	cxx_test(cli_segmentation gtest_main cli_common.cc)
+  cxx_test(cli_segmentation gtest_main cli_common.cc)
 endif()
