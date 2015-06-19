@@ -53,12 +53,7 @@
 #define RMDIR_CMMD " rmdir /s /q "
 #define CAT_CMMD " type "
 #define MV_CMMD " move "
-#elif LINUX
-#define RM_CMMD " rm "
-#define RMDIR_CMMD " rm -rf "
-#define CAT_CMMD " cat "
-#define MV_CMMD " mv "
-#elif DARWIN || APPLE
+#else
 #define RM_CMMD " rm "
 #define RMDIR_CMMD " rm -rf "
 #define CAT_CMMD " cat "
