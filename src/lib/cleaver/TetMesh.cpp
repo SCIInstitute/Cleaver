@@ -1179,6 +1179,7 @@ namespace cleaver
     double min = 180;
     double max = 0;
     Status status(this->tets.size());
+    std::ofstream debug_output("TetDihedralAngles.txt");
     for (unsigned int i=0; i < this->tets.size(); i++)
     {
       status.printStatus();
@@ -1203,6 +1204,7 @@ namespace cleaver
         face_normals[j] = normal;
       }
 
+      double local_min = 180., local_max = 0.;
 
       //now compute the 6 dihedral angles between each pair of faces
       for (int j=0; j<4; j++) {
@@ -1215,41 +1217,43 @@ namespace cleaver
           }
 
           double dihedral_angle = 180.0 - acos(dot_product) * 180.0 / PI;
-
-          if (dihedral_angle < min)
-          {
-            min = dihedral_angle;
-          }
-          else if(dihedral_angle > max)
-          {
-            max = dihedral_angle;
-            if(max == 180){
-
-              t->flagged = true;
-              std::cout << "ERROR, TET #: " << i << std::endl;
-              std::cout << "bad tet, vert orders { "
-                << t->verts[0]->order() << ", "
-                << t->verts[1]->order() << ", "
-                << t->verts[2]->order() << ", "
-                << t->verts[3]->order() << " } " << std::endl;
-              std::cout << "\t vertex positions: {"
-                << t->verts[0]->pos() << ", "
-                << t->verts[1]->pos() << ", "
-                << t->verts[2]->pos() << ", "
-                << t->verts[3]->pos() << "} " << std::endl;
-              std::cout << "\t exterior?: {"
-                << t->verts[0]->isExterior << ", "
-                << t->verts[1]->isExterior << ", "
-                << t->verts[2]->isExterior << ", "
-                << t->verts[3]->isExterior << "} " << std::endl;
-
-
-
-            }
-          }
+          if (local_min > dihedral_angle) local_min = dihedral_angle;
+          if (local_max < dihedral_angle) local_max = dihedral_angle;
+          if (dihedral_angle < min) min = dihedral_angle;
+          if (dihedral_angle > max) max = dihedral_angle;
         }
       }
+      //DEBUG debugging flat tets, remove when done.
+      if(max == 180){
+
+        t->flagged = true;
+        std::cout << "ERROR, TET #: " << i << std::endl;
+        std::cout << "bad tet, vert orders { "
+          << t->verts[0]->order() << ", "
+          << t->verts[1]->order() << ", "
+          << t->verts[2]->order() << ", "
+          << t->verts[3]->order() << " } " << std::endl;
+        std::cout << "\t vertex positions: {"
+          << t->verts[0]->pos() << ", "
+          << t->verts[1]->pos() << ", "
+          << t->verts[2]->pos() << ", "
+          << t->verts[3]->pos() << "} " << std::endl;
+        std::cout << "\t exterior?: {"
+          << t->verts[0]->isExterior << ", "
+          << t->verts[1]->isExterior << ", "
+          << t->verts[2]->isExterior << ", "
+          << t->verts[3]->isExterior << "} " << std::endl;
+      }
+      debug_output << "Tet# " << i << 
+        ": \t{" << t->verts[0]->tm_v_index <<
+        ", " << t->verts[1]->tm_v_index <<
+        ", " << t->verts[2]->tm_v_index <<
+        ", " << t->verts[3]->tm_v_index <<
+        "}, \tMIN ANG: " << local_min <<
+        ", \tMAX ANG: " << local_max << std::endl;
+      //END DEBUG
     }
+    debug_output.close();
     status.done();
 
     min_angle = min;
