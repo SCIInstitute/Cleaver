@@ -47,6 +47,9 @@
 #include <Cleaver/SizingFieldCreator.h>
 #include <Cleaver/Timer.h>
 #include <nrrd2cleaver/nrrd2cleaver.h>
+#if USE_BIOMESH_SEGMENTATION
+#include <SegmentationTools.h>
+#endif
 
 #include <boost/program_options.hpp>
 
@@ -327,6 +330,28 @@ int main(int argc,  char* argv[])
   //-----------------------------------
   cleaver::Timer total_timer;
   total_timer.start();
+  bool add_inverse = false;
+
+  if(material_fields.empty()){
+    std::cerr << "No material fields or segmentation files provided. Terminating."
+      << std::endl;
+    return 10;
+  }
+  else if(material_fields.size() == 1) {
+#if USE_BIOMESH_SEGMENTATION
+    std::string tmp = SegmentationTools::getNRRDType(material_fields[0]);
+    if (tmp == "NRRD0001" || tmp == "NRRD0005")
+      add_inverse = true;
+    else if (tmp == "NRRD0004") {
+      SegmentationTools::createIndicatorFunctions(material_fields);
+    } else {
+      std::cerr << "Cleaver cannot mesh this volume file: " << tmp << std::endl;
+      return 1;
+    }
+#else
+    add_inverse = true;
+#endif
+  }
 
   if(verbose) {
     std::cout << " Loading input fields:" << std::endl;
@@ -335,14 +360,13 @@ int main(int argc,  char* argv[])
     }
   }
 
-  std::vector<cleaver::AbstractScalarField*> fields = loadNRRDFiles(material_fields, verbose);
-  if(fields.empty()){
+  std::vector<cleaver::AbstractScalarField*> fields =
+    loadNRRDFiles(material_fields, verbose);
+  if (fields.empty()) {
     std::cerr << "Failed to load image data. Terminating." << std::endl;
     return 10;
-  }
-  else if(fields.size() == 1) {
+  } else if (add_inverse)
     fields.push_back(new cleaver::InverseScalarField(fields[0]));
-  }
 
   cleaver::Volume *volume = new cleaver::Volume(fields);
   cleaver::CleaverMesher mesher(volume);

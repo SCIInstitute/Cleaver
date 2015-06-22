@@ -39,13 +39,16 @@
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
 #include "cli_common.h"
-TEST(CLIRegressionTests, Basic) {
+
+// Tests segmentation IO for CLI
+TEST(CLIRegressionTests, Segmentation) {
   //make sure there is a command interpreter
   ASSERT_EQ(0,(int)!(std::system(NULL)));
   //setup the line that calls the command line interface
-  std::string log = "basic_output.txt";
+  std::string log = "segmentation_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string line = (command + name + path + input + output);
+  std::string option = " --scale 0.5 ";
+  std::string line = (command + name + path + option + seg_input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
@@ -54,10 +57,10 @@ TEST(CLIRegressionTests, Basic) {
   }
   //compare all of the related files
   EXPECT_NO_FATAL_FAILURE(compareNodeFiles(
-        data_dir + "basic/output.node",
+        data_dir + "segmentation/output.node",
         data_dir + "output.node"));
   EXPECT_NO_FATAL_FAILURE(compareEleFiles(
-        data_dir + "basic/output.ele",
+        data_dir + "segmentation/output.ele",
         data_dir + "output.ele"));
   //delete the output files from this test
   for(size_t i = 0; i < num_files - 4; i++) {
@@ -66,5 +69,6 @@ TEST(CLIRegressionTests, Basic) {
   system_execute(RM_CMMD,data_dir + "output.info");
   system_execute(RM_CMMD,data_dir + "output.node");
   system_execute(RM_CMMD,data_dir + "output.ele");
-  system_execute(RM_CMMD,data_dir + log);
+  //system_execute(RM_CMMD,data_dir + log);
+  system_execute(RMDIR_CMMD,data_dir + "input/*material_fields");
 }

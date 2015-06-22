@@ -213,7 +213,7 @@ TEST_F(ViolationTest, QuadrupleViolatesVertices)
     tet->quadruple->order() = QUAD;
     tet->quadruple->violating = false;
 
-    float alpha = 0.1;
+    float alpha = 0.1f;
     for (int e = 0; e < EDGES_PER_FACE; e++) {
         edges[e]->alpha = alpha;
         edges[e]->mate->alpha = alpha;
@@ -263,7 +263,7 @@ TEST_F(ViolationTest, QuadrupleViolatesEdges)
     tet->quadruple->order() = QUAD;
     tet->quadruple->violating = false;
 
-    float alpha = 0.1;
+    float alpha = 0.1f;
     for (int e = 0; e < EDGES_PER_FACE; e++) {
         edges[e]->alpha = alpha;
         edges[e]->mate->alpha = alpha;
@@ -325,7 +325,7 @@ TEST_F(ViolationTest, QuadrupleViolatesFaces)
     tet->quadruple->order() = QUAD;
     tet->quadruple->violating = false;
 
-    float alpha = 0.1;
+    float alpha = 0.1f;
     for (int e = 0; e < EDGES_PER_FACE; e++) {
         edges[e]->alpha = alpha;
         edges[e]->mate->alpha = alpha;

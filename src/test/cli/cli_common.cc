@@ -45,6 +45,8 @@ std::string data_dir = std::string(TEST_DATA_DIR);
 std::string command = std::string(BINARY_DIR) + _CLI + " -v ";
 std::string name = _NAME + std::string("output");
 std::string path = _PATH + data_dir;
+std::string seg_input = _FIELDS +
+data_dir + "input/mickey.nrrd " ;
 std::string input = _FIELDS +
 data_dir + "input/spheres1.nrrd " +
 data_dir + "input/spheres2.nrrd " +
@@ -56,6 +58,19 @@ std::string files[num_files] = {
   "boundary.nrrd",
   "feature_field.nrrd",
   "medial.nrrd"};
+
+void system_execute(const std::string cmmd, const std::string args) {
+	std::string new_args;
+#if WIN32
+	for(size_t i = 0; i < args.size(); i++) 
+		if (args[i] == '/') new_args = new_args + "\\";
+		else new_args = new_args + args[i];
+#else
+	new_args = args;
+#endif
+	std::system((cmmd + new_args).c_str());
+}
+
 
 void compareEleFiles(const std::string a, const std::string b) {
   ASSERT_FALSE(a == b);

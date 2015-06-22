@@ -104,6 +104,6 @@ TEST(vec3, dot) {
     cleaver::vec3 b(0.2, 0.2, 0.4);
     double result = a.dot(b);
     double expected = 0.58;
-    ASSERT_FLOAT_EQ(expected, result);
+    ASSERT_FLOAT_EQ(static_cast<float>(expected), static_cast<float>(result));
 }
 
