@@ -1302,6 +1302,9 @@ namespace cleaver
     case  cleaver::VTK:
       writeVtkUnstructuredGrid(filename, verbose);
       break;
+    case  cleaver::PLY:
+      writePly(filename, verbose);
+      break;
     default: {
                std::cerr << "Unsupported Mesh Format. " << std::endl;
                break;

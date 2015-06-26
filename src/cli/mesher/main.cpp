@@ -70,6 +70,7 @@ const std::string scirun = "scirun";
 const std::string tetgen = "tetgen";
 const std::string matlab = "matlab";
 const std::string vtk = "vtk";
+const std::string ply = "ply";
 
 const std::string kDefaultOutputPath   = "./";
 const std::string kDefaultOutputName   = "output";
@@ -92,6 +93,9 @@ int main(int argc,  char* argv[])
 {
   bool verbose = false;
   bool fix_tets = false;
+#if USE_BIOMESH_SEGMENTATION
+  bool segmentation = false;
+#endif
   std::vector<std::string> material_fields;
   std::string sizing_field;
   std::string background_mesh;
@@ -125,8 +129,11 @@ int main(int argc,  char* argv[])
     description.add_options()
       ("help,h", "display help message")
       ("verbose,v", "enable verbose output")
-      ("version", "display version information")
-      ("material_fields,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
+#if USE_BIOMESH_SEGMENTATION
+      ("segmentation,S", "The input file is a segmentation file.")
+#endif
+      ("version,V", "display version information")
+      ("input_files,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths or segmentation path")
       ("background_mesh,b", po::value<std::string>(), "input background mesh")
       ("mesh_mode,m", po::value<std::string>(), "background mesh mode (structured [default], regular)")
       ("alpha,a", po::value<double>(), "initial alpha value")
@@ -142,7 +149,7 @@ int main(int argc,  char* argv[])
       ("strip_exterior,e", "strip exterior tetrahedra")
       ("output_path,o", po::value<std::string>(), "output path prefix")
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
-      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtk)")
+      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtk, ply [Surface mesh only])")
       ("strict,t", "warnings become errors")
       ;
 
@@ -167,13 +174,20 @@ int main(int argc,  char* argv[])
       verbose = true;
     }
 
+#if USE_BIOMESH_SEGMENTATION
+    // enable segmentation
+    if (variables_map.count("segmentation")) {
+      segmentation = true;
+    }
+#endif
+
     if (variables_map.count("strict")) {
       strict = true;
     }
 
     // parse the material field input file names
-    if (variables_map.count("material_fields")) {
-      material_fields = variables_map["material_fields"].as<std::vector<std::string> >();
+    if (variables_map.count("input_files")) {
+      material_fields = variables_map["input_files"].as<std::vector<std::string> >();
     }
     else{
       std::cout << "Error: At least one material field file must be specified." << std::endl;
@@ -299,6 +313,9 @@ int main(int argc,  char* argv[])
       else if(format_string.compare(vtk) == 0){
         output_format = cleaver::VTK;
       }
+      else if(format_string.compare(ply) == 0){
+        output_format = cleaver::PLY;
+      }
       else{
         std::cerr << "Error: unsupported output format: " << format_string << std::endl;
         return 7;
@@ -337,20 +354,17 @@ int main(int argc,  char* argv[])
       << std::endl;
     return 10;
   }
-  else if(material_fields.size() == 1) {
 #if USE_BIOMESH_SEGMENTATION
-    std::string tmp = SegmentationTools::getNRRDType(material_fields[0]);
-    if (tmp == "NRRD0001" || tmp == "NRRD0005")
-      add_inverse = true;
-    else if (tmp == "NRRD0004") {
-      SegmentationTools::createIndicatorFunctions(material_fields);
-    } else {
-      std::cerr << "Cleaver cannot mesh this volume file: " << tmp << std::endl;
-      return 1;
+  else if (segmentation) {
+    if (material_fields.size() > 1) {
+      std::cerr << "WARNING: More than 1 input provided for segmentation." <<
+        " Only the first input will be used." << std::endl;
     }
-#else
-    add_inverse = true;
+    SegmentationTools::createIndicatorFunctions(material_fields);
+  }
 #endif
+  else if(material_fields.size() == 1) {
+    add_inverse = true;
   }
 
   if(verbose) {
