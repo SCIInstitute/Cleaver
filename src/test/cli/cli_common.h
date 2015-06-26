@@ -43,7 +43,7 @@
 #include <cstdio>
 #include <fstream>
 #include <cmath>
-#define _FIELDS " --material_fields "
+#define _FIELDS " --input_files "
 #define _NAME   " --output_name "
 #define _PATH   " --output_path "
 #define _CLI    "cleaver-cli "
