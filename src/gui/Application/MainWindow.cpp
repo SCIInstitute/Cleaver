@@ -489,13 +489,14 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   std::string name = mesh->name == "" ? "Untitled" : mesh->name;
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"),
       (lastPath_ + "/" + name).c_str(),
-      tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat)"), &selectedFilter);
+      tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat);;VTK (*.vtk)"), &selectedFilter);
 
 
   QString filter1("Tetgen (*.node)");
   QString filter2("SCIRun (*.pts)");
   QString filter3("Surface PLY (*.ply)");
   QString filter4("Matlab (*.mat)");
+  QString filter5("VTK (*.vtk)");
 
   std::string f = fileName.toStdString();
   f = f.substr(0,f.rfind("."));
@@ -511,6 +512,9 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   }
   else if(selectedFilter == filter4){
     mesh->writeMatlab(f, true);
+  }
+  else if(selectedFilter == filter5){
+    mesh->writeVtkUnstructuredGrid(f, true);
   }
   if (fileName != "") {
     std::string file1 = fileName.toStdString();

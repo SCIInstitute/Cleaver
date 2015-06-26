@@ -70,6 +70,7 @@ const std::string scirun = "scirun";
 const std::string tetgen = "tetgen";
 const std::string matlab = "matlab";
 const std::string vtk = "vtk";
+const std::string ply = "ply";
 
 const std::string kDefaultOutputPath   = "./";
 const std::string kDefaultOutputName   = "output";
@@ -142,7 +143,7 @@ int main(int argc,  char* argv[])
       ("strip_exterior,e", "strip exterior tetrahedra")
       ("output_path,o", po::value<std::string>(), "output path prefix")
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
-      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtk)")
+      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtk, ply [Surface mesh only])")
       ("strict,t", "warnings become errors")
       ;
 
@@ -298,6 +299,9 @@ int main(int argc,  char* argv[])
       }
       else if(format_string.compare(vtk) == 0){
         output_format = cleaver::VTK;
+      }
+      else if(format_string.compare(ply) == 0){
+        output_format = cleaver::PLY;
       }
       else{
         std::cerr << "Error: unsupported output format: " << format_string << std::endl;

@@ -53,7 +53,7 @@ namespace cleaver
 {
   //              BCCLattice   BCCOctree
   enum MeshType { Regular, Structured };
-  enum MeshFormat { Tetgen, Scirun, Matlab, VTK };
+  enum MeshFormat { Tetgen, Scirun, Matlab, VTK, PLY };
 
   // forward declare dependent types
   class Edge;
