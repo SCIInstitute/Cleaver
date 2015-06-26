@@ -107,8 +107,9 @@ For a list of command line tool options.
 Command line flags:
   -h [ --help ]                   display help message
   -v [ --verbose ]                enable verbose output
-  --version                       display version information
-  -i [ --material_fields ] arg    material field paths
+  -S [ --segmentation ]           The input file is a segmentation file.
+  -V [ --version ]                display version information
+  -i [ --input_files ] arg        material field paths or segmentation path
   -b [ --background_mesh ] arg    input background mesh
   -m [ --mesh_mode ] arg          background mesh mode (structured [default], 
                                   regular)
@@ -127,7 +128,7 @@ Command line flags:
   -o [ --output_path ] arg        output path prefix
   -n [ --output_name ] arg        output mesh name [default 'output']
   -f [ --output_format ] arg      output mesh format (tetgen [default], scirun,
-                                  matlab, vtk)
+                                  matlab, vtk, ply [Surface mesh only])
   -t [ --strict ]                 warnings become errors
 ```
 <h3>Graphical Interface</h3>
