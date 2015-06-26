@@ -93,6 +93,9 @@ int main(int argc,  char* argv[])
 {
   bool verbose = false;
   bool fix_tets = false;
+#if USE_BIOMESH_SEGMENTATION
+  bool segmentation = false;
+#endif
   std::vector<std::string> material_fields;
   std::string sizing_field;
   std::string background_mesh;
@@ -126,8 +129,11 @@ int main(int argc,  char* argv[])
     description.add_options()
       ("help,h", "display help message")
       ("verbose,v", "enable verbose output")
-      ("version", "display version information")
-      ("material_fields,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
+#if USE_BIOMESH_SEGMENTATION
+      ("segmentation,S", "The input file is a segmentation file.")
+#endif
+      ("version,V", "display version information")
+      ("input_files,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths or segmentation path")
       ("background_mesh,b", po::value<std::string>(), "input background mesh")
       ("mesh_mode,m", po::value<std::string>(), "background mesh mode (structured [default], regular)")
       ("alpha,a", po::value<double>(), "initial alpha value")
@@ -168,13 +174,20 @@ int main(int argc,  char* argv[])
       verbose = true;
     }
 
+#if USE_BIOMESH_SEGMENTATION
+    // enable segmentation
+    if (variables_map.count("segmentation")) {
+      segmentation = true;
+    }
+#endif
+
     if (variables_map.count("strict")) {
       strict = true;
     }
 
     // parse the material field input file names
-    if (variables_map.count("material_fields")) {
-      material_fields = variables_map["material_fields"].as<std::vector<std::string> >();
+    if (variables_map.count("input_files")) {
+      material_fields = variables_map["input_files"].as<std::vector<std::string> >();
     }
     else{
       std::cout << "Error: At least one material field file must be specified." << std::endl;
@@ -341,20 +354,17 @@ int main(int argc,  char* argv[])
       << std::endl;
     return 10;
   }
-  else if(material_fields.size() == 1) {
 #if USE_BIOMESH_SEGMENTATION
-    std::string tmp = SegmentationTools::getNRRDType(material_fields[0]);
-    if (tmp == "NRRD0001" || tmp == "NRRD0005")
-      add_inverse = true;
-    else if (tmp == "NRRD0004") {
-      SegmentationTools::createIndicatorFunctions(material_fields);
-    } else {
-      std::cerr << "Cleaver cannot mesh this volume file: " << tmp << std::endl;
-      return 1;
+  else if (segmentation) {
+    if (material_fields.size() > 1) {
+      std::cerr << "WARNING: More than 1 input provided for segmentation." <<
+        " Only the first input will be used." << std::endl;
     }
-#else
-    add_inverse = true;
+    SegmentationTools::createIndicatorFunctions(material_fields);
+  }
 #endif
+  else if(material_fields.size() == 1) {
+    add_inverse = true;
   }
 
   if(verbose) {

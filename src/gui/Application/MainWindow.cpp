@@ -279,11 +279,59 @@ void MainWindow::computeMeshAngles()
     }
   }
 }
+//*************Custom file dialog if segmentation is available.
+#if USE_BIOMESH_SEGMENTATION
+class MyFileDialog : public QFileDialog
+{
+  public:
+    MyFileDialog(QWidget *, const QString& a,
+        const QString& b, const QString& c);
+    bool isSegmentation();
+  private:
+    QCheckBox *segmentation_check_;
+};
 
+bool MyFileDialog::isSegmentation() {
+  return this->segmentation_check_->isChecked();
+}
+
+MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
+    const QString& b, const QString& c) :
+  QFileDialog( parent, a, b, c),
+  segmentation_check_(NULL)
+{
+  setOption(QFileDialog::DontUseNativeDialog,true);
+  setFileMode(QFileDialog::ExistingFiles);
+  QGridLayout* mainLayout = dynamic_cast<QGridLayout*>(layout());
+
+  QHBoxLayout *hbl = new QHBoxLayout();
+
+  // add some widgets
+  segmentation_check_ = new QCheckBox("This is a segmentation file", this);
+  segmentation_check_->setChecked(false);
+  hbl->addWidget(segmentation_check_);
+
+  int numRows = mainLayout->rowCount();
+
+  // add the new layout to the bottom of mainLayout
+  // and span all columns
+  mainLayout->addLayout( hbl, numRows,0,1,-1);
+}
+#endif
+//*********************END custom file dialog
 void MainWindow::importVolume()
 {
-  QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Select Indicator Functions"),
+  QStringList fileNames;
+#if USE_BIOMESH_SEGMENTATION
+  MyFileDialog dialog(this, tr("Select Indicator Functions"),
       QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
+  if (dialog.exec())
+    fileNames = dialog.selectedFiles();
+  bool segmentation = dialog.isSegmentation();
+#else
+  fileNames = QFileDialog::getOpenFileNames(this, tr("Select Indicator Functions"),
+            QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
+#endif
 
   if(!fileNames.isEmpty())
   {
@@ -303,42 +351,41 @@ void MainWindow::importVolume()
         << std::endl;
       return;
     }
-    else if(inputs.size() == 1) {
 #if USE_BIOMESH_SEGMENTATION
-      std::string tmp = SegmentationTools::getNRRDType(inputs[0]);
-      if (tmp == "NRRD0001" || tmp == "NRRD0005")
-        add_inverse = true;
-      else if (tmp == "NRRD0004") {
-	    QProgressDialog status(QString("Converting Segmentation to Indicator Functions..."),QString(),0,100, this);
-		status.show();
-		status.setWindowModality(Qt::WindowModal);
-		status.setValue(50);
-		QApplication::processEvents();
-        SegmentationTools::createIndicatorFunctions(inputs);
-		status.setValue(100);
-      } else {
-        std::cerr << "Cleaver cannot mesh this volume file." << std::endl;
-        return;
+    else if (segmentation) {
+      if (inputs.size() > 1) {
+        std::cerr << "WARNING: More than one inputs provided for segmentation." <<
+          " Only the first input will be used." << std::endl;
       }
-#else
-      add_inverse = true;
-#endif
+      QProgressDialog status(QString(
+            "Converting Segmentation to Indicator Functions..."),
+          QString(),0,100, this);
+      status.show();
+      status.setWindowModality(Qt::WindowModal);
+      status.setValue(50);
+      QApplication::processEvents();
+      SegmentationTools::createIndicatorFunctions(inputs);
+      status.setValue(100);
     }
-	
-	QProgressDialog status(QString("Loading Indicator Functions..."),QString(),0,100, this);
-	status.show();
-	status.setWindowModality(Qt::WindowModal);
+#endif
+    else if(inputs.size() == 1) {
+      add_inverse = true;
+    }
+
+    QProgressDialog status(QString("Loading Indicator Functions..."),QString(),0,100, this);
+    status.show();
+    status.setWindowModality(Qt::WindowModal);
     std::cout << " Loading input fields:" << std::endl;
     for (size_t i=0; i < inputs.size(); i++) {
       std::cout << " - " << inputs[i] << std::endl;
     }
-	status.setValue(5);
-	QApplication::processEvents();
+    status.setValue(5);
+    QApplication::processEvents();
 
     std::vector<cleaver::AbstractScalarField*> fields =
       loadNRRDFiles(inputs, true);
-	status.setValue(70);
-	QApplication::processEvents();
+    status.setValue(70);
+    QApplication::processEvents();
     if (fields.empty()) {
       std::cerr << "Failed to load image data. Terminating." << std::endl;
       return;
@@ -346,8 +393,8 @@ void MainWindow::importVolume()
       fields.push_back(new cleaver::InverseScalarField(fields[0]));
       fields.back()->setName(fields[0]->name() + "-inverse");
     }
-	status.setValue(90);
-	QApplication::processEvents();
+    status.setValue(90);
+    QApplication::processEvents();
     // Add Fields to Data Manager
     for(size_t f=0; f < fields.size(); f++){
       dataManager()->addField(fields[f]);
@@ -361,14 +408,14 @@ void MainWindow::importVolume()
       volumeName += std::string(" ") + QString::number(v).toStdString();
     }
     volume->setName(volumeName);
-	status.setValue(95);
-	QApplication::processEvents();
+    status.setValue(95);
+    QApplication::processEvents();
 
     dataManager()->addVolume(volume);
     createWindow(volume, QString(volumeName.c_str()));
 
     m_cleaverWidget->resetCheckboxes();
-	status.setValue(100);
+    status.setValue(100);
   }
 }
 
