@@ -95,10 +95,10 @@ cmake -DSCIRun4_DIR="/Path/To/SCIRun" ../src
 <h2>Running</h2>
 
 <h3>Command line Tool:</h3>
-Using the sphere indicator functions in <code>example_data</code>, you can generate a simple tet mesh
+Using the sphere indicator functions in <code>src/test/test_data/input/</code>, you can generate a simple tet mesh
 using the following command: <br/>
 ```c++
-bin/cleaver-cli --output_name spheres -i ../example_data/spheres*.nrrd 
+bin/cleaver-cli --output_name spheres -i ../src/test/test_data/input/spheres*.nrrd 
 ```
 <code> bin/cleaver-cli --help</code><br/>
 For a list of command line tool options.
@@ -136,7 +136,7 @@ You can run the GUI from the command line, or by double-clicking it in a folder.
 <code> bin/cleaver-gui</code><br/>
 You should see a window similar to this:<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/application.png"><br/>
-Load the spheres in <code>example_data</code> either with <code>ctrl+v</code> or <code>File -> Load Volume</code>,
+Load the spheres in <code>src/test/test_data/input</code> either with <code>ctrl+v</code> or <code>File -> Load Volume</code>,
 or load your own indicator functions or segmentation file (if included in the build).<br/>
 **Sizing Field Creator**<br/>
 This tool allows a user to set parameters for the cleaving sizing field.<br/>
