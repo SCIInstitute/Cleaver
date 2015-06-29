@@ -92,7 +92,7 @@ TEST(CLIRegressionTests, RegularStrict) {
   line = (command + option + output);
   EXPECT_EQ(8 * _MUL , std::system(line.c_str()));
   //check for bad input material field
-  option = " --strict --material_fields " + data_dir + 
+  option = " --strict --input_files " + data_dir + 
     "basic/basic_output.log " + input;
   line = (command + option + output);
   EXPECT_EQ(10 * _MUL , std::system(line.c_str()));
