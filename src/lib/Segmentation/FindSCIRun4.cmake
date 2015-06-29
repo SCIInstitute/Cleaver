@@ -82,7 +82,6 @@ else()
     ${SCIRun4_BINARY_DIR}/TransformFieldWithTransform*
     ${SCIRun4_BINARY_DIR}/UnorientNrrdAndGetTransform*
     ${SCIRun4_BINARY_DIR}/ComputeTightenedLabels*
-    ${SCIRun4_BINARY_DIR}/*.dll
     ${SCIRun4_FEMESHER_DIR}/BuildMesh.py
     ${SCIRun4_FEMESHER_DIR}/MakeSoloNrrd.py
     ${SCIRun4_FEMESHER_DIR}/Utils.py
