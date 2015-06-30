@@ -361,6 +361,10 @@ if (MSVC)
             COMMAND ${CMAKE_COMMAND} -E copy
             ${BZ2_INCLUDE_DIR}/../bin/bzip2.dll
             ${CMAKE_BINARY_DIR}/bin)
+  ADD_CUSTOM_COMMAND(TARGET teem POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${ZLIB_INCLUDE_DIR}/../bin/zlib1.dll
+            ${CMAKE_BINARY_DIR}/bin)
 endif()
 IF(Teem_ZLIB_LIB)
   TARGET_LINK_LIBRARIES(teem ${Teem_ZLIB_LIB})
