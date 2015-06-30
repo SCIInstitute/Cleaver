@@ -420,7 +420,8 @@ ENDIF(BUILD_TEEM_TESTS)
 #-----------------------------------------------------------------------------
 # Help outside projects build Teem projects.
 INCLUDE(CMakeExportBuildSettings)
-EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
+#EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
+EXPORT(TARGETS teem FILE ${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
 CMAKE_EXPORT_BUILD_SETTINGS(${Teem_BINARY_DIR}/TeemBuildSettings.cmake)
 
 SET(CFLAGS "${CMAKE_C_FLAGS}")
