@@ -8,6 +8,7 @@
 #include <fstream>
 #include <QProgressDialog>
 #include <QApplication>
+#include <QCheckBox>
 #if USE_BIOMESH_SEGMENTATION
 #include <SegmentationTools.h>
 #endif
