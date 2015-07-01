@@ -185,7 +185,7 @@ int main(int argc,  char* argv[])
     if (variables_map.count("scirun_path")) {
       scirun_dir = variables_map["scirun_path"].as<std::string>() + "/bin";
     }
-	if (scirun_dir.empty()) {
+	if (scirun_dir.empty() && segmentation) {
 		std::cerr << "Error: Cannot run segmentations without a path to SCIRun4!" << std::endl;
 		return 11;
 	}

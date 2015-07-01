@@ -85,18 +85,24 @@ namespace SegmentationTools {
 #else
     "/unu ";
 #endif
-	std::string unu_tmp = unu_cmmd;
-	//if the file doesn't exist, try release/debug
-	std::ifstream tmp(exe_path + unu_tmp);
-	if (!tmp.is_open()) unu_tmp = "/Release" + unu_cmmd;
-	std::ifstream tmp2(exe_path + unu_cmmd);
-	if (!tmp2.is_open()) unu_tmp = "/Debug" + unu_cmmd;
-	std::ifstream tmp3(exe_path + "/Release" + unu_cmmd);
-	if (!tmp3.is_open()) {
-		std::cerr << "Error: Cannot find unu executable" << std::endl;
-		return -1;
-	}
-	tmp.close(); tmp2.close(); tmp3.close();
+    std::string unu_tmp = unu_cmmd;
+    //if the file doesn't exist, try release/debug
+    std::ifstream tmp1((exe_path + unu_tmp).c_str());
+    if (!tmp1.good()) {
+      unu_tmp = "/Release" + unu_cmmd;
+      std::ifstream tmp2((exe_path + unu_tmp).c_str());
+      if (!tmp2.good()) {
+        unu_tmp = "/Debug" + unu_cmmd;
+        std::ifstream tmp3((exe_path + unu_tmp).c_str());
+        //as a last resort, choose bin/unu
+        if (!tmp3.good()) {
+          unu_tmp = unu_cmmd;
+        }
+        tmp3.close();
+      }
+      tmp2.close(); 
+    }
+    tmp1.close();
     std::string cmmd = exe_path + unu_tmp + " minmax " + file + " > tmp";
 #if WIN32
     for(size_t i = 0; i < cmmd.size(); i++)
