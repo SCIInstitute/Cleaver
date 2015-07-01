@@ -71,24 +71,16 @@ if (${SCIRun4_DIR} MATCHES "SCIRun4_DIR-NOTFOUND")
   message(WARNING "SCIRun4 directory not found. Segmentation Tools Disabled.")
   message(STATUS "Please set SCIRun4_DIR in CMake for Segmentation Tools.")
 else()
-  #copy the binaries from SCIRun to Cleaver binary dir
+  #copy the python scipts from SCIRun to Cleaver binary dir
   message(STATUS "SCIRun4 found at: ${SCIRun4_DIR}")
   FILE(GLOB SEGMENTATION_DEPS
-    ${SCIRun4_BINARY_DIR}/ConvertFieldToNrrd*
-    ${SCIRun4_BINARY_DIR}/ConvertNrrdToField*
-    ${SCIRun4_BINARY_DIR}/ExtractIsosurface*
-    ${SCIRun4_BINARY_DIR}/JoinFields*
-    ${SCIRun4_BINARY_DIR}/morphsmooth*
-    ${SCIRun4_BINARY_DIR}/TransformFieldWithTransform*
-    ${SCIRun4_BINARY_DIR}/UnorientNrrdAndGetTransform*
-    ${SCIRun4_BINARY_DIR}/ComputeTightenedLabels*
     ${SCIRun4_FEMESHER_DIR}/BuildMesh.py
     ${SCIRun4_FEMESHER_DIR}/MakeSoloNrrd.py
     ${SCIRun4_FEMESHER_DIR}/Utils.py
     ${CMAKE_SOURCE_DIR}/lib/Segmentation/*.py
     )
   foreach(file ${SEGMENTATION_DEPS})
-    file( COPY ${file} DESTINATION ${CMAKE_BINARY_DIR}/bin)
+        file( COPY ${file} DESTINATION ${CMAKE_BINARY_DIR}/bin)
   endforeach()
   # add definitions for Cleaver applications to determine whether to use tools
   add_definitions(-DUSE_BIOMESH_SEGMENTATION)
@@ -103,20 +95,4 @@ else()
   add_subdirectory(${CMAKE_SOURCE_DIR}/lib/Segmentation)
   include_directories(${CMAKE_SOURCE_DIR}/lib/Segmentation)
   set(USE_SEGMENTATION_TOOLS ON)
-  #MSVC/XCode put executables in Release/Debug folders. try copying unu to bin folder.
-  SET(possible_unu_files
-    ${CMAKE_BINARY_DIR}/bin/Release/unu
-    ${CMAKE_BINARY_DIR}/bin/Release/unu.exe
-    ${CMAKE_BINARY_DIR}/bin/Debug/unu
-    ${CMAKE_BINARY_DIR}/bin/Debug/unu.exe
-    ${CMAKE_BINARY_DIR}/bin/RelWithDebInfo/unu
-    ${CMAKE_BINARY_DIR}/bin/RelWithDebInfo/unu.exe
-    ${CMAKE_BINARY_DIR}/bin/MinSizeRel/unu
-    ${CMAKE_BINARY_DIR}/bin/MinSizeRel/unu.exe
-    )
-    foreach(file ${possible_unu_files})
-      if (EXISTS ${file})
-        file(COPY ${file} DESTINATION ${CMAKE_BINARY_DIR}/bin)
-      endif()
-    endforeach()
 endif()

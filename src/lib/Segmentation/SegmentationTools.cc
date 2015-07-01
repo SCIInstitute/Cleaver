@@ -59,17 +59,14 @@ namespace SegmentationTools {
     GetModuleFileName(hModule,str,sz);
     for(size_t i = 0; i < sz; i++)
       if (str[i] == '\\') str[i] = '/';
-    std::string tmp(str);
-    str[tmp.rfind("bin/")+4] = '\0';
 #elif LINUX
     readlink("/proc/self/exe",str,sz);
 #elif DARWIN
     _NSGetExecutablePath(str,&sz);
-    std::string tmp(str);
-    str[tmp.rfind("bin/")+4] = '\0';
 #endif
-    exe_path = std::string(str);
-    return exe_path.substr(0,exe_path.find_last_of("/"));
+    std::string tmp(str);
+    str[tmp.rfind("bin/")+3] = '\0';
+    return std::string(str);
   }
 
   std::string getNRRDType(std::string file){
@@ -84,11 +81,23 @@ namespace SegmentationTools {
     std::string exe_path = getExecutablePath();
     std::string unu_cmmd =
 #if WIN32
-      "/unu.exe minmax ";
+      "/unu.exe ";
 #else
-    "/unu minmax ";
+    "/unu ";
 #endif
-    std::string cmmd = exe_path + unu_cmmd + file + " > tmp";
+	std::string unu_tmp = unu_cmmd;
+	//if the file doesn't exist, try release/debug
+	std::ifstream tmp(exe_path + unu_tmp);
+	if (!tmp.is_open()) unu_tmp = "/Release" + unu_cmmd;
+	std::ifstream tmp2(exe_path + unu_cmmd);
+	if (!tmp2.is_open()) unu_tmp = "/Debug" + unu_cmmd;
+	std::ifstream tmp3(exe_path + "/Release" + unu_cmmd);
+	if (!tmp3.is_open()) {
+		std::cerr << "Error: Cannot find unu executable" << std::endl;
+		return -1;
+	}
+	tmp.close(); tmp2.close(); tmp3.close();
+    std::string cmmd = exe_path + unu_tmp + " minmax " + file + " > tmp";
 #if WIN32
     for(size_t i = 0; i < cmmd.size(); i++)
       if (cmmd[i] == '/') cmmd[i] = '\\';
@@ -96,13 +105,13 @@ namespace SegmentationTools {
     std::system(cmmd.c_str());
     std::ifstream in("tmp");
     int first, second;
-    std::string tmp;
-    in >> tmp >> first >> tmp >> second;
+    std::string temp;
+    in >> temp >> first >> temp >> second;
     in.close();
     return second - first + 1;
   }
 
-  void createIndicatorFunctions(std::vector<std::string> &files) {
+  void createIndicatorFunctions(std::vector<std::string> &files, std::string scirun, std::string python) {
     //ensure we are using the right slashes for this section.
     for (size_t i = 0; i < files[0].size(); i++)
       if (files[0][i] == '\\')
@@ -135,8 +144,8 @@ namespace SegmentationTools {
       out << "'" << vol_name << i << "'" << ((i+1)==total_mats?")\n":", ");
     out.close();
     //call the python script to make the fields
-    cmmd = "python " + exe_path +
-      "/BuildMesh.py -s1:2 --binary-path " + exe_path
+    cmmd = python + " " + exe_path +
+      "/BuildMesh.py -s1:2 --binary-path " + scirun
       + " " + exe_path + "/ConfigUse.py";
 #if WIN32
     for(size_t i = 0; i < cmmd.size(); i++)

@@ -17,6 +17,7 @@ Table of Contents
 			- [Qt 4](#for-qt-4)<br/>
 			- [Qt 5](#for-qt-5)<br/>
 - [Running](#running)
+	- [Requirements](#requirements)
 	- [Command line Tool](#command-line-tool)
 	- [Graphical Interface](#graphical-interface)
 	- [Cleaver Library](#cleaver-library)
@@ -41,7 +42,7 @@ Cleaver is an Open Source software project that is principally funded through th
 <h2>Building</h2>
 
 Requirements: Git, CMake, Qt4 -OR- Qt5<br/>
-Optional Requirements: SCIRun4 (For segmentation tools)
+Optional Requirements: SCIRun4, python 2.7+ (For segmentation tools)
 Suggested:  QtCreator cross-platform IDE<br/>
 We recommend building cleaver outside of the source tree. <br/>
 From Cleaver2 directory:<br/>
@@ -94,6 +95,13 @@ cmake -DSCIRun4_DIR="/Path/To/SCIRun" ../src
 
 <h2>Running</h2>
 
+<h3>Requirements</h3>
+<br/>
+If you wish to run the segmentation tools, you must have installed:
+ * SCIRun4 (https://www.sci.utah.edu/download/scirun)
+ * Python 2.7+ (https://www.python.org/downloads/)
+ <br/>
+
 <h3>Command line Tool:</h3>
 Using the sphere indicator functions in <code>src/test/test_data/input/</code>, you can generate a simple tet mesh
 using the following command: <br/>
@@ -107,7 +115,6 @@ For a list of command line tool options.
 Command line flags:
   -h [ --help ]                   display help message
   -v [ --verbose ]                enable verbose output
-  -S [ --segmentation ]           The input file is a segmentation file.
   -V [ --version ]                display version information
   -i [ --input_files ] arg        material field paths or segmentation path
   -b [ --background_mesh ] arg    input background mesh
@@ -130,6 +137,9 @@ Command line flags:
   -f [ --output_format ] arg      output mesh format (tetgen [default], scirun,
                                   matlab, vtk, ply [Surface mesh only])
   -t [ --strict ]                 warnings become errors
+  -S [ --segmentation ]           The input file is a segmentation file.
+  -P [ --scirun_path ]            The path to SCIRun4 (required for a 
+                                  segmentation file)
 ```
 <h3>Graphical Interface</h3>
 You can run the GUI from the command line, or by double-clicking it in a folder.

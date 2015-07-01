@@ -120,7 +120,7 @@ private:
 
 
     int m_iNumOpenWindows;
-	std::string lastPath_, exePath_;
+	std::string lastPath_, exePath_, scirun_path_, python_path_;
 };
 
 #endif // MAINWINDOW_H

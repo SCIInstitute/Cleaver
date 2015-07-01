@@ -41,6 +41,9 @@ namespace SegmentationTools {
 
   int getNumMats(std::string file);
 
-  void createIndicatorFunctions(std::vector<std::string> &file);
+  void createIndicatorFunctions(std::vector<std::string> &file, 
+	  //SCIRun4 binary directory
+	  std::string scirun4_bin_dir,
+	  std::string python = "python");
 }
 #endif
