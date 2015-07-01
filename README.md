@@ -41,7 +41,7 @@ Cleaver is an Open Source software project that is principally funded through th
 <h2>Building</h2>
 
 Requirements: Git, CMake, Qt4 -OR- Qt5<br/>
-Optional Requirements: SCIRun4 (For segmentation tools)
+Optional Requirements: SCIRun4, python 2.7+ (For segmentation tools)
 Suggested:  QtCreator cross-platform IDE<br/>
 We recommend building cleaver outside of the source tree. <br/>
 From Cleaver2 directory:<br/>
