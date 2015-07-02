@@ -60,8 +60,8 @@ namespace SegmentationTools {
 #endif
       std::string tmp(str);
       tmp = tmp.substr(0,tmp.find_last_of("/"));
-      if ((tmp.substr(tmp.size()-9,8) == "/Release") ||
-          (tmp.substr(tmp.size()-7,6) == "/Debug"))
+      if ((tmp.substr(tmp.size()-8,8) == "/Release") ||
+          (tmp.substr(tmp.size()-6,6) == "/Debug"))
           tmp = tmp.substr(0,tmp.find_last_of("/"));
       return tmp;
   }
