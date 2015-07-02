@@ -58,11 +58,12 @@ namespace SegmentationTools {
 #elif DARWIN
     _NSGetExecutablePath(str,&sz);
 #endif
-    std::string tmp(str);
-	tmp = tmp.substr(0,tmp.find_last_of("/"));
-	if (tmp.rfind("/Release") != std::string::npos || tmp.rfind("/Debug") != std::string::npos)
-		tmp = tmp.substr(0,tmp.find_last_of("/"));
-	return tmp;
+      std::string tmp(str);
+      tmp = tmp.substr(0,tmp.find_last_of("/"));
+      if ((tmp.substr(tmp.size()-9,8) == "/Release") ||
+          (tmp.substr(tmp.size()-7,6) == "/Debug"))
+          tmp = tmp.substr(0,tmp.find_last_of("/"));
+      return tmp;
   }
 
   std::string getNRRDType(std::string file){
