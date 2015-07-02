@@ -99,7 +99,7 @@ namespace SegmentationTools {
       tmp2.close(); 
     }
     tmp1.close();
-    std::string cmmd = "\"" + exe_path + unu_tmp + " minmax " + file + "> tmp\"";
+    std::string cmmd = "\"" + exe_path + unu_tmp + " minmax " + file + " > tmp\"";
 	std::cout << cmmd << std::endl;
     std::system(cmmd.c_str());
     std::ifstream in("tmp");
