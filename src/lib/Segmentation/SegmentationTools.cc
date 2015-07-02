@@ -99,7 +99,13 @@ namespace SegmentationTools {
       tmp2.close(); 
     }
     tmp1.close();
-    std::string cmmd = "\"" + exe_path + unu_tmp + " minmax " + file + " > tmp\"";
+	std::string quote = 
+#ifdef WIN32
+		"\"";
+#else
+		"";
+#endif
+    std::string cmmd = quote + exe_path + unu_tmp + " minmax " + file + " > tmp" + quote;
 	std::cout << cmmd << std::endl;
     std::system(cmmd.c_str());
     std::ifstream in("tmp");
@@ -144,9 +150,15 @@ namespace SegmentationTools {
       out << "'" << vol_name << i << "'" << ((i+1)==total_mats?")\n":", ");
     out.close();
     //call the python script to make the fields
-    std::string cmmd = "\"" + python + " " + exe_path +
+	std::string quote = 
+#ifdef WIN32
+		"\"";
+#else
+		"";
+#endif
+    std::string cmmd = quote + python + " " + exe_path +
       "/BuildMesh.py -s1:2 --binary-path " + scirun + " "
-      + exe_path + "/ConfigUse.py \"";
+      + exe_path + "/ConfigUse.py" + quote;
 	std::cout << cmmd << std::endl;
     std::system(cmmd.c_str());
     files.clear();
