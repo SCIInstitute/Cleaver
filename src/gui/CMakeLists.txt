@@ -128,14 +128,6 @@ else()
   ADD_EXECUTABLE(cleaver-gui ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
 endif()
 
-IF(WIN32) # Check if we are on Windows
-  if(MSVC) # Check if we are using the Visual Studio compiler
-    set_target_properties(cleaver-gui PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:\"mainCRTStartup\"")
-  else()
-    message(SEND_ERROR "You are using an unsupported Windows compiler! (Not MSVC)")
-  endif()
-ENDIF()
-
 if(${QT_VERSION} MATCHES "5")
   if(WIN32)
     TARGET_LINK_LIBRARIES(cleaver-gui
@@ -193,7 +185,7 @@ endif()
 
 if(WIN32)
   if(MSVC)
-    set_target_properties(cleaver-gui PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+    set_target_properties(cleaver-gui PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:\"mainCRTStartup\"")
   endif()
 endif()
 

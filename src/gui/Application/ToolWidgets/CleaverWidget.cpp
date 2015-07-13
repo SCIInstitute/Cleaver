@@ -121,6 +121,8 @@ void CleaverWidget::createMesh()
 		QProgressDialog status(QString("Meshing Indicator Functions..."),QString(),0,100, this);
 		status.show();
 		status.setWindowModality(Qt::WindowModal);
+		status.setValue(5);
+        qApp->processEvents();
         mesher->setRegular(false);
         mesher->createBackgroundMesh(true);
 		status.setValue(10);

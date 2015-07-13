@@ -361,6 +361,10 @@ if (MSVC)
             COMMAND ${CMAKE_COMMAND} -E copy
             ${BZ2_INCLUDE_DIR}/../bin/bzip2.dll
             ${CMAKE_BINARY_DIR}/bin)
+  ADD_CUSTOM_COMMAND(TARGET teem POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${ZLIB_INCLUDE_DIR}/../bin/zlib1.dll
+            ${CMAKE_BINARY_DIR}/bin)
 endif()
 IF(Teem_ZLIB_LIB)
   TARGET_LINK_LIBRARIES(teem ${Teem_ZLIB_LIB})
@@ -416,7 +420,8 @@ ENDIF(BUILD_TEEM_TESTS)
 #-----------------------------------------------------------------------------
 # Help outside projects build Teem projects.
 INCLUDE(CMakeExportBuildSettings)
-EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
+#EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
+EXPORT(TARGETS teem FILE ${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
 CMAKE_EXPORT_BUILD_SETTINGS(${Teem_BINARY_DIR}/TeemBuildSettings.cmake)
 
 SET(CFLAGS "${CMAKE_C_FLAGS}")

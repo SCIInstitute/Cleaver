@@ -8,6 +8,7 @@
 #include <fstream>
 #include <QProgressDialog>
 #include <QApplication>
+#include <QCheckBox>
 #if USE_BIOMESH_SEGMENTATION
 #include <SegmentationTools.h>
 #endif
@@ -52,7 +53,7 @@ MainWindow::MainWindow(const QString &title)
 
   std::ifstream path((exePath_ + "/.path").c_str());
   if(path.is_open()) {
-    path >> lastPath_;
+    path >> lastPath_ >> scirun_path_ >> python_path_;
     path.close();
   }
 
@@ -60,7 +61,7 @@ MainWindow::MainWindow(const QString &title)
 
 MainWindow::~MainWindow() {
   std::ofstream path((exePath_ + "/.path").c_str());
-  path << lastPath_;
+  path << lastPath_ << std::endl << scirun_path_  << std::endl << python_path_;
   path.close();
 }
 
@@ -364,7 +365,22 @@ void MainWindow::importVolume()
       status.setWindowModality(Qt::WindowModal);
       status.setValue(50);
       QApplication::processEvents();
-      SegmentationTools::createIndicatorFunctions(inputs);
+	  if (scirun_path_.empty()) {
+		  scirun_path_ = QFileDialog::getExistingDirectory(this, tr("Browse to SCIRun4 Install Directory"),
+                                             QString::fromStdString(lastPath_),
+                                             QFileDialog::ShowDirsOnly
+											 | QFileDialog::DontResolveSymlinks).toStdString() + "/bin";
+	  }
+#ifdef WIN32
+	  if (python_path_.empty()) {
+		  python_path_ = QFileDialog::getOpenFileName(this,
+											 tr("Open Python Executable"), QString::fromStdString(lastPath_),
+											 tr("Executable Files (*.* *.exe)")).toStdString();
+	  }
+#else
+	  python_path_ = "python";
+#endif
+      SegmentationTools::createIndicatorFunctions(inputs,scirun_path_,python_path_);
       status.setValue(100);
     }
 #endif
@@ -375,11 +391,13 @@ void MainWindow::importVolume()
     QProgressDialog status(QString("Loading Indicator Functions..."),QString(),0,100, this);
     status.show();
     status.setWindowModality(Qt::WindowModal);
+    status.setValue(5);
+    QApplication::processEvents();
     std::cout << " Loading input fields:" << std::endl;
     for (size_t i=0; i < inputs.size(); i++) {
       std::cout << " - " << inputs[i] << std::endl;
     }
-    status.setValue(5);
+    status.setValue(10);
     QApplication::processEvents();
 
     std::vector<cleaver::AbstractScalarField*> fields =

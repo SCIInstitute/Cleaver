@@ -35,16 +35,10 @@
 #include <stdint.h>
 #if WIN32
 #include <Windows.h>
-#define RM_CMMD " del /s /q "
-#define CAT_CMMD " type "
 #elif LINUX
 #include <unistd.h>
-#define RM_CMMD " rm -rf "
-#define CAT_CMMD " cat "
 #elif DARWIN
 #include <mach-o/dyld.h>
-#define RM_CMMD " rm -rf "
-#define CAT_CMMD " cat "
 #endif
 
 namespace SegmentationTools {
@@ -59,17 +53,17 @@ namespace SegmentationTools {
     GetModuleFileName(hModule,str,sz);
     for(size_t i = 0; i < sz; i++)
       if (str[i] == '\\') str[i] = '/';
-    std::string tmp(str);
-    str[tmp.rfind("bin/")+4] = '\0';
 #elif LINUX
     readlink("/proc/self/exe",str,sz);
 #elif DARWIN
     _NSGetExecutablePath(str,&sz);
-    std::string tmp(str);
-    str[tmp.rfind("bin/")+4] = '\0';
 #endif
-    exe_path = std::string(str);
-    return exe_path.substr(0,exe_path.find_last_of("/"));
+      std::string tmp(str);
+      tmp = tmp.substr(0,tmp.find_last_of("/"));
+      if ((tmp.substr(tmp.size()-8,8) == "/Release") ||
+          (tmp.substr(tmp.size()-6,6) == "/Debug"))
+          tmp = tmp.substr(0,tmp.find_last_of("/"));
+      return tmp;
   }
 
   std::string getNRRDType(std::string file){
@@ -84,28 +78,54 @@ namespace SegmentationTools {
     std::string exe_path = getExecutablePath();
     std::string unu_cmmd =
 #if WIN32
-      "/unu.exe minmax ";
+      "/unu.exe";
 #else
-    "/unu minmax ";
+    "/unu";
 #endif
-    std::string cmmd = exe_path + unu_cmmd + file + " > tmp";
-#if WIN32
-    for(size_t i = 0; i < cmmd.size(); i++)
-      if (cmmd[i] == '/') cmmd[i] = '\\';
+    std::string unu_tmp = unu_cmmd;
+    //if the file doesn't exist, try release/debug
+    std::ifstream tmp1((exe_path + unu_tmp).c_str());
+    if (!tmp1.good()) {
+      unu_tmp = "/Release" + unu_cmmd;
+      std::ifstream tmp2((exe_path + unu_tmp).c_str());
+      if (!tmp2.good()) {
+        unu_tmp = "/Debug" + unu_cmmd;
+        std::ifstream tmp3((exe_path + unu_tmp).c_str());
+        //as a last resort, choose bin/unu
+        if (!tmp3.good()) {
+          unu_tmp = unu_cmmd;
+        }
+        tmp3.close();
+      }
+      tmp2.close(); 
+    }
+    tmp1.close();
+	std::string quote = 
+#ifdef WIN32
+		"\"";
+#else
+		"";
 #endif
+    std::string cmmd = quote + exe_path + unu_tmp + " minmax " + file + " > tmp" + quote;
+	std::cout << cmmd << std::endl;
     std::system(cmmd.c_str());
     std::ifstream in("tmp");
     int first, second;
-    std::string tmp;
-    in >> tmp >> first >> tmp >> second;
+    std::string temp;
+    in >> temp >> first >> temp >> second;
     in.close();
     return second - first + 1;
   }
 
-  void createIndicatorFunctions(std::vector<std::string> &files) {
+  void createIndicatorFunctions(std::vector<std::string> &files, std::string scirun, std::string python) {
+	if (files[0].find(" ") != std::string::npos) {
+		for (size_t i = 0; i < files[0].size(); i++)
+		  if (files[0][i] == ' ' && files[0][i - 1] != '\\')
+			files[0].insert(i,"\\");
+	}
     //ensure we are using the right slashes for this section.
     for (size_t i = 0; i < files[0].size(); i++)
-      if (files[0][i] == '\\')
+      if (files[0][i] == '\\' && files[0][i+1] != ' ')
         files[0][i] = '/';
     std::string exe_path = getExecutablePath();
     int total_mats = SegmentationTools::getNumMats(files[0]);
@@ -116,15 +136,11 @@ namespace SegmentationTools {
         files[0].find_last_of("/")) + "/" + vol_name + "_material_fields" ;
     //create the python file that the scripts need to create the fields.
     //copy template file
-    std::string cmmd = CAT_CMMD + exe_path + "/ConfigTemplate.py > " +
-      exe_path + "/ConfigUse.py ";
-#if WIN32
-    for(size_t i = 0; i < cmmd.size(); i++)
-      if (cmmd[i] == '/') cmmd[i] = '\\';
-#endif
-    std::system(cmmd.c_str());
+	std::ifstream templat((exe_path + "/ConfigTemplate.py").c_str());
+	std::ofstream out((exe_path + "/ConfigUse.py").c_str());
+	out << templat.rdbuf();
+	templat.close();
     //add "mats" "mat_names" "model_output_path" "model_input_file"
-    std::ofstream out((exe_path + "/ConfigUse.py").c_str(),std::ios::app);
     out << "model_input_file=\"" << files[0] << "\"" << std::endl;
     out << "model_output_path=\"" << output_dir << "\"" << std::endl;
     out << "mats = (";
@@ -135,36 +151,81 @@ namespace SegmentationTools {
       out << "'" << vol_name << i << "'" << ((i+1)==total_mats?")\n":", ");
     out.close();
     //call the python script to make the fields
-    cmmd = "python " + exe_path +
-      "/BuildMesh.py -s1:2 --binary-path " + exe_path
-      + " " + exe_path + "/ConfigUse.py";
-#if WIN32
-    for(size_t i = 0; i < cmmd.size(); i++)
-      if (cmmd[i] == '/') cmmd[i] = '\\';
+	std::string quote = 
+#ifdef WIN32
+		"\"";
+#else
+		"";
 #endif
+    std::string cmmd = quote + python + " " + exe_path +
+      "/BuildMesh.py -s1:2 --binary-path " + scirun + " "
+      + exe_path + "/ConfigUse.py" + quote;
+	std::cout << cmmd << std::endl;
     std::system(cmmd.c_str());
-    //delete all of the unneeded files.
-    cmmd = RM_CMMD + output_dir + "/";
-#if WIN32
-    for(size_t i = 0; i < cmmd.size(); i++)
-      if (cmmd[i] == '/') cmmd[i] = '\\';
-#endif
-    std::system((cmmd + "*.log").c_str());
-    std::system((cmmd + "*.txt").c_str());
-    std::system((cmmd + "*.fld").c_str());
-    std::system((cmmd + "*.raw").c_str());
-    std::system((cmmd + "*.tight.nrrd").c_str());
-    std::system((cmmd + "*corrected.nrrd").c_str());
-    std::system((cmmd + "*solo.nrrd").c_str());
-    std::system((cmmd + "*lut.nrrd").c_str());
-    std::system((cmmd + "*unorient.nrrd").c_str());
-    std::system((cmmd + "*.tf").c_str());
-    std::system((cmmd + "*labelmap.nrrd").c_str());
-    std::system((RM_CMMD + std::string("tmp")).c_str());
     files.clear();
-    for(int i = 0; i < total_mats; i++)
-      files.push_back(output_dir + "/" +
+    for(int i = 0; i < total_mats; i++) {
+		//remove unneeded files.
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".tight.nrrd")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".raw")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".lut.nrrd")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".lut.raw")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".solo.nrrd")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".tight.fld")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".tight_transformed.fld")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string(".tight-corrected.nrrd")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + ((char)('0' + i)) +
+          std::string("_isosurface.ts.fld")).c_str());
+		std::remove((output_dir + "/" +
+          vol_name + "_pad_transform.tf").c_str());
+		std::remove((output_dir + "/" +
+          vol_name + "_pad_unorient.nrrd").c_str());
+		std::remove((output_dir + "/" +
+          "mesh_state.txt").c_str());
+		std::remove((output_dir + "/" +
+          "dominant_labelmap.nrrd").c_str());
+		std::remove((output_dir + "/" +
+          "medial_axis_param_file.txt").c_str());
+		std::remove((output_dir + "/" +
+          "make-solo-nrrd-runtime.txt").c_str());
+		std::remove((output_dir + "/" +
+          "compute-material-boundary-runtime.txt").c_str());
+		std::remove((output_dir + "/" +
+          "labelmap.txt").c_str());
+		std::remove((output_dir + "/" +
+          "isosurface-all.ts.fld").c_str());
+		std::remove((output_dir + "/" +
+          "running_stage_1.txt").c_str());
+		std::remove((output_dir + "/" +
+          "running_stage_2.txt").c_str());
+		std::remove((output_dir + "/" +
+          "pid_1.txt").c_str());
+		std::remove((output_dir + "/" +
+          "pid_2.txt").c_str());
+		std::remove((output_dir + "/" +
+          "completed_stage_1.txt").c_str());
+		std::remove((output_dir + "/" +
+          "completed_stage_2.txt").c_str());
+		//push back the wanted one 
+		files.push_back(output_dir + "/" +
           vol_name + ((char)('0' + i)) +
           std::string(".tight_transformed.nrrd"));
+	}
   }
 }

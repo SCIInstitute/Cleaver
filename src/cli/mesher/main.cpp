@@ -95,6 +95,7 @@ int main(int argc,  char* argv[])
   bool fix_tets = false;
 #if USE_BIOMESH_SEGMENTATION
   bool segmentation = false;
+  std::string scirun_dir = "";
 #endif
   std::vector<std::string> material_fields;
   std::string sizing_field;
@@ -129,9 +130,6 @@ int main(int argc,  char* argv[])
     description.add_options()
       ("help,h", "display help message")
       ("verbose,v", "enable verbose output")
-#if USE_BIOMESH_SEGMENTATION
-      ("segmentation,S", "The input file is a segmentation file.")
-#endif
       ("version,V", "display version information")
       ("input_files,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths or segmentation path")
       ("background_mesh,b", po::value<std::string>(), "input background mesh")
@@ -151,6 +149,10 @@ int main(int argc,  char* argv[])
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
       ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtk, ply [Surface mesh only])")
       ("strict,t", "warnings become errors")
+#if USE_BIOMESH_SEGMENTATION
+      ("segmentation,S", "The input file is a segmentation file.")
+      ("scirun_path,P", po::value<std::string>(), "The path to SCIRun4 (required for a segmentation file)")
+#endif
       ;
 
     boost::program_options::variables_map variables_map;
@@ -179,6 +181,14 @@ int main(int argc,  char* argv[])
     if (variables_map.count("segmentation")) {
       segmentation = true;
     }
+    // set scirun4 path
+    if (variables_map.count("scirun_path")) {
+      scirun_dir = variables_map["scirun_path"].as<std::string>() + "/bin";
+    }
+	if (scirun_dir.empty() && segmentation) {
+		std::cerr << "Error: Cannot run segmentations without a path to SCIRun4!" << std::endl;
+		return 11;
+	}
 #endif
 
     if (variables_map.count("strict")) {
@@ -360,7 +370,7 @@ int main(int argc,  char* argv[])
       std::cerr << "WARNING: More than 1 input provided for segmentation." <<
         " Only the first input will be used." << std::endl;
     }
-    SegmentationTools::createIndicatorFunctions(material_fields);
+	SegmentationTools::createIndicatorFunctions(material_fields,scirun_dir);
   }
 #endif
   else if(material_fields.size() == 1) {
