@@ -12,6 +12,7 @@ include_directories(${CLEAVER2_SOURCE_DIR}/lib/gtest)
 include_directories(${CLEAVER2_SOURCE_DIR}/lib/gtest/include)
 add_definitions(-DBINARY_DIR="${CLEAVER2_BINARY_DIR}/bin/")
 add_definitions(-DTEST_DATA_DIR="${CLEAVER2_SOURCE_DIR}/test/test_data/")
+add_definitions(-DSCIRun4_DIR="${SCIRun4_DIR}/")
 #cli
 cxx_test(cli_basic gtest_main cli_common.cc)
 cxx_test(cli_scale gtest_main cli_common.cc)

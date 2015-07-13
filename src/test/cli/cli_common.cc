@@ -52,6 +52,7 @@ data_dir + "input/spheres1.nrrd " +
 data_dir + "input/spheres2.nrrd " +
 data_dir + "input/spheres3.nrrd " +
 data_dir + "input/spheres4.nrrd " ;
+std::string scirun = std::string(SCIRun4_DIR) + " ";
 std::string files[num_files] = {
   "sizing_field.nrrd",
   "boundary_field.nrrd",
