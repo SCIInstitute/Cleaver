@@ -436,6 +436,24 @@ namespace cleaver
   }
 
   //===================================================
+  // vec3 comparator
+  //
+  //===================================================
+  class vec3_compare {
+    public:
+      bool operator()(const vec3 &a, const vec3 &b) const {
+        if ((a.x < b.x) && (b.x - a.x) > 1e-9) return true;
+        else if ((a.x > b.x) && (a.x - b.x) > 1e-9) return false;
+        if ((a.y < b.y) && (b.y - a.y) > 1e-9) return true;
+        else if ((a.y > b.y) && (a.y - b.y) > 1e-9) return false;
+        if ((a.z < b.z) && (b.z - a.z) > 1e-9) return true;
+        else if ((a.z > b.z) && (a.z - b.z) > 1e-9) return false;
+        return false;
+      }
+  };
+  typedef std::map< const vec3, unsigned int, vec3_compare > VertMap;
+
+  //===================================================
   // writePly()
   //
   // Public method that writes the surface mesh
@@ -453,6 +471,8 @@ namespace cleaver
     std::vector<unsigned int> interfaces;
     std::vector<unsigned int> colors;
     std::vector<unsigned int> keys;
+    VertMap vert_map;
+    std::vector<vec3> pruned_verts;
 
     // determine output faces and vertices vertex counts
     for(size_t f=0; f < faces.size(); f++)
@@ -490,19 +510,49 @@ namespace cleaver
       }
     }
 
-    int face_count = interfaces.size();
-    int vertex_count = 3*face_count;
-
     //-----------------------------------
     //           Write Header
     //-----------------------------------
     file << "ply" << endl;
     file << "format ascii 1.0" << endl;
-    file << "element vertex " << vertex_count << endl;
+
+    //-----------------------------------
+    //         Create Pruned Vertex List
+    //-----------------------------------
+    unsigned int pruned_pos = 0;
+    for(int f=0; f < interfaces.size(); f++)
+    {
+      Face *face = faces[interfaces[f]];
+
+      Vertex *v1 = this->verts[face->verts[0]];
+      Vertex *v2 = this->verts[face->verts[1]];
+      Vertex *v3 = this->verts[face->verts[2]];
+
+      vec3 p1 = v1->pos();
+      vec3 p2 = v2->pos();
+      vec3 p3 = v3->pos();
+
+      if (!vert_map.count(p1)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p1,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p1);
+      }
+      if (!vert_map.count(p2)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p2,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p2);
+      }
+      if (!vert_map.count(p3)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p3,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p3);
+      }
+    }
+    file << "element vertex " << pruned_verts.size() << endl;
     file << "property float x " << endl;
     file << "property float y " << endl;
     file << "property float z " << endl;
-    file << "element face " << face_count << endl;
+    file << "element face " << interfaces.size() << endl;
     file << "property list uchar int vertex_index" << endl;
     file << "property uchar red" << endl;
     file << "property uchar green" << endl;
@@ -512,37 +562,34 @@ namespace cleaver
     //-----------------------------------
     //         Write Vertex List
     //-----------------------------------
-    for(int f=0; f < face_count; f++)
-    {
-      Face *face = faces[interfaces[f]];
-
-      Vertex *v1 = this->verts[face->verts[0]];
-      Vertex *v2 = this->verts[face->verts[1]];
-      Vertex *v3 = this->verts[face->verts[2]];
-
-      file << v1->pos().x << " " << v1->pos().y << " " << v1->pos().z << endl;
-      file << v2->pos().x << " " << v2->pos().y << " " << v2->pos().z << endl;
-      file << v3->pos().x << " " << v3->pos().y << " " << v3->pos().z << endl;
+    for(std::vector<vec3>::iterator it = pruned_verts.begin();
+        it != pruned_verts.end(); ++it) {
+      file << it->x << " " << it->y << " " << it->z << std::endl;   
     }
 
     //-----------------------------------
     //         Write Face List
     //-----------------------------------
-    for(int f=0; f < face_count; f++)
+    for(int f=0; f < interfaces.size(); f++)
     {
       //Face &face = faces[interfaces[f]];
 
+      Face *face = faces[interfaces[f]];
+
+      Vertex *v1 = this->verts[face->verts[0]];
+      Vertex *v2 = this->verts[face->verts[1]];
+      Vertex *v3 = this->verts[face->verts[2]];
+      unsigned int i1 = vert_map.find(v1->pos())->second; 
+      unsigned int i2 = vert_map.find(v2->pos())->second; 
+      unsigned int i3 = vert_map.find(v3->pos())->second; 
       // output 3 vertices
-      file << "3 " << (3*f + 0) << " " << (3*f + 1) << " " << (3*f + 2) << " ";
+      file << "3 " << i1 << " " << i2 << " " << i3 << " ";
 
       // output 3 color components
       file << (int)(255*INTERFACE_COLORS[colors[f]%12][0]) << " ";
       file << (int)(255*INTERFACE_COLORS[colors[f]%12][1]) << " ";
       file << (int)(255*INTERFACE_COLORS[colors[f]%12][2]) << endl;
     }
-
-    // end with a single blank line
-    file << endl;
 
     //-----------------------------------
     //          Close  File
