@@ -1500,6 +1500,46 @@ namespace cleaver
     std::ofstream output(filepath.c_str(), std::ios::out | std::ios::binary);
     if(verbose)
       std::cout << "Writing mesh vtk file: " << filepath << std::endl;
+    //-----------------------------------
+    //         Create Pruned Vertex List
+    //-----------------------------------
+    VertMap vert_map;
+    std::vector<vec3> pruned_verts;
+    unsigned int pruned_pos = 0;
+    for(size_t t=0; t < this->tets.size(); t++) {
+      Tet* tet = this->tets[t];
+
+      Vertex *v1 = tet->verts[0];
+      Vertex *v2 = tet->verts[1];
+      Vertex *v3 = tet->verts[2];
+      Vertex *v4 = tet->verts[3];
+
+      vec3 p1 = v1->pos();
+      vec3 p2 = v2->pos();
+      vec3 p3 = v3->pos();
+      vec3 p4 = v4->pos();
+
+      if (!vert_map.count(p1)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p1,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p1);
+      }
+      if (!vert_map.count(p2)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p2,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p2);
+      }
+      if (!vert_map.count(p3)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p3,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p3);
+      }
+      if (!vert_map.count(p4)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p4,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p4);
+      }
+    }
 
     //-----------------------------------
     //         Write Header
@@ -1508,15 +1548,15 @@ namespace cleaver
     output << filepath << " Tet Mesh\n";
     output << "ASCII\n";
     output << "DATASET UNSTRUCTURED_GRID\n";
-    output << "POINTS " << this->verts.size() << " float\n";
+    output << "POINTS " << pruned_verts.size() << " float\n";
     //-----------------------------------
     //         Write Vertex List
     //-----------------------------------
-    for(size_t i=0; i < this->verts.size(); i++)
+    for(size_t i=0; i < pruned_verts.size(); i++)
     {
-      output << this->verts[i]->pos().x << " "
-        << this->verts[i]->pos().y << " "
-        << this->verts[i]->pos().z << std::endl;
+      output << pruned_verts[i].x << " "
+        << pruned_verts[i].y << " "
+        << pruned_verts[i].z << std::endl;
     }
 
     //-----------------------------------
@@ -1528,11 +1568,15 @@ namespace cleaver
     {
       Tet* t = this->tets.at(f);
 
-      size_t v1 = t->verts[0]->tm_v_index;
-      size_t v2 = t->verts[1]->tm_v_index;
-      size_t v3 = t->verts[2]->tm_v_index;
-      size_t v4 = t->verts[3]->tm_v_index;
-      output << 4 << " " << v1 <<  " " << v2 << " " << v3 << " " << v4 << "\n";
+      Vertex* v1 = t->verts[0];
+      Vertex* v2 = t->verts[1];
+      Vertex* v3 = t->verts[2];
+      Vertex* v4 = t->verts[3];
+      unsigned int i1 = vert_map.find(v1->pos())->second;
+      unsigned int i2 = vert_map.find(v2->pos())->second;
+      unsigned int i3 = vert_map.find(v3->pos())->second;
+      unsigned int i4 = vert_map.find(v4->pos())->second;
+      output << 4 << " " << i1 <<  " " << i2 << " " << i3 << " " << i4 << "\n";
     }
 
     output << "CELL_TYPES " << this->tets.size() << "\n";
@@ -1554,7 +1598,7 @@ namespace cleaver
       output << (int)t->mat_label << "\n";
     }
 
-    // \todo make optional
+    /* \todo make optional
     output << "POINT_DATA " << this->verts.size() << "\n";
     output << "SCALARS labels int 1\n";
     output << "LOOKUP_TABLE default\n";
@@ -1562,7 +1606,7 @@ namespace cleaver
     {
       Vertex* v = this->verts.at(f);
       output << (int)v->label << "\n";
-    }
+    }*/
 
     //CLOSE
     output.close();
