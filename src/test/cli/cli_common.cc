@@ -61,15 +61,15 @@ std::string files[num_files] = {
   "medial.nrrd"};
 
 void system_execute(const std::string cmmd, const std::string args) {
-	std::string new_args;
+  std::string new_args;
 #if WIN32
-	for(size_t i = 0; i < args.size(); i++) 
-		if (args[i] == '/') new_args = new_args + "\\";
-		else new_args = new_args + args[i];
+  for(size_t i = 0; i < args.size(); i++)
+    if (args[i] == '/') new_args = new_args + "\\";
+    else new_args = new_args + args[i];
 #else
-	new_args = args;
+  new_args = args;
 #endif
-	std::system((cmmd + new_args).c_str());
+  std::system((cmmd + new_args).c_str());
 }
 
 
@@ -153,10 +153,19 @@ void compareVTKFiles(const std::string a, const std::string b) {
   int point_count0, poly_count0;
   int point_count1, poly_count1;
   char line[512];
-  for(int i = 0; i < 4; i++) {
+  //eat the first 3 lines
+  for(int i = 0; i < 3; i++) {
     test.getline(line,512);
     ans.getline(line,512);
   }
+  //test the vtk types
+  char type0[256], type1[256];
+  test.getline(line,512);
+  sscanf(line,"DATASET %s",type0);
+  ans.getline(line,512);
+  sscanf(line,"DATASET %s",type1);
+  ASSERT_EQ(strcmp(type1,type0),0);
+  //test the number of points
   test.getline(line,512);
   sscanf(line,"POINTS %d float",&point_count0);
   ans.getline(line,512);
@@ -169,18 +178,72 @@ void compareVTKFiles(const std::string a, const std::string b) {
       ASSERT_FLOAT_EQ(tmp,tmp2);
     }
   }
+  //eat the new line
   test.getline(line,512);
   ans.getline(line,512);
-  test.getline(line,512);
-  sscanf(line,"POLYGONS %d %d",&point_count0,&poly_count0);
-  ans.getline(line,512);
-  sscanf(line,"POLYGONS %d %d",&point_count1,&poly_count1);
-  ASSERT_EQ(point_count0,point_count1);
-  ASSERT_EQ(poly_count0,poly_count1);
-  for (int i = 0; i < poly_count0; i++) {
-    size_t num0 = 0, num1 = 0;
-    test >> num0; ans >> num1;
-    ASSERT_EQ(num0,num1);
+  //tests based on VTK type
+  if (strcmp("POLYDATA",type0)==0) {
+    //test the polygons (faces)
+    test.getline(line,512);
+    sscanf(line,"POLYGONS %d %d",&point_count0,&poly_count0);
+    ans.getline(line,512);
+    sscanf(line,"POLYGONS %d %d",&point_count1,&poly_count1);
+    ASSERT_EQ(point_count0,point_count1);
+    ASSERT_EQ(poly_count0,poly_count1);
+    for (int i = 0; i < poly_count0; i++) {
+      size_t num0 = 0, num1 = 0;
+      test >> num0; ans >> num1;
+      ASSERT_EQ(num0,num1);
+    }
+  } else if (strcmp("UNSTRUCTURED_GRID",type0)==0) {
+    //test the cells (tets)
+    test.getline(line,512);
+    sscanf(line,"CELLS %d %d",&point_count0,&poly_count0);
+    ans.getline(line,512);
+    sscanf(line,"CELLS %d %d",&point_count1,&poly_count1);
+    ASSERT_EQ(point_count0,point_count1);
+    ASSERT_EQ(poly_count0,poly_count1);
+    for (int i = 0; i < poly_count0; i++) {
+      size_t num0 = 0, num1 = 0;
+      test >> num0; ans >> num1;
+      ASSERT_EQ(num0,num1);
+    }
+    //eat the newline
+    test.getline(line,512);
+    ans.getline(line,512);
+    //test the cell types
+    test.getline(line,512);
+    sscanf(line,"CELL_TYPES %d",&poly_count0);
+    ans.getline(line,512);
+    sscanf(line,"CELL_TYPES %d",&poly_count1);
+    ASSERT_EQ(poly_count0,poly_count1);
+    for (int i = 0; i < poly_count0; i++) {
+      size_t num0 = 0, num1 = 0;
+      test >> num0; ans >> num1;
+      ASSERT_EQ(num0,num1);
+    }
+    //eat the newline
+    test.getline(line,512);
+    ans.getline(line,512);
+    //test the cell data
+    test.getline(line,512);
+    sscanf(line,"CELL_DATA %d",&poly_count0);
+    ans.getline(line,512);
+    sscanf(line,"CELL_DATA %d",&poly_count1);
+    ASSERT_EQ(poly_count0,poly_count1);
+    //eat the newlines
+    test.getline(line,512);
+    ans.getline(line,512);
+    test.getline(line,512);
+    ans.getline(line,512);
+    for (int i = 0; i < poly_count0; i++) {
+      size_t num0 = 0, num1 = 0;
+      test >> num0; ans >> num1;
+      ASSERT_EQ(num0,num1);
+    }
+
+  } else {
+    ASSERT_EQ(1,0);
   }
   test.close();
   ans.close();
@@ -225,7 +288,7 @@ void testValue(std::ifstream &a, std::ifstream &b, T &value) {
 #endif
 
 void testValueFloat(std::ifstream &a, std::ifstream &b) {
-  float_t test,ans;     
+  float_t test,ans;
   a.read((char*)&test,sizeof(float_t));
   b.read((char*)&ans,sizeof(float_t));
   ASSERT_FLOAT_EQ(test,ans);
