@@ -120,6 +120,22 @@ elseif(${QT_VERSION} MATCHES "4")
   QT4_ADD_RESOURCES(RCC_SRC ${RCC_FILES})
 endif()
 
+
+#icon
+# For Apple set the icns file containing icons
+IF(APPLE)
+  # set how it shows up in the Info.plist file
+  SET(MACOSX_BUNDLE_ICON_FILE cleaverIcon.icns) 
+  # set where in the bundle to put the icns file
+  SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+  # include the icns file in the target
+  SET(STUDIO_SRCS ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
+ENDIF(APPLE)
+
+#IF(WIN32)
+#  SET(STUDIO_SRCS ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
+#ENDIF(WIN32)
+
 ADD_CUSTOM_TARGET(comp_shaders
   DEPENDS ${default_vertex_shader} ${default_fragment_shader})
 if(APPLE)
