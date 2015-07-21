@@ -132,18 +132,9 @@ IF(APPLE)
   SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
 ENDIF(APPLE)
 
-#IF(WIN32)
-  SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
-#ENDIF(WIN32)
-
 ADD_CUSTOM_TARGET(comp_shaders
   DEPENDS ${default_vertex_shader} ${default_fragment_shader})
-if(APPLE)
-  ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
-else()
-  ADD_EXECUTABLE(cleaver-gui ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
-endif()
-
+  ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE WIN32 ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
 if(${QT_VERSION} MATCHES "5")
   if(WIN32)
     TARGET_LINK_LIBRARIES(cleaver-gui
@@ -209,3 +200,8 @@ ADD_DEPENDENCIES(cleaver-gui comp_shaders)
 if (USE_SEGMENTATION_TOOLS)
   target_link_libraries(cleaver-gui seg_tools)
 endif()
+
+INSTALL(TARGETS cleaver-gui
+    BUNDLE DESTINATION . COMPONENT Runtime
+    RUNTIME DESTINATION bin COMPONENT Runtime
+    )
