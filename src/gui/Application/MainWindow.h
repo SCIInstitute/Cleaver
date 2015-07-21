@@ -44,9 +44,7 @@ public slots:
     void exportField(cleaver::FloatField *field);
     void exportMesh(cleaver::TetMesh *mesh = NULL);
     void subWindowClosed();
-    void closeSubWindow();
-    void closeSubWindow(MeshWindow *win);
-    void closeAllSubWindows();
+    void closeSubWindow(MeshWindow *win = NULL);
     void focus(QMdiSubWindow*);
     void about();
 
@@ -82,7 +80,6 @@ private:
     QAction *importVolumeAct;
     QAction *importSizingFieldAct;
     QAction *importMeshAct;
-    QAction *closeAct;
     QAction *closeAllAct;
     QAction *exitAct;
 
@@ -115,7 +112,6 @@ private:
     QMenu *m_computeMenu;
     QMenu *m_viewMenu;
     QMenu *m_toolsMenu;
-    QMenu *m_windowsMenu;
     QMenu *m_helpMenu;
 
 

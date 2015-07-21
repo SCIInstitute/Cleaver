@@ -258,7 +258,7 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
     {
         QMenu contextMenu;
         QAction *exportAction = contextMenu.addAction("Export Field");
-//        QAction *deleteAction = contextMenu.addAction("Delete Field");
+        QAction *deleteAction = contextMenu.addAction("Delete Field");
         QAction *renameAction = contextMenu.addAction("Rename Field");
 
         cleaver::FloatField *floatField = dynamic_cast<cleaver::FloatField*>(field);
@@ -268,11 +268,9 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
         QAction *selectedItem = contextMenu.exec(mapToGlobal(event->pos()));
         if(selectedItem)
         {
-//            if(selectedItem == deleteAction){
-//                MainWindow::dataManager()->removeField(field);
-//            }
-//            else
-            if(selectedItem == renameAction){
+            if(selectedItem == deleteAction){
+                MainWindow::dataManager()->removeField(field);
+            } else if(selectedItem == renameAction){
 
                 QDialog dialog;
                 dialog.setWindowTitle("Rename Field");
