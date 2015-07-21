@@ -129,11 +129,11 @@ IF(APPLE)
   # set where in the bundle to put the icns file
   SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
   # include the icns file in the target
-  SET(STUDIO_SRCS ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
+  SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
 ENDIF(APPLE)
 
 #IF(WIN32)
-#  SET(STUDIO_SRCS ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
+  SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
 #ENDIF(WIN32)
 
 ADD_CUSTOM_TARGET(comp_shaders
