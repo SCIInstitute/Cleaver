@@ -46,7 +46,7 @@ TEST(CLIRegressionTests, VTK) {
   std::string log = "vtk_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
   std::string line = (command + name + path + 
-      " --output_format vtk " + input + output);
+      " --output_format vtkPoly " + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
