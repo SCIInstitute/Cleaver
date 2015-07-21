@@ -18,7 +18,7 @@ public:
 		, m_Box(cleaver::vec3::zero, cleaver::vec3(1,1,1))
 	{}
 
-	virtual double valueAt( double x, double y, double z ) const override
+	virtual double valueAt( double x, double y, double z ) const 
 	{
 		x -= m_Center[0];
 		y -= m_Center[1];
@@ -28,7 +28,7 @@ public:
 		return (m_Radius-d);
 	}
 
-	virtual cleaver::BoundingBox bounds() const override
+	virtual cleaver::BoundingBox bounds() const 
 	{
 		return m_Box;
 	}
@@ -47,9 +47,9 @@ public:
 		, m_Box(cleaver::vec3::zero, cleaver::vec3(1,1,1)) // don't like this ...
 	{}
 
-	virtual double valueAt( double x, double y, double z ) const override { return m_Constant; }
+	virtual double valueAt( double x, double y, double z ) const { return m_Constant; }
 
-	virtual cleaver::BoundingBox bounds() const override { return m_Box; }
+	virtual cleaver::BoundingBox bounds() const { return m_Box; }
 
 private:
 	double m_Constant;
