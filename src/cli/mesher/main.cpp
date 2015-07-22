@@ -69,7 +69,8 @@
 const std::string scirun = "scirun";
 const std::string tetgen = "tetgen";
 const std::string matlab = "matlab";
-const std::string vtk = "vtk";
+const std::string vtkPoly = "vtkPoly";
+const std::string vtkUSG = "vtkUSG";
 const std::string ply = "ply";
 
 const std::string kDefaultOutputPath   = "./";
@@ -147,7 +148,7 @@ int main(int argc,  char* argv[])
       ("strip_exterior,e", "strip exterior tetrahedra")
       ("output_path,o", po::value<std::string>(), "output path prefix")
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
-      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtk, ply [Surface mesh only])")
+      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [Surface mesh only])")
       ("strict,t", "warnings become errors")
 #if USE_BIOMESH_SEGMENTATION
       ("segmentation,S", "The input file is a segmentation file.")
@@ -320,8 +321,11 @@ int main(int argc,  char* argv[])
       else if(format_string.compare(matlab) == 0){
         output_format = cleaver::Matlab;
       }
-      else if(format_string.compare(vtk) == 0){
-        output_format = cleaver::VTK;
+      else if(format_string.compare(vtkPoly) == 0){
+        output_format = cleaver::VtkPoly;
+      }
+      else if(format_string.compare(vtkUSG) == 0){
+        output_format = cleaver::VtkUSG;
       }
       else if(format_string.compare(ply) == 0){
         output_format = cleaver::PLY;

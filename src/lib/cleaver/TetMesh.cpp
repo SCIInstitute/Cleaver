@@ -436,6 +436,24 @@ namespace cleaver
   }
 
   //===================================================
+  // vec3 comparator
+  //
+  //===================================================
+  class vec3_compare {
+    public:
+      bool operator()(const vec3 &a, const vec3 &b) const {
+        if ((a.x < b.x) && (b.x - a.x) > 1e-9) return true;
+        else if ((a.x > b.x) && (a.x - b.x) > 1e-9) return false;
+        if ((a.y < b.y) && (b.y - a.y) > 1e-9) return true;
+        else if ((a.y > b.y) && (a.y - b.y) > 1e-9) return false;
+        if ((a.z < b.z) && (b.z - a.z) > 1e-9) return true;
+        else if ((a.z > b.z) && (a.z - b.z) > 1e-9) return false;
+        return false;
+      }
+  };
+  typedef std::map< const vec3, unsigned int, vec3_compare > VertMap;
+
+  //===================================================
   // writePly()
   //
   // Public method that writes the surface mesh
@@ -490,19 +508,51 @@ namespace cleaver
       }
     }
 
-    int face_count = interfaces.size();
-    int vertex_count = 3*face_count;
-
     //-----------------------------------
     //           Write Header
     //-----------------------------------
     file << "ply" << endl;
     file << "format ascii 1.0" << endl;
-    file << "element vertex " << vertex_count << endl;
+
+    //-----------------------------------
+    //         Create Pruned Vertex List
+    //-----------------------------------
+    VertMap vert_map;
+    std::vector<vec3> pruned_verts;
+    unsigned int pruned_pos = 0;
+    for(int f=0; f < interfaces.size(); f++)
+    {
+      Face *face = faces[interfaces[f]];
+
+      Vertex *v1 = this->verts[face->verts[0]];
+      Vertex *v2 = this->verts[face->verts[1]];
+      Vertex *v3 = this->verts[face->verts[2]];
+
+      vec3 p1 = v1->pos();
+      vec3 p2 = v2->pos();
+      vec3 p3 = v3->pos();
+
+      if (!vert_map.count(p1)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p1,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p1);
+      }
+      if (!vert_map.count(p2)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p2,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p2);
+      }
+      if (!vert_map.count(p3)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p3,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p3);
+      }
+    }
+    file << "element vertex " << pruned_verts.size() << endl;
     file << "property float x " << endl;
     file << "property float y " << endl;
     file << "property float z " << endl;
-    file << "element face " << face_count << endl;
+    file << "element face " << interfaces.size() << endl;
     file << "property list uchar int vertex_index" << endl;
     file << "property uchar red" << endl;
     file << "property uchar green" << endl;
@@ -512,37 +562,34 @@ namespace cleaver
     //-----------------------------------
     //         Write Vertex List
     //-----------------------------------
-    for(int f=0; f < face_count; f++)
-    {
-      Face *face = faces[interfaces[f]];
-
-      Vertex *v1 = this->verts[face->verts[0]];
-      Vertex *v2 = this->verts[face->verts[1]];
-      Vertex *v3 = this->verts[face->verts[2]];
-
-      file << v1->pos().x << " " << v1->pos().y << " " << v1->pos().z << endl;
-      file << v2->pos().x << " " << v2->pos().y << " " << v2->pos().z << endl;
-      file << v3->pos().x << " " << v3->pos().y << " " << v3->pos().z << endl;
+    for(std::vector<vec3>::iterator it = pruned_verts.begin();
+        it != pruned_verts.end(); ++it) {
+      file << it->x << " " << it->y << " " << it->z << std::endl;
     }
 
     //-----------------------------------
     //         Write Face List
     //-----------------------------------
-    for(int f=0; f < face_count; f++)
+    for(int f=0; f < interfaces.size(); f++)
     {
       //Face &face = faces[interfaces[f]];
 
+      Face *face = faces[interfaces[f]];
+
+      Vertex *v1 = this->verts[face->verts[0]];
+      Vertex *v2 = this->verts[face->verts[1]];
+      Vertex *v3 = this->verts[face->verts[2]];
+      unsigned int i1 = vert_map.find(v1->pos())->second;
+      unsigned int i2 = vert_map.find(v2->pos())->second;
+      unsigned int i3 = vert_map.find(v3->pos())->second;
       // output 3 vertices
-      file << "3 " << (3*f + 0) << " " << (3*f + 1) << " " << (3*f + 2) << " ";
+      file << "3 " << i1 << " " << i2 << " " << i3 << " ";
 
       // output 3 color components
       file << (int)(255*INTERFACE_COLORS[colors[f]%12][0]) << " ";
       file << (int)(255*INTERFACE_COLORS[colors[f]%12][1]) << " ";
       file << (int)(255*INTERFACE_COLORS[colors[f]%12][2]) << endl;
     }
-
-    // end with a single blank line
-    file << endl;
 
     //-----------------------------------
     //          Close  File
@@ -1299,8 +1346,11 @@ namespace cleaver
     case cleaver::Matlab:
       writeMatlab(filename, verbose);
       break;
-    case  cleaver::VTK:
+    case  cleaver::VtkUSG:
       writeVtkUnstructuredGrid(filename, verbose);
+      break;
+    case  cleaver::VtkPoly:
+      writeVtkPolyData(filename, verbose);
       break;
     case  cleaver::PLY:
       writePly(filename, verbose);
@@ -1311,11 +1361,10 @@ namespace cleaver
              }
     }
   }
-
   //==================================================================
   //
   //==================================================================
-  void TetMesh::writeVtkUnstructuredGrid(const std::string &filename, bool verbose)
+  void TetMesh::writeVtkPolyData(const std::string &filename, bool verbose)
   {
     std::string path = filename.substr(0,filename.find_last_of("/")+1);
     std::string name = filename.substr(filename.find_last_of("/")+1,filename.size() - 1);
@@ -1348,6 +1397,52 @@ namespace cleaver
         std::cout << "\t" << filenames.at(i) << std::endl;
     }
     //-----------------------------------
+    //         Create Pruned Vertex List
+    //-----------------------------------
+    std::vector<VertMap> vert_maps;
+    vert_maps.resize(numTetsPerMat.size());
+    std::vector<std::vector<vec3> > pruned_verts;
+    pruned_verts.resize(numTetsPerMat.size());
+    std::vector<unsigned int> pruned_pos;
+    pruned_pos.resize(numTetsPerMat.size());
+    for(size_t i = 0; i < numTetsPerMat.size();i++)
+      pruned_pos[i] = 0;
+    for(size_t t=0; t < this->tets.size(); t++) {
+      Tet* tet = this->tets[t];
+      size_t label = tet->mat_label;
+
+      Vertex *v1 = tet->verts[0];
+      Vertex *v2 = tet->verts[1];
+      Vertex *v3 = tet->verts[2];
+      Vertex *v4 = tet->verts[3];
+
+      vec3 p1 = v1->pos();
+      vec3 p2 = v2->pos();
+      vec3 p3 = v3->pos();
+      vec3 p4 = v4->pos();
+
+      if (!vert_maps[label].count(p1)) {
+        vert_maps[label].insert(std::pair<vec3,unsigned int>(p1,pruned_pos[label]));
+        pruned_pos[label]++;
+        pruned_verts[label].push_back(p1);
+      }
+      if (!vert_maps[label].count(p2)) {
+        vert_maps[label].insert(std::pair<vec3,unsigned int>(p2,pruned_pos[label]));
+        pruned_pos[label]++;
+        pruned_verts[label].push_back(p2);
+      }
+      if (!vert_maps[label].count(p3)) {
+        vert_maps[label].insert(std::pair<vec3,unsigned int>(p3,pruned_pos[label]));
+        pruned_pos[label]++;
+        pruned_verts[label].push_back(p3);
+      }
+      if (!vert_maps[label].count(p4)) {
+        vert_maps[label].insert(std::pair<vec3,unsigned int>(p4,pruned_pos[label]));
+        pruned_pos[label]++;
+        pruned_verts[label].push_back(p4);
+      }
+    }
+    //-----------------------------------
     //         Write Headers
     //-----------------------------------
     for(size_t i=0; i < numTetsPerMat.size(); i++) {
@@ -1356,17 +1451,17 @@ namespace cleaver
       *output.at(i) << filenames.at(i) << " Tet Mesh\n";
       *output.at(i) << "ASCII\n";
       *output.at(i) << "DATASET POLYDATA\n";
-      *output.at(i) << "POINTS " << this->verts.size() << " float\n";
+      *output.at(i) << "POINTS " << pruned_verts[i].size() << " float\n";
     }
     //-----------------------------------
     //         Write Vertex List
     //-----------------------------------
     for(size_t f=0; f < numTetsPerMat.size(); f++) {
-      for(size_t i=0; i < this->verts.size(); i++)
+      for(size_t i=0; i < pruned_verts[f].size(); i++)
       {
-        *output.at(f) << this->verts[i]->pos().x << " "
-          << this->verts[i]->pos().y << " "
-          << this->verts[i]->pos().z << std::endl;
+        *output.at(f) << pruned_verts[f][i].x << " "
+          << pruned_verts[f][i].y << " "
+          << pruned_verts[f][i].z << std::endl;
       }
       size_t num_tets = numTetsPerMat.at(f);
       *output.at(f) << "POLYGONS " << num_tets*4 << " "
@@ -1379,21 +1474,146 @@ namespace cleaver
     {
       Tet* t = this->tets.at(f);
 
-      size_t v1 = t->verts[0]->tm_v_index;
-      size_t v2 = t->verts[1]->tm_v_index;
-      size_t v3 = t->verts[2]->tm_v_index;
-      size_t v4 = t->verts[3]->tm_v_index;
+      Vertex *v1 = t->verts[0];
+      Vertex *v2 = t->verts[1];
+      Vertex *v3 = t->verts[2];
+      Vertex *v4 = t->verts[3];
+      unsigned int i1 = vert_maps[t->mat_label].find(v1->pos())->second;
+      unsigned int i2 = vert_maps[t->mat_label].find(v2->pos())->second;
+      unsigned int i3 = vert_maps[t->mat_label].find(v3->pos())->second;
+      unsigned int i4 = vert_maps[t->mat_label].find(v4->pos())->second;
 
-      *output.at(t->mat_label) << 3 << " " << v1 <<  " " << v2 << " " << v3 << "\n";
-      *output.at(t->mat_label) << 3 << " " << v2 <<  " " << v3 << " " << v4 << "\n";
-      *output.at(t->mat_label) << 3 << " " << v3 <<  " " << v4 << " " << v1 << "\n";
-      *output.at(t->mat_label) << 3 << " " << v4 <<  " " << v1 << " " << v2 << "\n";
+      *output.at(t->mat_label) << 3 << " " << i1 <<  " " << i2 << " " << i3 << "\n";
+      *output.at(t->mat_label) << 3 << " " << i2 <<  " " << i3 << " " << i4 << "\n";
+      *output.at(t->mat_label) << 3 << " " << i3 <<  " " << i4 << " " << i1 << "\n";
+      *output.at(t->mat_label) << 3 << " " << i4 <<  " " << i1 << " " << i2 << "\n";
     }
     //CLOSE
     for(size_t i=0; i < numTetsPerMat.size(); i++) {
       (*output.at(i)).close();
       delete output.at(i);
     }
+  }
+
+  //==================================================================
+  //
+  //==================================================================
+  void TetMesh::writeVtkUnstructuredGrid(const std::string &filename, bool verbose)
+  {
+    std::string filepath = filename + ".vtk";
+    std::ofstream output(filepath.c_str(), std::ios::out | std::ios::binary);
+    if(verbose)
+      std::cout << "Writing mesh vtk file: " << filepath << std::endl;
+    //-----------------------------------
+    //         Create Pruned Vertex List
+    //-----------------------------------
+    VertMap vert_map;
+    std::vector<vec3> pruned_verts;
+    unsigned int pruned_pos = 0;
+    for(size_t t=0; t < this->tets.size(); t++) {
+      Tet* tet = this->tets[t];
+
+      Vertex *v1 = tet->verts[0];
+      Vertex *v2 = tet->verts[1];
+      Vertex *v3 = tet->verts[2];
+      Vertex *v4 = tet->verts[3];
+
+      vec3 p1 = v1->pos();
+      vec3 p2 = v2->pos();
+      vec3 p3 = v3->pos();
+      vec3 p4 = v4->pos();
+
+      if (!vert_map.count(p1)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p1,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p1);
+      }
+      if (!vert_map.count(p2)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p2,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p2);
+      }
+      if (!vert_map.count(p3)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p3,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p3);
+      }
+      if (!vert_map.count(p4)) {
+        vert_map.insert(std::pair<vec3,unsigned int>(p4,pruned_pos));
+        pruned_pos++;
+        pruned_verts.push_back(p4);
+      }
+    }
+
+    //-----------------------------------
+    //         Write Header
+    //-----------------------------------
+    output << "# vtk DataFile Version 2.0\n";
+    output << filepath << " Tet Mesh\n";
+    output << "ASCII\n";
+    output << "DATASET UNSTRUCTURED_GRID\n";
+    output << "POINTS " << pruned_verts.size() << " float\n";
+    //-----------------------------------
+    //         Write Vertex List
+    //-----------------------------------
+    for(size_t i=0; i < pruned_verts.size(); i++)
+    {
+      output << pruned_verts[i].x << " "
+        << pruned_verts[i].y << " "
+        << pruned_verts[i].z << std::endl;
+    }
+
+    //-----------------------------------
+    //         Write Cell/Face List
+    //-----------------------------------
+    // \todo make writing background optional
+    output << "CELLS " << this->tets.size() << " " << this->tets.size()*5 << "\n";
+    for(size_t f=0; f < this->tets.size(); f++)
+    {
+      Tet* t = this->tets.at(f);
+
+      Vertex* v1 = t->verts[0];
+      Vertex* v2 = t->verts[1];
+      Vertex* v3 = t->verts[2];
+      Vertex* v4 = t->verts[3];
+      unsigned int i1 = vert_map.find(v1->pos())->second;
+      unsigned int i2 = vert_map.find(v2->pos())->second;
+      unsigned int i3 = vert_map.find(v3->pos())->second;
+      unsigned int i4 = vert_map.find(v4->pos())->second;
+      output << 4 << " " << i1 <<  " " << i2 << " " << i3 << " " << i4 << "\n";
+    }
+
+    output << "CELL_TYPES " << this->tets.size() << "\n";
+    for(size_t f=0; f < this->tets.size(); f++)
+    {
+      Tet* t = this->tets.at(f);
+      output << 10 << "\n";
+    }
+
+    //-----------------------------------
+    //         Write Labels
+    //-----------------------------------
+    output << "CELL_DATA " << this->tets.size() << "\n";
+    output << "SCALARS labels int 1\n";
+    output << "LOOKUP_TABLE default\n";
+    for(size_t f=0; f < this->tets.size(); f++)
+    {
+      Tet* t = this->tets.at(f);
+      output << (int)t->mat_label << "\n";
+    }
+
+    /* \todo make optional
+    output << "POINT_DATA " << this->verts.size() << "\n";
+    output << "SCALARS labels int 1\n";
+    output << "LOOKUP_TABLE default\n";
+    for(size_t f=0; f < this->verts.size(); f++)
+    {
+      Vertex* v = this->verts.at(f);
+      output << (int)v->label << "\n";
+    }*/
+
+    //CLOSE
+    output.close();
   }
 
   //==================================================================

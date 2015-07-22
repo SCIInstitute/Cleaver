@@ -17,7 +17,7 @@ public:
     void removeMesh(cleaver::TetMesh *mesh);
 
     void addField(cleaver::AbstractScalarField *field);
-    void removeField(cleaver::AbstractScalarField *field);
+    void removeField(cleaver::AbstractScalarField *field, bool ask = true);
 
     void addVolume(cleaver::Volume *volume);
     void removeVolume(cleaver::Volume *volume);

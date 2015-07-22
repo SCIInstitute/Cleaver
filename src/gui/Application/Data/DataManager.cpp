@@ -1,4 +1,7 @@
 #include "DataManager.h"
+#include <QMessageBox>
+#include <Cleaver/InverseField.h>
+#include <Cleaver/AbstractScalarField.h>
 
 DataManager::DataManager()
 {
@@ -41,10 +44,29 @@ void DataManager::addField(cleaver::AbstractScalarField *field)
     emit fieldListChanged();
 }
 
-void DataManager::removeField(cleaver::AbstractScalarField *field)
+void DataManager::removeField(cleaver::AbstractScalarField *field, bool ask_delete_volume)
 {
     std::vector<cleaver::AbstractScalarField*>::iterator iter;
+	bool deleteVolume = false;
+	bool addInverse = false;
+	if (m_fields.size() == 2 && ask_delete_volume) {
+		QMessageBox msgBox;
+		msgBox.setText("You are Removing too many fields");
+		msgBox.setInformativeText("Do you want remove the volume, or mesh one field?");
+		QPushButton *deleteVol = msgBox.addButton(tr("Remove Volume"), QMessageBox::DestructiveRole);
+		QPushButton *addInv = msgBox.addButton(tr("Mesh One"), QMessageBox::ActionRole);
+		QPushButton *cancel = msgBox.addButton(tr("Cancel"), QMessageBox::NoRole);
+		msgBox.exec();
 
+		if (msgBox.clickedButton() == reinterpret_cast<QAbstractButton*>(deleteVol)) {
+			deleteVolume = true;
+		} else if (msgBox.clickedButton() == reinterpret_cast<QAbstractButton*>(addInv)) {
+			addInverse = true;
+		} else if (msgBox.clickedButton() == reinterpret_cast<QAbstractButton*>(cancel)) {
+			return;
+		}
+	}
+	
     for(iter = m_fields.begin(); iter != m_fields.end(); iter++)
     {        
         // remove field if there's a match
@@ -59,6 +81,7 @@ void DataManager::removeField(cleaver::AbstractScalarField *field)
 
     // remove it from any volume's that have it
     std::vector<cleaver::Volume*>::iterator vol_iter;
+    cleaver::Volume *temp_volume = NULL;
     for(vol_iter = m_volumes.begin(); vol_iter != m_volumes.end(); vol_iter++)
     {
         cleaver::Volume *volume = *vol_iter;
@@ -66,8 +89,10 @@ void DataManager::removeField(cleaver::AbstractScalarField *field)
         // first check materials
         for(int m=0; m < volume->numberOfMaterials(); m++)
         {
-            if(volume->getMaterial(m) == field)
+            if(volume->getMaterial(m) == field) {
                 volume->removeMaterial(field);
+				temp_volume = volume;
+			}
         }
 
         // then check sizing field
@@ -76,7 +101,17 @@ void DataManager::removeField(cleaver::AbstractScalarField *field)
     }
 
     // finally free the memory
-    delete field;
+	//if (field)
+	//	delete field;
+
+	if (deleteVolume && temp_volume)
+		removeVolume(temp_volume);
+	if (addInverse && temp_volume) {
+		cleaver::AbstractScalarField* fld = new cleaver::InverseScalarField(m_fields[0]);
+		fld->setName(m_fields[0]->name() + "-inverse");
+		temp_volume->addMaterial(fld);
+		addField(fld);
+	}
 
 
     emit dataChanged();
@@ -87,7 +122,7 @@ void DataManager::removeField(cleaver::AbstractScalarField *field)
 }
 
 void DataManager::addVolume(cleaver::Volume *volume)
-{
+{	
     m_volumes.push_back(volume);
 
     emit dataChanged();
@@ -100,7 +135,12 @@ void DataManager::removeVolume(cleaver::Volume *volume)
 {
     std::vector<cleaver::Volume*>::iterator iter;
     for(iter = m_volumes.begin(); iter != m_volumes.end(); iter++)
-    {
+    {	
+		cleaver::Volume* vol = *iter;
+		while (vol->numberOfMaterials() > 0) {
+			this->removeField(vol->getMaterial(0),false);
+		}
+		this->removeField(vol->getSizingField(),false);
         // remove the volume if there's a match
         if(*iter == volume){
             iter = m_volumes.erase(iter);

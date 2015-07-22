@@ -39,36 +39,29 @@
 //  //-------------------------------------------------------------------
 //  //-------------------------------------------------------------------
 #include "cli_common.h"
-
-// Tests segmentation IO for CLI
-TEST(CLIRegressionTests, Segmentation) {
+TEST(CLIRegressionTests, VTKUSG) {
   //make sure there is a command interpreter
   ASSERT_EQ(0,(int)!(std::system(NULL)));
   //setup the line that calls the command line interface
-  std::string log = "segmentation_output.txt";
+  std::string log = "vtk_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string option = " --scale 0.5 -S -P " + scirun;
-  std::string line = (command + name + path + option + seg_input + output);
+  std::string line = (command + name + path + 
+      " --output_format vtkUSG " + input + output);
   //make sure there was no error from the command line
   ASSERT_EQ(0, std::system(line.c_str()));
   //move the other generated files in the current dir to the test dir
-  for(size_t i = 0; i < num_files; i++) {
+  for(size_t i = 0; i < num_files - 4; i++) {
     system_execute(MV_CMMD,files[i] + " " + data_dir);
   }
   //compare all of the related files
-  EXPECT_NO_FATAL_FAILURE(compareNodeFiles(
-        data_dir + "segmentation/output.node",
-        data_dir + "output.node"));
-  EXPECT_NO_FATAL_FAILURE(compareEleFiles(
-        data_dir + "segmentation/output.ele",
-        data_dir + "output.ele"));
+  EXPECT_NO_FATAL_FAILURE(compareVTKFiles(
+        data_dir + "vtkusg/output.vtk",
+        data_dir + "output.vtk"));
   //delete the output files from this test
   for(size_t i = 0; i < num_files - 4; i++) {
     system_execute(RM_CMMD,data_dir + files[i]);
   }
   system_execute(RM_CMMD,data_dir + "output.info");
-  system_execute(RM_CMMD,data_dir + "output.node");
-  system_execute(RM_CMMD,data_dir + "output.ele");
+  system_execute(RM_CMMD,data_dir + "output.vtk");
   system_execute(RM_CMMD,data_dir + log);
-  system_execute(RMDIR_CMMD,data_dir + "input/*material_fields");
 }

@@ -65,6 +65,7 @@ extern std::string command;
 extern std::string name; 
 extern std::string path; 
 extern std::string input; 
+extern std::string scirun;
 extern std::string seg_input; 
 extern std::string files[num_files]; 
 

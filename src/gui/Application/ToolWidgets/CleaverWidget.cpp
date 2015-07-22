@@ -58,7 +58,8 @@ void CleaverWidget::focus(QMdiSubWindow* subwindow)
 
 void CleaverWidget::clear()
 {
-    //
+	this->ui->createMeshButton->setEnabled(false);
+	resetCheckboxes();
 }
 
 

@@ -35,6 +35,7 @@ MainWindow::MainWindow(const QString &title)
 
   // Create Data Manager
   m_dataManager = new DataManager();
+  connect(m_dataManager, SIGNAL(volumeRemoved()), this, SLOT(closeSubWindow()));
 
   // Create Menus/Windows
   createDockWindows();
@@ -96,27 +97,16 @@ void MainWindow::createActions()
   importMeshAct->setShortcut(tr("Ctrl+m"));
   connect(importMeshAct, SIGNAL(triggered()), this, SLOT(importMesh()));
 
-  closeAct = new QAction(tr("&Close"), this);
-  connect(closeAct, SIGNAL(triggered()), this, SLOT(closeSubWindow()));
-  closeAct->setDisabled(true);
-  closeAct->setShortcut(tr("Ctrl+c"));
-
-  closeAllAct = new QAction(tr("Close &All"), this);
-  connect(closeAllAct, SIGNAL(triggered()), this, SLOT(closeAllSubWindows()));
+  closeAllAct = new QAction(tr("Clear Data"), this);
+  connect(closeAllAct, SIGNAL(triggered()), this, SLOT(closeAllSubWindowsAndDelete()));
   closeAllAct->setDisabled(true);
-  closeAllAct->setShortcut(tr("Ctrl+x"));
+  closeAllAct->setShortcut(tr("Ctrl+d"));
 
   exportAct = new QAction(tr("&Export Mesh"), this);
   exportAct->setShortcut(tr("Ctrl+S"));
   exportAct->setDisabled(true);
   connect(exportAct, SIGNAL(triggered()), this, SLOT(exportMesh()));
-
-  /*exportAct2 = new QAction(tr("&Export Field"), this); //TODO do we want this?
-    exportAct2->setShortcut(tr("Ctrl+n"));
-    exportAct2->setDisabled(true);
-    connect(exportAct2, SIGNAL(triggered()), this, SLOT(exportField()));*/
-
-
+  
   exitAct = new QAction(tr("E&xit"), this);
   exitAct->setShortcut(tr("Ctrl+Q"));
   connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
@@ -170,7 +160,6 @@ void MainWindow::createMenus()
   m_computeMenu = new QMenu(tr("&Compute"), this);
   m_viewMenu = new QMenu(tr("&View"), this);
   m_toolsMenu = new QMenu(tr("&Tools"), this);
-  m_windowsMenu = new QMenu(tr("&Windows"), this);
   m_helpMenu = new QMenu(tr("&Help"), this);
 
   // File Menu Actions
@@ -181,7 +170,7 @@ void MainWindow::createMenus()
   m_fileMenu->addAction(exportAct);
   //m_fileMenu->addAction(exportAct2);
   m_fileMenu->addSeparator();
-  m_fileMenu->addAction(closeAct);
+  //m_fileMenu->addAction(closeAct);
   m_fileMenu->addAction(closeAllAct);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(exitAct);
@@ -215,7 +204,6 @@ void MainWindow::createMenus()
   menuBar()->addMenu(m_computeMenu);
   menuBar()->addMenu(m_viewMenu);
   menuBar()->addMenu(m_toolsMenu);
-  menuBar()->addMenu(m_windowsMenu);
   menuBar()->addMenu(m_helpMenu);
 }
 
@@ -322,6 +310,8 @@ MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
 //*********************END custom file dialog
 void MainWindow::importVolume()
 {
+  while(this->m_dataManager->volumes().size() > 0)
+	this->m_dataManager->removeVolume(this->m_dataManager->volumes()[0]);
   QStringList fileNames;
 #if USE_BIOMESH_SEGMENTATION
   MyFileDialog dialog(this, tr("Select Indicator Functions"),
@@ -554,14 +544,15 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   std::string name = mesh->name == "" ? "Untitled" : mesh->name;
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"),
       (lastPath_ + "/" + name).c_str(),
-      tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat);;VTK (*.vtk)"), &selectedFilter);
+      tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat);;VTK Poly (*.vtk);;VTK Unstructured Grid (*.vtk)"), &selectedFilter);
 
 
   QString filter1("Tetgen (*.node)");
   QString filter2("SCIRun (*.pts)");
   QString filter3("Surface PLY (*.ply)");
   QString filter4("Matlab (*.mat)");
-  QString filter5("VTK (*.vtk)");
+  QString filter5("VTK Unstructured Grid (*.vtk)");
+  QString filter6("VTK Poly (*.vtk)");
 
   std::string f = fileName.toStdString();
   f = f.substr(0,f.rfind("."));
@@ -580,6 +571,9 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   }
   else if(selectedFilter == filter5){
     mesh->writeVtkUnstructuredGrid(f, true);
+  }
+  else if(selectedFilter == filter6){
+    mesh->writeVtkPolyData(f, true);
   }
   if (fileName != "") {
     std::string file1 = fileName.toStdString();
@@ -620,56 +614,11 @@ void MainWindow::loadCamera()
   }
 }
 
-void MainWindow::closeSubWindow()
-{
-  MeshWindow *win = activeWindow();
-  //    if(win && win->mesh()) {
-  //        m_dataManager->removeMesh(win->mesh());
-  //    }
-  //    if(win && win->volume()) {
-  //        m_dataManager->removeField(win->volume()->getSizingField());
-  //        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
-  //            m_dataManager->removeField(win->volume()->getMaterial(i));
-  //        m_dataManager->removeVolume(win->volume());
-  //    }
-  m_workspace->closeActiveSubWindow();
-  m_iNumOpenWindows--;
-
-}
-
 void MainWindow::closeSubWindow(MeshWindow *win)
 {
-  if(!win) return;
-  //    if(win->mesh()) {
-  //        m_dataManager->removeMesh(win->mesh());
-  //    }
-  //    if(win->volume()) {
-  //        m_dataManager->removeField(win->volume()->getSizingField());
-  //        for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
-  //            m_dataManager->removeField(win->volume()->getMaterial(i));
-  //        m_dataManager->removeVolume(win->volume());
-  //    }
   m_workspace->closeActiveSubWindow();
   m_iNumOpenWindows--;
-
-}
-
-void MainWindow::closeAllSubWindows()
-{
-  MeshWindow *win = NULL;
-  while((win = activeWindow())) {
-    if(!win) continue;
-    //        if(win->volume()) {
-    //            m_dataManager->removeField(win->volume()->getSizingField());
-    //            for(size_t i = 0; i < std::max(win->volume()->numberOfMaterials(),2); i++)
-    //                m_dataManager->removeField(win->volume()->getMaterial(i));
-    //            m_dataManager->removeVolume(win->volume());
-    //        } else if(win->mesh()) {
-    //            m_dataManager->removeMesh(win->mesh());
-    //        }
-    m_workspace->closeActiveSubWindow();
-    m_iNumOpenWindows--;
-  }
+  this->m_cleaverWidget->clear();
 }
 
 void MainWindow::focus(QMdiSubWindow *subwindow)
@@ -733,13 +682,11 @@ void MainWindow::createWindow(cleaver::Volume *volume, const QString &title)
     QMdiSubWindow *sw = m_workspace->addSubWindow(window);
     window->setAttribute(Qt::WA_DeleteOnClose);
     window->showMaximized();
-    closeAct->setEnabled(true);
     closeAllAct->setEnabled(true);
 
     QAction *windowAct = new QAction(title, window);
     connect(windowAct, SIGNAL(triggered()), window, SLOT(setFocus()));
     connect(window, SIGNAL(closed(MeshWindow*)), this, SLOT(closeSubWindow(MeshWindow*)));
-    m_windowsMenu->addAction(windowAct);
     m_iNumOpenWindows++;
 
     m_workspace->setActiveSubWindow(sw);
@@ -750,7 +697,6 @@ void MainWindow::enableMeshedVolumeOptions() {
 
   MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(true);
   MainWindow::instance()->exportAct->setEnabled(true);
-  //MainWindow::instance()->exportAct2->setEnabled(true);
 }
 
 void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)
@@ -762,13 +708,11 @@ void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)
     QMdiSubWindow *sw = m_workspace->addSubWindow(window);
     window->setAttribute(Qt::WA_DeleteOnClose);
     window->showMaximized();
-    closeAct->setEnabled(true);
     closeAllAct->setEnabled(true);
 
     QAction *windowAct = new QAction(title, window);
     connect(windowAct, SIGNAL(triggered()), window, SLOT(setFocus()));
     connect(window, SIGNAL(closed(MeshWindow*)), this, SLOT(closeSubWindow(MeshWindow*)));
-    m_windowsMenu->addAction(windowAct);
     m_iNumOpenWindows++;
 
     m_workspace->setActiveSubWindow(sw);

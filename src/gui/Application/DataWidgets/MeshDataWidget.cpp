@@ -306,17 +306,15 @@ void MeshDataWidget::mousePressEvent(QMouseEvent *event)
     {
         QMenu contextMenu;
         QAction *exportAction = contextMenu.addAction("Export Mesh");
-//        QAction *deleteAction = contextMenu.addAction("Delete Mesh");
+        QAction *deleteAction = contextMenu.addAction("Delete Mesh");
         QAction *renameAction = contextMenu.addAction("Rename Mesh");
 
         QAction *selectedItem = contextMenu.exec(mapToGlobal(event->pos()));
         if(selectedItem)
         {
-//            if(selectedItem == deleteAction) {
-//                MainWindow::dataManager()->removeMesh(this->mesh);
-//            }
-//            else
-            if(selectedItem == renameAction){
+            if(selectedItem == deleteAction) {
+                MainWindow::dataManager()->removeMesh(this->mesh);
+            } else if(selectedItem == renameAction){
 
                 QDialog dialog;
                 dialog.setWindowTitle("Rename Mesh");

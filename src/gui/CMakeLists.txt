@@ -120,14 +120,21 @@ elseif(${QT_VERSION} MATCHES "4")
   QT4_ADD_RESOURCES(RCC_SRC ${RCC_FILES})
 endif()
 
+
+#icon
+# For Apple set the icns file containing icons
+IF(APPLE)
+  # set how it shows up in the Info.plist file
+  SET(MACOSX_BUNDLE_ICON_FILE cleaverIcon.icns) 
+  # set where in the bundle to put the icns file
+  SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+  # include the icns file in the target
+  SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
+ENDIF(APPLE)
+
 ADD_CUSTOM_TARGET(comp_shaders
   DEPENDS ${default_vertex_shader} ${default_fragment_shader})
-if(APPLE)
-  ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
-else()
-  ADD_EXECUTABLE(cleaver-gui ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
-endif()
-
+  ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE WIN32 ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC} ${vert} ${frag} ${vf_h})
 if(${QT_VERSION} MATCHES "5")
   if(WIN32)
     TARGET_LINK_LIBRARIES(cleaver-gui
@@ -193,3 +200,8 @@ ADD_DEPENDENCIES(cleaver-gui comp_shaders)
 if (USE_SEGMENTATION_TOOLS)
   target_link_libraries(cleaver-gui seg_tools)
 endif()
+
+INSTALL(TARGETS cleaver-gui
+    BUNDLE DESTINATION . COMPONENT Runtime
+    RUNTIME DESTINATION bin COMPONENT Runtime
+    )

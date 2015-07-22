@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/icons">
         <file>Icons/Info.png</file>
+        <file>Icons/cleaverIcon.png</file>
         <file>Icons/InfoOff.png</file>
         <file>Icons/Visible.png</file>
         <file>Icons/VisibleGray.png</file>
