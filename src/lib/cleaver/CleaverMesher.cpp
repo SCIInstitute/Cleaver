@@ -5284,6 +5284,12 @@ void CleaverMesherImp::conformQuadruple(Tet *tet, Vertex *warpVertex, const vec3
 
     double L1 = lambda.x + lambda.y + lambda.z + lambda_w;
     lambda /= L1;
+	if ((fabs(lambda.x - 0.5) > 0.5 + EPS ) || 
+		(fabs(lambda.y - 0.5) > 0.5 + EPS ) || 
+		(fabs(lambda.z - 0.5) > 0.5 + EPS ) || 
+		(fabs((1.0 - (lambda.x + lambda.y + lambda.z)) - 0.5) > 0.5 + EPS ) ) {
+			std::cout << "WARNING : Quadruple point failed to snap into the tet!" << std::endl;
+	}
 
     // Compute New Triple Coordinate
     quadruple.x = lambda.x*v1.x + lambda.y*v2.x + lambda.z*v3.x + (1.0 - (lambda.x + lambda.y + lambda.z))*v4.x;
@@ -5796,7 +5802,7 @@ Tet* CleaverMesherImp::getInnerTet(HalfFace *face, Vertex *vertex, const vec3 &w
 
     std::vector<Tet*> tets = m_bgMesh->tetsAroundFace(face);
 
-    // if on boundary, return only neighbor tet  (added Mar 14/2003)
+    // if on boundary, return only neighbor tet  (added Mar 14/2013)
     if(tets.size() == 1)
         return tets[0];
 
