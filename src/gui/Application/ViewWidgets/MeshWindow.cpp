@@ -1316,7 +1316,10 @@ void MeshWindow::setVolume(cleaver::Volume *volume)
     }
     ((TrackballCamera*)m_camera)->setTargetBounds(m_volume->bounds());
     m_camera->reset();
-    updateGL();
+
+    if(init){
+        updateGL();
+    }
 }
 
 void MeshWindow::setup_vbos()
