@@ -1,26 +1,13 @@
 #ifndef MESHWINDOW_H
 #define MESHWINDOW_H
 
-// enable vertex buffer includes
-#define GL_GLEXT_PROTOTYPES
-
-#if defined(WIN32)
-#ifndef USING_QT5
-#include <GL/glew.h>
-#endif
-#endif
-
 #include <QGLWidget>
+#include <QOpenGLShaderProgram>
 #include <Cleaver/CleaverMesher.h>
 #include <Cleaver/TetMesh.h>
 #include <Cleaver/Volume.h>
 #include "Camera.h"
 #include <QMatrix4x4>
-#if defined(WIN32)
-#ifdef USING_QT5
-#include <GL/glext.h>
-#endif
-#endif
 
 enum StarMode { NoStar, VertexStar, EdgeStar, FaceStar };
 
@@ -132,10 +119,6 @@ private:
 
     QMatrix4x4 m_savedViewMatrix;
 
-    GLuint m_cutVBO;
-    GLuint m_violVBO;
-    GLuint m_meshVBO[3];
-
     GLuint m_meshVertexCount;
     GLuint m_cutVertexCount;
     GLuint m_violVertexCount;
@@ -173,9 +156,8 @@ private:
     void drawEdgeStar(int e);
     void drawFaceStar(int f);
 
-    GLenum program;
-    GLenum vertex_shader;
-    GLenum fragment_shader;    
+    QOpenGLShaderProgram program_;
+    QOpenGLBuffer meshVBO_[3], cutVBO_, violVBO_;
     bool init;
 
 protected:

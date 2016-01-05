@@ -47,7 +47,7 @@
 #endif
 
 #include <iostream>
-
+#include <algorithm>
 
 #ifdef min
 #undef min

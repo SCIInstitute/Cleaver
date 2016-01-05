@@ -31,7 +31,6 @@ if(${QT_VERSION} MATCHES "5")
   include_directories(${Qt5OpenGL_INCLUDE_DIRS})
   include_directories(${Qt5Core_INCLUDE_DIRS})
   include_directories(${Qt5Gui_INCLUDE_DIRS})
-  include_directories(${GLEXT_INCLUDE_DIR})
 
   #defines
   add_definitions(${Qt5Widgets_DEFINITIONS})
@@ -149,7 +148,6 @@ if(${QT_VERSION} MATCHES "5")
       Qt5::Core
       Qt5::Gui
       Qt5::WinMain
-      ${GLEXT_LIBRARY}
       ${QT_QTMAIN_LIBRARY}
       )
   else()

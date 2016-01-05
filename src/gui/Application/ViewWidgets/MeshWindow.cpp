@@ -47,7 +47,7 @@ const char* starModeString[4] = {"No-Star Mode","Vertex-Star Mode", "Edge-Star M
 extern std::vector<cleaver::vec3> badEdges;
 
 MeshWindow::MeshWindow(QObject *parent) :
-  QGLWidget(QGLFormat(QGL::SampleBuffers), qobject_cast<QWidget *>(parent))
+QGLWidget(QGLFormat(QGL::SampleBuffers), qobject_cast<QWidget *>(parent)), program_(this)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
     this->setMouseTracking(true);
@@ -175,31 +175,23 @@ void MeshWindow::initializeShaders()
 
 
     // Create Shader And Program Objects
-    program = glCreateProgram();
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER_ARB);
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER_ARB);
-
-    // Load Shader Sources
-    glShaderSource(vertex_shader, 1, &vertex_shader_source, (const GLint *) &default_vert_len);
-    glShaderSource(fragment_shader, 1, &fragment_shader_source, (const GLint *) &default_frag_len);
-
-    // Compile The Shaders
-    glCompileShader(vertex_shader);
-    glCompileShader(fragment_shader);
-
-    // Attach The Shader Objects To The Program Object
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-
-    // Link The Program Object
-    glLinkProgram(program);
-
-    GLsizei bufferSize = 255;
-    GLsizei length = 0;
-    GLchar *infoLogBuffer = new GLchar[bufferSize];
-    glGetProgramInfoLog(program, bufferSize, &length, infoLogBuffer);
-
-    std::cout << infoLogBuffer << std::endl;
+    QOpenGLShader vshader(QOpenGLShader::Vertex); 
+    if (!vshader.compileSourceCode(vertex_shader_source)) {
+      qWarning() << vshader.log();
+    }
+    if (!this->program_.addShader(&vshader)) {
+      qWarning() << this->program_.log();
+    }
+    QOpenGLShader fshader(QOpenGLShader::Fragment);
+    if (!fshader.compileSourceCode(fragment_shader_source)) {
+      qWarning() << fshader.log();
+    }
+    if (!this->program_.addShader(&fshader)) {
+      qWarning() << this->program_.log();
+    }
+    if (!this->program_.link()) {
+      qWarning() << this->program_.log();
+    }
 }
 
 void MeshWindow::initializeGL()
@@ -803,7 +795,7 @@ void MeshWindow::initializeSSAO()
 
 void MeshWindow::drawFacesWithSSAO()
 {
-    GLuint framebufferID = 0;
+   /* GLuint framebufferID = 0;
     GLuint colorTextureID = 0;
 
 
@@ -819,11 +811,11 @@ void MeshWindow::drawFacesWithSSAO()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);            // Clear Screen And Depth Buffer on the fbo to red
     glLoadIdentity();                                              // Reset The Modelview Matrix
 
-    /*
-    gluLookAt(m_camera->e().x, m_camera->e().y, m_camera->e().z,
-              m_camera->t().x, m_camera->t().y, m_camera->t().z,
-              m_camera->u().x, m_camera->u().y, m_camera->u().z);
-    */
+    
+    //gluLookAt(m_camera->e().x, m_camera->e().y, m_camera->e().z,
+    //          m_camera->t().x, m_camera->t().y, m_camera->t().z,
+    //          m_camera->u().x, m_camera->u().y, m_camera->u().z);
+   
 
     drawFaces();
 
@@ -845,7 +837,7 @@ void MeshWindow::drawFacesWithSSAO()
 
     // draw screen aligned quad
 
-    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);*/
 }
 
 void MeshWindow::drawEdges()
@@ -865,22 +857,9 @@ void MeshWindow::drawEdges()
     glVertexPointer(3, GL_FLOAT, 0, 0);
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    /*
-    if(m_mesher->samplingDone() && !m_bShowFaces){
-        glBindBuffer(GL_ARRAY_BUFFER, m_meshVBO[COLOR_OBJECT]);
-        glColorPointer(3, GL_INT, 0, 0);
-        glEnableClientState(GL_COLOR_ARRAY);
-    }
-    */
-
     // Draw The Triangles
     glDrawArrays(GL_TRIANGLES, 0, m_meshVertexCount);
 
-    /*
-    if(m_mesher->samplingDone() && !m_bShowFaces){
-        glDisableClientState(GL_COLOR_ARRAY);       // deactivate color array
-    }
-    */
     glDisableClientState(GL_VERTEX_ARRAY);      // deactivate vertex array
 
 
@@ -1383,15 +1362,6 @@ void MeshWindow::update_vbos()
         else
             build_bkgrnd_vbos();
     }
-
-    // now update data to send to shader
-    /*
-    if(m_vertexData)
-        delete []m_vertexData;
-    m_vertexData = new float[m_meshVertexCount];
-    for(int i=0; i < m_meshVertexCount; i++)
-        m_vertexData[m_meshVertexCount] = (float)i;
-    */    
 
 }
 
