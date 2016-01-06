@@ -3,6 +3,8 @@
 
 #include <QGLWidget>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLBuffer>
+#include <QOpenGLVertexArrayObject>
 #include <Cleaver/CleaverMesher.h>
 #include <Cleaver/TetMesh.h>
 #include <Cleaver/Volume.h>
@@ -24,6 +26,8 @@ public:
     void saveView();
     void loadView();
     void updateMesh();
+    QVector3D screenToBall(const QVector2D &s);
+    double angleBetween(const QVector3D &v1, const QVector3D &v2);
     
     QSize sizeHint() const;
 
@@ -41,14 +45,14 @@ public:
         m_colorUpdate = true;}
     void setClippingPlaneVisible(bool value){ m_bShowClippingPlane = value; }
     void setClipping(bool value){ m_bClipping = value; update_vbos(); }
-    void setClippingPlane(float plane[4]){ memcpy(m_4fvClippingPlane, plane, 4*sizeof(float)); if(!m_bShowClippingPlane || m_bSyncedClipping) update_vbos();}
-    void setCamera(Camera *camera){ m_camera = camera; }
+    void setClippingPlane(float plane[4]){
+      memcpy(m_4fvClippingPlane, plane, 4*sizeof(float)); 
+      if(!m_bShowClippingPlane || m_bSyncedClipping) 
+        update_vbos();
+    }
+
     void setMaterialFaceLock(int m, bool value){ m_bMaterialFaceLock[m] = value; }
     void setMaterialCellLock(int m, bool value){ m_bMaterialCellLock[m] = value; }
-
-
-    //void setClippingPlane(float plane[4]){ memcpy(m_4fvClippingPlane, plane, 4*sizeof(float)); update_vbos();}
-    //void setClipping(bool value){ m_bClipping = value; update_vbos(); }
 
     //-- acccessors
     bool axisVisible(){ return m_bShowAxis; }
@@ -77,10 +81,8 @@ private:
     cleaver::TetMesh *m_mesh;
     cleaver::Volume  *m_volume;
     cleaver::BoundingBox m_dataBounds;
-    Camera *m_camera;
+    QMatrix4x4 rotateMatrix_, cameraMatrix_;
     int m_width, m_height;
-    float m_zoom, m_x_trans, m_y_trans;
-
 
     StarMode m_starmode;
     int m_currentVertex;
@@ -117,12 +119,6 @@ private:
     float m_4fvCutsColor[4];
     float m_4fvClippingPlane[4];
 
-    QMatrix4x4 m_savedViewMatrix;
-
-    GLuint m_meshVertexCount;
-    GLuint m_cutVertexCount;
-    GLuint m_violVertexCount;
-
     void drawOTCell(cleaver::OTCell *node);
     void drawTree();
     void drawFaces();
@@ -135,13 +131,6 @@ private:
     // draw violation regions around vertices
     void drawViolationPolytopesForVertices();
     void drawViolationPolytopeForVertex(int v);
-    //void drawSafetyPolytopes();
-
-    // experimental
-    void initializeSSAO();
-    void drawFacesWithSSAO();
-
-    //void printModelViewProjection();
     void dumpSVGImage(const std::string &filename);
 
 
@@ -156,14 +145,15 @@ private:
     void drawEdgeStar(int e);
     void drawFaceStar(int f);
 
-    QOpenGLShaderProgram program_;
-    QOpenGLBuffer meshVBO_[3], cutVBO_, violVBO_;
+    QOpenGLShaderProgram faceProg_, edgeProg_;
+    QOpenGLBuffer * faceVBO_, *edgeVBO_, *cutVBO_, *violVBO_;
+    QOpenGLVertexArrayObject * faceVAO_, *edgeVAO_, *cutVAO_, *violVAO_;
+    std::vector<float> faceData_, edgeData_, cutData_, violData_;
     bool init;
 
 protected:
 
     void initializeOptions();
-    void initializeCamera();
     void initializeShaders();
     void initializeGL();
     void paintGL();

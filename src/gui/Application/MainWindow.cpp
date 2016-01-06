@@ -98,7 +98,6 @@ void MainWindow::createActions()
   connect(importMeshAct, SIGNAL(triggered()), this, SLOT(importMesh()));
 
   closeAllAct = new QAction(tr("Clear Data"), this);
-  connect(closeAllAct, SIGNAL(triggered()), this, SLOT(closeAllSubWindowsAndDelete()));
   closeAllAct->setDisabled(true);
   closeAllAct->setShortcut(tr("Ctrl+d"));
 
@@ -276,6 +275,7 @@ class MyFileDialog : public QFileDialog
     MyFileDialog(QWidget *, const QString& a,
         const QString& b, const QString& c);
     bool isSegmentation();
+    QSize sizeHint() const;
   private:
     QCheckBox *segmentation_check_;
 };
@@ -306,6 +306,13 @@ MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
   // and span all columns
   mainLayout->addLayout( hbl, numRows,0,1,-1);
 }
+
+
+QSize MyFileDialog::sizeHint() const
+{
+  return this->maximumSize();
+}
+
 #endif
 //*********************END custom file dialog
 void MainWindow::importVolume()

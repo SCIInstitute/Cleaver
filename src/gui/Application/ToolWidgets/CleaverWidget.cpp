@@ -7,13 +7,8 @@
 #include <Cleaver/Timer.h>
 #include <Cleaver/SizingFieldCreator.h>
 #include <iostream>
-#ifdef USING_QT5
 #include <QApplication>
 #include <QProgressDialog>
-#else
-#include <QtGui/QApplication>
-#endif
-
 
 CleaverWidget::CleaverWidget(QWidget *parent) :
     QDockWidget(parent),
