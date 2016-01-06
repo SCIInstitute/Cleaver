@@ -13,6 +13,7 @@
 #include "Shaders/Shaders.h"
 #include <QMatrix4x4>
 #include "MainWindow.h"
+#include <array>
 #include <boost/math/special_functions/fpclassify.hpp>
 
 
@@ -31,8 +32,6 @@ enum
 };
 
 static bool ctrl_down = false;
-float DefaultBBoxColor[4] = { 0, 0, 0, 1.0 };
-float DefaultCutsColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 float color_for_label[][4] = { { 0.0f, 174 / 255.0f, 239 / 255.0f, 1.0f },   // label 0
 { 0.0f, 166 / 255.0f, 81 / 255.0f, 1.0f },   // label 1
 { 1.0f, 242 / 255.0f, 0.0f, 1.0f },         // label 2
@@ -48,7 +47,8 @@ extern std::vector<cleaver::vec3> badEdges;
 
 MeshWindow::MeshWindow(QObject *parent) :
 QGLWidget(QGLFormat(QGL::SampleBuffers), qobject_cast<QWidget *>(parent)), 
-faceProg_(this), edgeProg_(this)
+faceProg_(this), edgeProg_(this), axisProg_(this),
+bboxVBO_(QOpenGLBuffer::VertexBuffer), bboxVAO_(this)
 {
   this->setAttribute(Qt::WA_DeleteOnClose);
   this->setMouseTracking(true);
@@ -66,12 +66,16 @@ faceProg_(this), edgeProg_(this)
 
 MeshWindow::~MeshWindow()
 {
+  this->faceVBO_->destroy();
+  this->faceVAO_->destroy();
+  this->edgeVBO_->destroy();
+  this->edgeVAO_->destroy();
   emit closed(this);
 }
 
 QSize MeshWindow::sizeHint() const
 {
-  return this->maximumSize();
+  return QSize(800, 600);
 }
 
 void MeshWindow::setDefaultOptions()
@@ -86,19 +90,113 @@ void MeshWindow::resetView()
     bb = m_volume->bounds();
   else
     bb = m_mesh->bounds;
+  //bbox lines
+  this->bboxData_.clear();
+  //origin to X
+  this->bboxData_.push_back(bb.origin.x);
+  this->bboxData_.push_back(bb.origin.y);
+  this->bboxData_.push_back(bb.origin.z);
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y);
+  this->bboxData_.push_back(bb.origin.z);
+  //origin to Y
+  this->bboxData_.push_back(bb.origin.x);
+  this->bboxData_.push_back(bb.origin.y);
+  this->bboxData_.push_back(bb.origin.z);
+  this->bboxData_.push_back(bb.origin.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z);
+  //origin to Z
+  this->bboxData_.push_back(bb.origin.x);
+  this->bboxData_.push_back(bb.origin.y);
+  this->bboxData_.push_back(bb.origin.z);
+  this->bboxData_.push_back(bb.origin.x);
+  this->bboxData_.push_back(bb.origin.y);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  //back to -X
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  this->bboxData_.push_back(bb.origin.x + 0);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  //back to -Y
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + 0);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  //back to -Z
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + 0);
+  //O + Y -> X
+  this->bboxData_.push_back(bb.origin.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z);
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + 0);
+  //O + Y -> Z
+  this->bboxData_.push_back(bb.origin.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z);
+  this->bboxData_.push_back(bb.origin.x + 0);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  //back - Y -> X
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + 0);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  this->bboxData_.push_back(bb.origin.x + 0);
+  this->bboxData_.push_back(bb.origin.y + 0);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  //back - Y -> Z
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + 0);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + 0);
+  this->bboxData_.push_back(bb.origin.z + 0);
+  //O + X -> Y
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + 0);
+  this->bboxData_.push_back(bb.origin.z + 0);
+  this->bboxData_.push_back(bb.origin.x + bb.size.x);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + 0);
+  //O + Z -> Y
+  this->bboxData_.push_back(bb.origin.x + 0);
+  this->bboxData_.push_back(bb.origin.y + 0);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+  this->bboxData_.push_back(bb.origin.x + 0);
+  this->bboxData_.push_back(bb.origin.y + bb.size.y);
+  this->bboxData_.push_back(bb.origin.z + bb.size.z);
+
+  if (this->init) {
+    //the 6 bb lines
+    this->edgeProg_.bind();
+    this->bboxVBO_.bind();
+    this->bboxVBO_.write(0, &this->bboxData_[0], static_cast<int>(
+      sizeof(GL_FLOAT) * this->bboxData_.size()));
+    this->bboxVBO_.release();
+    this->edgeProg_.release();
+  }
   this->cameraMatrix_ = this->rotateMatrix_ = QMatrix4x4();
-  float scale = 1. / std::max(bb.size.x, std::max(bb.size.y, bb.size.z));
-  QMatrix4x4 trans;
-  trans.translate(-bb.center().x, -bb.center().y, -bb.center().z);
-  this->cameraMatrix_ = trans * this->cameraMatrix_;
-  trans = QMatrix4x4();
-  trans.scale(scale);
-  this->cameraMatrix_ = trans * this->cameraMatrix_;
-  trans = QMatrix4x4();
-  trans.rotate(30, 1, 0, 0);
-  trans.rotate(-10, 0, 1, 0);
-  this->cameraMatrix_ = trans * this->cameraMatrix_;
-  this->rotateMatrix_ = trans;
+  this->cameraMatrix_.translate(-bb.center().x, -bb.center().y, -bb.center().z);
+  float scale = 0.5 / std::max(bb.size.x, std::max(bb.size.y, bb.size.z));
+  QMatrix4x4 scalemat;
+  scalemat.scale(scale);
+  this->cameraMatrix_ = scalemat * this->cameraMatrix_;
+  QMatrix4x4 rotmat;
+  rotmat.rotate(30, 1, 0, 0);
+  rotmat.rotate(-10, 0, 1, 0);
+  this->cameraMatrix_ = rotmat * this->cameraMatrix_;
+  this->rotateMatrix_ = rotmat;
 
   this->updateGL();
 }
@@ -148,9 +246,6 @@ void MeshWindow::initializeOptions()
   m_bImportedBeta = false;
   m_bLoadedView = false;
 
-  memcpy(m_4fvBBoxColor, DefaultBBoxColor, 4 * sizeof(float));
-  memcpy(m_4fvCutsColor, DefaultCutsColor, 4 * sizeof(float));
-
   // for adjacency visualization and debugging
   m_starmode = NoStar;
   m_currentVertex = 0;
@@ -164,31 +259,125 @@ void MeshWindow::initializeOptions()
 
 void MeshWindow::initializeShaders()
 {
-  std::string testV((const char *)default_vert);
-  std::string testF((const char *)default_frag);
-  std::string fs, vs;
+  //AXIS SETUP
+  std::string vs;
+  vs = "#version 330\n";
+  vs = vs + "layout (location = 0) in vec3 aPos;\n";
+  vs = vs + "layout (location = 1) in vec3 aColor;\n";
+  vs = vs + "uniform mat4 uRotation;\n";
+  vs = vs + "uniform float uAspect;\n";
+  vs = vs + "uniform float uWidth;\n";
+  vs = vs + "out vec4 oColor;\n";
+  vs = vs + "void main() {\n";
+  vs = vs + "  vec4 ans = uRotation * vec4(aPos.x, aPos.y, aPos.z ,1.0);\n";
+  vs = vs + "  gl_Position = vec4((.4 * ans.x * 300./uWidth - 1. + 200./uWidth), ";
+  vs = vs + "                .4 * ans.y * 300. * uAspect / uWidth + 1. - 200. ";
+  vs = vs + "                 * uAspect / uWidth,";
+  vs = vs + "                 0,1.);\n";
+  vs = vs + "  oColor = vec4(aColor,1.);\n";
+  vs = vs + "}\n";
+  QOpenGLShader vshader0(QOpenGLShader::Vertex);
+  if (!vshader0.compileSourceCode(vs.c_str())) {
+    qWarning() << vshader0.log();
+  }
+  if (!this->axisProg_.addShader(&vshader0)) {
+    qWarning() << this->axisProg_.log();
+  }
+  std::string fs;
+  fs = "in vec4 oColor;\n";
+  fs = fs + "void main() {\n";
+  fs = fs + "  gl_FragColor = oColor;\n";
+  fs = fs + "}\n";
+  QOpenGLShader fshader0(QOpenGLShader::Fragment);
+  if (!fshader0.compileSourceCode(fs.c_str())) {
+    qWarning() << fshader0.log();
+  }
+  if (!this->axisProg_.addShader(&fshader0)) {
+    qWarning() << this->axisProg_.log();
+  }
+  if (!this->axisProg_.link()) {
+    qWarning() << this->axisProg_.log();
+  }
+  //create VBO for the axis
+
+  std::array<float, 132> axis_data;
+  axis_data = { {
+    //aPos...           aColor...
+    // X
+    0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
+    1.f, 0.f, 0.f, 1.f, 0.f, 0.f,
+    1.2f, 0.2f, 0.f, 1.f, 0.f, 0.f,
+    1.4f, -0.2f, 0.f, 1.f, 0.f, 0.f,
+    1.4f, 0.2f, 0.f, 1.f, 0.f, 0.f,
+    1.2f, -0.2f, 0.f, 1.f, 0.f, 0.f,
+    // Y
+    0.f, 0.f, 0.f, 0.f, 1.f, 0.f,
+    0.f, 1.f, 0.f, 0.f, 1.f, 0.f,
+    0.0f, 1.2f, 0.f, 0.f, 1.f, 0.f,
+    0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
+    0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
+    0.1f, 1.6f, 0.f, 0.f, 1.f, 0.f,
+    0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
+    -0.1f, 1.6f, 0.f, 0.f, 1.f, 0.f,
+    // Z
+    0.f, 0.f, 0.f, 0.f, 0.f, 1.f,
+    0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    0.0f, 0.2f, 1.4f, 0.f, 0.f, 1.f,
+    0.0f, 0.2f, 1.2f, 0.f, 0.f, 1.f,
+    0.0f, 0.2f, 1.2f, 0.f, 0.f, 1.f,
+    0.0f, -0.2f, 1.4f, 0.f, 0.f, 1.f,
+    0.0f, -0.2f, 1.4f, 0.f, 0.f, 1.f,
+    0.0f, -0.2f, 1.2f, 0.f, 0.f, 1.f
+      } }; 
+  QOpenGLBuffer axis_vbo(QOpenGLBuffer::VertexBuffer);
+  axis_vbo.create();
+  axis_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+  if (!axis_vbo.bind()) {
+    qWarning() << "Could not bind shader program to context";
+  }
+  axis_vbo.allocate(&axis_data, sizeof(GL_FLOAT) * 132);
+
+  this->axisVAO_.create();
+  this->axisVAO_.bind();
+  this->axisProg_.enableAttributeArray(0);
+  this->axisProg_.enableAttributeArray(1);
+  this->axisProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 6);
+  this->axisProg_.setAttributeBuffer(1, GL_FLOAT, sizeof(GL_FLOAT) * 3, 3, sizeof(GL_FLOAT) * 6);
+
+  this->axisVAO_.release();
+  this->axisVAO_.release();
+  this->axisProg_.release();
+  //setup axis transform matrix and send down.
+  auto aspect = static_cast<float>(
+    this->width()) / static_cast<float>(this->height());
+  this->axisProg_.bind();
+  this->axisProg_.setUniformValue("uAspect", aspect);
+  this->axisProg_.setUniformValue("uWidth", static_cast<float>(
+    this->width()));
+  this->axisProg_.release();
+
   // face shaders
   vs = "#version 330\n";
   vs = vs + "layout (location = 0) in vec3 aPos;\n";
   vs = vs + "layout (location = 1) in vec3 aNormal;\n";
-  vs = vs + "layout (location = 2) in int aColor;\n";
+  vs = vs + "layout (location = 2) in vec3 aColor;\n";
   vs = vs + "uniform mat4 uProjection;\n";
   vs = vs + "uniform mat4 uTransform;\n";
   vs = vs + "out vec3 oPos;\n";
   vs = vs + "out vec3 oNormal;\n";
-  vs = vs + "flat out int oColor;\n";
+  vs = vs + "out vec3 oColor;\n";
   vs = vs + "void main() {\n";
-  vs = vs + "  vec4 ans = uTransform * vec4(aPos.x, aPos.y, aPos.z, 1.0); \n";
+  vs = vs + "  vec4 ans = uTransform * vec4(aPos.x, aPos.y,aPos.z,1.0);\n";
+  vs = vs + "  gl_Position = uProjection * vec4(ans.x,ans.y,ans.z - 2, 1.);\n ";
   vs = vs + "  oPos = ans.xyz;\n ";
-  vs = vs + "  gl_Position = uProjection * vec4(aPos / 30.,1.);\n//uProjection * ans;\n";
-  vs = vs + "  oColor = aColor;\n";
   vs = vs + "  oNormal = normalize((uTransform * vec4(aNormal,0.)).xyz);\n";
+  vs = vs + "  oColor = aColor;\n";
   vs = vs + "}\n";
   //fragment
   fs = "#version 330\n";
-  fs = fs + "flat in int oColor;\n";
-  fs = fs + "in vec3 oNormal;\n";
   fs = fs + "in vec3 oPos;\n";
+  fs = fs + "in vec3 oNormal;\n";
+  fs = fs + "in vec3 oColor;\n";
   fs = fs + "out vec4 fragColor;\n";
   //the main
   fs = fs + "void main() {\n";
@@ -202,13 +391,8 @@ void MeshWindow::initializeShaders()
   fs = fs + "  vec3 half_vector = normalize(oPos+L);\n";
   fs = fs + "  float ndoth = abs(dot(N,L));\n";
   fs = fs + "  float spc = 0.3 * pow(ndoth,50.);\n";
-  fs = fs + "  float r = float(oColor >> 24);\n";
-  fs = fs + "  float g = float((oColor >> 16) & 0x000000FF);\n";
-  fs = fs + "  float b = float((oColor >> 8) & 0x000000FF);\n";
-  fs = fs + "  float a = float((oColor >> 0) & 0x000000FF);\n";
-  fs = fs + "  vec4 col = vec4(r,g,b,a);\n";
   fs = fs + "  fragColor = vec4(spc * vec3(1.,1.,1.) + \n";
-  fs = fs + "                      clamp(col.xyz * (amb + dif),0.,1.),1.);\n";
+  fs = fs + "       clamp(oColor * (amb + dif),0.,1.),1.);\n";
   fs = fs + "}\n";
   this->faceProg_.bind();
   // Create Shader And Program Objects
@@ -231,16 +415,18 @@ void MeshWindow::initializeShaders()
   }
   this->faceProg_.release();
 
-  fs = vs = "";
   //edge shaders
   vs = "#version 330\n";
   vs = vs + "layout (location = 0) in vec3 aPos;\n";
+  vs = vs + "uniform mat4 uProjection;\n";
+  vs = vs + "uniform mat4 uTransform;\n";
   vs = vs + "void main() {\n";
-  vs = vs + "  gl_Position = vec4(aPos,1.);\n ";
+  vs = vs + "  vec4 ans = uTransform * vec4(aPos.x, aPos.y,aPos.z,1.0);\n";
+  vs = vs + "  gl_Position = uProjection * vec4(ans.x,ans.y,ans.z - 2. + .001, 1.);\n ";
   vs = vs + "}\n";
-  fs = "uniform vec4 oColor;\n";
+  fs = "uniform vec4 uColor;\n";
   fs = fs + "void main() {\n";
-  fs = fs + "  gl_FragColor = oColor;\n";
+  fs = fs + "  gl_FragColor = uColor;\n";
   fs = fs + "}\n";
   this->edgeProg_.bind();
   // Create Shader And Program Objects
@@ -266,9 +452,13 @@ void MeshWindow::initializeShaders()
 
 void MeshWindow::initializeGL()
 {
+  QGLFormat glFormat = QGLWidget::format();
+  if (!glFormat.sampleBuffers()) {
+    qWarning() << "Could not enable sample buffers";
+  }
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST); 
 
   setup_vbos();
 
@@ -277,62 +467,20 @@ void MeshWindow::initializeGL()
   init = true;
 }
 
-void createFrustumMatrix(float *matrix, float left, float right,
-  float bottom, float top, float zNear, float zFar)
-{
-  float temp, temp2, temp3, temp4;
-  temp = 2.0f * zNear;
-  temp2 = right - left;
-  temp3 = top - bottom;
-  temp4 = zFar - zNear;
-  matrix[0] = temp / temp2;
-  matrix[1] = 0.0f;
-  matrix[2] = 0.0f;
-  matrix[3] = 0.0f;
-  matrix[4] = 0.0f;
-  matrix[5] = temp / temp3;
-  matrix[6] = 0.0f;
-  matrix[7] = 0.0f;
-  matrix[8] = (right + left) / temp2;
-  matrix[9] = (top + bottom) / temp3;
-  matrix[10] = (-zFar - zNear) / temp4;
-  matrix[11] = -1.0f;
-  matrix[12] = 0.0f;
-  matrix[13] = 0.0f;
-  matrix[14] = (-temp * zFar) / temp4;
-  matrix[15] = 0.0f;
-}
-
 void MeshWindow::resizeGL(int w, int h)
 {
   glViewport(0, 0, w, h);
-  m_width = w;
-  m_height = h;
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-
   GLdouble aspectRatio = (GLdouble)w / (float)h;
   GLdouble zNear = 0.1;
   GLdouble zFar = 2000.0;
   GLdouble yFovInDegrees = 45;
-
-  GLdouble top = zNear * tan(yFovInDegrees * M_PI / 360.0);
-  GLdouble bottom = -top;
-  GLdouble right = top*aspectRatio;
-  GLdouble left = -right;
-
-  glFrustum(left, right, bottom, top, zNear, zFar);
-  float mtx[16];
-  createFrustumMatrix(mtx, left, right, bottom, top, zNear, zFar);
-  if (this->m_mesh) {
-    QMatrix4x4 mat;
-    mat.perspective(yFovInDegrees, aspectRatio, zNear, zFar);
-    this->faceProg_.bind();
-    this->faceProg_.setUniformValueArray("uProjection", &mat, 1);
-    this->faceProg_.release();
-    //this->edgeProg_.setUniformValueArray("uProjection", &mat, 1);
-  }
+  this->perspMat_ = QMatrix4x4();
+  this->perspMat_.perspective(yFovInDegrees, aspectRatio, zNear, zFar);
+  this->axisProg_.bind();
+  this->axisProg_.setUniformValue("uAspect", (float)aspectRatio);
+  this->axisProg_.setUniformValue("uWidth", static_cast<float>(
+    this->width()));
+  this->axisProg_.release();
 }
 
 void printMatrix(GLdouble *matrix)
@@ -353,88 +501,70 @@ void printMatrix(float *matrix)
 
 void MeshWindow::paintGL()
 {
-#ifdef WIN32
-  if (!init)
-    initializeGL();
-#endif
-
-  makeCurrent();
-
+  if (!this->bboxVBO_.isCreated()) {
+    this->edgeProg_.bind();
+    this->bboxVBO_.create();
+    this->bboxVBO_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    this->bboxVBO_.bind();
+    this->bboxVBO_.allocate(&this->bboxData_[0], static_cast<int>(
+      sizeof(GL_FLOAT) * this->bboxData_.size()));
+    this->bboxVAO_.create();
+    this->bboxVAO_.bind();
+    this->edgeProg_.enableAttributeArray(0);
+    this->edgeProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 3);
+    this->bboxVAO_.release();
+    this->bboxVBO_.release();
+    this->edgeProg_.release();
+  }
+  if (this->perspMat_ == QMatrix4x4()) {
+    this->resizeGL(this->width(), this->height());
+  }
+  qglClearColor(Qt::gray);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  if (m_bOpenGLError)
-    return;
-
-  float glmat[16];
-  glGetFloatv(GL_MODELVIEW_MATRIX, glmat);
-  for (size_t i = 0; i < 16; i++) {
-    if (boost::math::isnan(glmat[i])) {
-      std::cout << "Recovering from a NaN matrix error..." << std::endl;
-      this->resetView();
-      glMultMatrixf(this->cameraMatrix_.constData());
-      break;
-    }
-  }
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  // DRAW THE COORDINATE AXIS
   if (m_bShowAxis) {
-    glDisable(GL_LIGHTING);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glLineWidth(2.0);
-    drawAxis();
-    glEnable(GL_LIGHTING);
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
+    glLineWidth(1.0);
+    this->axisProg_.bind();
+    this->axisProg_.setUniformValueArray("uRotation",
+      &this->rotateMatrix_, 1);
+    this->axisVAO_.bind();
+    glDrawArrays(GL_LINES, 0, 132);
+    this->axisVAO_.release();
+    this->axisProg_.release();
   }
-  QMatrix4x4 mat;
-  mat.translate(0, 0, -3);
-  mat = mat * this->cameraMatrix_;
-  glMultMatrixf(mat.constData());
-
-  if (this->m_mesh) {
-    this->faceProg_.bind();
-    this->faceProg_.setUniformValueArray("uTransform", &mat, 1);
-    this->faceProg_.release();
-    //this->edgeProg_.setUniformValueArray("uTransform", &mat, 1);
+  //now draw the bbox lines
+  if (this->m_bShowBBox && (this->m_mesh || this->m_volume)) {
+    glLineWidth(2.);
+    this->edgeProg_.bind();
+    this->edgeProg_.setUniformValue("uColor", 0, 0, 0, 1);
+    this->edgeProg_.setUniformValueArray("uProjection", &this->perspMat_, 1);
+    this->edgeProg_.setUniformValueArray("uTransform", &this->cameraMatrix_, 1);
+    this->bboxVAO_.bind();
+    glDrawArrays(GL_LINES, 0,
+      static_cast<GLsizei>(this->bboxData_.size() / 3));
+    this->bboxVAO_.release();
+    this->edgeProg_.release();
   }
-  if (m_bShowBBox){
-    glColor4f(0.0f, 0.0f, 0.0f, 0.9f);
-
-    glDisable(GL_LIGHTING);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glLineWidth(2.0);
-    drawBox((this->m_mesh!=NULL)?(this->m_mesh->bounds):(this->m_volume->bounds()));
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
-    glEnable(GL_LIGHTING);
+  if (m_bShowEdges) {
+    drawEdges();
+  }
+  if (m_bShowFaces) {
+    drawFaces();
+  }
+  if (m_bShowCuts && m_volume) {
+    drawCuts();
   }
 
-  if (m_mesh){
-    if (m_bShowFaces)
-      drawFaces();
-
-    if (m_bShowCuts && m_volume)
-      drawCuts();
-
-    if (m_bShowEdges)
-      drawEdges();
-
-    glLineWidth(3.0f);
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_LINES);
-    for (size_t i = 0; i < badEdges.size() / 2; i += 2)
-    {
-      glVertex3f(badEdges[i].x, badEdges[i].y, badEdges[i].z);
-      glVertex3f(badEdges[i + 1].x, badEdges[i + 1].y, badEdges[i + 1].z);
-    }
-    glEnd();
+  //bad edges
+  glLineWidth(3.0f);
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glBegin(GL_LINES);
+  for (size_t i = 0; i < badEdges.size() / 2; i += 2)
+  {
+    glVertex3f(badEdges[i].x, badEdges[i].y, badEdges[i].z);
+    glVertex3f(badEdges[i + 1].x, badEdges[i + 1].y, badEdges[i + 1].z);
   }
-
+  glEnd();
   switch (m_starmode)
   {
   case NoStar:
@@ -451,11 +581,12 @@ void MeshWindow::paintGL()
   default: break;
   }
 
-  if (m_bShowViolationPolytopes)
+  if (m_bShowViolationPolytopes) {
     drawViolationPolytopesForVertices();
-
-  if (m_bClipping && m_bShowClippingPlane)
+  }
+  if (m_bClipping && m_bShowClippingPlane) {
     drawClippingPlane();
+  }
 }
 
 void MeshWindow::drawVertexStar(int v)
@@ -723,19 +854,11 @@ void MeshWindow::drawFaces()
   if (!this->m_mesh || this->faceData_.empty()) return;
   // shader pogram
   this->faceProg_.bind();
+  this->faceProg_.setUniformValueArray("uTransform", &this->cameraMatrix_, 1);
+  this->faceProg_.setUniformValueArray("uProjection", &this->perspMat_, 1);
   this->faceVAO_->bind();
-  QMatrix4x4 mat;
-  mat.translate(0, 0, -3);
-  mat = mat * this->cameraMatrix_;
-  QMatrix4x4 pmat;
-  GLdouble aspectRatio = (GLdouble)m_width / (float)m_height;
-  GLdouble zNear = 0.1;
-  GLdouble zFar = 2000.0;
-  GLdouble yFovInDegrees = 45;
-  pmat.perspective(yFovInDegrees, aspectRatio, zNear, zFar);
-  this->faceProg_.setUniformValueArray("uTransform", &mat, 1);
-  this->faceProg_.setUniformValueArray("uPerspective", &pmat, 1);
-  glDrawArrays(GL_TRIANGLES, 0, this->faceData_.size() / 7);
+  glDrawArrays(GL_TRIANGLES, 0,
+    static_cast<GLsizei>(this->faceData_.size() / 9));
   this->faceVAO_->release();
   this->faceProg_.release();
 }
@@ -745,34 +868,32 @@ void MeshWindow::drawEdges()
   if (!this->m_mesh || this->edgeData_.empty()) return;
   glLineWidth(1.5);
   this->edgeProg_.bind();
-  this->edgeProg_.setUniformValue("oColor", 0.0f, 0.0f, 0.0f, 0.2f);
+  this->edgeProg_.setUniformValue("uColor", 0, 0, 0, 1);
+  this->edgeProg_.setUniformValueArray("uTransform", &this->cameraMatrix_, 1);
+  this->edgeProg_.setUniformValueArray("uProjection", &this->perspMat_, 1);
   this->edgeVAO_->bind();
   glDrawArrays(GL_LINES, 0,
-    static_cast<GLsizei>(this->edgeData_.size() / 6));
+    static_cast<GLsizei>(this->edgeData_.size() / 3));
   this->edgeVAO_->release();
   this->edgeProg_.release();
 }
 
 void MeshWindow::drawCuts()
 {
-  if (!this->m_mesh || this->cutData_.empty() || this->violData_.empty()) return;
+  if (!this->m_mesh || this->cutData_.empty()) return;
   //violating cuts
   glPointSize(4.0);
-
   this->edgeProg_.bind();
-  this->edgeProg_.setUniformValue("oColor", m_4fvCutsColor[0],
-    m_4fvCutsColor[1], m_4fvCutsColor[2], m_4fvCutsColor[3]);
+  this->edgeProg_.setUniformValue("uColor", 1, 0, 0, 1);
   this->cutVAO_->bind();
-  glDrawArrays(GL_POINTS, 0, this->cutData_.size() / 3);
+  glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(this->cutData_.size() / 3));
   this->cutVAO_->release();
   this->edgeProg_.release();
-
+  if (this->violData_.empty()) return;
   //violating vectors
   this->edgeProg_.bind();
-  this->edgeProg_.setUniformValue("oColor", 1.0f, 0.5f, 0.5f, 1.0f);
   this->violVAO_->bind();
-  glDrawArrays(GL_LINES, 0,
-    static_cast<GLsizei>(this->violData_.size() / 3));
+  glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(this->violData_.size() / 3));
   this->violVAO_->release();
   this->edgeProg_.release();
 
@@ -810,151 +931,52 @@ void MeshWindow::drawClippingPlane()
   cleaver::vec3 p3 = p0 + (-1.0)*w*u + (-1.0)*h*v;
   cleaver::vec3 p4 = p0 + (1.0)*w*u + (-1.0)*h*v;
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glDisable(GL_LIGHTING);
+  std::vector<float> pts;
+  pts.push_back(p1.x);
+  pts.push_back(p1.y);
+  pts.push_back(p1.z);
+  pts.push_back(p2.x);
+  pts.push_back(p2.y);
+  pts.push_back(p2.z);
+  pts.push_back(p3.x);
+  pts.push_back(p3.y);
+  pts.push_back(p3.z);
+  pts.push_back(p3.x);
+  pts.push_back(p3.y);
+  pts.push_back(p3.z);
+  pts.push_back(p4.x);
+  pts.push_back(p4.y);
+  pts.push_back(p4.z);
+  pts.push_back(p1.x);
+  pts.push_back(p1.y);
+  pts.push_back(p1.z);
+  this->edgeProg_.bind();
+  QOpenGLBuffer vbo(QOpenGLBuffer::VertexBuffer);
+  vbo.create();
+  vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+  vbo.bind();
+  vbo.allocate(pts.data(), sizeof(GL_FLOAT) * pts.size());
+  QOpenGLVertexArrayObject vao(this);
+  vao.create();
+  vao.bind();
+  this->edgeProg_.enableAttributeArray(0);
+  this->edgeProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 3);
+
+  vao.release();
+  vbo.release();
+  this->edgeProg_.release();
+
   glEnable(GL_BLEND);
-  glColor4f(0.5f, 0.5f, 0.5f, 0.3f);
-  glBegin(GL_TRIANGLES);
-  glVertex3f(p1.x, p1.y, p1.z);
-  glVertex3f(p2.x, p2.y, p2.z);
-  glVertex3f(p3.x, p3.y, p3.z);
-  glVertex3f(p3.x, p3.y, p3.z);
-  glVertex3f(p4.x, p4.y, p4.z);
-  glVertex3f(p1.x, p1.y, p1.z);
-  glEnd();
+  glDepthMask(GL_FALSE);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  this->edgeProg_.bind();
+  vao.bind();
+  this->edgeProg_.setUniformValue("uColor", .5, .5, .5, .6);
+  glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(pts.size() / 3));
+  this->edgeProg_.release();
+  vao.release();
   glDisable(GL_BLEND);
-}
-
-
-void MeshWindow::drawBox(const cleaver::BoundingBox &box)
-{
-  float e = 0.01f;
-  float x = box.origin.x - e;
-  float y = box.origin.y - e;
-  float z = box.origin.z - e;
-  float w = box.size.x + 2 * e;
-  float h = box.size.y + 2 * e;
-  float d = box.size.z + 2 * e;
-
-  glPushMatrix();
-  glTranslatef(x, y, z);
-
-  glBegin(GL_LINES);
-
-  // front face
-  glVertex3f(0, 0, 0);
-  glVertex3f(w, 0, 0);
-
-  glVertex3f(w, 0, 0);
-  glVertex3f(w, h, 0);
-
-  glVertex3f(w, h, 0);
-  glVertex3f(0, h, 0);
-
-  glVertex3f(0, h, 0);
-  glVertex3f(0, 0, 0);
-
-  // back face
-  glVertex3f(0, 0, d);
-  glVertex3f(w, 0, d);
-
-  glVertex3f(w, 0, d);
-  glVertex3f(w, h, d);
-
-  glVertex3f(w, h, d);
-  glVertex3f(0, h, d);
-
-  glVertex3f(0, h, d);
-  glVertex3f(0, 0, d);
-
-  // remaining edges
-  glVertex3f(0, 0, 0);
-  glVertex3f(0, 0, d);
-
-  glVertex3f(w, 0, 0);
-  glVertex3f(w, 0, d);
-
-  glVertex3f(w, h, 0);
-  glVertex3f(w, h, d);
-
-  glVertex3f(0, h, 0);
-  glVertex3f(0, h, d);
-  glEnd();
-  glPopMatrix();
-}
-
-void MeshWindow::drawAxis()
-{
-  float ratio = (float)m_width / (float)m_height;
-  glPushMatrix();
-
-  glTranslatef(-4.2*ratio, +4.0, -15);
-
-  glMultMatrixf(this->rotateMatrix_.constData());
-
-  glBegin(GL_LINES);
-
-  glColor4f(1.f, 0.f, 0.f, 1.f);
-  glVertex3f(0, 0, 0);
-  glVertex3f(1, 0, 0);
-
-  glVertex3f(1.2f, 0.2f, 0);
-  glVertex3f(1.4f, -0.2f, 0);
-
-  glVertex3f(1.4f, 0.2f, 0);
-  glVertex3f(1.2f, -0.2f, 0);
-
-  glColor4f(0.f, 1.f, 0.f, 1.f);
-  glVertex3f(0, 0, 0);
-  glVertex3f(0, 1, 0);
-
-  glVertex3f(0, 1.2f, 0);
-  glVertex3f(0, 1.4f, 0);
-
-  glVertex3f(0, 1.4f, 0);
-  glVertex3f(0.1f, 1.6f, 0);
-
-  glVertex3f(0, 1.4f, 0);
-  glVertex3f(-0.1f, 1.6f, 0);
-
-  glColor4f(0.f, 0.f, 1.f, 1.f);
-  glVertex3f(0, 0, 0);
-  glVertex3f(0, 0, 1);
-
-  glVertex3f(0, 0.2f, 1.4f);
-  glVertex3f(0, 0.2f, 1.2f);
-
-  glVertex3f(0, 0.2f, 1.2f);
-  glVertex3f(0, -0.2f, 1.4f);
-
-  glVertex3f(0, -0.2f, 1.4f);
-  glVertex3f(0, -0.2f, 1.2f);
-
-  glEnd();
-  glPopMatrix();
-}
-
-void MeshWindow::drawOTCell(cleaver::OTCell *cell)
-{
-  if (cell){
-    float *color = color_for_label[cell->level % 8];
-    glColor3fv(color);
-    drawBox(cell->bounds);
-    for (int i = 0; i < 8; i++)
-      drawOTCell(cell->children[i]);
-  }
-}
-
-void MeshWindow::drawTree()
-{
-  glDisable(GL_LIGHTING);
-  glEnable(GL_BLEND);
-
-  cleaver::Octree *tree = m_mesher->getTree();
-  drawOTCell(tree->root());
-
-  glDisable(GL_BLEND);
-  glEnable(GL_LIGHTING);
+  glDepthMask(GL_TRUE);
 }
 
 double MeshWindow::angleBetween(const QVector3D &v1, const QVector3D &v2)
@@ -1030,6 +1052,7 @@ void MeshWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MeshWindow::keyPressEvent(QKeyEvent *event)
 {
+  QString file;
   switch (event->key())
   {
   case Qt::Key_Space:
@@ -1088,7 +1111,9 @@ void MeshWindow::keyPressEvent(QKeyEvent *event)
   case Qt::Key_S:
     break;
   case Qt::Key_F5:
-    dumpSVGImage("screenshot");
+    file = QFileDialog::getSaveFileName(this, "Save as...", "name", 
+      "PNG (*.png);; BMP (*.bmp);;TIFF (*.tiff *.tif);; JPEG (*.jpg *.jpeg)");
+    this->grabFrameBuffer().save(file);
     break;
   case Qt::Key_0:
     m_bShowViolationPolytopes = !m_bShowViolationPolytopes;
@@ -1190,7 +1215,6 @@ void MeshWindow::update_vbos()
   // 1. Generate a new buffer object with glGenBuffersARB().
   // 2. Bind the buffer object with glBindBufferARB().
   // 3. Copy vertex data to the buffer object with glBufferDataARB().
-
   if (m_mesh){
     if ((m_mesher && mesher()->stencilsDone()) || m_mesh->imported)
       build_output_vbos();
@@ -1205,47 +1229,9 @@ void MeshWindow::updateMesh()
   update_vbos();
 }
 
-cleaver::vec3 computeIncenter(const cleaver::vec3 &v1,
-  const cleaver::vec3 &v2, const cleaver::vec3 &v3)
-{
-  cleaver::vec3 result = cleaver::vec3::zero;
-
-  float a = length(v2 - v3);
-  float b = length(v3 - v1);
-  float c = length(v1 - v2);
-  float perimeter = a + b + c;
-
-  result.x = (a*v1.x + b*v2.x + c*v3.x) / perimeter;
-  result.y = (a*v1.y + b*v2.y + c*v3.y) / perimeter;
-  result.z = (a*v1.z + b*v2.z + c*v3.z) / perimeter;
-
-  return result;
-}
-
-cleaver::vec3 computeIncenter(cleaver::Tet *tet)
-{
-  cleaver::vec3 result = cleaver::vec3::zero;
-
-  cleaver::vec3 v1 = tet->verts[0]->pos();
-  cleaver::vec3 v2 = tet->verts[1]->pos();
-  cleaver::vec3 v3 = tet->verts[2]->pos();
-  cleaver::vec3 v4 = tet->verts[3]->pos();
-
-  float a = 0.5f*length(cross(v2 - v3, v4 - v3));
-  float b = 0.5f*length(cross(v3 - v1, v4 - v1));
-  float c = 0.5f*length(cross(v1 - v2, v4 - v2));
-  float d = 0.5f*length(cross(v3 - v2, v1 - v2));
-  float total_area = a + b + c + d;
-
-  result.x = (a*v1.x + b*v2.x + c*v3.x + d*v4.x) / total_area;
-  result.y = (a*v1.y + b*v2.y + c*v3.y + d*v4.y) / total_area;
-  result.z = (a*v1.z + b*v2.z + c*v3.z + d*v4.z) / total_area;
-
-  return result;
-}
-
 void MeshWindow::build_bkgrnd_vbos()
 {
+  if (!this->init) return;
   this->faceData_.clear();
   this->edgeData_.clear();
   for (size_t f = 0; f < m_mesh->faces.size(); f++)
@@ -1338,14 +1324,13 @@ void MeshWindow::build_bkgrnd_vbos()
         this->faceData_.push_back(static_cast<float>(normal.x));
         this->faceData_.push_back(static_cast<float>(normal.y));
         this->faceData_.push_back(static_cast<float>(normal.z));
-        uint32_t r, g, b, a;
+        float r, g, b;
         if (m_mesher && m_mesher->samplingDone())
         {
           float *color = color_for_label[vertex->label];
-          r = static_cast<uint32_t>(color[0] * 255);
-          g = static_cast<uint32_t>(color[1] * 255);
-          b = static_cast<uint32_t>(color[2] * 255);
-          a = 255;
+          r = color[0];
+          g = color[1];
+          b = color[2];
         } else{
           int color_label = -1;
           if (m_mesh->faces[f]->tets[0] >= 0)
@@ -1354,22 +1339,19 @@ void MeshWindow::build_bkgrnd_vbos()
             color_label = m_mesh->tets[m_mesh->faces[f]->tets[1]]->mat_label;
 
           if (color_label < 0){
-            r = static_cast<uint32_t>(0.9f * 255);
-            g = static_cast<uint32_t>(0.9f * 255);
-            b = static_cast<uint32_t>(0.9f * 255);
-            a = 255;
+            r = 0.9f;
+            g = 0.9f;
+            b = 0.9f;
           } else{
             float *color = color_for_label[color_label % 4];
-            r = static_cast<uint32_t>(color[0] * 255);
-            g = static_cast<uint32_t>(color[1] * 255);
-            b = static_cast<uint32_t>(color[2] * 255);
-            a = 255;
+            r = color[0];
+            g = color[1];
+            b = color[2];
           }
         }
-        uint32_t col = (r << 24) | (g << 16) | (b << 8) & a;
-        float val;
-        memcpy(&val, &col, 4);
-        this->faceData_.push_back(val);
+        this->faceData_.push_back(r);
+        this->faceData_.push_back(g);
+        this->faceData_.push_back(b);
       }
     }
   }
@@ -1387,6 +1369,7 @@ void MeshWindow::build_bkgrnd_vbos()
   this->faceVBO_->allocate(this->faceData_.data(),
     sizeof(GL_FLOAT) * this->faceData_.size());
 
+  this->faceProg_.bind();
   if (this->faceVAO_) {
     this->faceVAO_->destroy();
     delete this->faceVAO_;
@@ -1398,9 +1381,9 @@ void MeshWindow::build_bkgrnd_vbos()
   this->faceProg_.enableAttributeArray(0);
   this->faceProg_.enableAttributeArray(1);
   this->faceProg_.enableAttributeArray(2);
-  this->faceProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 7);
-  this->faceProg_.setAttributeBuffer(1, GL_FLOAT, sizeof(GL_FLOAT) * 3, 3, sizeof(GL_FLOAT) * 7);
-  this->faceProg_.setAttributeBuffer(2, GL_FLOAT, sizeof(GL_FLOAT) * 6, 1, sizeof(GL_FLOAT) * 7);
+  this->faceProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 9);
+  this->faceProg_.setAttributeBuffer(1, GL_FLOAT, sizeof(GL_FLOAT) * 3, 3, sizeof(GL_FLOAT) * 9);
+  this->faceProg_.setAttributeBuffer(2, GL_FLOAT, sizeof(GL_FLOAT) * 6, 3, sizeof(GL_FLOAT) * 9);
 
   this->faceVAO_->release();
   this->faceVBO_->release();
@@ -1420,6 +1403,7 @@ void MeshWindow::build_bkgrnd_vbos()
   this->edgeVBO_->allocate(this->edgeData_.data(),
     sizeof(GL_FLOAT) * this->edgeData_.size());
 
+  this->edgeProg_.bind();
   if (this->edgeVAO_) {
     this->edgeVAO_->destroy();
     delete this->edgeVAO_;
@@ -1494,6 +1478,7 @@ void MeshWindow::build_bkgrnd_vbos()
     this->cutVBO_->allocate(this->cutData_.data(),
       sizeof(GL_FLOAT) * this->cutData_.size());
 
+    this->edgeProg_.bind();
     if (this->cutVAO_) {
       this->cutVAO_->destroy();
       delete this->cutVAO_;
@@ -1523,6 +1508,7 @@ void MeshWindow::build_bkgrnd_vbos()
     this->violVBO_->allocate(this->violData_.data(),
       sizeof(GL_FLOAT) * this->violData_.size());
 
+    this->edgeProg_.bind();
     if (this->violVAO_) {
       this->violVAO_->destroy();
       delete this->violVAO_;
@@ -1543,13 +1529,13 @@ void MeshWindow::build_bkgrnd_vbos()
 
 void MeshWindow::build_output_vbos()
 {
+  if (!this->init) return;
   this->faceData_.clear();
   this->edgeData_.clear();
   for (size_t f = 0; f < m_mesh->faces.size(); f++)
   {
     int t1 = m_mesh->faces[f]->tets[0];
     int t2 = m_mesh->faces[f]->tets[1];
-
 
     bool clipped = false;
     bool exterior = false;
@@ -1698,14 +1684,9 @@ void MeshWindow::build_output_vbos()
         this->faceData_.push_back(static_cast<float>(normal.y));
         this->faceData_.push_back(static_cast<float>(normal.z));
 
-        uint32_t r = static_cast<uint32_t>(0.5*(color1[0] + color2[0]) * 255);
-        uint32_t g = static_cast<uint32_t>(0.5*(color1[1] + color2[1]) * 255);
-        uint32_t b = static_cast<uint32_t>(0.5*(color1[2] + color2[2]) * 255);
-        uint32_t a = 255;
-        uint32_t col = (r << 24) | (g << 16) | (b << 8) & a;
-        float val;
-        memcpy(&val, &col, 4);
-        faceData_.push_back(val);
+        faceData_.push_back(0.5*(color1[0] + color2[0]));
+        faceData_.push_back(0.5*(color1[1] + color2[1]));
+        faceData_.push_back(0.5*(color1[2] + color2[2]));
       }
 
     }
@@ -1726,6 +1707,7 @@ void MeshWindow::build_output_vbos()
   this->faceVBO_->allocate(this->faceData_.data(),
     sizeof(GL_FLOAT) * this->faceData_.size());
 
+  this->faceProg_.bind();
   if (this->faceVAO_) {
     this->faceVAO_->destroy();
     delete this->faceVAO_;
@@ -1737,13 +1719,43 @@ void MeshWindow::build_output_vbos()
   this->faceProg_.enableAttributeArray(0);
   this->faceProg_.enableAttributeArray(1);
   this->faceProg_.enableAttributeArray(2);
-  this->faceProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 7);
-  this->faceProg_.setAttributeBuffer(1, GL_FLOAT, sizeof(GL_FLOAT) * 3, 3, sizeof(GL_FLOAT) * 7);
-  this->faceProg_.setAttributeBuffer(2, GL_FLOAT, sizeof(GL_FLOAT) * 6, 1, sizeof(GL_FLOAT) * 7);
+  this->faceProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 9);
+  this->faceProg_.setAttributeBuffer(1, GL_FLOAT, sizeof(GL_FLOAT) * 3, 3, sizeof(GL_FLOAT) * 9);
+  this->faceProg_.setAttributeBuffer(2, GL_FLOAT, sizeof(GL_FLOAT) * 6, 3, sizeof(GL_FLOAT) * 9);
 
   this->faceVAO_->release();
   this->faceVBO_->release();
   this->faceProg_.release();
+
+  if (this->edgeVBO_) {
+    this->edgeVBO_->destroy();
+    delete this->edgeVBO_;
+    this->edgeVBO_ = NULL;
+  }
+  this->edgeVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+  this->edgeVBO_->create();
+  this->edgeVBO_->setUsagePattern(QOpenGLBuffer::StaticDraw);
+  if (!this->edgeVBO_->bind()) {
+    qWarning() << "Could not bind shader program to context";
+  }
+  this->edgeVBO_->allocate(this->edgeData_.data(),
+    sizeof(GL_FLOAT) * this->edgeData_.size());
+
+  this->edgeProg_.bind();
+  if (this->edgeVAO_) {
+    this->edgeVAO_->destroy();
+    delete this->edgeVAO_;
+    this->edgeVAO_ = NULL;
+  }
+  this->edgeVAO_ = new QOpenGLVertexArrayObject(this);
+  this->edgeVAO_->create();
+  this->edgeVAO_->bind();
+  this->edgeProg_.enableAttributeArray(0);
+  this->edgeProg_.setAttributeBuffer(0, GL_FLOAT, 0, 3, sizeof(GL_FLOAT) * 3);
+
+  this->edgeVAO_->release();
+  this->edgeVBO_->release();
+  this->edgeProg_.release();
 
   this->cutData_.clear();
   // Now update Cuts List
@@ -1791,6 +1803,7 @@ void MeshWindow::build_output_vbos()
     this->cutVBO_->allocate(this->cutData_.data(),
       sizeof(GL_FLOAT) * this->cutData_.size());
 
+    this->edgeProg_.bind();
     if (this->cutVAO_) {
       this->cutVAO_->destroy();
       delete this->cutVAO_;
@@ -1806,296 +1819,4 @@ void MeshWindow::build_output_vbos()
     this->cutVBO_->release();
     this->edgeProg_.release();
   }
-}
-
-
-// column major multiplication
-void matrixMultiply(float A[16], float B[16], float C[16])
-{
-  for (int j = 0; j < 4; j++)
-  {
-    for (int i = 0; i < 4; i++)
-    {
-      // compute result C[i][j];
-      C[i + 4 * j] = 0;
-
-      for (int k = 0; k < 4; k++)
-        C[i + 4 * j] += A[i + 4 * k] * B[k + 4 * j];
-    }
-  }
-}
-
-cleaver::vec3 matrixVector(float A[16], const cleaver::vec3 &x, float &depth)
-{
-  float r[4] = { 0 };
-  float xx[4];
-  xx[0] = x.x;
-  xx[1] = x.y;
-  xx[2] = x.z;
-  xx[3] = 1;
-
-  for (int i = 0; i < 4; i++){
-    for (int k = 0; k < 4; k++)
-    {
-      r[i] += A[i + 4 * k] * xx[k];
-    }
-  }
-
-  depth = r[3];
-
-  return cleaver::vec3((r[0] / r[3]), r[1] / r[3], r[2] / r[3]);
-}
-
-struct triangle{ float x[3], y[3]; float d[3]; QColor color; };
-bool triangle_sort(triangle t1, triangle t2){
-
-  float d1 = std::max(std::max(t1.d[0], t1.d[1]), t1.d[2]);
-  float d2 = std::max(std::max(t2.d[0], t2.d[1]), t2.d[2]);
-
-  return d1 > d2;
-}
-
-void MeshWindow::dumpSVGImage(const std::string &filename)
-{
-  int w = this->width();
-  int h = this->height();
-
-  GLdouble aspectRatio = (GLdouble)w / (float)h;
-  GLdouble zNear = 0.1;
-  GLdouble zFar = 500.0;
-  GLdouble yFovInDegrees = 45;
-  GLdouble top = zNear * tan(yFovInDegrees * M_PI / 360.0);
-  GLdouble bottom = -top;
-  GLdouble right = top*aspectRatio;
-  GLdouble left = -right;
-
-  float projectionMatrix[16];
-  GLdouble A = (right + left) / (right - left);
-  GLdouble B = (top + bottom) / (top - bottom);
-  GLdouble C = -(zFar + zNear) / (zFar - zNear);
-  GLdouble D = -(2 * zFar*zNear) / (zFar - zNear);
-  projectionMatrix[0] = 2 * zNear / (right - left);
-  projectionMatrix[1] = 0;
-  projectionMatrix[2] = 0;
-  projectionMatrix[3] = 0;
-  projectionMatrix[4] = 0;
-  projectionMatrix[5] = 2 * zNear / (top - bottom);
-  projectionMatrix[6] = 0;
-  projectionMatrix[7] = 0;
-  projectionMatrix[8] = A;
-  projectionMatrix[9] = B;
-  projectionMatrix[10] = C;
-  projectionMatrix[11] = -1;
-  projectionMatrix[12] = 0;
-  projectionMatrix[13] = 0;
-  projectionMatrix[14] = D;
-  projectionMatrix[15] = 0;
-
-  std::cout << "Computed Projection Matrix:" << std::endl;
-  printMatrix(projectionMatrix);
-
-  float *viewMatrix = this->cameraMatrix_.data();
-  std::cout << "Computed ModelView Matrix:" << std::endl;
-  printMatrix(viewMatrix);
-
-  float viewProjectionMatrix[16];
-  matrixMultiply(projectionMatrix, viewMatrix, viewProjectionMatrix);
-
-  std::stringstream ss;
-
-  ss << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" << std::endl;
-  ss << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" <<
-    w << "px\" height =\"" << h << "px\" viewBox = \"0 0 " << w <<
-    " " << h << "\">" << std::endl;
-
-  std::vector<triangle> triangle_list;
-
-  for (size_t f = 0; f < m_mesh->faces.size(); f++)
-  {
-    int t1 = m_mesh->faces[f]->tets[0];
-    int t2 = m_mesh->faces[f]->tets[1];
-
-
-    bool clipped = false;
-    bool exterior = false;
-    bool clipborder = false;
-    bool surface = false;
-    bool force = false;
-    int num_adj_tets = 0;
-    num_adj_tets += t1 >= 0 ? 1 : 0;
-    num_adj_tets += t2 >= 0 ? 1 : 0;
-
-    if (num_adj_tets == 1)
-      exterior = true;
-
-    if (num_adj_tets == 2 && m_mesh->tets[t1]->mat_label != m_mesh->tets[t2]->mat_label)
-      surface = true;
-
-    int m1 = -1;
-    int m2 = -2;
-    if (t1 >= 0){
-      m1 = m_mesh->tets[t1]->mat_label;
-      if (m_bMaterialFaceLock[m1])
-        force = true;
-    }
-    if (t2 >= 0){
-      m2 = m_mesh->tets[t2]->mat_label;
-      if (m_bMaterialFaceLock[m2])
-        force = true;
-    }
-    if (m1 == m2)
-      force = false;
-
-    if (m_bClipping)
-    {
-      cleaver::vec3 n(m_4fvClippingPlane[0], m_4fvClippingPlane[1], m_4fvClippingPlane[2]);
-      float d = m_4fvClippingPlane[3];
-
-      // does plane cut through face?
-      for (int v = 0; v < 3; v++)
-      {
-        // is vertex on proper side of the plane?
-        cleaver::Vertex *vertex = m_mesh->verts[m_mesh->faces[f]->verts[v]];
-        cleaver::vec3 p(vertex->pos().x, vertex->pos().y, vertex->pos().z);
-
-        if (n.dot(p) - d > 1E-4){
-          clipped = true;
-          break;
-        }
-      }
-
-      // determine if face is on border of nonclipped faces
-      if (!clipped)
-      {
-        // look at both adjacent tets
-        if (m_mesh->faces[f]->tets[0] > 0)
-        {
-          cleaver::Tet *tet = m_mesh->tets[m_mesh->faces[f]->tets[0]];
-
-          for (int v = 0; v < 4; v++){
-            cleaver::Vertex *vertex = tet->verts[v];
-            cleaver::vec3 p(vertex->pos().x, vertex->pos().y, vertex->pos().z);
-
-            if (n.dot(p) - d > 1E-4){
-              clipborder = true;
-              break;
-            }
-          }
-        }
-        if (m_mesh->faces[f]->tets[1] > 0)
-        {
-          cleaver::Tet *tet = m_mesh->tets[m_mesh->faces[f]->tets[1]];
-
-          for (int v = 0; v < 4; v++){
-            cleaver::Vertex *vertex = tet->verts[v];
-            cleaver::vec3 p(vertex->pos().x, vertex->pos().y, vertex->pos().z);
-
-            if (n.dot(p) - d > 1E-4){
-              clipborder = true;
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    if ((((!clipped && exterior) || 
-      clipborder) && !m_bSurfacesOnly) || 
-      (m_bSurfacesOnly && !clipped && surface) || force)
-    {
-      cleaver::Tet *tet1 = m_mesh->tets[m_mesh->faces[f]->tets[0]];
-      cleaver::Tet *tet2 = m_mesh->tets[m_mesh->faces[f]->tets[1]];
-
-      float default_color[3] = { 0.9f, 0.9f, 0.9f };
-      float *color1 = default_color, *color2 = default_color;
-      if (m_mesh->faces[f]->tets[0] >= 0)
-        color1 = color_for_label[(int)tet1->mat_label];
-      if (m_mesh->faces[f]->tets[1] >= 0)
-        color2 = color_for_label[(int)tet2->mat_label];
-      if (m_mesh->faces[f]->tets[0] < 0)
-        color1 = color2;
-      if (m_mesh->faces[f]->tets[1] < 0)
-        color2 = color1;
-
-      cleaver::vec3 normal = m_mesh->faces[f]->normal;
-
-
-      //ss << "<polygon points=\" ";
-
-      //Cleaver::Vertex *v1 = m_mesh->verts[m_mesh->faces[f].verts[0]];
-      //Cleaver::Vertex *v2 = m_mesh->verts[m_mesh->faces[f].verts[1]];
-      //Cleaver::Vertex *v3 = m_mesh->verts[m_mesh->faces[f].verts[2]];
-
-      /*
-      float avg_length = (1.0/3.0)*(length(v1->pos() - v2->pos()) +
-      length(v2->pos() - v3->pos()) +
-      length(v3->pos() - v1->pos()));
-      float stroke_width = avg_length / 18.0f;
-      */
-
-      triangle tri;
-
-      // set vertex positions and colors
-      for (int v = 0; v < 3; v++)
-      {
-        cleaver::Vertex *v1 = m_mesh->verts[m_mesh->faces[f]->verts[(v + 0) % 3]];
-
-        float depth1;
-
-        cleaver::vec3 p1 = matrixVector(viewProjectionMatrix, v1->pos(), depth1);
-
-        float x1 = w * (p1.x + 1) / 2;
-        float y1 = h - h * (p1.y + 1) / 2;
-
-        tri.x[v] = x1;
-        tri.y[v] = y1;
-        tri.d[v] = depth1;
-      }
-
-      tri.color = QColor((int)(0.5*(color1[0] + color2[0]) * 255), 
-        (int)(0.5*(color1[1] + color2[1]) * 255), (int)(0.5*(color1[2] 
-        + color2[2]) * 255), 255);
-
-      triangle_list.push_back(tri);
-    }
-  }
-
-  sort(triangle_list.begin(), triangle_list.end(), triangle_sort);
-  for (unsigned int i = 0; i < triangle_list.size(); i++)
-  {
-    triangle t = triangle_list[i];
-    ss << "<polygon points=\" ";
-
-    float avg_length = 0;
-
-
-    for (int v = 0; v < 3; v++){
-      ss << t.x[v] << "," << t.y[v] << " ";
-      float dx = t.x[v] - t.x[(v + 1) % 3];
-      float dy = t.y[v] - t.y[(v + 1) % 3];
-      avg_length += (1.0 / 3.0)*(sqrt(dx*dx + dy*dy));
-    }
-    //float stroke_width = avg_length / 30.0f;
-    float stroke_width = 0.5f;
-
-    ss << "\" style=\"fill:" << t.color.name().toStdString() << 
-      ";stroke-linejoin:round;stroke-opacity:0.4;stroke:black;stroke-width:"
-      << stroke_width << "\"/>\n" << std::endl;
-  }
-
-
-  // need to sort these triangles
-
-  ss << "</svg>" << std::endl;
-
-
-  std::string svgString = ss.str();
-  //std::cout << svgString << std::endl;
-  std::cout << "saving SVG file: " << filename << ".svg" << std::endl;
-
-  std::ofstream file(std::string(filename + ".svg").c_str());
-
-  file << svgString;
-
-  file.close();
 }

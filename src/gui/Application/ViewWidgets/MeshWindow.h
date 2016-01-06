@@ -81,14 +81,12 @@ private:
     cleaver::TetMesh *m_mesh;
     cleaver::Volume  *m_volume;
     cleaver::BoundingBox m_dataBounds;
-    QMatrix4x4 rotateMatrix_, cameraMatrix_;
-    int m_width, m_height;
+    QMatrix4x4 rotateMatrix_, cameraMatrix_, perspMat_;
 
     StarMode m_starmode;
     int m_currentVertex;
     int m_currentEdge;
     int m_currentFace;
-
 
     int m_prev_x, m_prev_y;
 
@@ -131,7 +129,6 @@ private:
     // draw violation regions around vertices
     void drawViolationPolytopesForVertices();
     void drawViolationPolytopeForVertex(int v);
-    void dumpSVGImage(const std::string &filename);
 
 
     // worker functions
@@ -145,10 +142,10 @@ private:
     void drawEdgeStar(int e);
     void drawFaceStar(int f);
 
-    QOpenGLShaderProgram faceProg_, edgeProg_;
-    QOpenGLBuffer * faceVBO_, *edgeVBO_, *cutVBO_, *violVBO_;
-    QOpenGLVertexArrayObject * faceVAO_, *edgeVAO_, *cutVAO_, *violVAO_;
-    std::vector<float> faceData_, edgeData_, cutData_, violData_;
+    QOpenGLShaderProgram faceProg_, edgeProg_, axisProg_;
+    QOpenGLBuffer * faceVBO_, *edgeVBO_, *cutVBO_, *violVBO_, bboxVBO_;
+    QOpenGLVertexArrayObject * faceVAO_, *edgeVAO_, *cutVAO_, *violVAO_, axisVAO_, bboxVAO_;
+    std::vector<float> faceData_, edgeData_, cutData_, violData_, bboxData_;
     bool init;
 
 protected:
