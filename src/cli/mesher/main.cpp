@@ -201,7 +201,7 @@ int main(int argc,  char* argv[])
       material_fields = variables_map["input_files"].as<std::vector<std::string> >();
     }
     else{
-      std::cout << "Error: At least one material field file must be specified." << std::endl;
+      std::cerr << "Error: At least one material field file must be specified." << std::endl;
       return 1;
     }
 
