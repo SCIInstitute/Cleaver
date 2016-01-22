@@ -13,7 +13,7 @@ FIND_PACKAGE(OpenGL QUIET)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 if(WIN32)
-cmake_policy(SET CMP0020 OLD)
+  cmake_policy(SET CMP0020 OLD)
 endif()
 
 # Find QT5
@@ -68,17 +68,21 @@ QT5_ADD_RESOURCES(RCC_SRC ${RCC_FILES})
 # For Apple set the icns file containing icons
 IF(APPLE)
   # set how it shows up in the Info.plist file
-  SET(MACOSX_BUNDLE_ICON_FILE cleaverIcon.icns) 
+  SET(MACOSX_BUNDLE_ICON_FILE cleaverIcon.icns)
   # set where in the bundle to put the icns file
   SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
   # include the icns file in the target
   SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
 ENDIF(APPLE)
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
+
 
 ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE  ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC})
 
 if(WIN32)
-TARGET_LINK_LIBRARIES(cleaver-gui
+  TARGET_LINK_LIBRARIES(cleaver-gui
     cleaver
     nrrd2cleaver
     teem
@@ -92,7 +96,7 @@ TARGET_LINK_LIBRARIES(cleaver-gui
     Qt5::WinMain
     )
 else()
-TARGET_LINK_LIBRARIES(cleaver-gui
+  TARGET_LINK_LIBRARIES(cleaver-gui
     cleaver
     nrrd2cleaver
     teem
@@ -111,6 +115,6 @@ if (USE_SEGMENTATION_TOOLS)
 endif()
 
 INSTALL(TARGETS cleaver-gui
-    BUNDLE DESTINATION . COMPONENT Runtime
-    RUNTIME DESTINATION bin COMPONENT Runtime
-    )
+  BUNDLE DESTINATION . COMPONENT Runtime
+  RUNTIME DESTINATION bin COMPONENT Runtime
+  )
