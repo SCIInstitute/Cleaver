@@ -251,7 +251,7 @@
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>Show Surfaces Only</string>
+           <string>Surfaces Only</string>
           </property>
           <property name="checked">
            <bool>false</bool>

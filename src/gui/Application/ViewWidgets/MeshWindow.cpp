@@ -33,22 +33,22 @@ enum
 
 static bool ctrl_down = false;
 float color_for_label[][4] = { { 0.0f, 174 / 255.0f, 239 / 255.0f, 1.0f },   // label 0
-{ 0.0f, 166 / 255.0f, 81 / 255.0f, 1.0f },   // label 1
-{ 1.0f, 242 / 255.0f, 0.0f, 1.0f },         // label 2
-{ 237 / 255.0f, 28 / 255.0f, 36 / 255.0f, 1.0f },   // label 3
-{ 1.0f, 0.0f, 1.0f, 1.0f },          // label 4
-{ 0.5f, 1.0f, 0.5f, 1.0f },          // label 5
-{ 1.0f, 0.5f, 0.5f, 1.0f } };         // label 6
+  { 0.0f, 166 / 255.0f, 81 / 255.0f, 1.0f },   // label 1
+  { 1.0f, 242 / 255.0f, 0.0f, 1.0f },         // label 2
+  { 237 / 255.0f, 28 / 255.0f, 36 / 255.0f, 1.0f },   // label 3
+  { 1.0f, 0.0f, 1.0f, 1.0f },          // label 4
+  { 0.5f, 1.0f, 0.5f, 1.0f },          // label 5
+  { 1.0f, 0.5f, 0.5f, 1.0f } };         // label 6
 
-const char* starModeString[4] = { "No-Star Mode", 
-"Vertex-Star Mode", "Edge-Star Mode", "Face-Star Mode" };
+const char* starModeString[4] = { "No-Star Mode",
+  "Vertex-Star Mode", "Edge-Star Mode", "Face-Star Mode" };
 
 extern std::vector<cleaver::vec3> badEdges;
 
 MeshWindow::MeshWindow(QObject *parent) :
-QGLWidget(QGLFormat(QGL::SampleBuffers), qobject_cast<QWidget *>(parent)), 
-faceProg_(this), edgeProg_(this), axisProg_(this),
-bboxVBO_(QOpenGLBuffer::VertexBuffer), bboxVAO_(this)
+  QGLWidget(QGLFormat(QGL::SampleBuffers), qobject_cast<QWidget *>(parent)),
+  faceProg_(this), edgeProg_(this), axisProg_(this),
+  bboxVBO_(QOpenGLBuffer::VertexBuffer), bboxVAO_(this)
 {
   this->setAttribute(Qt::WA_DeleteOnClose);
   this->setMouseTracking(true);
@@ -182,7 +182,7 @@ void MeshWindow::resetView()
     this->edgeProg_.bind();
     this->bboxVBO_.bind();
     this->bboxVBO_.write(0, &this->bboxData_[0], static_cast<int>(
-      sizeof(GL_FLOAT) * this->bboxData_.size()));
+          sizeof(GL_FLOAT) * this->bboxData_.size()));
     this->bboxVBO_.release();
     this->edgeProg_.release();
   }
@@ -305,30 +305,30 @@ void MeshWindow::initializeShaders()
     //aPos...           aColor...
     // X
     0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-    1.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-    1.2f, 0.2f, 0.f, 1.f, 0.f, 0.f,
-    1.4f, -0.2f, 0.f, 1.f, 0.f, 0.f,
-    1.4f, 0.2f, 0.f, 1.f, 0.f, 0.f,
-    1.2f, -0.2f, 0.f, 1.f, 0.f, 0.f,
-    // Y
-    0.f, 0.f, 0.f, 0.f, 1.f, 0.f,
-    0.f, 1.f, 0.f, 0.f, 1.f, 0.f,
-    0.0f, 1.2f, 0.f, 0.f, 1.f, 0.f,
-    0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
-    0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
-    0.1f, 1.6f, 0.f, 0.f, 1.f, 0.f,
-    0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
-    -0.1f, 1.6f, 0.f, 0.f, 1.f, 0.f,
-    // Z
-    0.f, 0.f, 0.f, 0.f, 0.f, 1.f,
-    0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
-    0.0f, 0.2f, 1.4f, 0.f, 0.f, 1.f,
-    0.0f, 0.2f, 1.2f, 0.f, 0.f, 1.f,
-    0.0f, 0.2f, 1.2f, 0.f, 0.f, 1.f,
-    0.0f, -0.2f, 1.4f, 0.f, 0.f, 1.f,
-    0.0f, -0.2f, 1.4f, 0.f, 0.f, 1.f,
-    0.0f, -0.2f, 1.2f, 0.f, 0.f, 1.f
-      } }; 
+      1.f, 0.f, 0.f, 1.f, 0.f, 0.f,
+      1.2f, 0.2f, 0.f, 1.f, 0.f, 0.f,
+      1.4f, -0.2f, 0.f, 1.f, 0.f, 0.f,
+      1.4f, 0.2f, 0.f, 1.f, 0.f, 0.f,
+      1.2f, -0.2f, 0.f, 1.f, 0.f, 0.f,
+      // Y
+      0.f, 0.f, 0.f, 0.f, 1.f, 0.f,
+      0.f, 1.f, 0.f, 0.f, 1.f, 0.f,
+      0.0f, 1.2f, 0.f, 0.f, 1.f, 0.f,
+      0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
+      0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
+      0.1f, 1.6f, 0.f, 0.f, 1.f, 0.f,
+      0.0f, 1.4f, 0.f, 0.f, 1.f, 0.f,
+      -0.1f, 1.6f, 0.f, 0.f, 1.f, 0.f,
+      // Z
+      0.f, 0.f, 0.f, 0.f, 0.f, 1.f,
+      0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+      0.0f, 0.2f, 1.4f, 0.f, 0.f, 1.f,
+      0.0f, 0.2f, 1.2f, 0.f, 0.f, 1.f,
+      0.0f, 0.2f, 1.2f, 0.f, 0.f, 1.f,
+      0.0f, -0.2f, 1.4f, 0.f, 0.f, 1.f,
+      0.0f, -0.2f, 1.4f, 0.f, 0.f, 1.f,
+      0.0f, -0.2f, 1.2f, 0.f, 0.f, 1.f
+  } };
   QOpenGLBuffer axis_vbo(QOpenGLBuffer::VertexBuffer);
   axis_vbo.create();
   axis_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
@@ -349,11 +349,11 @@ void MeshWindow::initializeShaders()
   this->axisProg_.release();
   //setup axis transform matrix and send down.
   auto aspect = static_cast<float>(
-    this->width()) / static_cast<float>(this->height());
+      this->width()) / static_cast<float>(this->height());
   this->axisProg_.bind();
   this->axisProg_.setUniformValue("uAspect", aspect);
   this->axisProg_.setUniformValue("uWidth", static_cast<float>(
-    this->width()));
+        this->width()));
   this->axisProg_.release();
 
   // face shaders
@@ -458,7 +458,7 @@ void MeshWindow::initializeGL()
   }
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glEnable(GL_DEPTH_TEST); 
+  glEnable(GL_DEPTH_TEST);
 
   setup_vbos();
 
@@ -479,7 +479,7 @@ void MeshWindow::resizeGL(int w, int h)
   this->axisProg_.bind();
   this->axisProg_.setUniformValue("uAspect", (float)aspectRatio);
   this->axisProg_.setUniformValue("uWidth", static_cast<float>(
-    this->width()));
+        this->width()));
   this->axisProg_.release();
 }
 
@@ -507,7 +507,7 @@ void MeshWindow::paintGL()
     this->bboxVBO_.setUsagePattern(QOpenGLBuffer::StaticDraw);
     this->bboxVBO_.bind();
     this->bboxVBO_.allocate(&this->bboxData_[0], static_cast<int>(
-      sizeof(GL_FLOAT) * this->bboxData_.size()));
+          sizeof(GL_FLOAT) * this->bboxData_.size()));
     this->bboxVAO_.create();
     this->bboxVAO_.bind();
     this->edgeProg_.enableAttributeArray(0);
@@ -519,6 +519,14 @@ void MeshWindow::paintGL()
   if (this->perspMat_ == QMatrix4x4()) {
     this->resizeGL(this->width(), this->height());
   }
+  auto matTest = this->rotateMatrix_.data();
+  for(size_t i = 0; i < 16; i++) {
+    if(boost::math::isnan(matTest[i])) {
+      std::cout << "Recovering from a NaN matrix error..." << std::endl;
+      this->resetView();
+      break;
+    }
+  }
   qglClearColor(Qt::gray);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   // DRAW THE COORDINATE AXIS
@@ -526,7 +534,7 @@ void MeshWindow::paintGL()
     glLineWidth(1.0);
     this->axisProg_.bind();
     this->axisProg_.setUniformValueArray("uRotation",
-      &this->rotateMatrix_, 1);
+        &this->rotateMatrix_, 1);
     this->axisVAO_.bind();
     glDrawArrays(GL_LINES, 0, 132);
     this->axisVAO_.release();
@@ -541,7 +549,7 @@ void MeshWindow::paintGL()
     this->edgeProg_.setUniformValueArray("uTransform", &this->cameraMatrix_, 1);
     this->bboxVAO_.bind();
     glDrawArrays(GL_LINES, 0,
-      static_cast<GLsizei>(this->bboxData_.size() / 3));
+        static_cast<GLsizei>(this->bboxData_.size() / 3));
     this->bboxVAO_.release();
     this->edgeProg_.release();
   }
@@ -858,7 +866,7 @@ void MeshWindow::drawFaces()
   this->faceProg_.setUniformValueArray("uProjection", &this->perspMat_, 1);
   this->faceVAO_->bind();
   glDrawArrays(GL_TRIANGLES, 0,
-    static_cast<GLsizei>(this->faceData_.size() / 9));
+      static_cast<GLsizei>(this->faceData_.size() / 9));
   this->faceVAO_->release();
   this->faceProg_.release();
 }
@@ -873,7 +881,7 @@ void MeshWindow::drawEdges()
   this->edgeProg_.setUniformValueArray("uProjection", &this->perspMat_, 1);
   this->edgeVAO_->bind();
   glDrawArrays(GL_LINES, 0,
-    static_cast<GLsizei>(this->edgeData_.size() / 3));
+      static_cast<GLsizei>(this->edgeData_.size() / 3));
   this->edgeVAO_->release();
   this->edgeProg_.release();
 }
@@ -902,8 +910,8 @@ void MeshWindow::drawCuts()
 void MeshWindow::drawClippingPlane()
 {
   cleaver::vec3 u, v;
-  cleaver::vec3 n = cleaver::vec3(m_4fvClippingPlane[0], 
-    m_4fvClippingPlane[1], m_4fvClippingPlane[2]);
+  cleaver::vec3 n = cleaver::vec3(m_4fvClippingPlane[0],
+      m_4fvClippingPlane[1], m_4fvClippingPlane[2]);
 
   u = n.cross(cleaver::vec3::unitX);
   double dotval = n.dot(cleaver::vec3::unitX);
@@ -922,8 +930,8 @@ void MeshWindow::drawClippingPlane()
   int h = 0.6f*m_dataBounds.size.y;
 
   cleaver::vec3 shift = cleaver::vec3(m_dataBounds.size.x*n.x,
-    m_dataBounds.size.y*n.y,
-    m_dataBounds.size.z*n.z);
+      m_dataBounds.size.y*n.y,
+      m_dataBounds.size.z*n.z);
 
   cleaver::vec3 p0 = m_dataBounds.center() - 0.5f*shift + m_4fvClippingPlane[3] * n;
   cleaver::vec3 p1 = p0 + (1.0)*w*u + (1.0)*h*v;
@@ -1009,7 +1017,7 @@ void MeshWindow::mouseMoveEvent(QMouseEvent *event)
   if (buttonstate == Qt::RightButton){
     QMatrix4x4 trans;
     trans.translate((float)(event->x() - m_prev_x)*0.001f,
-      -(float)(event->y() - m_prev_y)*0.001f, 0.);
+        -(float)(event->y() - m_prev_y)*0.001f, 0.);
     this->cameraMatrix_ = trans * this->cameraMatrix_;
   } else if (buttonstate == Qt::LeftButton){
     // first convert to sphere coordinates
@@ -1111,8 +1119,8 @@ void MeshWindow::keyPressEvent(QKeyEvent *event)
   case Qt::Key_S:
     break;
   case Qt::Key_F5:
-    file = QFileDialog::getSaveFileName(this, "Save as...", "name", 
-      "PNG (*.png);; BMP (*.bmp);;TIFF (*.tiff *.tif);; JPEG (*.jpg *.jpeg)");
+    file = QFileDialog::getSaveFileName(this, "Save as...", "name",
+        "PNG (*.png);; BMP (*.bmp);;TIFF (*.tiff *.tif);; JPEG (*.jpg *.jpeg)");
     this->grabFrameBuffer().save(file);
     break;
   case Qt::Key_0:
@@ -1367,7 +1375,7 @@ void MeshWindow::build_bkgrnd_vbos()
     qWarning() << "Could not bind shader program to context";
   }
   this->faceVBO_->allocate(this->faceData_.data(),
-    sizeof(GL_FLOAT) * this->faceData_.size());
+      sizeof(GL_FLOAT) * this->faceData_.size());
 
   this->faceProg_.bind();
   if (this->faceVAO_) {
@@ -1401,7 +1409,7 @@ void MeshWindow::build_bkgrnd_vbos()
     qWarning() << "Could not bind shader program to context";
   }
   this->edgeVBO_->allocate(this->edgeData_.data(),
-    sizeof(GL_FLOAT) * this->edgeData_.size());
+      sizeof(GL_FLOAT) * this->edgeData_.size());
 
   this->edgeProg_.bind();
   if (this->edgeVAO_) {
@@ -1425,7 +1433,7 @@ void MeshWindow::build_bkgrnd_vbos()
   if (m_mesher && m_mesher->interfacesComputed())
   {
     std::vector<GLfloat> ViolationData;
-    std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator 
+    std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator
       edgesIter = m_mesh->halfEdges.begin();
 
     // reset evaluation flag, so we can use to avoid duplicates
@@ -1476,7 +1484,7 @@ void MeshWindow::build_bkgrnd_vbos()
       qWarning() << "Could not bind shader program to context";
     }
     this->cutVBO_->allocate(this->cutData_.data(),
-      sizeof(GL_FLOAT) * this->cutData_.size());
+        sizeof(GL_FLOAT) * this->cutData_.size());
 
     this->edgeProg_.bind();
     if (this->cutVAO_) {
@@ -1506,7 +1514,7 @@ void MeshWindow::build_bkgrnd_vbos()
       qWarning() << "Could not bind shader program to context";
     }
     this->violVBO_->allocate(this->violData_.data(),
-      sizeof(GL_FLOAT) * this->violData_.size());
+        sizeof(GL_FLOAT) * this->violData_.size());
 
     this->edgeProg_.bind();
     if (this->violVAO_) {
@@ -1705,7 +1713,7 @@ void MeshWindow::build_output_vbos()
     qWarning() << "Could not bind shader program to context";
   }
   this->faceVBO_->allocate(this->faceData_.data(),
-    sizeof(GL_FLOAT) * this->faceData_.size());
+      sizeof(GL_FLOAT) * this->faceData_.size());
 
   this->faceProg_.bind();
   if (this->faceVAO_) {
@@ -1739,7 +1747,7 @@ void MeshWindow::build_output_vbos()
     qWarning() << "Could not bind shader program to context";
   }
   this->edgeVBO_->allocate(this->edgeData_.data(),
-    sizeof(GL_FLOAT) * this->edgeData_.size());
+      sizeof(GL_FLOAT) * this->edgeData_.size());
 
   this->edgeProg_.bind();
   if (this->edgeVAO_) {
@@ -1801,7 +1809,7 @@ void MeshWindow::build_output_vbos()
       qWarning() << "Could not bind shader program to context";
     }
     this->cutVBO_->allocate(this->cutData_.data(),
-      sizeof(GL_FLOAT) * this->cutData_.size());
+        sizeof(GL_FLOAT) * this->cutData_.size());
 
     this->edgeProg_.bind();
     if (this->cutVAO_) {

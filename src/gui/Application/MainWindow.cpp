@@ -310,7 +310,7 @@ MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
 
 QSize MyFileDialog::sizeHint() const
 {
-  return this->maximumSize();
+  return QSize(800,600);
 }
 
 #endif
