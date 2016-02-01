@@ -11,13 +11,12 @@ Table of Contents
 ========
 
 - [Aknowledgements](#aknowledgements)
+- [Requirements](#requirements)
 - [Building](#building)<br/>
 		- [Linux, OSX](#linux-osx)<br/>
 		- [Windows](#windows)<br/>
-			- [Qt 4](#for-qt-4)<br/>
 			- [Qt 5](#for-qt-5)<br/>
 - [Running](#running)
-	- [Requirements](#requirements)
 	- [Command line Tool](#command-line-tool)
 	- [Graphical Interface](#graphical-interface)
 	- [Cleaver Library](#cleaver-library)
@@ -39,11 +38,20 @@ Cleaver is an Open Source software project that is principally funded through th
 <strong>Contributors: </strong> Ross Whitaker, Josh Levine, Shankar Sastry<br/>
 <strong>Developer: </strong> Brig Bagley<br/>
 
+<h2>Requirements</h2>
+<br/>
+Tested OS: Windows 7+, OpenSuSe 13.2, OSX 10.7.5 (10.8+ required for Qt5/Cleaver GUI)
+Requirements: Git, CMake<br/>
+Optional Requirements: SCIRun4, python 2.7+ (For segmentation tools), Qt5 (For GUI application)
+Suggested:  QtCreator cross-platform IDE<br/>
+If you wish to run the segmentation tools, you must have installed:
+ * SCIRun4 (https://www.sci.utah.edu/download/scirun)
+ * Python 2.7+ (https://www.python.org/downloads/)
+<br/>
+
+
 <h2>Building</h2>
 
-Requirements: Git, CMake, Qt4 -OR- Qt5<br/>
-Optional Requirements: SCIRun4, python 2.7+ (For segmentation tools)
-Suggested:  QtCreator cross-platform IDE<br/>
 We recommend building cleaver outside of the source tree. <br/>
 From Cleaver2 directory:<br/>
 
@@ -63,9 +71,7 @@ cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" -DQt5OpenGL_
 ```
 
 <h4>Windows</h4>
-Additional requirements for GUI: glew (<link>http://glew.sourceforge.net/</link>) -OR- Qt5 and glext
-(<link>http://sourceforge.net/projects/glextwin32/</link>)<br/>
-From Developer Command Prompt: (e.g.  Visual Studio 10 (32bit)) <br/>
+From Developer Command Prompt: (e.g.  Visual Studio 10 (64bit)) <br/>
 
 ```bash
 mkdir build
@@ -75,15 +81,10 @@ nmake
 ```
 
 
-**NOTE**: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below:<br/>
+**NOTE**: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below, replacing paths with your library locations:<br/>
 
-<h5>For Qt 4</h5>
 ```bash
-cmake -G "NMake Makefiles" -DGLEW_LIBRARY="C:\glew\glew-1.10.0\lib\Release\Win32\glew32.lib" -DGLEW_INCLUDE_DIR="C:\glew\glew-1.10.0\include" -DQT_QMAKE_EXECUTABLE="C:\Qt\4.8.5\bin\qmake.exe" -DQT_VERSION="4" ..\src
-```
-<h5>For Qt 5</h5>
-```bash
-cmake -G "NMake Makefiles" -DGLEXT_LIBRARY="C:\glext\glext\lib\glext.lib" -DGLEXT_INCLUDE_DIR="C:\glext\glext\include" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2010_opengl\lib\cmake\Qt5OpenGL"  -DQT_VERSION="5" ..\src
+cmake -G "NMake Makefiles" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5OpenGL" ..\src
 ```
 
 **NOTE**: To include Segmentation Tools in your build, you must set your SCIRun4 directory:<br/>
@@ -92,15 +93,9 @@ cmake -DSCIRun4_DIR="/Path/To/SCIRun" ../src
 ```
 <br/>
 **NOTE**: Since the segmentation tools make system calls, it is important that you provide the full path to the segmentation file (not a relative path).<br/>
+**NOTE**: Turn Off <code>BUILD_CLEAVER_APP</code> in CMake to disable building the GUI if Qt5 is not supported by your OS (IE: OS < OSX 10.8).<br/>
 
 <h2>Running</h2>
-
-<h3>Requirements</h3>
-<br/>
-If you wish to run the segmentation tools, you must have installed:
- * SCIRun4 (https://www.sci.utah.edu/download/scirun)
- * Python 2.7+ (https://www.python.org/downloads/)
- <br/>
 
 <h3>Command line Tool:</h3>
 Using the sphere indicator functions in <code>src/test/test_data/input/</code>, you can generate a simple tet mesh

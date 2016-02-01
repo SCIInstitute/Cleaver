@@ -52,6 +52,7 @@ ADD_SUBDIRECTORY(lib/cleaver)
 ADD_SUBDIRECTORY(examples)
 
 OPTION(BUILD_FULL_CLEAVER "doc" ON)
+OPTION(BUILD_CLEAVER_APP "Build Cleaver GUI App (REQUIRES TEEM)" ON)
 IF(BUILD_FULL_CLEAVER)
 
 	ADD_SUBDIRECTORY(lib/synthetic)
@@ -64,7 +65,9 @@ IF(BUILD_FULL_CLEAVER)
 	ADD_SUBDIRECTORY(cli/sizingfieldcreator)
 	include(lib/Segmentation/FindSCIRun4.cmake)
 	ADD_SUBDIRECTORY(cli/mesher)
-	ADD_SUBDIRECTORY(gui)
+	if (BUILD_CLEAVER_APP) 
+	  ADD_SUBDIRECTORY(gui)
+	endif()
 	
 	########################################################################
 	# All of the testing and test framework options
