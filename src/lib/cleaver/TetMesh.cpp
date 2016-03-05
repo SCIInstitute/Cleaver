@@ -2891,9 +2891,8 @@ namespace cleaver
       parser.clear();
       parser >> tmp >> tetidx[0] >> tetidx[1] >> tetidx[2] >> tetidx[3];
       //bring the indexing down 1 to be zero based?
-      if (i == 0 && (tetidx[0] == 0 || tetidx[1] == 0 ||
-            tetidx[2] == 0 || tetidx[3] == 0)) {
-        zero_based = true;
+      if (i == 0) {
+        zero_based = tmp == 0;
       }
       material = 0;
       if (attrCount > 0) {
