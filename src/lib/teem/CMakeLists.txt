@@ -1,5 +1,5 @@
 #
-# Teem: Tools to process and visualize scientific data and images              
+# Teem: Tools to process and visualize scientific data and images
 # Copyright (C) 2008, 2007, 2006, 2005  Gordon Kindlmann
 # Copyright (C) 2004, 2003, 2002, 2001, 2000, 1999, 1998  University of Utah
 #
@@ -33,7 +33,15 @@ SET(Teem_PNG OFF CACHE BOOL "Build Teem with support for PNG images.")
 # Run cmake --help-policy CMP<num> to see documentation.
 IF(COMMAND cmake_policy)
   # Library paths (/path/to/libmy.so not translated to -L/path/to -lmy)
-  CMAKE_POLICY(SET CMP0003 NEW)
+  if(POLICY CMP0062)
+    cmake_policy(SET CMP0062 OLD)
+  endif(POLICY CMP0062)
+  if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+  endif(POLICY CMP0054)
+  if(POLICY CMP0003)
+    CMAKE_POLICY(SET CMP0003 NEW)
+  endif(POLICY CMP0003)
 ENDIF(COMMAND cmake_policy)
 
 PROJECT(Teem)
@@ -73,7 +81,7 @@ FILE(MAKE_DIRECTORY ${Teem_BINARY_DIR}/include)
 FILE(MAKE_DIRECTORY ${Teem_BINARY_DIR}/include/teem)
 
 #-----------------------------------------------------------------------------
-# Find platform-specific differences in the handling of IEEE floating point 
+# Find platform-specific differences in the handling of IEEE floating point
 # special values.
 
 INCLUDE(${Teem_SOURCE_DIR}/CMake/TestQnanhibit.cmake)
@@ -286,7 +294,7 @@ FOREACH(header_file ${Teem_HEADER_FILES})
 ENDFOREACH(header_file)
 
 #---
-# Include directory 
+# Include directory
 INCLUDE_DIRECTORIES(
   "${CMAKE_BINARY_DIR}/include/"
   "${Teem_SOURCE_DIR}/include/"
@@ -386,7 +394,7 @@ INSTALL(TARGETS teem
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib${EXTRA_INSTALL_PATH}
   ARCHIVE DESTINATION lib${EXTRA_INSTALL_PATH}
-  ) 
+  )
 
 # Now compile the binaries
 ADD_SUBDIRECTORY(src/bin)

@@ -29,6 +29,16 @@
 cmake_minimum_required(VERSION 2.6)
 project(SegmentationTools)
 
+#Find ITK
+FIND_PACKAGE(ITK COMPONENTS ITKCommon ITKIONRRD ITKIOMeta ITKThresholding ITKSmoothing ITKDistanceMap REQUIRED)
+IF (ITK_FOUND)
+  INCLUDE (${ITK_USE_FILE})
+ENDIF(ITK_FOUND)
+MESSAGE(STATUS "** ITK_DIR: ${ITK_DIR}")
+
 include_directories(${CMAKE_SOURCE_DIR}/lib/Segmentation)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
 
 add_library(seg_tools SegmentationTools.cc SegmentationTools.h)
+
+target_link_libraries(seg_tools ${ITK_LIBRARIES} cleaver)

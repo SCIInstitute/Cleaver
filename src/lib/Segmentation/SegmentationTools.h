@@ -29,21 +29,13 @@
 
 #ifndef __SEGMENTATIONTOOLS_H__
 #define __SEGMENTATIONTOOLS_H__
-
-#include <cstdlib>
 #include <string>
 #include <vector>
+#include <Cleaver/ScalarField.h>
 
 namespace SegmentationTools {
-  std::string getExecutablePath() ;
-
-  std::string getNRRDType(std::string file);
-
   int getNumMats(std::string file);
 
-  void createIndicatorFunctions(std::vector<std::string> &file, 
-	  //SCIRun4 binary directory
-	  std::string scirun4_bin_dir,
-	  std::string python = "python");
+  std::vector<cleaver::AbstractScalarField*> createIndicatorFunctions(std::string file);
 }
 #endif

@@ -9,10 +9,7 @@
 #include <QProgressDialog>
 #include <QApplication>
 #include <QCheckBox>
-#if USE_BIOMESH_SEGMENTATION
 #include <SegmentationTools.h>
-#endif
-
 
 MainWindow* MainWindow::m_instance = NULL;
 
@@ -267,8 +264,7 @@ void MainWindow::computeMeshAngles()
     }
   }
 }
-//*************Custom file dialog if segmentation is available.
-#if USE_BIOMESH_SEGMENTATION
+//*************Custom file dialog for segmentation check
 class MyFileDialog : public QFileDialog
 {
   public:
@@ -313,28 +309,21 @@ QSize MyFileDialog::sizeHint() const
   return QSize(800,600);
 }
 
-#endif
 //*********************END custom file dialog
 void MainWindow::importVolume()
 {
   while(this->m_dataManager->volumes().size() > 0)
 	this->m_dataManager->removeVolume(this->m_dataManager->volumes()[0]);
   QStringList fileNames;
-#if USE_BIOMESH_SEGMENTATION
   MyFileDialog dialog(this, tr("Select Indicator Functions"),
       QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
   if (dialog.exec())
     fileNames = dialog.selectedFiles();
   bool segmentation = dialog.isSegmentation();
-#else
-  fileNames = QFileDialog::getOpenFileNames(this, tr("Select Indicator Functions"),
-            QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
-#endif
-
   if(!fileNames.isEmpty())
   {
     std::string file1 = (*fileNames.begin()).toStdString();
-    int pos = file1.find_last_of('/');
+    auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
     bool add_inverse = false;
 
@@ -344,72 +333,50 @@ void MainWindow::importVolume()
       inputs.push_back(fileNames[i].toStdString());
     }
 
-    if(inputs.empty()){
-      std::cerr << "No material fields or segmentation files provided. Terminating."
-        << std::endl;
-      return;
-    }
-#if USE_BIOMESH_SEGMENTATION
-    else if (segmentation) {
-      if (inputs.size() > 1) {
-        std::cerr << "WARNING: More than one inputs provided for segmentation." <<
-          " Only the first input will be used." << std::endl;
-      }
-      QProgressDialog status(QString(
-            "Converting Segmentation to Indicator Functions..."),
-          QString(),0,100, this);
-      status.show();
-      status.setWindowModality(Qt::WindowModal);
-      status.setValue(50);
-      QApplication::processEvents();
-	  if (scirun_path_.empty()) {
-		  scirun_path_ = QFileDialog::getExistingDirectory(this, tr("Browse to SCIRun4 Install Directory"),
-                                             QString::fromStdString(lastPath_),
-                                             QFileDialog::ShowDirsOnly
-											 | QFileDialog::DontResolveSymlinks).toStdString() + "/bin";
-	  }
-#ifdef WIN32
-	  if (python_path_.empty()) {
-		  python_path_ = QFileDialog::getOpenFileName(this,
-											 tr("Open Python Executable"), QString::fromStdString(lastPath_),
-											 tr("Executable Files (*.* *.exe)")).toStdString();
-	  }
-#else
-	  python_path_ = "python";
-#endif
-      SegmentationTools::createIndicatorFunctions(inputs,scirun_path_,python_path_);
-      status.setValue(100);
-    }
-#endif
-    else if(inputs.size() == 1) {
-      add_inverse = true;
-    }
-
-    QProgressDialog status(QString("Loading Indicator Functions..."),QString(),0,100, this);
+    QProgressDialog status(QString("Loading Indicator Functions..."), QString(), 0, 100, this);
     status.show();
     status.setWindowModality(Qt::WindowModal);
     status.setValue(5);
     QApplication::processEvents();
     std::cout << " Loading input fields:" << std::endl;
-    for (size_t i=0; i < inputs.size(); i++) {
-      std::cout << " - " << inputs[i] << std::endl;
-    }
-    status.setValue(10);
-    QApplication::processEvents();
-
-    std::vector<cleaver::AbstractScalarField*> fields =
-      loadNRRDFiles(inputs, true);
-    status.setValue(70);
-    QApplication::processEvents();
-    if (fields.empty()) {
-      std::cerr << "Failed to load image data. Terminating." << std::endl;
+    std::vector<cleaver::AbstractScalarField*> fields;
+    if(inputs.empty()){
+      std::cerr << "No material fields or segmentation files provided. Terminating."
+        << std::endl;
       return;
-    } else if (add_inverse) {
-      fields.push_back(new cleaver::InverseScalarField(fields[0]));
-      fields.back()->setName(fields[0]->name() + "-inverse");
+    } else if (segmentation) {
+      if (inputs.size() > 1) {
+        std::cerr << "WARNING: More than one inputs provided for segmentation." <<
+          " Only the first input will be used." << std::endl;
+      }
+      fields = SegmentationTools::createIndicatorFunctions(inputs[0]);
+      status.setValue(90);
+      QApplication::processEvents();
+    } else {
+      if (inputs.size() == 1) {
+        add_inverse = true;
+      }
+
+      for (size_t i = 0; i < inputs.size(); i++) {
+        std::cout << " - " << inputs[i] << std::endl;
+      }
+      status.setValue(10);
+      QApplication::processEvents();
+
+      fields = loadNRRDFiles(inputs, true);
+
+      status.setValue(70);
+      QApplication::processEvents();
+      if (fields.empty()) {
+        std::cerr << "Failed to load image data. Terminating." << std::endl;
+        return;
+      } else if (add_inverse) {
+        fields.push_back(new cleaver::InverseScalarField(fields[0]));
+        fields.back()->setName(fields[0]->name() + "-inverse");
+      }
+      status.setValue(90);
+      QApplication::processEvents();
     }
-    status.setValue(90);
-    QApplication::processEvents();
     // Add Fields to Data Manager
     for(size_t f=0; f < fields.size(); f++){
       dataManager()->addField(fields[f]);
@@ -448,7 +415,7 @@ void MainWindow::importSizingField()
   if(!fileName.isEmpty())
   {
     std::string file1 = QString((*fileName.begin())).toStdString();
-    int pos = file1.find_last_of('/');
+    auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
     cleaver::AbstractScalarField* sizingField = loadNRRDFile(fileName.toStdString(), true);
     volume->setSizingField(sizingField);
@@ -508,7 +475,7 @@ void MainWindow::importMesh()
   }
   if (!fileNames.empty()) {
     std::string file1 = (*fileNames.begin()).toStdString();
-    int pos = file1.find_last_of('/');
+    auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
   }
 }
@@ -531,7 +498,7 @@ void MainWindow::exportField(cleaver::FloatField *field)
   saveNRRDFile(field, std::string(fileName.toLatin1()));
   if (fileName != "") {
     std::string file1 = fileName.toStdString();
-    int pos = file1.find_last_of('/');
+    auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
   }
 }
@@ -584,7 +551,7 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   }
   if (fileName != "") {
     std::string file1 = fileName.toStdString();
-    int pos = file1.find_last_of('/');
+    auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
   }
 }
