@@ -83,8 +83,7 @@ make
 **NOTE**: You may need to set your Qt build variables:
 
 ```bash
-cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" 
--DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
+cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" -DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
 ```
 
 <h4>Windows</h4>
@@ -104,8 +103,7 @@ qt-creator, or pass library paths directly to command
 line like below, replacing paths with your library locations:<br/>
 
 ```bash
-cmake -G "NMake Makefiles" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5Widgets" 
--DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5OpenGL" ..\src
+cmake -G "NMake Makefiles" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5OpenGL" ..\src
 ```
 
 <br/>
