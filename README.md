@@ -2,7 +2,9 @@ Cleaver2
 ========
 
 **Cleaver - A MultiMaterial Tetrahedral Meshing Library and Application**
-The method is theoretically guaranteed to produce valid meshes with bounded dihedral angles, while still conforming to multimaterial material surfaces. Empirically these bounds have been shown to be significant.
+The method is theoretically guaranteed to produce valid meshes with bounded
+ dihedral angles, while still conforming to multimaterial material surfaces.
+  Empirically these bounds have been shown to be significant.
 
 This is the open-source repository for Cleaver2, a tetrahedral meshing tool. 
 This distribution comes with both a command-line interface, and a GUI.
@@ -13,6 +15,7 @@ Table of Contents
 - [Aknowledgements](#aknowledgements)
 - [Requirements](#requirements)
 - [Building](#building)<br/>
+		- [Building ITK](#building-itk)<br/>
 		- [Linux, OSX](#linux-osx)<br/>
 		- [Windows](#windows)<br/>
 			- [Qt 5](#for-qt-5)<br/>
@@ -28,32 +31,45 @@ Aknowledgements
 ========
 The Cleaver Library is based on the 'Lattice Cleaving' algorithm:
 
-<strong>Bronson J., Levine, J., Whitaker R., "Lattice Cleaving: Conforming Tetrahedral Meshes of Multimaterial Domains with Bounded Quality". Proceedings of the 21st International Meshing Roundtable (San Jose, CA, Oct 7-10, 2012)</strong>
+<strong>Bronson J., Levine, J., Whitaker R., "Lattice Cleaving: 
+Conforming Tetrahedral Meshes of Multimaterial Domains with Bounded Quality". 
+Proceedings of the 21st International Meshing Roundtable (San Jose, CA, Oct 7-10, 2012)</strong>
 
-Cleaver is an Open Source software project that is principally funded through the SCI Institute's NIH/NIGMS CIBC Center. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of NIH/NIGMS CIBC software or data sets.
+Cleaver is an Open Source software project that is principally funded through 
+the SCI Institute's NIH/NIGMS CIBC Center. Please use the following acknowledgment 
+and send us references to any publications, presentations, or successful
+ funding applications that make use of NIH/NIGMS CIBC software or data sets.
 
-"This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545."
+"This project was supported by the National Institute of General Medical 
+Sciences of the National Institutes of Health under grant number P41GM103545."
 
 <strong>Author: </strong> Jonathan Bronson<br/>
 <strong>Contributors: </strong> Ross Whitaker, Josh Levine, Shankar Sastry<br/>
 <strong>Developer: </strong> Brig Bagley<br/>
 
 <h2>Requirements</h2>
+ * C++11 compatible compiler
+ * Git (https://git-scm.com/)
+ * CMake 2.8+ (http://www.cmake.org/)
+ * Insight Toolkit (ITK 4.7+ recommended) (http://www.itk.org/)
+ * Qt 5.* (http://www.qt.io/developers/)
+ * Windows 7+, OSX 10.9+, and OpenSuse 13.1+ Recommended. 
+ Other platforms may work, but are not officially supported.
+ 
 <br/>
-Tested OS: Windows 7+, OpenSuSe 13.2, OSX 10.7.5 (10.8+ required for Qt5/Cleaver GUI)
-Requirements: Git, CMake<br/>
-Optional Requirements: SCIRun4, python 2.7+ (For segmentation tools), Qt5 (For GUI application)
-Suggested:  QtCreator cross-platform IDE<br/>
-If you wish to run the segmentation tools, you must have installed:
- * SCIRun4 (https://www.sci.utah.edu/download/scirun)
- * Python 2.7+ (https://www.python.org/downloads/)
-<br/>
-
 
 <h2>Building</h2>
-
 We recommend building cleaver outside of the source tree. <br/>
 From Cleaver2 directory:<br/>
+##Building ITK
+- Configure with:
+  - <code>CMAKE_CXX_FLAGS+="-std=c++11"</code> on UNIX
+  - <code>BUILD_SHARED_LIBS=FALSE</code>
+  - <code>BUILD_EXAMPLES=FALSE</code>
+  - <code>BUILD_TESTING=FALSE</code>
+  - <code>ITKV3_COMPATIBILTY=TRUE</code>
+- Build ITK:
+  - Make command: <code>make -j4</code><br/>
 
 <h4>Linux, OSX</h4>
 
@@ -67,7 +83,8 @@ make
 **NOTE**: You may need to set your Qt build variables:
 
 ```bash
-cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" -DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
+cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" 
+-DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
 ```
 
 <h4>Windows</h4>
@@ -81,24 +98,26 @@ nmake
 ```
 
 
-**NOTE**: If you do not have your development environment paths set up, you can set them with cmake-gui, qt-creator, or pass library paths directly to command line like below, replacing paths with your library locations:<br/>
+**NOTE**: If you do not have your development environment 
+paths set up, you can set them with cmake-gui, 
+qt-creator, or pass library paths directly to command 
+line like below, replacing paths with your library locations:<br/>
 
 ```bash
-cmake -G "NMake Makefiles" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5OpenGL" ..\src
+cmake -G "NMake Makefiles" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5Widgets" 
+-DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5OpenGL" ..\src
 ```
 
-**NOTE**: To include Segmentation Tools in your build, you must set your SCIRun4 directory:<br/>
-```bash
-cmake -DSCIRun4_DIR="/Path/To/SCIRun" ../src
-```
 <br/>
-**NOTE**: Since the segmentation tools make system calls, it is important that you provide the full path to the segmentation file (not a relative path).<br/>
-**NOTE**: Turn Off <code>BUILD_CLEAVER_APP</code> in CMake to disable building the GUI if Qt5 is not supported by your OS (IE: OS < OSX 10.8).<br/>
+**NOTE**: Turn Off <code>BUILD_CLEAVER_APP</code> in 
+CMake to disable building the GUI if Qt5 is not 
+supported by your OS (IE: OS < OSX 10.8).<br/>
 
 <h2>Running</h2>
 
 <h3>Command line Tool:</h3>
-Using the sphere indicator functions in <code>src/test/test_data/input/</code>, you can generate a simple tet mesh
+Using the sphere indicator functions in 
+<code>src/test/test_data/input/</code>, you can generate a simple tet mesh
 using the following command: <br/>
 ```c++
 bin/cleaver-cli --output_name spheres -i ../src/test/test_data/input/spheres*.nrrd 
@@ -133,15 +152,14 @@ Command line flags:
                                   matlab, vtk, ply [Surface mesh only])
   -t [ --strict ]                 warnings become errors
   -S [ --segmentation ]           The input file is a segmentation file.
-  -P [ --scirun_path ]            The path to SCIRun4 (required for a 
-                                  segmentation file)
 ```
 <h3>Graphical Interface</h3>
 You can run the GUI from the command line, or by double-clicking it in a folder.
 <code> bin/cleaver-gui</code><br/>
 You should see a window similar to this:<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/application.png"><br/>
-Load the spheres in <code>src/test/test_data/input</code> either with <code>ctrl+v</code> or <code>File -> Load Volume</code>,
+Load the spheres in <code>src/test/test_data/input</code> 
+either with <code>ctrl+v</code> or <code>File -> Load Volume</code>,
 or load your own indicator functions or segmentation file (if included in the build).<br/>
 **Sizing Field Creator**<br/>
 This tool allows a user to set parameters for the cleaving sizing field.<br/>
@@ -224,12 +242,15 @@ To include the cleaver library, you should link to the library built, <code>libc
 include_directories(Cleaver2/src/lib/cleaver)
 target_link_libraries(YOUR_TARGET ${your_libs} Cleaver2/build/lib/libcleaver.a)
 ```
-There are other headers for different options, such as converting NRRD files to cleaver indicator functions.
-You may wish to write your own indicator function creation methods. The basic set of calls are the following:
+There are other headers for different options, 
+such as converting NRRD files to cleaver indicator functions.
+You may wish to write your own indicator function creation methods. 
+The basic set of calls are the following:
 ```c++
 #include <Cleaver/Cleaver.h>
 #include <Cleaver/CleaverMesher.h>
 ...
+  //obtain your image fields before this line
   cleaver::Volume *volume = new cleaver::Volume(fields);
   cleaver::CleaverMesher mesher(volume);
   cleaver::AbstractScalarField *sizingField = 
@@ -255,18 +276,23 @@ You may wish to write your own indicator function creation methods. The basic se
   mesh->writeMesh(output_path + output_name, output_format, verbose);
 ...
 ```
-Look at the <code>Cleaver2/src/cli/mesher/main.cpp</code> file for more details on how to apply
+Look at the <code>Cleaver2/src/cli/mesher/main.cpp</code> file 
+for more details on how to apply
 and use the different options of the cleaver library.<br/>
 
 <h2>Testing</h2>
 
-The repo comes with a set of regression tests to see if recent changes break expected results. To build the tests, you will need to set <code>BUILD_TESTING</code> to "ON" in either <code>ccmake</code> or when calling CMake:
+The repo comes with a set of regression tests to see if recent 
+changes break expected results. To build the tests, you will
+ need to set <code>BUILD_TESTING</code> to "ON" in either
+  <code>ccmake</code> or when calling CMake:
 
 ```c++
 cmake -DBUILD_TESTING=ON ../src
 ```
 <h4>Windows</h4>
-The gtest library included in the repo needs to be built with forced shared libraries on Windows, so use the following:
+The gtest library included in the repo needs to be
+ built with forced shared libraries on Windows, so use the following:
 
 ```c++
 cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON ../src
@@ -275,4 +301,7 @@ Be sure to include all other necessary CMake definitions as annotated above.
 
 <h2>Known Issues</h2>
 
- * On larger data sets with a potentially high number of quadruple points (> 3 material fields), some functions are failing to ensure valid tets and meshes, causing bad tets in the final output. This code is being debugged now for a future release.
+ * On larger data sets with a potentially high number of quadruple points
+  (> 3 material fields), some functions are failing to ensure valid tets
+   and meshes, causing bad tets in the final output. This code is being 
+   debugged now for a future release.
