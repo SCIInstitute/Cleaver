@@ -66,10 +66,18 @@ MeshWindow::MeshWindow(QObject *parent) :
 
 MeshWindow::~MeshWindow()
 {
-  this->faceVBO_->destroy();
-  this->faceVAO_->destroy();
-  this->edgeVBO_->destroy();
-  this->edgeVAO_->destroy();
+  if (this->faceVBO_) {
+    this->faceVBO_->destroy();
+  }
+  if (this->faceVAO_) {
+    this->faceVBO_->destroy();
+  }
+  if (this->edgeVBO_) {
+    this->edgeVBO_->destroy();
+  }
+  if (this->edgeVAO_) {
+    this->edgeVAO_->destroy();
+  }
   emit closed(this);
 }
 

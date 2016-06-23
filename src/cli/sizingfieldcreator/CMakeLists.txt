@@ -6,6 +6,7 @@ SET( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 # Add library includes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
 FILE(GLOB srcs *.cpp )

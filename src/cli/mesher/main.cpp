@@ -46,10 +46,7 @@
 #include <Cleaver/InverseField.h>
 #include <Cleaver/SizingFieldCreator.h>
 #include <Cleaver/Timer.h>
-#include <nrrd2cleaver/nrrd2cleaver.h>
-#if USE_BIOMESH_SEGMENTATION
-#include <SegmentationTools.h>
-#endif
+#include <NRRDTools.h>
 
 #include <boost/program_options.hpp>
 
@@ -94,10 +91,7 @@ int main(int argc,  char* argv[])
 {
   bool verbose = false;
   bool fix_tets = false;
-#if USE_BIOMESH_SEGMENTATION
   bool segmentation = false;
-  std::string scirun_dir = "";
-#endif
   std::vector<std::string> material_fields;
   std::string sizing_field;
   std::string background_mesh;
@@ -150,10 +144,7 @@ int main(int argc,  char* argv[])
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
       ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [Surface mesh only])")
       ("strict,t", "warnings become errors")
-#if USE_BIOMESH_SEGMENTATION
       ("segmentation,S", "The input file is a segmentation file.")
-      ("scirun_path,P", po::value<std::string>(), "The path to SCIRun4 (required for a segmentation file)")
-#endif
       ;
 
     boost::program_options::variables_map variables_map;
@@ -177,21 +168,10 @@ int main(int argc,  char* argv[])
       verbose = true;
     }
 
-#if USE_BIOMESH_SEGMENTATION
     // enable segmentation
     if (variables_map.count("segmentation")) {
       segmentation = true;
     }
-    // set scirun4 path
-    if (variables_map.count("scirun_path")) {
-      scirun_dir = variables_map["scirun_path"].as<std::string>() + "/bin";
-    }
-	if (scirun_dir.empty() && segmentation) {
-		std::cerr << "Error: Cannot run segmentations without a path to SCIRun4!" << std::endl;
-		return 11;
-	}
-#endif
-
     if (variables_map.count("strict")) {
       strict = true;
     }
@@ -362,40 +342,34 @@ int main(int argc,  char* argv[])
   cleaver::Timer total_timer;
   total_timer.start();
   bool add_inverse = false;
-
+  std::vector<cleaver::AbstractScalarField*> fields;
   if(material_fields.empty()){
     std::cerr << "No material fields or segmentation files provided. Terminating."
       << std::endl;
     return 10;
-  }
-#if USE_BIOMESH_SEGMENTATION
-  else if (segmentation) {
+  } 
+  if (segmentation) {
     if (material_fields.size() > 1) {
       std::cerr << "WARNING: More than 1 input provided for segmentation." <<
         " Only the first input will be used." << std::endl;
     }
-	SegmentationTools::createIndicatorFunctions(material_fields,scirun_dir);
-  }
-#endif
-  else if(material_fields.size() == 1) {
+	  NRRDTools::segmentationToIndicatorFunctions(material_fields[0]);
+  } else if(material_fields.size() == 1) {
     add_inverse = true;
-  }
-
-  if(verbose) {
-    std::cout << " Loading input fields:" << std::endl;
-    for (size_t i=0; i < material_fields.size(); i++) {
-      std::cout << " - " << material_fields[i] << std::endl;
+  } else {
+    if (verbose) {
+      std::cout << " Loading input fields:" << std::endl;
+      for (size_t i = 0; i < material_fields.size(); i++) {
+        std::cout << " - " << material_fields[i] << std::endl;
+      }
     }
+    fields = NRRDTools::loadNRRDFiles(material_fields);
+    if (fields.empty()) {
+      std::cerr << "Failed to load image data. Terminating." << std::endl;
+      return 10;
+    } else if (add_inverse)
+      fields.push_back(new cleaver::InverseScalarField(fields[0]));
   }
-
-  std::vector<cleaver::AbstractScalarField*> fields =
-    loadNRRDFiles(material_fields, verbose);
-  if (fields.empty()) {
-    std::cerr << "Failed to load image data. Terminating." << std::endl;
-    return 10;
-  } else if (add_inverse)
-    fields.push_back(new cleaver::InverseScalarField(fields[0]));
-
   cleaver::Volume *volume = new cleaver::Volume(fields);
   cleaver::CleaverMesher mesher(volume);
   mesher.setAlphaInit(alpha);
@@ -422,16 +396,15 @@ int main(int argc,  char* argv[])
     //------------------------------------------------------------
     // Load or Construct Sizing Field
     //------------------------------------------------------------
-    cleaver::AbstractScalarField *sizingField = NULL;
+    std::vector<cleaver::AbstractScalarField *> sizingField;
     if (have_sizing_field) {
       std::cout << "Loading sizing field: " << sizing_field << std::endl;
-      sizingField = loadNRRDFile(sizing_field, verbose);
+      sizingField = NRRDTools::loadNRRDFiles({ {sizing_field} });
       // todo(jon): add error handling
-    }
-    else {
+    } else {
       cleaver::Timer sizing_field_timer;
       sizing_field_timer.start();
-      sizingField = cleaver::SizingFieldCreator::createSizingFieldFromVolume(
+      sizingField[0] = cleaver::SizingFieldCreator::createSizingFieldFromVolume(
           volume,
           (float)(1.0/lipschitz),
           (float)scale,
@@ -446,7 +419,7 @@ int main(int argc,  char* argv[])
     //------------------------------------------------------------
     // Set Sizing Field on Volume
     //------------------------------------------------------------
-    volume->setSizingField(sizingField);
+    volume->setSizingField(sizingField[0]);
 
 
     //-----------------------------------------------------------

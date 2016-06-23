@@ -44,7 +44,7 @@
 #include <Cleaver/Cleaver.h>
 #include <Cleaver/InverseField.h>
 #include <Cleaver/SizingFieldCreator.h>
-#include <nrrd2cleaver/nrrd2cleaver.h>
+#include <NRRDTools.h>
 
 #include <boost/program_options.hpp>
 
@@ -150,7 +150,7 @@ int main(int argc,	char* argv[])
         std::cout << " - " << material_fields[i] << std::endl;
     }
 
-    std::vector<cleaver::AbstractScalarField*> fields = loadNRRDFiles(material_fields, verbose);
+    std::vector<cleaver::AbstractScalarField*> fields = NRRDTools::loadNRRDFiles(material_fields);
     if(fields.empty()){
         std::cerr << "Failed to load image data. Terminating." << std::endl;
         return 0;
@@ -177,7 +177,7 @@ int main(int argc,	char* argv[])
     // Write Field to File
     //------------------------------------------------------------
     std::cout << " Writing sizing field to file: " << output_path << ".nrrd" << std::endl;  // todo(jrb) strip path
-    saveNRRDFile(sizingField, output_path);
+    NRRDTools::saveNRRDFile(sizingField, output_path);
 
 
     // done

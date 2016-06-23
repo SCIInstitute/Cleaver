@@ -52,7 +52,7 @@ FILE(GLOB RCC_FILES ./Resources/*.qrc)
 
 # Add library incl1udes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/Segmentation)
+include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
 FILE(GLOB srcs *.cpp ./Main/*.cpp )
@@ -89,9 +89,6 @@ if(WIN32)
   TARGET_LINK_LIBRARIES(cleaver-gui
     cleaver
     nrrd2cleaver
-    teem
-    synthetic
-	seg_tools
     ${OPENGL_LIBRARIES}
     ${QT_LIBRARIES}
     Qt5::Widgets
@@ -104,9 +101,6 @@ else()
   TARGET_LINK_LIBRARIES(cleaver-gui
     cleaver
     nrrd2cleaver
-    teem
-    synthetic
-	seg_tools
     ${OPENGL_LIBRARIES}
     ${QT_LIBRARIES}
     Qt5::Widgets

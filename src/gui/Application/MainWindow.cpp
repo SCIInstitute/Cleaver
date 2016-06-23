@@ -3,13 +3,12 @@
 #include <Cleaver/Cleaver.h>
 #include <Cleaver/ConstantField.h>
 #include <Cleaver/InverseField.h>
-#include <nrrd2cleaver/nrrd2cleaver.h>
 #include <cstdio>
 #include <fstream>
 #include <QProgressDialog>
 #include <QApplication>
 #include <QCheckBox>
-#include <SegmentationTools.h>
+#include <NRRDTools.h>
 
 MainWindow* MainWindow::m_instance = NULL;
 
@@ -349,7 +348,7 @@ void MainWindow::importVolume()
         std::cerr << "WARNING: More than one inputs provided for segmentation." <<
           " Only the first input will be used." << std::endl;
       }
-      fields = SegmentationTools::createIndicatorFunctions(inputs[0]);
+      fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0]);
       status.setValue(90);
       QApplication::processEvents();
     } else {
@@ -363,7 +362,7 @@ void MainWindow::importVolume()
       status.setValue(10);
       QApplication::processEvents();
 
-      fields = loadNRRDFiles(inputs, true);
+      fields = NRRDTools::loadNRRDFiles(inputs);
 
       status.setValue(70);
       QApplication::processEvents();
@@ -417,8 +416,9 @@ void MainWindow::importSizingField()
     std::string file1 = QString((*fileName.begin())).toStdString();
     auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
-    cleaver::AbstractScalarField* sizingField = loadNRRDFile(fileName.toStdString(), true);
-    volume->setSizingField(sizingField);
+    std::vector<cleaver::AbstractScalarField*> sizingField =
+      NRRDTools::loadNRRDFiles({ {fileName.toStdString()} });
+    volume->setSizingField(sizingField[0]);
     std::cout << "Sizing Field Set" << std::endl;
   }
 }
@@ -495,7 +495,7 @@ void MainWindow::exportField(cleaver::FloatField *field)
 
   QString filter1("NRRD (*.nrrd)");
 
-  saveNRRDFile(field, std::string(fileName.toLatin1()));
+  NRRDTools::saveNRRDFile(field, std::string(fileName.toLatin1()));
   if (fileName != "") {
     std::string file1 = fileName.toStdString();
     auto pos = file1.find_last_of('/');

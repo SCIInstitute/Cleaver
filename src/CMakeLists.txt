@@ -49,27 +49,27 @@ endif()
 # Build Cleaver Library (no dependencies)
 ADD_SUBDIRECTORY(lib/cleaver)
 
-ADD_SUBDIRECTORY(examples)
+OPTION(BUILD_EXTRAS "Example use cases, tools" OFF)
+IF(BUILD_EXTRAS)
+  ADD_SUBDIRECTORY(examples)
+ENDIF()
 
-OPTION(BUILD_FULL_CLEAVER "doc" ON)
+OPTION(BUILD_FULL_CLEAVER "doc" OFF)
 OPTION(BUILD_CLEAVER_APP "Build Cleaver GUI App (REQUIRES TEEM)" ON)
 IF(BUILD_FULL_CLEAVER)
-
-  ADD_SUBDIRECTORY(lib/synthetic)
   ADD_SUBDIRECTORY(lib/boost)
-  ADD_SUBDIRECTORY(lib/teem)
   ADD_SUBDIRECTORY(lib/nrrd2cleaver)
-  add_subdirectory(lib/Segmentation)
-
   include_directories(lib/boost)
-
-  ADD_SUBDIRECTORY(cli/sizingfieldcreator)
-
   ADD_SUBDIRECTORY(cli/mesher)
+  
+  IF(BUILD_EXTRAS)
+    ADD_SUBDIRECTORY(lib/synthetic)
+    ADD_SUBDIRECTORY(cli/sizingfieldcreator)
+  ENDIF()
+
   if (BUILD_CLEAVER_APP)
     ADD_SUBDIRECTORY(gui)
   endif()
-
   ########################################################################
   # All of the testing and test framework options
   INCLUDE(CTest)

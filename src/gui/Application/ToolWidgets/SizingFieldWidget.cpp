@@ -11,7 +11,7 @@
 #include <Cleaver/InverseField.h>
 #include <Cleaver/ScaledField.h>
 #include <Cleaver/SizingFieldCreator.h>
-#include <nrrd2cleaver/nrrd2cleaver.h>
+#include <NRRDTools.h>
 #include <Cleaver/Timer.h>
 
 SizingFieldWidget::SizingFieldWidget(QWidget *parent) :
@@ -87,7 +87,7 @@ void SizingFieldWidget::loadIndicatorFunctions()
             inputs.push_back(fileNames[i].toStdString());
         }
 
-        std::vector<cleaver::AbstractScalarField*> fields = loadNRRDFiles(inputs, true);
+        std::vector<cleaver::AbstractScalarField*> fields = NRRDTools::loadNRRDFiles(inputs);
         if(fields.empty()){
             std::cerr << "Failed to load image data." << std::endl;
             return;
@@ -121,8 +121,9 @@ void SizingFieldWidget::loadSizingField()
 
     if(!fileName.isEmpty())
     {
-        cleaver::AbstractScalarField* sizingField = loadNRRDFile(fileName.toStdString(), true);
-        this->volume->setSizingField(sizingField);
+      std::vector<cleaver::AbstractScalarField*> sizingField = 
+        NRRDTools::loadNRRDFiles({ {fileName.toStdString()} });
+        this->volume->setSizingField(sizingField[0]);
     }
 }
 
