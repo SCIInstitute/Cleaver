@@ -31,7 +31,7 @@ project(SegmentationTools)
 
 #Find ITK
 FIND_PACKAGE(ITK COMPONENTS ITKCommon ITKIONRRD ITKIOMeta
-   ITKThresholding ITKSmoothing ITKDistanceMap ITKIOImageBase REQUIRED)
+  ITKThresholding ITKSmoothing ITKDistanceMap ITKIOImageBase REQUIRED)
 IF (ITK_FOUND)
   INCLUDE (${ITK_USE_FILE})
 ENDIF(ITK_FOUND)

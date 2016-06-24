@@ -27,6 +27,7 @@
 //  USE OR OTHER DEALINGS IN THE SOFTWARE.
 //-------------------------------------------------------------------
 
+#include <cstdio>
 #include <NRRDTools.h>
 #include <itkImage.h>
 #include <itkImageFileReader.h>
