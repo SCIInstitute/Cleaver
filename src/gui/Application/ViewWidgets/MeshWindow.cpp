@@ -45,8 +45,8 @@ const char* starModeString[4] = { "No-Star Mode",
 
 extern std::vector<cleaver::vec3> badEdges;
 
-MeshWindow::MeshWindow(QObject *parent) :
-  QGLWidget(QGLFormat(QGL::SampleBuffers), qobject_cast<QWidget *>(parent)),
+MeshWindow::MeshWindow(const QGLFormat& format, QObject *parent) :
+  QGLWidget(format, qobject_cast<QWidget *>(parent)),
   faceProg_(this), edgeProg_(this), axisProg_(this),
   bboxVBO_(QOpenGLBuffer::VertexBuffer), bboxVAO_(this)
 {

@@ -17,7 +17,7 @@ class MeshWindow : public QGLWidget
 {
     Q_OBJECT
 public:
-    explicit MeshWindow(QObject *parent = 0);
+    explicit MeshWindow(const QGLFormat& format, QObject *parent = 0);
     ~MeshWindow();
 
     bool connectToTimer(QTimer *timer);

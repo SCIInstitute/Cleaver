@@ -651,7 +651,15 @@ void MainWindow::createWindow(cleaver::Volume *volume, const QString &title)
 {
   if(volume)
   {
-    MeshWindow *window = new MeshWindow(this);
+    QGLFormat glFormat;
+    glFormat.setVersion(3, 3);
+    glFormat.setProfile(QGLFormat::CoreProfile); // Requires >=Qt-4.8.0
+    glFormat.setSampleBuffers(true);
+    MeshWindow *window = new MeshWindow(glFormat, this);
+    std::cout << "Current Context: " << 
+      window->format().majorVersion() << "." << 
+      window->format().minorVersion() << ", CORE? " << 
+      ((window->format().profile() == 1) ? "true" : "false") << std::endl;
     window->setVolume(volume);
     QMdiSubWindow *sw = m_workspace->addSubWindow(window);
     window->setAttribute(Qt::WA_DeleteOnClose);
@@ -677,7 +685,11 @@ void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)
 {
   if(mesh)
   {
-    MeshWindow *window = new MeshWindow(this);
+    QGLFormat glFormat;
+    glFormat.setVersion(3, 3);
+    glFormat.setProfile(QGLFormat::CoreProfile); // Requires >=Qt-4.8.0
+    glFormat.setSampleBuffers(true);
+    MeshWindow *window = new MeshWindow(glFormat, this);
     window->setMesh(mesh);
     QMdiSubWindow *sw = m_workspace->addSubWindow(window);
     window->setAttribute(Qt::WA_DeleteOnClose);
