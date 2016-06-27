@@ -292,7 +292,8 @@ void MeshWindow::initializeShaders()
     qWarning() << this->axisProg_.log();
   }
   std::string fs;
-  fs = "in vec4 oColor;\n";
+  fs = "#version 330\n";
+  fs = fs + "in vec4 oColor;\n";
   fs = fs + "void main() {\n";
   fs = fs + "  gl_FragColor = oColor;\n";
   fs = fs + "}\n";
