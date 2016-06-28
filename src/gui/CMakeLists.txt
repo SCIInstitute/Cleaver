@@ -4,9 +4,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 add_definitions(-DCLEAVER_VERSION_MAJOR="2")
 add_definitions(-DCLEAVER_VERSION_MINOR="1")
-if(WIN32)
-  add_definitions(-DWIN32_ICON_FILE="${CMAKE_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.ico")
-endif()
 
 FIND_PACKAGE(OpenGL QUIET)
 
@@ -49,6 +46,9 @@ FILE(GLOB moc_hdrs ./Application/MainWindow.h   ./Application/Data/*.h   ./Appli
 # Add QT Files
 FILE(GLOB Forms_UIS ./Application/*.ui ./Application/DataWidgets/*.ui ./Application/ToolWidgets/*.ui ./Application/ViewWidgets/*.ui)
 FILE(GLOB RCC_FILES ./Resources/*.qrc)
+FILE(GLOB APP_ICNS Resources/Icons/*.ico)
+FILE(GLOB WINDOW_ICNS Resources/Icons/cleaverIcon.png)
+add_definitions(-DWINDOW_ICON="${CMAKE_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.png")
 
 # Add library incl1udes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
@@ -73,6 +73,8 @@ IF(APPLE)
   SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
   # include the icns file in the target
   SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
+ELSEIF(WIN32)
+  SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
 ENDIF(APPLE)
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -83,7 +85,13 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 
-ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE  ${srcs} ${hdrs} ${moc_srcs} ${MOC_SRC} ${UI_SRC} ${RCC_SRC})
+ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE WIN32
+   ${srcs} ${hdrs} 
+   ${moc_srcs} ${MOC_SRC}
+   ${UI_SRC} ${RCC_SRC}
+   ${APP_ICNS} 
+   ${WINDOW_ICNS} 
+   )
 
 if(WIN32)
   TARGET_LINK_LIBRARIES(cleaver-gui

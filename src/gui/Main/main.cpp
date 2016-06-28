@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
       + QString(".") + QString(CLEAVER_VERSION_MINOR));
     w.resize(900,400);
 #ifdef WIN32
-	w.setWindowIcon(QIcon(WIN32_ICON_FILE));
+	w.setWindowIcon(QIcon(WINDOW_ICON));
 #endif
     w.show();
     return a.exec();
