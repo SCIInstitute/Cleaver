@@ -69,7 +69,7 @@ From Cleaver2 directory:<br/>
   - <code>BUILD_TESTING=FALSE</code>
   - <code>ITKV3_COMPATIBILTY=TRUE</code>
 - Build ITK:
-  - Make command: <code>make -j4</code><br/>
+  - Make command: <code>make -j4 all</code><br/>
 
 <h4>Linux, OSX</h4>
 

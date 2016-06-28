@@ -45,8 +45,8 @@ const char* starModeString[4] = { "No-Star Mode",
 
 extern std::vector<cleaver::vec3> badEdges;
 
-MeshWindow::MeshWindow(QObject *parent) :
-  QGLWidget(QGLFormat(QGL::SampleBuffers), qobject_cast<QWidget *>(parent)),
+MeshWindow::MeshWindow(const QGLFormat& format, QObject *parent) :
+  QGLWidget(format, qobject_cast<QWidget *>(parent)),
   faceProg_(this), edgeProg_(this), axisProg_(this),
   bboxVBO_(QOpenGLBuffer::VertexBuffer), bboxVAO_(this)
 {
@@ -292,9 +292,11 @@ void MeshWindow::initializeShaders()
     qWarning() << this->axisProg_.log();
   }
   std::string fs;
-  fs = "in vec4 oColor;\n";
+  fs = "#version 330\n";
+  fs = fs + "in vec4 oColor;\n";
+  fs = fs + "out vec4 fragColor;\n";
   fs = fs + "void main() {\n";
-  fs = fs + "  gl_FragColor = oColor;\n";
+  fs = fs + "  fragColor = oColor;\n";
   fs = fs + "}\n";
   QOpenGLShader fshader0(QOpenGLShader::Fragment);
   if (!fshader0.compileSourceCode(fs.c_str())) {
@@ -432,9 +434,11 @@ void MeshWindow::initializeShaders()
   vs = vs + "  vec4 ans = uTransform * vec4(aPos.x, aPos.y,aPos.z,1.0);\n";
   vs = vs + "  gl_Position = uProjection * vec4(ans.x,ans.y,ans.z - 2. + .001, 1.);\n ";
   vs = vs + "}\n";
-  fs = "uniform vec4 uColor;\n";
+  fs = "#version 330\n";
+  fs = fs + "uniform vec4 uColor;\n";
+  fs = fs + "out vec4 fragColor;\n";
   fs = fs + "void main() {\n";
-  fs = fs + "  gl_FragColor = uColor;\n";
+  fs = fs + "  fragColor = uColor;\n";
   fs = fs + "}\n";
   this->edgeProg_.bind();
   // Create Shader And Program Objects
