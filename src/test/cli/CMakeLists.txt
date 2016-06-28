@@ -8,12 +8,9 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 # Tests for cli
-include_directories(${CLEAVER2_SOURCE_DIR}/lib/gtest)
-include_directories(${CLEAVER2_SOURCE_DIR}/lib/gtest/include)
 add_definitions(-DBINARY_DIR="${CLEAVER2_BINARY_DIR}/bin/")
 add_definitions(-DTEST_DATA_DIR="${CLEAVER2_SOURCE_DIR}/test/test_data/")
-add_definitions(-DSCIRun4_DIR="${SCIRun4_DIR}/")
-#cli tests removed until valid output determined.
+#newtest(cli_basic)
 #cxx_test(cli_basic gtest_main cli_common.cc)
 #cxx_test(cli_scale gtest_main cli_common.cc)
 #cxx_test(cli_alpha gtest_main cli_common.cc)
@@ -32,8 +29,4 @@ add_definitions(-DSCIRun4_DIR="${SCIRun4_DIR}/")
 #cxx_test(cli_jacobian gtest_main cli_common.cc)
 #cxx_test(cli_scirun gtest_main cli_common.cc)
 #cxx_test(cli_matlab gtest_main cli_common.cc)
-#only build this if the tools exist. Windows has a slightly different result,
-#so this test will just fail, and will be excluded on WIN32
-if (USE_SEGMENTATION_TOOLS AND NOT WIN32)
-#  cxx_test(cli_segmentation gtest_main cli_common.cc)
-endif()
+#cxx_test(cli_segmentation gtest_main cli_common.cc)
