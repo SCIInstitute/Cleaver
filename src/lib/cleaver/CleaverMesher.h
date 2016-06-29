@@ -21,7 +21,7 @@ public:
     TetMesh* getBackgroundMesh() const;
 
     void setVolume(const Volume *volume);
-    const Volume* getVolume() const;
+    Volume* getVolume() const;
 
     void cleanup();    
     //================================

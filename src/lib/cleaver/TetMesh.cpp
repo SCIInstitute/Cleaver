@@ -212,16 +212,16 @@ namespace cleaver
     return max;
   }
 
-  TetMesh::TetMesh() : halfFaces(0), imported(false), time(0)
+  TetMesh::TetMesh() : halfFaces(NULL), imported(false), time(0)
   {
   }
 
-  TetMesh::TetMesh(BoundingBox b) : halfFaces(0), imported(false), time(0), bounds(b)
+  TetMesh::TetMesh(BoundingBox b) : halfFaces(NULL), imported(false), time(0), bounds(b)
   {
   }
 
   TetMesh::TetMesh(const std::vector<Vertex*> &verts, const std::vector<Tet*> &tets) :
-    verts(verts), tets(tets), halfFaces(0),  imported(false), time(0)
+    verts(verts), tets(tets), halfFaces(NULL),  imported(false), time(0)
   {
     computeBounds();
   }
@@ -233,7 +233,7 @@ namespace cleaver
       delete faces[f];
 
     //    std::cout << "TetMesh Going out of scope" << std::endl;
-    if (halfFaces){
+    if (halfFaces != NULL){
       delete [] halfFaces;
       halfFaces = NULL;
     }
@@ -2654,7 +2654,7 @@ namespace cleaver
 
     // free existing structure
 
-    if(halfFaces){
+    if(halfFaces != NULL){
       //        std::cout << "freeing existing halfFaces to recompute them" << std::endl;
       delete [] halfFaces;
       halfFaces = NULL;

@@ -334,7 +334,6 @@ void VolumeDataWidget::setSelected(bool value)
 void VolumeDataWidget::setDataName(const QString &name)
 {
     volume->setName(std::string(name.toLatin1()));
-    MainWindow::dataManager()->update();
 }
 
 void VolumeDataWidget::setTitle(const std::string &title)
@@ -427,10 +426,10 @@ void VolumeDataWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if(event->modifiers().testFlag(Qt::ControlModifier))
-            MainWindow::dataManager()->toggleAddSelection(reinterpret_cast<ulong>(volume));
-        else
-            MainWindow::dataManager()->setSelection(reinterpret_cast<ulong>(volume));
+        //if(event->modifiers().testFlag(Qt::ControlModifier))
+        //    MainWindow::dataManager()->toggleAddSelection(reinterpret_cast<ulong>(volume));
+        //else
+        //    MainWindow::dataManager()->setSelection(reinterpret_cast<ulong>(volume));
 
 
         updateStyleSheet();
@@ -446,7 +445,7 @@ void VolumeDataWidget::mousePressEvent(QMouseEvent *event)
         if(selectedItem)
         {
             if(selectedItem == deleteAction){
-                MainWindow::dataManager()->removeVolume(volume);
+             //   MainWindow::dataManager()->removeVolume(volume);
             } else if(selectedItem == renameAction){
 
                 QDialog dialog;
@@ -464,7 +463,6 @@ void VolumeDataWidget::mousePressEvent(QMouseEvent *event)
 
                 if(dialog.exec() == QDialog::Accepted){
                     ui->dataLabel->setText(lineEdit.text());
-                    MainWindow::dataManager()->update();
                 }
             }
         }
@@ -544,8 +542,6 @@ void VolumeDataWidget::dropEvent(QDropEvent *event)
         }
 
         volume->addMaterial(field);
-        MainWindow::dataManager()->update();
-
 
         event->setDropAction(Qt::MoveAction);
         event->accept();

@@ -9,34 +9,31 @@
 #include <QApplication>
 #include <QProgressDialog>
 
-CleaverWidget::CleaverWidget(QWidget *parent) :
+CleaverWidget::CleaverWidget(QWidget *parent, 
+  DataManagerWidget* data, MeshWindow* window) :
   QDockWidget(parent),
+  data_(data),
+  window_(window),
+  mesher(NULL),
   ui(new Ui::CleaverWidget) {
   this->ui->setupUi(this);
-
-  QObject::connect(MainWindow::dataManager(), SIGNAL(volumeListChanged()), this, SLOT(updateVolumeList()));
 }
 
 CleaverWidget::~CleaverWidget() {
   delete this->ui;
 }
 
+void CleaverWidget::setMeshButtonEnabled(bool b) {
+  this->ui->createMeshButton->setEnabled(b);
+}
+
+cleaver::CleaverMesher * CleaverWidget::getMesher() {
+  return this->mesher;
+}
+
 //========================
 //     Public Slots
 //========================
-
-void CleaverWidget::focus(QMdiSubWindow* subwindow) {
-  if (subwindow != NULL) {
-    MeshWindow *window = qobject_cast<MeshWindow *>(subwindow->widget());
-    if (window != NULL) {
-      //std::cout << "Cleaver Widget has Volume from Window" << std::endl;
-      this->mesher = window->mesher();
-    } else {
-      this->mesher = NULL;
-    }
-    this->update();
-  }
-}
 
 void CleaverWidget::clear() {
   resetCheckboxes();
@@ -53,25 +50,10 @@ void CleaverWidget::resetCheckboxes() {
   this->ui->stencilCheck->setChecked(false);
 }
 
-//=========================================
-// - update()       Updates the Widget
-//
-//=========================================
-void CleaverWidget::update() {
-  //-----------------------------
-  // Set Main Mesh Button
-  //-----------------------------
-  if (this->mesher) {
-    this->ui->createMeshButton->setEnabled(true);
-  } else {
-    this->ui->createMeshButton->setEnabled(false);
-  }
-  QDockWidget::update();
-}
-
-void CleaverWidget::updateOpenGL(MeshWindow * window) {
-  window->updateMesh();
-  window->updateGL();
+void CleaverWidget::updateOpenGL() {
+  this->window_->updateMesh();
+  this->window_->updateGL();
+  this->window_->repaint();
 }
 
 //=========================================
@@ -79,70 +61,73 @@ void CleaverWidget::updateOpenGL(MeshWindow * window) {
 //=========================================
 void CleaverWidget::createMesh() {
   this->clear();
-  MeshWindow *window = MainWindow::instance()->activeWindow();
-  if (window != NULL) {
-    //progress
-    QProgressDialog status(QString("Meshing Indicator Functions..."),
-      QString(), 0, 100, this);
-    status.show();
-    status.setWindowModality(Qt::WindowModal);
-    status.setValue(5);
-    qApp->processEvents();
-    //create background mesh
-    mesher->setRegular(false);
-    this->createBackgroundMesh(window);
-    status.setValue(10);
-    qApp->processEvents();
-    //adjacencies
-    this->buildMeshAdjacency();
-    status.setValue(20);
-    qApp->processEvents();
-    //sample vol
-    this->sampleVolume();
-    this->updateOpenGL(window);
-    status.setValue(30);
-    qApp->processEvents();
-    //alphas
-    this->computeAlphas();
-    status.setValue(40);
-    qApp->processEvents();
-    //interfaces
-    this->computeInterfaces();
-    this->updateOpenGL(window);
-    status.setValue(50);
-    qApp->processEvents();
-    //generalize
-    this->generalizeTets();
-    status.setValue(60);
-    qApp->processEvents();
-    //snap and warp
-    this->snapAndWarp();
-    this->updateOpenGL(window);
-    status.setValue(70);
-    qApp->processEvents();
-    //stencil
-    this->stencilTets();
-    this->updateOpenGL(window);
-    status.setValue(80);
-    if (this->ui->fixJacobianCheckBox->isChecked()) {
-      this->mesher->fixVertexWindup(true);
-    }
-    status.setValue(90);
-    qApp->processEvents();
-    MainWindow::instance()->enableMeshedVolumeOptions();
-    status.setValue(100);
+  //progress
+  QProgressDialog status(QString("Meshing Indicator Functions..."),
+    QString(), 0, 100, this);
+  if (this->mesher != NULL) {
+    delete this->mesher;
   }
+  this->mesher = new cleaver::CleaverMesher(this->data_->getVolume());
+  this->window_->setMesher(this->mesher);
+  status.show();
+  status.setWindowModality(Qt::WindowModal);
+  status.setValue(5);
+  qApp->processEvents();
+  //create background mesh
+  mesher->setRegular(false);
+  this->createBackgroundMesh();
+  status.setValue(10);
+  qApp->processEvents();
+  //adjacencies
+  this->buildMeshAdjacency();
+  status.setValue(20);
+  qApp->processEvents();
+  //sample vol
+  this->sampleVolume();
+  this->updateOpenGL();
+  status.setValue(30);
+  qApp->processEvents();
+  //alphas
+  this->computeAlphas();
+  status.setValue(40);
+  qApp->processEvents();
+  //interfaces
+  this->computeInterfaces();
+  this->updateOpenGL();
+  status.setValue(50);
+  qApp->processEvents();
+  //generalize
+  this->generalizeTets();
+  status.setValue(60);
+  qApp->processEvents();
+  //snap and warp
+  this->snapAndWarp();
+  this->updateOpenGL();
+  status.setValue(70);
+  qApp->processEvents();
+  //stencil
+  this->stencilTets();
+  this->updateOpenGL();
+  status.setValue(80);
+  if (this->ui->fixJacobianCheckBox->isChecked()) {
+    this->mesher->fixVertexWindup(true);
+  }
+  status.setValue(90);
+  qApp->processEvents();
+  //MainWindow::instance()->enableMeshedVolumeOptions();
+  status.setValue(100);
 }
 //=========================================
 // - createBackgroundMesh()
 //
 //=========================================
-void CleaverWidget::createBackgroundMesh(MeshWindow *window) {
+void CleaverWidget::createBackgroundMesh() {
+  auto sf = this->data_->hasSizingField();
   this->mesher->createBackgroundMesh(true);
   cleaver::TetMesh *mesh = this->mesher->getBackgroundMesh();
   mesh->name = "Adaptive-BCC-Mesh";
-  MainWindow::dataManager()->addMesh(mesh);
-  window->setMesh(mesh);
+  this->data_->setMesh(mesh);
+  this->window_->setMesh(mesh);
   this->ui->backgroundCheck->setChecked(true);
   this->update();
 }

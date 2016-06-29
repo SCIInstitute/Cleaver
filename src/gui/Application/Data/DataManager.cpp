@@ -5,12 +5,29 @@
 
 DataManager::DataManager() : mesh_(NULL), sizingField_(NULL), volume_(NULL) {}
 
+
+DataManager::~DataManager(){
+  if (this->mesh_ != NULL) {
+    delete this->mesh_;
+  }
+  if (this->sizingField_ != NULL) {
+    delete this->sizingField_;
+  }
+  for (auto a : this->indicators_) {
+    if (a != NULL) {
+      delete a;
+    }
+  }
+  if (this->volume_ != NULL) {
+    delete this->volume_;
+  }
+}
+
 void DataManager::setMesh(cleaver::TetMesh *mesh) {
   if (this->mesh_ != NULL) {
     delete this->mesh_;
   }
   this->mesh_ = mesh;
-  emit dataChanged();
 }
 
 void DataManager::setSizingField(cleaver::AbstractScalarField *field) {
@@ -18,7 +35,7 @@ void DataManager::setSizingField(cleaver::AbstractScalarField *field) {
     delete this->sizingField_;
   }
   this->sizingField_ = field;
-  emit dataChanged();
+  this->volume_->setSizingField(field);
 }
 
 void DataManager::setIndicators(std::vector<cleaver::AbstractScalarField *> indicators) {
@@ -28,7 +45,6 @@ void DataManager::setIndicators(std::vector<cleaver::AbstractScalarField *> indi
     }
   }
   this->indicators_ = indicators;
-  emit dataChanged();
 }
 
 void DataManager::setVolume(cleaver::Volume *volume) {
@@ -36,7 +52,6 @@ void DataManager::setVolume(cleaver::Volume *volume) {
     delete this->volume_;
   }
   this->volume_ = volume;
-  emit dataChanged();
 }
 
 cleaver::AbstractScalarField*  DataManager::sizingField() const { return this->sizingField_; }

@@ -206,8 +206,7 @@ void MeshDataWidget::setSelected(bool value)
 
 void MeshDataWidget::setDataName(const QString &name)
 {
-    mesh->name = std::string(name.toLatin1());
-    MainWindow::dataManager()->update();
+    this->mesh->name = std::string(name.toLatin1());
 }
 
 void MeshDataWidget::setTitle(const std::string &title)
@@ -293,10 +292,10 @@ void MeshDataWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if(event->modifiers().testFlag(Qt::ControlModifier))
-            MainWindow::dataManager()->toggleAddSelection(reinterpret_cast<ulong>(mesh));
-        else
-            MainWindow::dataManager()->setSelection(reinterpret_cast<ulong>(mesh));
+        //if(event->modifiers().testFlag(Qt::ControlModifier))
+        //    MainWindow::dataManager()->toggleAddSelection(reinterpret_cast<ulong>(mesh));
+        //else
+        //    MainWindow::dataManager()->setSelection(reinterpret_cast<ulong>(mesh));
 
         //selected = !selected;
 
@@ -313,7 +312,7 @@ void MeshDataWidget::mousePressEvent(QMouseEvent *event)
         if(selectedItem)
         {
             if(selectedItem == deleteAction) {
-                MainWindow::dataManager()->removeMesh(this->mesh);
+                //MainWindow::dataManager()->removeMesh(this->mesh);
             } else if(selectedItem == renameAction){
 
                 QDialog dialog;
@@ -331,11 +330,10 @@ void MeshDataWidget::mousePressEvent(QMouseEvent *event)
 
                 if(dialog.exec() == QDialog::Accepted){
                     ui->dataLabel->setText(lineEdit.text());
-                     MainWindow::dataManager()->update();
                 }
             }
             else if(selectedItem == exportAction){
-                MainWindow::instance()->exportMesh(this->mesh);
+                //MainWindow::instance()->exportMesh(this->mesh);
             }
         }
     }

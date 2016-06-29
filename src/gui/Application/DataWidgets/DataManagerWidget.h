@@ -14,7 +14,7 @@
 #include <Cleaver/ScalarField.h>
 #include <Cleaver/Volume.h>
 #include <Cleaver/TetMesh.h>
-#include <DataManager.h>
+#include <Data/DataManager.h>
 
 typedef void DataGroup;
 
@@ -29,6 +29,13 @@ class DataManagerWidget : public QDockWidget
 public:
     explicit DataManagerWidget(QWidget *parent = 0);
     ~DataManagerWidget();
+    void setMesh(cleaver::TetMesh *mesh);
+    void setSizingField(cleaver::AbstractScalarField *field);
+    void setIndicators(std::vector<cleaver::AbstractScalarField *> indicators);
+    void setVolume(cleaver::Volume *volume);
+    cleaver::Volume * getVolume();
+
+    bool hasSizingField();
 
     void updateGroupWidgets();
     DataGroupWidget* makeNewGroup(DataGroup *);

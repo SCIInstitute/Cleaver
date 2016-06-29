@@ -199,7 +199,7 @@ TetMesh* CleaverMesher::getTetMesh() const
 }
 
 
-const Volume* CleaverMesher::getVolume() const
+Volume* CleaverMesher::getVolume() const
 {
     return m_pimpl->m_volume;
 }
