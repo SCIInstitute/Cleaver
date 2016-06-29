@@ -31,7 +31,6 @@ MainWindow::MainWindow(const QString &title)
 
   // Create Data Manager
   m_dataManager = new DataManager();
-  connect(m_dataManager, SIGNAL(volumeRemoved()), this, SLOT(closeSubWindow()));
 
   // Create Menus/Windows
   createDockWindows();
@@ -311,16 +310,13 @@ QSize MyFileDialog::sizeHint() const
 //*********************END custom file dialog
 void MainWindow::importVolume()
 {
-  while(this->m_dataManager->volumes().size() > 0)
-	this->m_dataManager->removeVolume(this->m_dataManager->volumes()[0]);
   QStringList fileNames;
   MyFileDialog dialog(this, tr("Select Indicator Functions"),
       QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
   if (dialog.exec())
     fileNames = dialog.selectedFiles();
   bool segmentation = dialog.isSegmentation();
-  if(!fileNames.isEmpty())
-  {
+  if(!fileNames.isEmpty()) {
     std::string file1 = (*fileNames.begin()).toStdString();
     auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
@@ -377,10 +373,7 @@ void MainWindow::importVolume()
       QApplication::processEvents();
     }
     // Add Fields to Data Manager
-    for(size_t f=0; f < fields.size(); f++){
-      dataManager()->addField(fields[f]);
-    }
-
+    dataManager()->setIndicators(fields);
     cleaver::Volume *volume = new cleaver::Volume(fields);
 
     static int v = 0;
@@ -392,7 +385,7 @@ void MainWindow::importVolume()
     status.setValue(95);
     QApplication::processEvents();
 
-    dataManager()->addVolume(volume);
+    dataManager()->setVolume(volume);
     createWindow(volume, QString(volumeName.c_str()));
 
     m_cleaverWidget->resetCheckboxes();
@@ -470,7 +463,7 @@ void MainWindow::importMesh()
 
       MainWindow::instance()->createWindow(mesh, QString("New Mesh"));
       MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
-      m_dataManager->addMesh(mesh);
+      m_dataManager->setMesh(mesh);
     }
   }
   if (!fileNames.empty()) {

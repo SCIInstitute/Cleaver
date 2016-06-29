@@ -14,15 +14,9 @@
 #include <Cleaver/ScalarField.h>
 #include <Cleaver/Volume.h>
 #include <Cleaver/TetMesh.h>
-
+#include <DataManager.h>
 
 typedef void DataGroup;
-
-typedef std::map< std::string, DataGroupWidget* >  DataWidgetMap;
-typedef std::map< ulong, FieldDataWidget* >  FieldMap;
-typedef std::map< ulong, VolumeDataWidget* > VolumeMap;
-typedef std::map< ulong, MeshDataWidget* >   MeshMap;
-
 
 namespace Ui {
 class DataManagerWidget;
@@ -36,7 +30,6 @@ public:
     explicit DataManagerWidget(QWidget *parent = 0);
     ~DataManagerWidget();
 
-
     void updateGroupWidgets();
     DataGroupWidget* makeNewGroup(DataGroup *);
 
@@ -47,14 +40,10 @@ public slots:
 
 private:
     Ui::DataManagerWidget *ui;
-
-    DataWidgetMap groupMap;
-    VolumeMap     volumeMap;
-    MeshMap       meshMap;
-    FieldMap      fieldMap;
-
-    QSpacerItem *spacer;
-    QVBoxLayout *vbox;
+    DataManager manager_;
+    QSpacerItem *spacer_;
+    QVBoxLayout *vbox_;
+    std::vector<QWidget*> widgets_;
 };
 
 #endif // DATAMANAGERWIDGET_H

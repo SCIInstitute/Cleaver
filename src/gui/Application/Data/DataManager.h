@@ -13,55 +13,24 @@ class DataManager : public QObject
 public:
     DataManager();
 
-    void addMesh(cleaver::TetMesh *mesh);
-    void removeMesh(cleaver::TetMesh *mesh);
-
-    void addField(cleaver::AbstractScalarField *field);
-    void removeField(cleaver::AbstractScalarField *field, bool ask = true);
-
-    void addVolume(cleaver::Volume *volume);
-    void removeVolume(cleaver::Volume *volume);
-
-    std::vector<ulong> getSelection();
-    void setSelection(ulong);
-    void addSelection(ulong);
-    void toggleSetSelection(ulong);
-    void toggleAddSelection(ulong);
-    void clearSelection();
-
-    void update(){ emit dataChanged(); }
-
-    std::vector<cleaver::AbstractScalarField*>  fields() const { return m_fields; }
-    std::vector<cleaver::Volume*>       volumes() const { return m_volumes; }
-    std::vector<cleaver::TetMesh*>      meshes() const { return m_meshes; }
+    void setMesh(cleaver::TetMesh *mesh);
+    void setSizingField(cleaver::AbstractScalarField *field);
+    void setIndicators(std::vector<cleaver::AbstractScalarField *> indicators);
+    void setVolume(cleaver::Volume *volume);
+    
+    cleaver::AbstractScalarField* sizingField() const;
+    std::vector<cleaver::AbstractScalarField*> indicators() const;
+    cleaver::Volume*              volume() const;
+    cleaver::TetMesh*             mesh() const;
 
 signals:
-
-    void dataAdded();
-    void dataRemoved();
     void dataChanged();
 
-    void meshAdded();
-    void meshRemoved();
-
-    void fieldAdded();
-    void fieldRemoved();
-
-    void volumeAdded();
-    void volumeRemoved();
-
-    void meshListChanged();
-    void fieldListChanged();
-    void volumeListChanged();
-
-    void selectionChanged();
-
 private:
-
-    std::vector<ulong>                          m_selection;
-    std::vector<cleaver::TetMesh*>              m_meshes;
-    std::vector<cleaver::Volume*>               m_volumes;
-    std::vector<cleaver::AbstractScalarField*>  m_fields;
+    cleaver::TetMesh*              mesh_;
+    cleaver::Volume*               volume_;
+    cleaver::AbstractScalarField*  sizingField_;
+    std::vector<cleaver::AbstractScalarField*>  indicators_;
 };
 
 #endif // DATAMANAGER_H

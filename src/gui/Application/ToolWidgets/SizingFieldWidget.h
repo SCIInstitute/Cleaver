@@ -24,8 +24,6 @@ public slots:
     void loadIndicatorFunctions();
     void loadSizingField();
     void computeSizingField();
-    void updateVolumeList();
-    void volumeSelected(int index);
 
 protected:
 

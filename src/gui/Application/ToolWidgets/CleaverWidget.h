@@ -4,6 +4,7 @@
 #include <QDockWidget>
 #include <QMdiSubWindow>
 #include <Cleaver/CleaverMesher.h>
+#include "ViewWidgets/MeshWindow.h"
 
 namespace Ui {
 class CleaverWidget;
@@ -24,10 +25,8 @@ public slots:
 
     //------ run entire cleaving algorithm
     void createMesh();
-    //------ run entire legacy cleaving algorithm
-    void createRegularMesh();
     //------ advanced indididual calls
-    void createBackgroundMesh();
+    void createBackgroundMesh(MeshWindow * window);
     void buildMeshAdjacency();
     void sampleVolume();
     void computeAlphas();
@@ -36,11 +35,12 @@ public slots:
     void snapAndWarp();
     void stencilTets();
 
-    void updateVolumeList();
     void updateMeshList();
     void volumeSelected(int index);
     void meshSelected(int index);
     void resetCheckboxes();
+private:
+  void updateOpenGL(MeshWindow * window);
     
 private:
     Ui::CleaverWidget *ui;

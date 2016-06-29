@@ -74,7 +74,8 @@ public:
     VoxelMesh& operator=(const VoxelMesh &mesh);
 
     void init(int l, int m, int n);
-    ScalarField<float>*  convertToFloatField(float factor, const cleaver::vec3 &padding, const cleaver::vec3 &offset);
+    ScalarField<float>*  convertToFloatField(float factor,
+      const cleaver::vec3 &padding, const cleaver::vec3 &offset);
 
     std::vector<std::vector<std::vector<bool> > > known;
     std::vector<std::vector<std::vector<double> > > dist;
@@ -158,7 +159,9 @@ class FeatureOctant
 class SizingFieldCreator
 {
     public:    
-    SizingFieldCreator(const Volume*, float speed = 1.0f, float sampleFactor = 2.0f, float sizingFactor = 1.0f, int padding = 0, bool adaptiveSurface=true, bool verbose=false);
+    SizingFieldCreator(const Volume*, float speed = 1.0f,
+      float sampleFactor = 2.0f, float sizingFactor = 1.0f, 
+      int padding = 0, bool adaptiveSurface=true, bool verbose=false);
     ~SizingFieldCreator();
 
     double valueAt(double x, double y, double z) const;
@@ -175,7 +178,9 @@ class SizingFieldCreator
         return mesh_padded_feature.convertToFloatField((float)m_sampleFactor, m_padding, m_offset);
     }
 
-    static ScalarField<float>* createSizingFieldFromVolume(const Volume *volume, float speed = 1.0f, float sampleFactor = 2.0f, float sizingFactor = 1.0f, int m_padding = 0, bool featureSize=true, bool verbose=false);
+    static ScalarField<float>* createSizingFieldFromVolume(const Volume *volume,
+      float speed = 1.0f, float sampleFactor = 2.0f, float sizingFactor = 1.0f,
+      int m_padding = 0, bool featureSize=true, bool verbose=false);
     
     private:
     bool   m_verbose;

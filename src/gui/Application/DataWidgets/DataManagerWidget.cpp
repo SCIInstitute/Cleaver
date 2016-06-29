@@ -14,10 +14,7 @@ DataManagerWidget::DataManagerWidget(QWidget *parent) :
     ui->setupUi(this);
 
     updateGroupWidgets();
-
-
     QObject::connect(MainWindow::dataManager(), SIGNAL(dataChanged()), this, SLOT(updateList()));
-    QObject::connect(MainWindow::dataManager(), SIGNAL(selectionChanged()), this, SLOT(selectionUpdate()));
 }
 
 DataManagerWidget::~DataManagerWidget()
@@ -37,287 +34,60 @@ void DataManagerWidget::updateGroupWidgets()
     // Get a list of all the groups
     std::vector< DataGroup* > groups;
 
-    //DataManager::Instance()->getGroups( groups );
-
-    // Make a copy of the old widgets map
-    DataWidgetMap tmp_map = this->groupMap;
-
-    // Clear the original map
-    this->groupMap.clear();
-
-    // Loop through current groups and put their widgets in order.
-    // Create new widgets when necessary
-
-    for( size_t i = 0; i < groups.size(); i++ )
-    {
-        // Look for an existing widget for the group.
-        // If found, remove it from temp map.
-        //Otherwise, create new widget.
-
-        //DataGroupWidget* groupWidget;
-        std::string groupID; //= groups[i]->getGroupID();
-        DataWidgetMap::iterator it = tmp_map.find(groupID);
-
-        if (it != tmp_map.end())
-        {
-
-        }
-        else
-        {
-
-        }
-
-
-
-    }
-
-    //FieldDataWidget *entry1 = new FieldDataWidget(this);
-    //FieldDataWidget *entry2 = new FieldDataWidget(this);
-    //DataObjectFrame *entry1 = new DataObjectFrame(this);    
-    //DataObjectFrame *entry2 = new DataObjectFrame(this);
-    //DataObjectFrame *entry3 = new DataObjectFrame(this);
-    //DataObjectFrame *entry4 = new DataObjectFrame(this);
-    //DataObjectFrame *entry5 = new DataObjectFrame(this);
-    //DataObjectFrame *entry6 = new DataObjectFrame(this);
-    spacer = new QSpacerItem(0,0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    //entry2->showInfoClicked(true);
+    this->spacer_ = new QSpacerItem(0,0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     // Put the widget in the layout
-    vbox = new QVBoxLayout;
-    //vbox->addWidget(entry1);
-    //vbox->addWidget(entry2);
-    //vbox->addWidget(entry3);
-    //vbox->addWidget(entry4);
-    //vbox->addWidget(entry5);
-    //vbox->addWidget(entry6);
-    vbox->addSpacerItem(spacer);
-    vbox->setContentsMargins(0,0,0,0);
-    vbox->setMargin(0);
-    vbox->setSpacing(0);
-    vbox->setAlignment(Qt::AlignTop);
-    //vbox->set
+    this->vbox_ = new QVBoxLayout;
+    this->vbox_->addSpacerItem(this->spacer_);
+    this->vbox_->setContentsMargins(0,0,0,0);
+    this->vbox_->setMargin(0);
+    this->vbox_->setSpacing(0);
+    this->vbox_->setAlignment(Qt::AlignTop);
 
-
-
-    ui->scrollAreaWidgetContents->setLayout(vbox);
+    ui->scrollAreaWidgetContents->setLayout(this->vbox_);
 }
 
-void DataManagerWidget::updateList()
-{
-    // make copies of the old maps
-    VolumeMap tmp_volume_map = this->volumeMap;
-    FieldMap  tmp_field_map = this->fieldMap;
-    MeshMap   tmp_mesh_map = this->meshMap;
-
-
-    // clear the original maps
-    this->volumeMap.clear();
-    this->fieldMap.clear();
-    this->meshMap.clear();
-
-
-    // remove ending spacer temporarily
-    vbox->removeItem(spacer);
-
-    //-----------------------------------------------------------------
-    //  Update Fields
-    //-----------------------------------------------------------------
-    for(size_t i=0; i < MainWindow::dataManager()->fields().size(); i++)
-    {
-        cleaver::AbstractScalarField *field = MainWindow::dataManager()->fields()[i];
-        FieldDataWidget *fieldWidget = NULL;
-
-        FieldMap::iterator it = tmp_field_map.find(reinterpret_cast<ulong>(field));
-        if (it != tmp_field_map.end())
-        {
-            //std::cout << "Found Existing" << std::endl;
-            fieldWidget = it->second;
-            tmp_field_map.erase(it);
-        }
-        else{
-            //std::cout << "Created New" << std::endl;
-            fieldWidget = new FieldDataWidget(field, this);
-        }
-
-        // Put the widget in the layout
-        vbox->insertWidget(i, fieldWidget);
-        // Add the widget to the map
-        fieldMap[reinterpret_cast<ulong>(field)] = fieldWidget;
-    }
-
-    // For anything left in temporary map, they are no longer needed.
-    // Remove them from the layout and delete them.
-    for(FieldMap::iterator it = tmp_field_map.begin(); it != tmp_field_map.end(); ++it)
-    {
-        FieldDataWidget *fieldWidget = it->second;
-        vbox->removeWidget(fieldWidget);
-        delete fieldWidget;
-    }
-
-    //-----------------------------------------------------------------
-    //  Update Volumes
-    //-----------------------------------------------------------------
-    for(size_t i=0; i < MainWindow::dataManager()->volumes().size(); i++)
-    {
-        cleaver::Volume  *volume = MainWindow::dataManager()->volumes()[i];
-        VolumeDataWidget *volumeWidget =  NULL;
-
-        VolumeMap::iterator it = tmp_volume_map.find(reinterpret_cast<ulong>(volume));
-        if (it != tmp_volume_map.end())
-        {
-            // found existing
-            volumeWidget = it->second;
-
-            //-- update it if necessary
-            volumeWidget->updateFields();
-
-
-            tmp_volume_map.erase(it);
-        }
-        else{
-            volumeWidget = new VolumeDataWidget(volume, this);
-        }
-
-        // Put the widget in the layout
-        vbox->insertWidget(i, volumeWidget);
-
-        // Add the widget to the map
-        volumeMap[reinterpret_cast<ulong>(volume)] = volumeWidget;
-    }
-
-    // For anything left in temporary map, they are no longer needed.
-    // Remove them from the layout and delete them.
-    for(VolumeMap::iterator it = tmp_volume_map.begin(); it != tmp_volume_map.end(); ++it)
-    {
-        VolumeDataWidget *volumeWidget = it->second;
-        vbox->removeWidget(volumeWidget);
-        delete volumeWidget;
-    }
-
-    //-----------------------------------------------------------------
-    //  Update Meshes
-    //-----------------------------------------------------------------
-    for(size_t i=0; i < MainWindow::dataManager()->meshes().size(); i++)
-    {
-        cleaver::TetMesh *mesh = MainWindow::dataManager()->meshes()[i];
-        MeshDataWidget *meshWidget =  NULL;
-
-        MeshMap::iterator it = tmp_mesh_map.find(reinterpret_cast<ulong>(mesh));
-        if (it != tmp_mesh_map.end())
-        {
-            meshWidget = it->second;
-            tmp_mesh_map.erase(it);
-        }
-        else{
-            meshWidget = new MeshDataWidget(mesh, this);
-        }
-
-        // Put the widget in the layout
-        vbox->insertWidget(i, meshWidget);
-        // Add the widget to the map
-        meshMap[reinterpret_cast<ulong>(mesh)] = meshWidget;
-    }
-
-    // For anything left in temporary map, they are no longer needed.
-    // Remove them from the layout and delete them.
-    for(MeshMap::iterator it = tmp_mesh_map.begin(); it != tmp_mesh_map.end(); ++it)
-    {
-        MeshDataWidget *meshWidget = it->second;
-        vbox->removeWidget(meshWidget);
-        delete meshWidget;
-    }
-
-
-
-    // add spacer back
-    vbox->addSpacerItem(spacer);
+void DataManagerWidget::updateList() {
+  // clear vbox
+  this->vbox_->removeItem(this->spacer_);
+  for (auto a : this->widgets_) {
+    this->vbox_->removeWidget(a);
+  }
+  this->widgets_.clear();
+  //  Update sizing Field
+  auto sizingField = this->manager_.sizingField();
+  auto fieldWidget = new FieldDataWidget(sizingField, this);
+  this->vbox_->insertWidget(this->widgets_.size(), fieldWidget);
+  this->widgets_.push_back(fieldWidget);
+  //  Update volume
+  auto v = this->manager_.volume();
+  auto volWidget = new VolumeDataWidget(v, this);
+  this->vbox_->insertWidget(this->widgets_.size(), volWidget);
+  this->widgets_.push_back(volWidget);
+  //  Update indicators
+  auto inds = this->manager_.indicators();
+  for (auto a : inds) {
+    auto ind = new FieldDataWidget(a, this);
+    this->vbox_->insertWidget(this->widgets_.size(), ind);
+    this->widgets_.push_back(ind);
+  }
+  //  Update volume
+  auto v = this->manager_.volume();
+  auto volWidget = new VolumeDataWidget(v, this);
+  this->vbox_->insertWidget(this->widgets_.size(), volWidget);
+  this->widgets_.push_back(volWidget);
+  //  Update mesh
+  auto m = this->manager_.mesh();
+  auto meshWidget = new MeshDataWidget(m, this);
+  this->vbox_->insertWidget(this->widgets_.size(), meshWidget);
+  this->widgets_.push_back(meshWidget);
+  // add spacer back
+  this->vbox_->addSpacerItem(this->spacer_);
 }
 
-void DataManagerWidget::selectionUpdate()
-{
-    std::vector<ulong> selection = MainWindow::dataManager()->getSelection();
-
-    //----------------------------------------------------
-    //           Update Mesh Selections
-    //----------------------------------------------------
-    MeshMap::iterator mesh_iter = meshMap.begin();
-    while(mesh_iter != meshMap.end())
-    {
-        MeshDataWidget *meshWidget = mesh_iter->second;
-
-        bool found = false;
-        for(size_t i=0; i < selection.size(); i++)
-        {
-            ulong ptr = selection[i];
-
-            if(mesh_iter->first == ptr)
-            {
-                meshWidget->setSelected(true);
-                found = true;
-                break;
-            }
-        }
-        if(!found)
-            meshWidget->setSelected(false);
-
-        mesh_iter++;
-    }
-
-    //----------------------------------------------------
-    //           Update Volume Selections
-    //----------------------------------------------------
-
-    VolumeMap::iterator volume_iter = volumeMap.begin();
-    while(volume_iter != volumeMap.end())
-    {
-        VolumeDataWidget *volumeWidget = volume_iter->second;
-        bool found = false;
-
-        found = false;
-        for(size_t i=0; i < selection.size(); i++)
-        {
-            ulong ptr = selection[i];
-
-            if(volume_iter->first == ptr)
-            {
-                volumeWidget->setSelected(true);
-                found = true;
-                break;
-            }
-        }
-        if(!found)
-            volumeWidget->setSelected(false);
-
-        volume_iter++;
-    }
-
-    //----------------------------------------------------
-    //          Update Field Selections
-    //----------------------------------------------------
-    FieldMap::iterator field_iter = fieldMap.begin();
-    while(field_iter != fieldMap.end())
-    {
-        FieldDataWidget *fieldWidget = field_iter->second;
-        bool found = false;
-
-        found = false;
-        for(size_t i=0; i < selection.size(); i++)
-        {
-            ulong ptr = selection[i];
-
-            if(field_iter->first == ptr)
-            {
-                fieldWidget->setSelected(true);
-                found = true;
-                break;
-            }
-        }
-        if(!found)
-            fieldWidget->setSelected(false);
-
-        field_iter++;
-    }
+void DataManagerWidget::selectionUpdate() {
+  //todo
+  //meshWidget->setSelected(false);
 }
 
 
