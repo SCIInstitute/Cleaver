@@ -4,7 +4,8 @@
 #include <QDockWidget>
 #include <QMdiSubWindow>
 #include <Cleaver/Volume.h>
-#include <Cleaver/CleaverMesher.h> // todo remove
+#include <Cleaver/CleaverMesher.h> 
+#include <DataWidgets/DataManagerWidget.h>
 
 namespace Ui {
 class SizingFieldWidget;
@@ -15,13 +16,13 @@ class SizingFieldWidget : public QDockWidget
     Q_OBJECT
     
 public:
-    explicit SizingFieldWidget(QWidget *parent = 0);
+    explicit SizingFieldWidget(QWidget *parent = NULL, 
+      DataManagerWidget * data = NULL);
     ~SizingFieldWidget();
+    void setCreateButtonEnabled(bool b);
 
 public slots:
 
-    void focus(QMdiSubWindow *);
-    void loadIndicatorFunctions();
     void loadSizingField();
     void computeSizingField();
 
@@ -33,8 +34,7 @@ protected:
     
 private:
     Ui::SizingFieldWidget *ui;
-    cleaver::Volume  *volume;
-    cleaver::CleaverMesher *mesher;
+    DataManagerWidget * data_;
 };
 
 #endif // DATALOADERWIDGET_H

@@ -2,9 +2,9 @@
 #define CLEAVERWIDGET_H
 
 #include <QDockWidget>
-#include <QMdiSubWindow>
 #include <Cleaver/CleaverMesher.h>
 #include "ViewWidgets/MeshWindow.h"
+#include "DataWidgets/DataManagerWidget.h"
 
 namespace Ui {
 class CleaverWidget;
@@ -15,18 +15,20 @@ class CleaverWidget : public QDockWidget
     Q_OBJECT
     
 public:
-    explicit CleaverWidget(QWidget *parent = 0);
+    explicit CleaverWidget(QWidget *parent = NULL, 
+      DataManagerWidget * data = NULL,
+      MeshWindow * window = NULL);
     ~CleaverWidget();
+    void setMeshButtonEnabled(bool b);
+    cleaver::CleaverMesher * getMesher();
 
 public slots:
     void clear();
-    void update();
-    void focus(QMdiSubWindow *);
 
     //------ run entire cleaving algorithm
     void createMesh();
     //------ advanced indididual calls
-    void createBackgroundMesh(MeshWindow * window);
+    void createBackgroundMesh();
     void buildMeshAdjacency();
     void sampleVolume();
     void computeAlphas();
@@ -40,11 +42,13 @@ public slots:
     void meshSelected(int index);
     void resetCheckboxes();
 private:
-  void updateOpenGL(MeshWindow * window);
+  void updateOpenGL();
     
 private:
     Ui::CleaverWidget *ui;
     cleaver::CleaverMesher *mesher;
+    DataManagerWidget * data_;
+    MeshWindow * window_;
 };
 
 #endif // CLEAVERWIDGET_H

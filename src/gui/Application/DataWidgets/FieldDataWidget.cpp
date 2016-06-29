@@ -188,7 +188,6 @@ void FieldDataWidget::setSelected(bool value)
 void FieldDataWidget::setDataName(const QString &name)
 {
     field->setName(std::string(name.toLatin1()));
-    MainWindow::dataManager()->update();
 }
 
 void FieldDataWidget::setTitle(const std::string &title)
@@ -245,10 +244,10 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if(event->modifiers().testFlag(Qt::ControlModifier))
-            MainWindow::dataManager()->toggleAddSelection(reinterpret_cast<ulong>(field));
-        else
-            MainWindow::dataManager()->setSelection(reinterpret_cast<ulong>(field));
+        //if(event->modifiers().testFlag(Qt::ControlModifier))
+        //    MainWindow::dataManager()->toggleAddSelection(reinterpret_cast<ulong>(field));
+        //else
+        //    MainWindow::dataManager()->setSelection(reinterpret_cast<ulong>(field));
 
 
         updateStyleSheet();
@@ -269,7 +268,7 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
         if(selectedItem)
         {
             if(selectedItem == deleteAction){
-                MainWindow::dataManager()->removeField(field);
+                //MainWindow::dataManager()->removeField(field);
             } else if(selectedItem == renameAction){
 
                 QDialog dialog;
@@ -288,7 +287,6 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
                 if(dialog.exec() == QDialog::Accepted){
                     field->setName(std::string(lineEdit.text().toLatin1()));
                     ui->dataLabel->setText(lineEdit.text());
-                    MainWindow::dataManager()->update();
                 }                
             }
             else if(selectedItem == exportAction){
@@ -298,7 +296,7 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
                 {
                     // give error
                 }
-                MainWindow::instance()->exportField(floatField);
+                //this->exportField(floatField);
             }
         }
     }

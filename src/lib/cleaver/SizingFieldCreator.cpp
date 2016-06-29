@@ -136,60 +136,6 @@ namespace cleaver
     vec3 origin(-offset[0], -offset[1], -offset[2]);
     vec3 mySize(w*sx, h*sy, d*sz);
     ret->setBounds(BoundingBox(origin, mySize));
-    //std::cout << "w=" << w << " h=" << h << " d=" << d << std::endl;
-    //std::cout << "sx=" << sx << " sy=" << sy << " sz=" << sz << std::endl;
-    //std::cout << "padding = " << padding.toString() << std::endl;
-
-
-    //printf("%lf %lf %lf\n", offset.x, offset.y, offset.z);
-    //printf("%lf %lf %lf\n", padding[0],padding[1],padding[2]);
-    //ret->setCenterType(Cleaver::FloatField::NodeCentered);
-    //write the NRRD file
-
-    // first write header file
-    std::string filename = "sizing_field.nrrd";
-    if (m_verbose)
-      std::cout << "Writing file '" << filename << "'" << std::endl;
-    ofstream nrrd_file(filename.c_str(), std::ofstream::binary);
-
-    // JRB: added safety check
-    if (nrrd_file.is_open())
-    {
-      nrrd_file << "NRRD0001" << std::endl;
-      nrrd_file << "# Complete NRRD file format specification at:" << std::endl;
-      nrrd_file << "# http://teem.sourceforge.net/nrrd/format.html" << std::endl;
-      nrrd_file << "type: float" << std::endl;
-      nrrd_file << "dimension: 3" << std::endl;
-      nrrd_file << "sizes: " << w << " " << h << " " << d << std::endl;
-      nrrd_file << "axis mins: " << -offset.x << ", " << -offset.y << ", " << -offset.z << std::endl;
-      nrrd_file << "spacings: " << sx << " " << sy << " " << sz << std::endl;
-      nrrd_file << "centerings: cell cell cell" << std::endl;
-      nrrd_file << "endian: little" << std::endl;
-      nrrd_file << "encoding: raw" << std::endl;
-      nrrd_file << std::endl;
-
-      // write data portion
-      for (int k = 0; k < d; k++)
-      {
-        for (int j = 0; j < h; j++)
-        {
-          for (int i = 0; i < w; i++)
-          {
-            float val = (float)dist[i][j][k] / factor;
-            nrrd_file.write((char*)&val, sizeof(float));
-            //if(dist[i][j][k]<0.5)
-            //    cout<<i<<" "<<j<<" "<<k<<" "<<dist[i][j][k]<<endl;
-          }
-        }
-      }
-
-      nrrd_file.close();
-
-      //ret->setCenterType(FloatField::NodeCentered);
-    } else {
-      std::cerr << "Failed to open file '" << filename << "' for writing." << std::endl;
-    }
-
     return ret;
   }
 

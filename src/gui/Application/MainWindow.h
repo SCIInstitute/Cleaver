@@ -20,103 +20,87 @@
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    MainWindow(const QString &title);
-    ~MainWindow();
-    explicit MainWindow(QWidget *parent = 0);
+  MainWindow(const QString &title);
+  ~MainWindow();
+  explicit MainWindow(QWidget *parent = 0);
+  MeshWindow * createWindow(const QString &title);
+  void enableMeshedVolumeOptions();
 
-    static MainWindow* instance(){ return m_instance; }
-    static DataManager* dataManager(){ return instance()->m_dataManager; }
+public slots :
 
-    void createWindow(cleaver::Volume *volume, const QString &title);
-    void createWindow(cleaver::TetMesh  *mesh, const QString &title);
-    MeshWindow* activeWindow() const;
-	void enableMeshedVolumeOptions();
-    
-signals:
-    
-public slots:
+  void importVolume();
+  void importSizingField();
+  void importMesh();
+  void exportField(cleaver::FloatField *field);
+  void exportMesh(cleaver::TetMesh *mesh = NULL);
+  void about();
 
-    void importVolume();
-    void importSizingField();
-    void importMesh();
-    void exportField(cleaver::FloatField *field);
-    void exportMesh(cleaver::TetMesh *mesh = NULL);
-    void subWindowClosed();
-    void closeSubWindow(MeshWindow *win = NULL);
-    void focus(QMdiSubWindow*);
-    void about();
-
-    // camera slots
-    void resetCamera();
-    void saveCamera();
-    void loadCamera();
+  // camera slots
+  void resetCamera();
+  void saveCamera();
+  void loadCamera();
 
 
-    // edit functions
-    void removeExternalTets();
-    void removeLockedTets();
+  // edit functions
+  void removeExternalTets();
+  void removeLockedTets();
 
-    // compute functions
-    void computeMeshAngles();
+  // compute functions
+  void computeMeshAngles();
 
 private:
-    void createDockWindows();
-    void createActions();
-    void createMenus();
+  void createDockWindows();
+  void createActions();
+  void createMenus();
 
 private:
-    static MainWindow *m_instance;
-    QMdiArea *m_workspace;
+  MeshWindow *window_;
 
-    DataManager *m_dataManager;
-    MeshViewOptionsWidget *m_meshViewOptionsWidget;
-    CleaverWidget *m_cleaverWidget;
-    SizingFieldWidget *m_sizingFieldWidget;
-    DataManagerWidget *m_dataManagerWidget;
+  MeshViewOptionsWidget *m_meshViewOptionsWidget;
+  CleaverWidget *m_cleaverWidget;
+  SizingFieldWidget *m_sizingFieldWidget;
+  DataManagerWidget *m_dataManagerWidget;
 
-    // File Menu Actions
-    QAction *importVolumeAct;
-    QAction *importSizingFieldAct;
-    QAction *importMeshAct;
-    QAction *closeAllAct;
-    QAction *exitAct;
+  // File Menu Actions
+  QAction *importVolumeAct;
+  QAction *importSizingFieldAct;
+  QAction *importMeshAct;
+  QAction *closeAct;
+  QAction *exitAct;
 
-    QAction *exportAct;
-    //QAction *exportAct2;
+  QAction *exportAct;
 
-    // Edit Menu Actions
-    QAction *removeExternalTetsAct;
-    QAction *removeLockedTetsAct;
+  // Edit Menu Actions
+  QAction *removeExternalTetsAct;
+  QAction *removeLockedTetsAct;
 
-    // Compute Menu Action
-    QAction *computeAnglesAct;
+  // Compute Menu Action
+  QAction *computeAnglesAct;
 
-    // View Menu Actions
-    QAction *resetCameraAct;
-    QAction *saveCameraAct;
-    QAction *loadCameraAct;
+  // View Menu Actions
+  QAction *resetCameraAct;
+  QAction *saveCameraAct;
+  QAction *loadCameraAct;
 
-    // Tool Menu Actions    
-    QAction *cleaverAction;
-    QAction *meshViewOptionsAction;
-    QAction *sizingFieldAction;
+  // Tool Menu Actions    
+  QAction *cleaverAction;
+  QAction *meshViewOptionsAction;
+  QAction *sizingFieldAction;
 
-    // About Menu Actions
-    QAction *aboutAct;
+  // About Menu Actions
+  QAction *aboutAct;
 
-    // Top Level Menus
-    QMenu *m_fileMenu;
-    QMenu *m_editMenu;
-    QMenu *m_computeMenu;
-    QMenu *m_viewMenu;
-    QMenu *m_toolsMenu;
-    QMenu *m_helpMenu;
+  // Top Level Menus
+  QMenu *m_fileMenu;
+  QMenu *m_editMenu;
+  QMenu *m_computeMenu;
+  QMenu *m_viewMenu;
+  QMenu *m_toolsMenu;
+  QMenu *m_helpMenu;
 
-
-    int m_iNumOpenWindows;
-	std::string lastPath_, exePath_, scirun_path_, python_path_;
+  std::string lastPath_, exePath_, scirun_path_, python_path_;
 };
 
 #endif // MAINWINDOW_H

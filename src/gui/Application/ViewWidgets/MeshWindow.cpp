@@ -56,9 +56,9 @@ MeshWindow::MeshWindow(const QGLFormat& format, QObject *parent) :
   //this->setFocusPolicy(Qt::StrongFocus);
   this->faceVAO_ = this->edgeVAO_ = this->cutVAO_ = this->violVAO_ = NULL;
   this->faceVBO_ = this->edgeVBO_ = this->cutVBO_ = this->violVBO_ = NULL;
-  m_mesh = NULL;
-  m_volume = NULL;
-  m_mesher = NULL;
+  this->volume_ = NULL;
+  this->mesh_ = NULL;
+  this->mesher_ = NULL;
   init = false;
 
   initializeOptions();
@@ -93,11 +93,7 @@ void MeshWindow::setDefaultOptions()
 
 void MeshWindow::resetView()
 {
-  cleaver::BoundingBox bb;
-  if (m_volume)
-    bb = m_volume->bounds();
-  else
-    bb = m_mesh->bounds;
+  auto &bb = this->m_dataBounds;
   //bbox lines
   this->bboxData_.clear();
   //origin to X
@@ -518,8 +514,9 @@ void MeshWindow::paintGL()
     this->bboxVBO_.create();
     this->bboxVBO_.setUsagePattern(QOpenGLBuffer::StaticDraw);
     this->bboxVBO_.bind();
-    this->bboxVBO_.allocate(&this->bboxData_[0], static_cast<int>(
-          sizeof(GL_FLOAT) * this->bboxData_.size()));
+    std::vector<float> tmp(72, 0);
+    this->bboxVBO_.allocate(&tmp[0], static_cast<int>(
+          sizeof(GL_FLOAT) * tmp.size()));
     this->bboxVAO_.create();
     this->bboxVAO_.bind();
     this->edgeProg_.enableAttributeArray(0);
@@ -553,7 +550,7 @@ void MeshWindow::paintGL()
     this->axisProg_.release();
   }
   //now draw the bbox lines
-  if (this->m_bShowBBox && (this->m_mesh || this->m_volume)) {
+  if (this->m_bShowBBox && !this->bboxData_.empty()) {
     glLineWidth(2.);
     this->edgeProg_.bind();
     this->edgeProg_.setUniformValue("uColor", 0, 0, 0, 1);
@@ -565,13 +562,13 @@ void MeshWindow::paintGL()
     this->bboxVAO_.release();
     this->edgeProg_.release();
   }
-  if (m_bShowEdges) {
+  if (m_bShowEdges && this->mesh_) {
     drawEdges();
   }
-  if (m_bShowFaces) {
+  if (m_bShowFaces && this->mesh_) {
     drawFaces();
   }
-  if (m_bShowCuts && m_volume) {
+  if (m_bShowCuts && this->mesh_ && this->volume_) {
     drawCuts();
   }
 
@@ -601,10 +598,10 @@ void MeshWindow::paintGL()
   default: break;
   }
 
-  if (m_bShowViolationPolytopes) {
+  if (m_bShowViolationPolytopes && this->mesh_) {
     drawViolationPolytopesForVertices();
   }
-  if (m_bClipping && m_bShowClippingPlane) {
+  if (m_bClipping && m_bShowClippingPlane && this->mesh_) {
     drawClippingPlane();
   }
 }
@@ -612,7 +609,7 @@ void MeshWindow::paintGL()
 void MeshWindow::drawVertexStar(int v)
 {
   // draw vertex
-  cleaver::Vertex *vertex = m_mesh->verts[v];
+  cleaver::Vertex *vertex = this->mesh_->verts[v];
   glPointSize(4.0f);
   glBegin(GL_POINTS);
   glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
@@ -626,7 +623,7 @@ void MeshWindow::drawVertexStar(int v)
 
 
   //--- Draw Faces Around Vertex ---
-  std::vector<cleaver::HalfFace*> facelist = m_mesh->facesAroundVertex(vertex);
+  std::vector<cleaver::HalfFace*> facelist = this->mesh_->facesAroundVertex(vertex);
 
   glColor3f(0.7f, 0.7f, 0.7f);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -666,7 +663,7 @@ void MeshWindow::drawEdgeStar(int edge)
 {
   // get pointer to the current edge
   int idx = 0;
-  std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator iter = m_mesh->halfEdges.begin();
+  std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator iter = this->mesh_->halfEdges.begin();
   while (idx != edge){
     iter++; idx++;
   }
@@ -684,7 +681,7 @@ void MeshWindow::drawEdgeStar(int edge)
   glEnd();
 
   // draw faces incident
-  std::vector<cleaver::HalfFace*> facelist = m_mesh->facesAroundEdge(e);
+  std::vector<cleaver::HalfFace*> facelist = this->mesh_->facesAroundEdge(e);
 
   glColor3f(0.7f, 0.7f, 0.7f);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -723,7 +720,7 @@ void MeshWindow::drawEdgeStar(int edge)
   //std::cout << facelist.size() << " incident faces" << std::endl;
 
   // draw tets incident
-  std::vector<cleaver::Tet*> tetlist = m_mesh->tetsAroundEdge(e);
+  std::vector<cleaver::Tet*> tetlist = this->mesh_->tetsAroundEdge(e);
   glBegin(GL_TRIANGLES);
   for (unsigned int t = 0; t < tetlist.size(); t++){
     for (int f = 0; f < 4; f++){
@@ -742,7 +739,7 @@ void MeshWindow::drawEdgeStar(int edge)
 void MeshWindow::drawFaceStar(int face)
 {
   // get pointer to face
-  cleaver::HalfFace *half_face = &m_mesh->halfFaces[face];
+  cleaver::HalfFace *half_face = &this->mesh_->halfFaces[face];
 
   cleaver::vec3 p1 = half_face->halfEdges[0]->vertex->pos();
   cleaver::vec3 p2 = half_face->halfEdges[1]->vertex->pos();
@@ -774,7 +771,7 @@ void MeshWindow::drawFaceStar(int face)
   glEnd();
 
   // get 2 incident tets
-  std::vector<cleaver::Tet*> tetlist = m_mesh->tetsAroundFace(half_face);
+  std::vector<cleaver::Tet*> tetlist = this->mesh_->tetsAroundFace(half_face);
   //std::cout << tetlist.size() << " incident tets" << std::endl;
 
   // draw their lines, don't fill them
@@ -796,42 +793,42 @@ void MeshWindow::drawFaceStar(int face)
 
 void MeshWindow::drawViolationPolytopesForVertices()
 {
-  if (m_mesher->alphasComputed())
+  if (!this->mesher_ || !this->mesher_->alphasComputed()) {
+    return;
+  }
+  for (size_t v = 0; v < this->mesh_->verts.size(); v++)
   {
-    for (size_t v = 0; v < m_mesh->verts.size(); v++)
-    {
-      glColor3f(1.0f, 0.5f, 0.5f);
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      glPolygonOffset(1.0f, 1.0f);
-      glEnable(GL_POLYGON_OFFSET_FILL);
-      drawViolationPolytopeForVertex(v);
-      glDisable(GL_POLYGON_OFFSET_FILL);
+    glColor3f(1.0f, 0.5f, 0.5f);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonOffset(1.0f, 1.0f);
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    drawViolationPolytopeForVertex(v);
+    glDisable(GL_POLYGON_OFFSET_FILL);
 
-      glColor3f(0.0f, 0.0f, 0.0f);
-      glEnable(GL_LINE_SMOOTH);
-      glEnable(GL_BLEND);
-      glDisable(GL_LIGHTING);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glLineWidth(1.0);
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glDisable(GL_LIGHTING);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glLineWidth(1.0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-      drawViolationPolytopeForVertex(v);
+    drawViolationPolytopeForVertex(v);
 
 
-      glDisable(GL_LINE_SMOOTH);
-      glDisable(GL_BLEND);
-    }
+    glDisable(GL_LINE_SMOOTH);
+    glDisable(GL_BLEND);
   }
 }
 
 void MeshWindow::drawViolationPolytopeForVertex(int v)
 {
   // get vertex
-  cleaver::Vertex *vertex = m_mesh->verts[v];
+  cleaver::Vertex *vertex = this->mesh_->verts[v];
 
   // get adjacency data
   //std::vector<Cleaver::HalfEdge*> adjEdges = m_mesh->edgesAroundVertex(vertex);
-  std::vector<cleaver::Tet*>      adjTets = m_mesh->tetsAroundVertex(vertex);
+  std::vector<cleaver::Tet*>      adjTets = this->mesh_->tetsAroundVertex(vertex);
 
   glDisable(GL_LIGHTING);
   glBegin(GL_TRIANGLES);
@@ -840,7 +837,7 @@ void MeshWindow::drawViolationPolytopeForVertex(int v)
   {
     // each tet t has 3 edges incident to vertex v
     int count = 0;
-    std::vector<cleaver::HalfEdge*> edges = m_mesh->edgesAroundTet(adjTets[t]);
+    std::vector<cleaver::HalfEdge*> edges = this->mesh_->edgesAroundTet(adjTets[t]);
     for (int e = 0; e < 6; e++){
       cleaver::HalfEdge *edge = edges[e];
       if (edge->incidentToVertex(vertex))
@@ -871,7 +868,7 @@ void MeshWindow::drawViolationPolytopeForVertex(int v)
 
 void MeshWindow::drawFaces()
 {
-  if (!this->m_mesh || this->faceData_.empty()) return;
+  if (!this->mesh_ || this->faceData_.empty()) return;
   // shader pogram
   this->faceProg_.bind();
   this->faceProg_.setUniformValueArray("uTransform", &this->cameraMatrix_, 1);
@@ -885,7 +882,7 @@ void MeshWindow::drawFaces()
 
 void MeshWindow::drawEdges()
 {
-  if (!this->m_mesh || this->edgeData_.empty()) return;
+  if (!this->mesh_ || this->edgeData_.empty()) return;
   glLineWidth(1.5);
   this->edgeProg_.bind();
   this->edgeProg_.setUniformValue("uColor", 0, 0, 0, 1);
@@ -900,7 +897,7 @@ void MeshWindow::drawEdges()
 
 void MeshWindow::drawCuts()
 {
-  if (!this->m_mesh || this->cutData_.empty()) return;
+  if (!this->mesh_ || this->cutData_.empty()) return;
   //violating cuts
   glPointSize(4.0);
   this->edgeProg_.bind();
@@ -1093,34 +1090,34 @@ void MeshWindow::keyPressEvent(QKeyEvent *event)
   case Qt::Key_J:
     m_currentVertex--;
     if (m_currentVertex < 0)
-      m_currentVertex = m_mesh->verts.size() - 1;
+      m_currentVertex = this->mesh_->verts.size() - 1;
     std::cout << "vertex index: " << m_currentVertex << std::endl;
 
     m_currentEdge--;
     if (m_currentEdge < 0)
-      m_currentEdge = m_mesh->halfEdges.size() - 1;
+      m_currentEdge = this->mesh_->halfEdges.size() - 1;
     std::cout << "edge index: " << m_currentEdge << std::endl;
 
     m_currentFace--;
     if (m_currentFace < 0)
-      m_currentFace = (4 * m_mesh->tets.size() - 1);
+      m_currentFace = (4 * this->mesh_->tets.size() - 1);
     std::cout << "face index: " << m_currentFace << std::endl;
 
     this->updateGL();
     break;
   case Qt::Key_K:
     m_currentVertex++;
-    if (m_currentVertex >= (int)m_mesh->verts.size())
+    if (m_currentVertex >= (int)this->mesh_->verts.size())
       m_currentVertex = 0;
     std::cout << "vertex index: " << m_currentVertex << std::endl;
 
     m_currentEdge++;
-    if (m_currentEdge >= (int)m_mesh->halfEdges.size())
+    if (m_currentEdge >= (int)this->mesh_->halfEdges.size())
       m_currentEdge = 0;
     std::cout << "edge index: " << m_currentEdge << std::endl;
 
     m_currentFace++;
-    if (m_currentFace >= (int)(4 * m_mesh->tets.size()))
+    if (m_currentFace >= (int)(4 * this->mesh_->tets.size()))
       m_currentFace = 0;
     std::cout << "face index: " << m_currentFace << std::endl;
 
@@ -1178,7 +1175,7 @@ void MeshWindow::closeEvent(QCloseEvent *event)
 
 void MeshWindow::setMesh(cleaver::TetMesh *mesh)
 {
-  m_mesh = mesh;
+  this->mesh_ = mesh;
   m_dataBounds = cleaver::BoundingBox::merge(m_dataBounds, mesh->bounds);
 
   if (mesh->imported) {
@@ -1201,16 +1198,14 @@ void MeshWindow::setMesh(cleaver::TetMesh *mesh)
   }
 }
 
+void MeshWindow::setMesher(cleaver::CleaverMesher *mesher) {
+  this->mesher_ = mesher;
+}
+
 void MeshWindow::setVolume(cleaver::Volume *volume)
 {
-  m_volume = volume;
+  this->volume_ = volume;
   m_dataBounds = cleaver::BoundingBox::merge(m_dataBounds, volume->bounds());
-
-  if (!m_mesher)
-    m_mesher = new cleaver::CleaverMesher(volume);
-  else{
-    m_mesher->setVolume(volume);
-  }
 
   m_bMaterialFaceLock.clear();
   m_bMaterialCellLock.clear();
@@ -1235,8 +1230,9 @@ void MeshWindow::update_vbos()
   // 1. Generate a new buffer object with glGenBuffersARB().
   // 2. Bind the buffer object with glBindBufferARB().
   // 3. Copy vertex data to the buffer object with glBufferDataARB().
-  if (m_mesh){
-    if ((m_mesher && mesher()->stencilsDone()) || m_mesh->imported)
+  if (this->mesh_){
+    if ((this->mesher_ && this->mesher_->stencilsDone()) ||
+      this->mesh_->imported)
       build_output_vbos();
     else
       build_bkgrnd_vbos();
@@ -1254,10 +1250,10 @@ void MeshWindow::build_bkgrnd_vbos()
   if (!this->init) return;
   this->faceData_.clear();
   this->edgeData_.clear();
-  for (size_t f = 0; f < m_mesh->faces.size(); f++)
+  for (size_t f = 0; f < this->mesh_->faces.size(); f++)
   {
-    int t1 = m_mesh->faces[f]->tets[0];
-    int t2 = m_mesh->faces[f]->tets[1];
+    int t1 = this->mesh_->faces[f]->tets[0];
+    int t2 = this->mesh_->faces[f]->tets[1];
 
 
     bool clipped = false;
@@ -1277,7 +1273,8 @@ void MeshWindow::build_bkgrnd_vbos()
       for (int v = 0; v < 3; v++)
       {
         // is vertex on proper side of the plane?
-        cleaver::Vertex *vertex = m_mesh->verts[m_mesh->faces[f]->verts[v]];
+        cleaver::Vertex *vertex = this->mesh_->verts[
+          this->mesh_->faces[f]->verts[v]];
         cleaver::vec3 p(vertex->pos().x, vertex->pos().y, vertex->pos().z);
 
         if (n.dot(p) - d > 1E-4){
@@ -1290,9 +1287,10 @@ void MeshWindow::build_bkgrnd_vbos()
       if (!clipped)
       {
         // look at both adjacent tets
-        if (m_mesh->faces[f]->tets[0] > 0)
+        if (this->mesh_->faces[f]->tets[0] > 0)
         {
-          cleaver::Tet *tet = m_mesh->tets[m_mesh->faces[f]->tets[0]];
+          cleaver::Tet *tet = this->mesh_->tets[
+            this->mesh_->faces[f]->tets[0]];
 
           for (int v = 0; v < 4; v++){
             cleaver::Vertex *vertex = tet->verts[v];
@@ -1304,9 +1302,10 @@ void MeshWindow::build_bkgrnd_vbos()
             }
           }
         }
-        if (m_mesh->faces[f]->tets[1] > 0)
+        if (this->mesh_->faces[f]->tets[1] > 0)
         {
-          cleaver::Tet *tet = m_mesh->tets[m_mesh->faces[f]->tets[1]];
+          cleaver::Tet *tet = this->mesh_->tets[
+            this->mesh_->faces[f]->tets[1]];
 
           for (int v = 0; v < 4; v++){
             cleaver::Vertex *vertex = tet->verts[v];
@@ -1321,14 +1320,16 @@ void MeshWindow::build_bkgrnd_vbos()
       }
     }
 
-    cleaver::vec3 normal = m_mesh->faces[f]->normal;
+    cleaver::vec3 normal = this->mesh_->faces[f]->normal;
 
     if ((!clipped && exterior) || clipborder)
     {
       for (int v = 0; v < 3; v++)
       {
-        cleaver::Vertex *vertex = m_mesh->verts[m_mesh->faces[f]->verts[v]];
-        cleaver::Vertex *vertex2 = m_mesh->verts[m_mesh->faces[f]->verts[(v+1)%3]];
+        cleaver::Vertex *vertex = this->mesh_->verts[
+          this->mesh_->faces[f]->verts[v]];
+        cleaver::Vertex *vertex2 = this->mesh_->verts[
+          this->mesh_->faces[f]->verts[(v+1)%3]];
 
         this->faceData_.push_back(static_cast<float>(vertex->pos().x));
         this->faceData_.push_back(static_cast<float>(vertex->pos().y));
@@ -1345,18 +1346,19 @@ void MeshWindow::build_bkgrnd_vbos()
         this->faceData_.push_back(static_cast<float>(normal.y));
         this->faceData_.push_back(static_cast<float>(normal.z));
         float r, g, b;
-        if (m_mesher && m_mesher->samplingDone())
-        {
+        if ((this->mesher_ && this->mesher_->samplingDone())) {
           float *color = color_for_label[vertex->label];
           r = color[0];
           g = color[1];
           b = color[2];
-        } else{
+        } else {
           int color_label = -1;
-          if (m_mesh->faces[f]->tets[0] >= 0)
-            color_label = m_mesh->tets[m_mesh->faces[f]->tets[0]]->mat_label;
-          else if (m_mesh->faces[f]->tets[1] >= 0)
-            color_label = m_mesh->tets[m_mesh->faces[f]->tets[1]]->mat_label;
+          if (this->mesh_->faces[f]->tets[0] >= 0)
+            color_label = this->mesh_->tets[
+              this->mesh_->faces[f]->tets[0]]->mat_label;
+          else if (this->mesh_->faces[f]->tets[1] >= 0)
+            color_label = this->mesh_->tets[
+              this->mesh_->faces[f]->tets[1]]->mat_label;
 
           if (color_label < 0){
             r = 0.9f;
@@ -1442,14 +1444,14 @@ void MeshWindow::build_bkgrnd_vbos()
   this->cutData_.clear();
   this->violData_.clear();
   // Now update Cuts List
-  if (m_mesher && m_mesher->interfacesComputed())
+  if ((this->mesher_ && this->mesher_->interfacesComputed()))
   {
     std::vector<GLfloat> ViolationData;
     std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator
-      edgesIter = m_mesh->halfEdges.begin();
+      edgesIter = this->mesh_->halfEdges.begin();
 
     // reset evaluation flag, so we can use to avoid duplicates
-    while (edgesIter != m_mesh->halfEdges.end())
+    while (edgesIter != this->mesh_->halfEdges.end())
     {
       cleaver::HalfEdge *edge = (*edgesIter).second;
       edge->evaluated = false;
@@ -1457,8 +1459,8 @@ void MeshWindow::build_bkgrnd_vbos()
     }
 
     // now grab each cut only once
-    edgesIter = m_mesh->halfEdges.begin();
-    while (edgesIter != m_mesh->halfEdges.end())
+    edgesIter = this->mesh_->halfEdges.begin();
+    while (edgesIter != this->mesh_->halfEdges.end())
     {
       cleaver::HalfEdge *edge = (*edgesIter).second;
       if (edge->cut && edge->cut->order() == 1 && !edge->evaluated)
@@ -1552,10 +1554,10 @@ void MeshWindow::build_output_vbos()
   if (!this->init) return;
   this->faceData_.clear();
   this->edgeData_.clear();
-  for (size_t f = 0; f < m_mesh->faces.size(); f++)
+  for (size_t f = 0; f < this->mesh_->faces.size(); f++)
   {
-    int t1 = m_mesh->faces[f]->tets[0];
-    int t2 = m_mesh->faces[f]->tets[1];
+    int t1 = this->mesh_->faces[f]->tets[0];
+    int t2 = this->mesh_->faces[f]->tets[1];
 
     bool clipped = false;
     bool exterior = false;
@@ -1569,18 +1571,20 @@ void MeshWindow::build_output_vbos()
     if (num_adj_tets == 1)
       exterior = true;
 
-    if (num_adj_tets == 2 && m_mesh->tets[t1]->mat_label != m_mesh->tets[t2]->mat_label)
+    if (num_adj_tets == 2 && 
+      this->mesh_->tets[t1]->mat_label !=
+      this->mesh_->tets[t2]->mat_label)
       surface = true;
 
     int m1 = -1;
     int m2 = -2;
     if (t1 >= 0){
-      m1 = m_mesh->tets[t1]->mat_label;
+      m1 = this->mesh_->tets[t1]->mat_label;
       if (m1 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m1])
         force = true;
     }
     if (t2 >= 0){
-      m2 = m_mesh->tets[t2]->mat_label;
+      m2 = this->mesh_->tets[t2]->mat_label;
       if (m2 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m2])
         force = true;
     }
@@ -1595,7 +1599,8 @@ void MeshWindow::build_output_vbos()
       for (int v = 0; v < 3; v++)
       {
         // is vertex on proper side of the plane?
-        cleaver::Vertex *vertex = m_mesh->verts[m_mesh->faces[f]->verts[v]];
+        cleaver::Vertex *vertex = this->mesh_->verts[
+          this->mesh_->faces[f]->verts[v]];
         cleaver::vec3 p(vertex->pos().x, vertex->pos().y, vertex->pos().z);
 
         if (n.dot(p) - d > 1E-4){
@@ -1608,9 +1613,10 @@ void MeshWindow::build_output_vbos()
       if (!clipped)
       {
         // look at both adjacent tets
-        if (m_mesh->faces[f]->tets[0] > 0)
+        if (this->mesh_->faces[f]->tets[0] > 0)
         {
-          cleaver::Tet *tet = m_mesh->tets[m_mesh->faces[f]->tets[0]];
+          cleaver::Tet *tet = this->mesh_->tets[
+            this->mesh_->faces[f]->tets[0]];
 
           for (int v = 0; v < 4; v++){
             cleaver::Vertex *vertex = tet->verts[v];
@@ -1622,9 +1628,10 @@ void MeshWindow::build_output_vbos()
             }
           }
         }
-        if (m_mesh->faces[f]->tets[1] > 0)
+        if (this->mesh_->faces[f]->tets[1] > 0)
         {
-          cleaver::Tet *tet = m_mesh->tets[m_mesh->faces[f]->tets[1]];
+          cleaver::Tet *tet = this->mesh_->tets[
+            this->mesh_->faces[f]->tets[1]];
 
           for (int v = 0; v < 4; v++){
             cleaver::Vertex *vertex = tet->verts[v];
@@ -1652,9 +1659,10 @@ void MeshWindow::build_output_vbos()
       float  bad_color[3] = { 1.0f, 0.3f, 0.0f };
 
       float *color1 = default_color, *color2 = default_color;
-      if (m_mesh->faces[f]->tets[0] >= 0){
+      if (this->mesh_->faces[f]->tets[0] >= 0){
 
-        tet1 = m_mesh->tets[m_mesh->faces[f]->tets[0]];
+        tet1 = this->mesh_->tets[
+          this->mesh_->faces[f]->tets[0]];
         if (m_bColorByQuality){
           float t = tet1->minAngle() / 90.0f;
           color1[0] = (1 - t)*bad_color[0] + t*good_color[0];
@@ -1664,9 +1672,10 @@ void MeshWindow::build_output_vbos()
           color1 = color_for_label[(int)tet1->mat_label];
         }
       }
-      if (m_mesh->faces[f]->tets[1] >= 0){
+      if (this->mesh_->faces[f]->tets[1] >= 0){
 
-        tet2 = m_mesh->tets[m_mesh->faces[f]->tets[1]];
+        tet2 = this->mesh_->tets[
+          this->mesh_->faces[f]->tets[1]];
         if (m_bColorByQuality){
           float t = tet2->minAngle() / 90.0f;
           color2[0] = (1 - t)*bad_color[0] + t*good_color[0];
@@ -1676,18 +1685,20 @@ void MeshWindow::build_output_vbos()
           color2 = color_for_label[(int)tet2->mat_label];
         }
       }
-      if (m_mesh->faces[f]->tets[0] < 0)
+      if (this->mesh_->faces[f]->tets[0] < 0)
         color1 = color2;
-      if (m_mesh->faces[f]->tets[1] < 0)
+      if (this->mesh_->faces[f]->tets[1] < 0)
         color2 = color1;
 
-      cleaver::vec3 normal = m_mesh->faces[f]->normal;
+      cleaver::vec3 normal = this->mesh_->faces[f]->normal;
 
       // set vertex positions and colors
       for (int v = 0; v < 3; v++)
       {
-        cleaver::Vertex *vertex = m_mesh->verts[m_mesh->faces[f]->verts[v]];
-        cleaver::Vertex *vertex2 = m_mesh->verts[m_mesh->faces[f]->verts[(v+1)%3]];
+        cleaver::Vertex *vertex = this->mesh_->verts[
+          this->mesh_->faces[f]->verts[v]];
+        cleaver::Vertex *vertex2 = this->mesh_->verts[
+          this->mesh_->faces[f]->verts[(v+1)%3]];
 
         this->faceData_.push_back(static_cast<float>(vertex->pos().x));
         this->faceData_.push_back(static_cast<float>(vertex->pos().y));
@@ -1779,13 +1790,13 @@ void MeshWindow::build_output_vbos()
 
   this->cutData_.clear();
   // Now update Cuts List
-  if (m_mesher && m_mesher->interfacesComputed())
+  if ((this->mesher_ && this->mesher_->interfacesComputed()))
   {
     std::map<std::pair<int, int>,
-      cleaver::HalfEdge*>::iterator edgesIter = m_mesh->halfEdges.begin();
+      cleaver::HalfEdge*>::iterator edgesIter = this->mesh_->halfEdges.begin();
 
     // reset evaluation flag, so we can use to avoid duplicates
-    while (edgesIter != m_mesh->halfEdges.end())
+    while (edgesIter != this->mesh_->halfEdges.end())
     {
       cleaver::HalfEdge *edge = (*edgesIter).second;
       edge->evaluated = false;
@@ -1793,8 +1804,8 @@ void MeshWindow::build_output_vbos()
     }
 
     // now grab each cut only once
-    edgesIter = m_mesh->halfEdges.begin();
-    while (edgesIter != m_mesh->halfEdges.end())
+    edgesIter = this->mesh_->halfEdges.begin();
+    while (edgesIter != this->mesh_->halfEdges.end())
     {
       cleaver::HalfEdge *edge = (*edgesIter).second;
       if (edge->cut && edge->cut->order() == 1 && !edge->evaluated)

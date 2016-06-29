@@ -174,8 +174,6 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files) {
       ++imageIterator;
     }
     ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
-    //debug
-    NRRDTools::saveNRRDFile(fields[num], "a" + std::to_string(num));
     num++;
   }
   return fields;

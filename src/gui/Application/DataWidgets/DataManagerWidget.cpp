@@ -12,14 +12,32 @@ DataManagerWidget::DataManagerWidget(QWidget *parent) :
     ui(new Ui::DataManagerWidget)
 {
     ui->setupUi(this);
-
     updateGroupWidgets();
-    QObject::connect(MainWindow::dataManager(), SIGNAL(dataChanged()), this, SLOT(updateList()));
 }
 
 DataManagerWidget::~DataManagerWidget()
 {
     delete ui;
+}
+
+void DataManagerWidget::setMesh(cleaver::TetMesh *mesh) {
+  this->manager_.setMesh(mesh); 
+}
+
+void DataManagerWidget::setSizingField(cleaver::AbstractScalarField *field) {
+  this->manager_.setSizingField(field);
+}
+
+void DataManagerWidget::setIndicators(std::vector<cleaver::AbstractScalarField *> indicators) {
+  this->manager_.setIndicators(indicators);
+}
+
+void DataManagerWidget::setVolume(cleaver::Volume *volume) {
+  this->manager_.setVolume(volume);
+}
+
+cleaver::Volume * DataManagerWidget::getVolume() {
+  return this->manager_.volume();
 }
 
 DataGroupWidget* DataManagerWidget::makeNewGroup(DataGroup *group)
@@ -56,33 +74,36 @@ void DataManagerWidget::updateList() {
   this->widgets_.clear();
   //  Update sizing Field
   auto sizingField = this->manager_.sizingField();
-  auto fieldWidget = new FieldDataWidget(sizingField, this);
-  this->vbox_->insertWidget(this->widgets_.size(), fieldWidget);
-  this->widgets_.push_back(fieldWidget);
+  if (sizingField != NULL) {
+    auto fieldWidget = new FieldDataWidget(sizingField, this);
+    this->vbox_->insertWidget(static_cast<int>(this->widgets_.size()), fieldWidget);
+    this->widgets_.push_back(fieldWidget);
+  }
   //  Update volume
   auto v = this->manager_.volume();
-  auto volWidget = new VolumeDataWidget(v, this);
-  this->vbox_->insertWidget(this->widgets_.size(), volWidget);
-  this->widgets_.push_back(volWidget);
+  if (v != NULL) {
+    auto volWidget = new VolumeDataWidget(v, this);
+    this->vbox_->insertWidget(static_cast<int>(this->widgets_.size()), volWidget);
+    this->widgets_.push_back(volWidget);
+  }
   //  Update indicators
   auto inds = this->manager_.indicators();
   for (auto a : inds) {
     auto ind = new FieldDataWidget(a, this);
-    this->vbox_->insertWidget(this->widgets_.size(), ind);
+    this->vbox_->insertWidget(static_cast<int>(this->widgets_.size()), ind);
     this->widgets_.push_back(ind);
   }
-  //  Update volume
-  auto v = this->manager_.volume();
-  auto volWidget = new VolumeDataWidget(v, this);
-  this->vbox_->insertWidget(this->widgets_.size(), volWidget);
-  this->widgets_.push_back(volWidget);
   //  Update mesh
   auto m = this->manager_.mesh();
-  auto meshWidget = new MeshDataWidget(m, this);
-  this->vbox_->insertWidget(this->widgets_.size(), meshWidget);
-  this->widgets_.push_back(meshWidget);
+  if (m != NULL) {
+    auto meshWidget = new MeshDataWidget(m, this);
+    this->vbox_->insertWidget(static_cast<int>(this->widgets_.size()), meshWidget);
+    this->widgets_.push_back(meshWidget);
+  }
   // add spacer back
   this->vbox_->addSpacerItem(this->spacer_);
+  this->repaint();
+  this->update();
 }
 
 void DataManagerWidget::selectionUpdate() {
@@ -90,5 +111,7 @@ void DataManagerWidget::selectionUpdate() {
   //meshWidget->setSelected(false);
 }
 
-
+bool DataManagerWidget::hasSizingField() {
+  return this->manager_.sizingField() != NULL;
+}
 

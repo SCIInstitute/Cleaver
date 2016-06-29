@@ -10,40 +10,18 @@
 #include <QCheckBox>
 #include <NRRDTools.h>
 
-MainWindow* MainWindow::m_instance = NULL;
-
 MainWindow::MainWindow(QWidget *parent) :
-  QMainWindow(parent)
-{
-  m_instance = this;
-}
+  QMainWindow(parent) {}
 
 MainWindow::MainWindow(const QString &title)
 {
-  m_instance = this;
-  setWindowTitle(title);
-
-  // Create Work Space
-  m_workspace = new QMdiArea(this);
-  setCentralWidget(m_workspace);
-
-  setMinimumWidth(1024);
-
-  // Create Data Manager
-  m_dataManager = new DataManager();
-
+  this->setWindowTitle(title);
+  this->setMinimumWidth(1024);  
   // Create Menus/Windows
-  createDockWindows();
-  createActions();
-  createMenus();
-
-  // Setup handling of windows
-  connect(m_workspace, SIGNAL(subWindowActivated(QMdiSubWindow *)), this, SLOT(focus(QMdiSubWindow*)));
-  connect(m_workspace, SIGNAL(subWindowActivated(QMdiSubWindow *)), m_meshViewOptionsWidget, SLOT(focus(QMdiSubWindow*)));
-  connect(m_workspace, SIGNAL(subWindowActivated(QMdiSubWindow *)), m_cleaverWidget, SLOT(focus(QMdiSubWindow*)));
-  connect(m_workspace, SIGNAL(subWindowActivated(QMdiSubWindow*)), m_sizingFieldWidget, SLOT(focus(QMdiSubWindow*)));
-  connect(m_workspace, SIGNAL(subWindowActivated(QMdiSubWindow*)), m_dataManagerWidget, SLOT(focus(QMdiSubWindow*)));
-  m_iNumOpenWindows = 0;
+  this->createDockWindows();
+  this->createActions();
+  this->setCentralWidget(this->window_);
+  this->createMenus();
 
   exePath_ = QFileInfo( QCoreApplication::applicationFilePath()).path().toStdString();
 
@@ -63,11 +41,11 @@ MainWindow::~MainWindow() {
 
 void MainWindow::createDockWindows()
 {
+  this->window_ = this->createWindow("Mesh Window");
   m_dataManagerWidget = new DataManagerWidget(this);
-
-  m_cleaverWidget = new CleaverWidget(this);
-  m_sizingFieldWidget = new SizingFieldWidget(this);
-  m_meshViewOptionsWidget = new MeshViewOptionsWidget(this);
+  m_cleaverWidget = new CleaverWidget(this, m_dataManagerWidget, this->window_);
+  m_sizingFieldWidget = new SizingFieldWidget(this, m_dataManagerWidget);
+  m_meshViewOptionsWidget = new MeshViewOptionsWidget(this, this->window_);
 
   addDockWidget(Qt::LeftDockWidgetArea, m_sizingFieldWidget);
   addDockWidget(Qt::LeftDockWidgetArea, m_cleaverWidget);
@@ -92,9 +70,9 @@ void MainWindow::createActions()
   importMeshAct->setShortcut(tr("Ctrl+m"));
   connect(importMeshAct, SIGNAL(triggered()), this, SLOT(importMesh()));
 
-  closeAllAct = new QAction(tr("Clear Data"), this);
-  closeAllAct->setDisabled(true);
-  closeAllAct->setShortcut(tr("Ctrl+d"));
+  closeAct = new QAction(tr("Clear Data"), this);
+  closeAct->setEnabled(true);
+  closeAct->setShortcut(tr("Ctrl+d"));
 
   exportAct = new QAction(tr("&Export Mesh"), this);
   exportAct->setShortcut(tr("Ctrl+S"));
@@ -165,7 +143,7 @@ void MainWindow::createMenus()
   //m_fileMenu->addAction(exportAct2);
   m_fileMenu->addSeparator();
   //m_fileMenu->addAction(closeAct);
-  m_fileMenu->addAction(closeAllAct);
+  m_fileMenu->addAction(closeAct);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(exitAct);
 
@@ -209,22 +187,17 @@ void MainWindow::createMenus()
 //--------------------------------------
 void MainWindow::removeExternalTets()
 {
-  MeshWindow *window = activeWindow();
-  if(window != NULL)
+  cleaver::TetMesh *mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
+  cleaver::Volume  *volume = this->m_cleaverWidget->getMesher()->getVolume();
+  if(mesh && volume)
   {
-    cleaver::TetMesh *mesh   = window->mesh();
-    cleaver::Volume  *volume = window->volume();
-    if(mesh && volume)
-    {
-      cleaver::stripExteriorTets(mesh,volume,true);
+    cleaver::stripExteriorTets(mesh,volume,true);
 
-      // recompute update adjacency
-      mesh->constructFaces();
-      mesh->constructBottomUpIncidences();
+    // recompute update adjacency
+    mesh->constructFaces();
+    mesh->constructBottomUpIncidences();
 
-      //mesh->removeExternalTets(); // make it so old way
-      window->setMesh(mesh);      // trigger update
-    }
+    this->window_->setMesh(mesh);      // trigger update
   }
 }
 
@@ -236,30 +209,22 @@ void MainWindow::removeExternalTets()
 //--------------------------------------
 void MainWindow::removeLockedTets()
 {
-  MeshWindow *window = activeWindow();
-  if(window != NULL)
+  cleaver::TetMesh *mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
+  if(mesh)
   {
-    cleaver::TetMesh *mesh = window->mesh();
-    if(mesh)
-    {
-      mesh->removeLockedTets();   // make it so
-      window->setMesh(mesh);      // trigger update
-    }
+    mesh->removeLockedTets();   // make it so
+    this->window_->setMesh(mesh);      // trigger update
   }
 }
 
 void MainWindow::computeMeshAngles()
 {
-  MeshWindow *window = activeWindow();
-  if(window != NULL)
+  cleaver::TetMesh *mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
+  if(mesh)
   {
-    cleaver::TetMesh *mesh = window->mesh();
-    if(mesh)
-    {
-      mesh->computeAngles();
-      std::cout << "Min Angle: " << mesh->min_angle << " degrees." << std::endl;
-      std::cout << "Max Angle: " << mesh->max_angle << " degrees." << std::endl;
-    }
+    mesh->computeAngles();
+    std::cout << "Min Angle: " << mesh->min_angle << " degrees." << std::endl;
+    std::cout << "Max Angle: " << mesh->max_angle << " degrees." << std::endl;
   }
 }
 //*************Custom file dialog for segmentation check
@@ -373,7 +338,7 @@ void MainWindow::importVolume()
       QApplication::processEvents();
     }
     // Add Fields to Data Manager
-    dataManager()->setIndicators(fields);
+    this->m_dataManagerWidget->setIndicators(fields);
     cleaver::Volume *volume = new cleaver::Volume(fields);
 
     static int v = 0;
@@ -385,21 +350,19 @@ void MainWindow::importVolume()
     status.setValue(95);
     QApplication::processEvents();
 
-    dataManager()->setVolume(volume);
-    createWindow(volume, QString(volumeName.c_str()));
+    this->m_dataManagerWidget->setVolume(volume);
+    this->window_->setVolume(volume);
 
     m_cleaverWidget->resetCheckboxes();
     status.setValue(100);
+    this->m_sizingFieldWidget->setCreateButtonEnabled(true);
+    this->m_cleaverWidget->setMeshButtonEnabled(true);
   }
 }
 
 void MainWindow::importSizingField()
 {
-  MeshWindow *window = activeWindow();
-  if(window == NULL)
-    return;
-
-  cleaver::Volume *volume = window->volume();
+  cleaver::Volume  *volume = this->m_cleaverWidget->getMesher()->getVolume();
 
   QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"),
       QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
@@ -461,9 +424,9 @@ void MainWindow::importMesh()
       mesh->constructBottomUpIncidences();
       mesh->imported = true;
 
-      MainWindow::instance()->createWindow(mesh, QString("New Mesh"));
-      MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
-      m_dataManager->setMesh(mesh);
+      this->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
+      this->m_dataManagerWidget->setMesh(mesh);
+      this->window_->setMesh(mesh);
     }
   }
   if (!fileNames.empty()) {
@@ -499,8 +462,8 @@ void MainWindow::exportField(cleaver::FloatField *field)
 void MainWindow::exportMesh(cleaver::TetMesh *mesh)
 {
   // If no mesh selected, get active window mesh
-  if(!mesh)
-    mesh = activeWindow()->mesh();
+  if (!mesh)
+    mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
 
   // If still no mesh, return (TODO: Error MessageBox)
   if(!mesh)
@@ -549,82 +512,30 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   }
 }
 
-void MainWindow::subWindowClosed()
-{
-
-}
-
 void MainWindow::resetCamera()
 {
-  MeshWindow *window = activeWindow();
-  if(window != NULL)
+  if(this->window_ != NULL)
   {
-    window->resetView();
+    this->window_->resetView();
   }
 }
 
 void MainWindow::saveCamera()
 {
-  MeshWindow *window = activeWindow();
-  if(window != NULL)
+  if(this->window_ != NULL)
   {
-    window->saveView();
+    this->window_->saveView();
   }
 }
 
 void MainWindow::loadCamera()
 {
-  MeshWindow *window = activeWindow();
-  if(window != NULL)
+  if(this->window_ != NULL)
   {
-    window->loadView();
+    this->window_->loadView();
   }
 }
 
-void MainWindow::closeSubWindow(MeshWindow *win)
-{
-  m_workspace->closeActiveSubWindow();
-  m_iNumOpenWindows--;
-  this->m_cleaverWidget->clear();
-}
-
-void MainWindow::focus(QMdiSubWindow *subwindow)
-{
-  if (subwindow != NULL)
-  {
-    MeshWindow *window = qobject_cast<MeshWindow *>(subwindow->widget());
-
-    if(window != NULL)
-    {
-      if(window->mesh() != NULL) {
-        exportAct->setEnabled(true);
-        //exportAct2->setEnabled(true);
-      }else {
-        exportAct->setEnabled(false);
-        //exportAct2->setEnabled(false);
-      }
-
-      importSizingFieldAct->setEnabled(true);
-      resetCameraAct->setEnabled(true);
-      saveCameraAct->setEnabled(true);
-      loadCameraAct->setEnabled(true);
-    }
-    else{
-      importSizingFieldAct->setEnabled(false);
-      exportAct->setEnabled(false);
-      resetCameraAct->setEnabled(false);
-      saveCameraAct->setEnabled(false);
-      loadCameraAct->setEnabled(false);
-    }
-  }
-  else{
-    importSizingFieldAct->setEnabled(false);
-    exportAct->setEnabled(false);
-    resetCameraAct->setEnabled(false);
-    saveCameraAct->setEnabled(false);
-    loadCameraAct->setEnabled(false);
-  }
-}
 
 void MainWindow::about()
 {
@@ -640,10 +551,8 @@ void MainWindow::about()
         "PARTICULAR PURPOSE."));
 }
 
-void MainWindow::createWindow(cleaver::Volume *volume, const QString &title)
+MeshWindow * MainWindow::createWindow(const QString &title)
 {
-  if(volume)
-  {
     QGLFormat glFormat;
     glFormat.setVersion(3, 3);
     glFormat.setProfile(QGLFormat::CoreProfile); // Requires >=Qt-4.8.0
@@ -653,61 +562,13 @@ void MainWindow::createWindow(cleaver::Volume *volume, const QString &title)
       window->format().majorVersion() << "." << 
       window->format().minorVersion() << ", CORE? " << 
       ((window->format().profile() == 1) ? "true" : "false") << std::endl;
-    window->setVolume(volume);
-    QMdiSubWindow *sw = m_workspace->addSubWindow(window);
     window->setAttribute(Qt::WA_DeleteOnClose);
     window->showMaximized();
-    closeAllAct->setEnabled(true);
-
-    QAction *windowAct = new QAction(title, window);
-    connect(windowAct, SIGNAL(triggered()), window, SLOT(setFocus()));
-    connect(window, SIGNAL(closed(MeshWindow*)), this, SLOT(closeSubWindow(MeshWindow*)));
-    m_iNumOpenWindows++;
-
-    m_workspace->setActiveSubWindow(sw);
-  }
+    return window;
 }
 
 void MainWindow::enableMeshedVolumeOptions() {
 
-  MainWindow::instance()->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(true);
-  MainWindow::instance()->exportAct->setEnabled(true);
+  this->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(true);
+  this->exportAct->setEnabled(true);
 }
-
-void MainWindow::createWindow(cleaver::TetMesh *mesh, const QString &title)
-{
-  if(mesh)
-  {
-    QGLFormat glFormat;
-    glFormat.setVersion(3, 3);
-    glFormat.setProfile(QGLFormat::CoreProfile); // Requires >=Qt-4.8.0
-    glFormat.setSampleBuffers(true);
-    MeshWindow *window = new MeshWindow(glFormat, this);
-    window->setMesh(mesh);
-    QMdiSubWindow *sw = m_workspace->addSubWindow(window);
-    window->setAttribute(Qt::WA_DeleteOnClose);
-    window->showMaximized();
-    closeAllAct->setEnabled(true);
-
-    QAction *windowAct = new QAction(title, window);
-    connect(windowAct, SIGNAL(triggered()), window, SLOT(setFocus()));
-    connect(window, SIGNAL(closed(MeshWindow*)), this, SLOT(closeSubWindow(MeshWindow*)));
-    m_iNumOpenWindows++;
-
-    m_workspace->setActiveSubWindow(sw);
-  }
-}
-
-
-MeshWindow* MainWindow::activeWindow() const
-{
-  QMdiSubWindow *window = m_workspace->activeSubWindow();
-
-  if(window == NULL)
-    return NULL;
-
-  MeshWindow *widget = qobject_cast<MeshWindow *>(window->widget());
-
-  return widget;
-}
-
