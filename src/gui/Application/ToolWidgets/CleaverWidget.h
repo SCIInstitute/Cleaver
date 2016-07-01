@@ -3,8 +3,6 @@
 
 #include <QDockWidget>
 #include <Cleaver/CleaverMesher.h>
-#include "ViewWidgets/MeshWindow.h"
-#include "DataWidgets/DataManagerWidget.h"
 
 namespace Ui {
 class CleaverWidget;
@@ -15,13 +13,14 @@ class CleaverWidget : public QDockWidget
     Q_OBJECT
     
 public:
-    explicit CleaverWidget(QWidget *parent = NULL, 
-      DataManagerWidget * data = NULL,
-      MeshWindow * window = NULL);
+  explicit CleaverWidget(cleaver::CleaverMesher& mesher,
+    QWidget *parent = NULL);
     ~CleaverWidget();
     void setMeshButtonEnabled(bool b);
-    cleaver::CleaverMesher * getMesher();
-
+  signals:
+    void doneMeshing();
+    void repaintGL();
+    void newMesh();
 public slots:
     void clear();
 
@@ -36,19 +35,11 @@ public slots:
     void generalizeTets();
     void snapAndWarp();
     void stencilTets();
-
-    void updateMeshList();
-    void volumeSelected(int index);
-    void meshSelected(int index);
     void resetCheckboxes();
-private:
-  void updateOpenGL();
     
 private:
     Ui::CleaverWidget *ui;
-    cleaver::CleaverMesher *mesher;
-    DataManagerWidget * data_;
-    MeshWindow * window_;
+    cleaver::CleaverMesher& mesher_;
 };
 
 #endif // CLEAVERWIDGET_H

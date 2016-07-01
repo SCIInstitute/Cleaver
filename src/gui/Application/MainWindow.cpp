@@ -42,96 +42,97 @@ MainWindow::~MainWindow() {
 void MainWindow::createDockWindows()
 {
   this->window_ = this->createWindow("Mesh Window");
-  m_dataManagerWidget = new DataManagerWidget(this);
-  m_cleaverWidget = new CleaverWidget(this, m_dataManagerWidget, this->window_);
-  m_sizingFieldWidget = new SizingFieldWidget(this, m_dataManagerWidget);
-  m_meshViewOptionsWidget = new MeshViewOptionsWidget(this, this->window_);
+  this->window_->setMesher(&this->mesher_);
+  this->m_dataManagerWidget = new DataManagerWidget(this);
+  this->m_cleaverWidget = new CleaverWidget(this->mesher_, this);
+  this->m_sizingFieldWidget = new SizingFieldWidget(this->mesher_, this);
+  this->m_meshViewOptionsWidget =
+    new MeshViewOptionsWidget(this->mesher_, this->window_, this);
 
-  addDockWidget(Qt::LeftDockWidgetArea, m_sizingFieldWidget);
-  addDockWidget(Qt::LeftDockWidgetArea, m_cleaverWidget);
-  addDockWidget(Qt::RightDockWidgetArea, m_dataManagerWidget);
-  addDockWidget(Qt::RightDockWidgetArea, m_meshViewOptionsWidget);
+  addDockWidget(Qt::LeftDockWidgetArea, this->m_sizingFieldWidget);
+  addDockWidget(Qt::LeftDockWidgetArea, this->m_cleaverWidget);
+  addDockWidget(Qt::RightDockWidgetArea, this->m_dataManagerWidget);
+  addDockWidget(Qt::RightDockWidgetArea, this->m_meshViewOptionsWidget);
 }
-
 
 void MainWindow::createActions()
 {
   // File Menu Actions
-  importVolumeAct = new QAction(tr("Import &Volume"), this);
-  importVolumeAct->setShortcut(tr("Ctrl+v"));
-  connect(importVolumeAct, SIGNAL(triggered()), this, SLOT(importVolume()));
+  this->importVolumeAct = new QAction(tr("Import &Volume"), this);
+  this->importVolumeAct->setShortcut(tr("Ctrl+v"));
+  connect(this->importVolumeAct, SIGNAL(triggered()), this, SLOT(importVolume()));
 
-  importSizingFieldAct = new QAction(tr("Import Sizing &Field"), this);
-  importSizingFieldAct->setShortcut(tr("Ctrl+f"));
-  connect(importSizingFieldAct, SIGNAL(triggered()), this, SLOT(importSizingField()));
-  importSizingFieldAct->setDisabled(true);
+  this->importSizingFieldAct = new QAction(tr("Import Sizing &Field"), this);
+  this->importSizingFieldAct->setShortcut(tr("Ctrl+f"));
+  connect(this->importSizingFieldAct, SIGNAL(triggered()), this, SLOT(importSizingField()));
+  this->importSizingFieldAct->setDisabled(true);
 
-  importMeshAct = new QAction(tr("Import &Mesh"), this);
-  importMeshAct->setShortcut(tr("Ctrl+m"));
-  connect(importMeshAct, SIGNAL(triggered()), this, SLOT(importMesh()));
+  this->importMeshAct = new QAction(tr("Import &Mesh"), this);
+  this->importMeshAct->setShortcut(tr("Ctrl+m"));
+  connect(this->importMeshAct, SIGNAL(triggered()), this, SLOT(importMesh()));
 
-  closeAct = new QAction(tr("Clear Data"), this);
-  closeAct->setEnabled(true);
-  closeAct->setShortcut(tr("Ctrl+d"));
-
-  exportAct = new QAction(tr("&Export Mesh"), this);
-  exportAct->setShortcut(tr("Ctrl+S"));
-  exportAct->setDisabled(true);
-  connect(exportAct, SIGNAL(triggered()), this, SLOT(exportMesh()));
+  this->exportAct = new QAction(tr("&Export Mesh"), this);
+  this->exportAct->setShortcut(tr("Ctrl+S"));
+  this->exportAct->setDisabled(true);
+  connect(this->exportAct, SIGNAL(triggered()), this, SLOT(exportMesh()));
   
-  exitAct = new QAction(tr("E&xit"), this);
-  exitAct->setShortcut(tr("Ctrl+Q"));
-  connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+  this->exitAct = new QAction(tr("E&xit"), this);
+  this->exitAct->setShortcut(tr("Ctrl+Q"));
+  connect(this->exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
   // Edit Menu Actions
-  removeExternalTetsAct = new QAction(tr("Remove &External Tets"), this);
-  connect(removeExternalTetsAct, SIGNAL(triggered()), this, SLOT(removeExternalTets()));
+  this->removeExternalTetsAct = new QAction(tr("Remove &External Tets"), this);
+  connect(this->removeExternalTetsAct, SIGNAL(triggered()), this, SLOT(removeExternalTets()));
+  this->removeExternalTetsAct->setEnabled(false);
 
-  removeLockedTetsAct = new QAction(tr("Remove &Locked Tets"), this);
-  connect(removeLockedTetsAct, SIGNAL(triggered()), this, SLOT(removeLockedTets()));
+  this->removeLockedTetsAct = new QAction(tr("Remove &Locked Tets"), this);
+  connect(this->removeLockedTetsAct, SIGNAL(triggered()), this, SLOT(removeLockedTets()));
+  this->removeLockedTetsAct->setEnabled(false);
 
   // Compute Menu Actions
-  computeAnglesAct = new QAction(tr("Dihedral Angles"), this);
-  connect(computeAnglesAct, SIGNAL(triggered()), this, SLOT(computeMeshAngles()));
-
-  // View Menu Actions
-  resetCameraAct = new QAction(tr("&Reset Camera"), this);
-  resetCameraAct->setDisabled(true);
-  connect(resetCameraAct, SIGNAL(triggered()), this, SLOT(resetCamera()));
-
-  saveCameraAct = new QAction(tr("&Save Camera"), this);
-  saveCameraAct->setDisabled(true);
-  connect(saveCameraAct, SIGNAL(triggered()), this, SLOT(saveCamera()));
-
-  loadCameraAct = new QAction(tr("&Load Camera"), this);
-  loadCameraAct->setDisabled(true);
-  connect(loadCameraAct, SIGNAL(triggered()), this, SLOT(loadCamera()));
-
+  this->computeAnglesAct = new QAction(tr("Dihedral Angles"), this);
+  connect(this->computeAnglesAct, SIGNAL(triggered()), this, SLOT(computeMeshAngles()));
 
   // Tool Menu Actions
-  cleaverAction = m_cleaverWidget->toggleViewAction();
-  cleaverAction->setCheckable(true);
-  meshViewOptionsAction = m_meshViewOptionsWidget->toggleViewAction();
-  meshViewOptionsAction->setCheckable(true);
+  this->cleaverAction = this->m_cleaverWidget->toggleViewAction();
+  this->cleaverAction->setCheckable(true);
 
-  sizingFieldAction = m_sizingFieldWidget->toggleViewAction();
-  sizingFieldAction->setCheckable(true);
+  this->meshViewOptionsAction = this->m_meshViewOptionsWidget->toggleViewAction();
+  this->meshViewOptionsAction->setCheckable(true);
+
+  this->sizingFieldAction = this->m_sizingFieldWidget->toggleViewAction();
+  this->sizingFieldAction->setCheckable(true);
+
+  this->dataViewAction = this->m_dataManagerWidget->toggleViewAction();
+  this->dataViewAction->setCheckable(true);
 
   // About Menu Actions
-  aboutAct = new QAction(tr("&About"), this);
-  aboutAct->setStatusTip(tr("Show the About box"));
-  connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-}
+  this->aboutAct = new QAction(tr("&About"), this);
+  this->aboutAct->setStatusTip(tr("Show the About box"));
+  connect(this->aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
+  //other actions
+  connect(this->m_cleaverWidget, SIGNAL(doneMeshing()), this, SLOT(handleDoneMeshing()));
+  connect(this->m_cleaverWidget, SIGNAL(newMesh()), this, SLOT(handleNewMesh()));
+  connect(this->m_cleaverWidget, SIGNAL(repaintGL()), this, SLOT(handleRepaintGL()));
+  connect(this->m_sizingFieldWidget, SIGNAL(sizingFieldDone()), 
+    this, SLOT(handleSizingFieldDone()));
+  connect(this->m_dataManagerWidget, SIGNAL(exportField(void*)),
+    this, SLOT(handleExportField(void*)));
+  connect(this->m_dataManagerWidget, SIGNAL(exportMesh(void*)),
+    this, SLOT(handleExportMesh(void*)));
+  connect(this->m_dataManagerWidget, SIGNAL(disableMeshing()),
+    this, SLOT(handleDisableMeshing()));
+  connect(this->m_dataManagerWidget, SIGNAL(disableSizingField()),
+    this, SLOT(handleDisableSizingField()));
+}
 
 void MainWindow::createMenus()
 {
   // Top Level Menus
   m_fileMenu = new QMenu(tr("&File"), this);
   m_editMenu = new QMenu(tr("&Edit"), this);
-  m_computeMenu = new QMenu(tr("&Compute"), this);
   m_viewMenu = new QMenu(tr("&View"), this);
-  m_toolsMenu = new QMenu(tr("&Tools"), this);
   m_helpMenu = new QMenu(tr("&Help"), this);
 
   // File Menu Actions
@@ -140,32 +141,26 @@ void MainWindow::createMenus()
   m_fileMenu->addAction(importMeshAct);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(exportAct);
-  //m_fileMenu->addAction(exportAct2);
   m_fileMenu->addSeparator();
-  //m_fileMenu->addAction(closeAct);
-  m_fileMenu->addAction(closeAct);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(exitAct);
 
   // Edit Menu Actions
   m_editMenu->addAction(removeExternalTetsAct);
   m_editMenu->addAction(removeLockedTetsAct);
+  m_editMenu->addAction(computeAnglesAct);
 
   // Compute Menu Actions
-  m_computeMenu->addAction(computeAnglesAct);
 
   // View Menu Actions
-  m_viewMenu->addAction(resetCameraAct);
-  m_viewMenu->addAction(saveCameraAct);
-  m_viewMenu->addAction(loadCameraAct);
-
-  // Tool Menu Actions
-  m_toolsMenu->addAction(sizingFieldAction);
-  m_toolsMenu->addSeparator();
-  m_toolsMenu->addAction(cleaverAction);
-  m_toolsMenu->addSeparator();
-  m_toolsMenu->addAction(meshViewOptionsAction);
-  m_toolsMenu->addSeparator();
+  m_viewMenu->addAction(sizingFieldAction);
+  m_viewMenu->addSeparator();
+  m_viewMenu->addAction(cleaverAction);
+  m_viewMenu->addSeparator();
+  m_viewMenu->addAction(meshViewOptionsAction);
+  m_viewMenu->addSeparator();
+  m_viewMenu->addAction(dataViewAction);
+  m_viewMenu->addSeparator();
 
   // Help Menu Actions
   m_helpMenu->addAction(aboutAct);
@@ -173,12 +168,46 @@ void MainWindow::createMenus()
   // Add Menus To MenuBar
   menuBar()->addMenu(m_fileMenu);
   menuBar()->addMenu(m_editMenu);
-  menuBar()->addMenu(m_computeMenu);
   menuBar()->addMenu(m_viewMenu);
-  menuBar()->addMenu(m_toolsMenu);
   menuBar()->addMenu(m_helpMenu);
 }
 
+void MainWindow::handleSizingFieldDone() {
+  // Add new sizing field to data manager
+  this->m_dataManagerWidget->setSizingField(
+    this->mesher_.getVolume()->getSizingField());
+  this->m_cleaverWidget->setMeshButtonEnabled(true);
+  this->mesher_.cleanup();
+}
+void MainWindow::handleDoneMeshing() {
+  this->window_->setMesh(this->mesher_.getTetMesh());
+  this->m_dataManagerWidget->setMesh(this->mesher_.getTetMesh());
+  this->enableMeshedVolumeOptions();
+  this->m_meshViewOptionsWidget->updateOptions();
+}
+
+void MainWindow::handleNewMesh() {
+  this->window_->setMesh(this->mesher_.getBackgroundMesh()); 
+}
+
+void MainWindow::handleRepaintGL() {
+  this->window_->updateMesh();
+  this->window_->updateGL();
+  this->window_->repaint();
+}
+
+void MainWindow::handleNewData(CleaverGUIDataType type) {
+  switch (type) {
+  case VOLUME:
+    break;
+  case SIZING_FIELD:
+    break;
+  case MESH:
+    break;
+  default:
+    break;
+  }
+}
 //--------------------------------------
 // - removeExternalTets()
 // This method grabs the current window
@@ -187,8 +216,8 @@ void MainWindow::createMenus()
 //--------------------------------------
 void MainWindow::removeExternalTets()
 {
-  cleaver::TetMesh *mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
-  cleaver::Volume  *volume = this->m_cleaverWidget->getMesher()->getVolume();
+  cleaver::TetMesh *mesh = this->mesher_.getTetMesh();
+  cleaver::Volume  *volume = this->mesher_.getVolume();
   if(mesh && volume)
   {
     cleaver::stripExteriorTets(mesh,volume,true);
@@ -200,7 +229,6 @@ void MainWindow::removeExternalTets()
     this->window_->setMesh(mesh);      // trigger update
   }
 }
-
 //--------------------------------------
 // - removeCementedTets()
 // This method grabs the current window
@@ -209,7 +237,7 @@ void MainWindow::removeExternalTets()
 //--------------------------------------
 void MainWindow::removeLockedTets()
 {
-  cleaver::TetMesh *mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
+  cleaver::TetMesh *mesh = this->mesher_.getTetMesh();
   if(mesh)
   {
     mesh->removeLockedTets();   // make it so
@@ -219,9 +247,8 @@ void MainWindow::removeLockedTets()
 
 void MainWindow::computeMeshAngles()
 {
-  cleaver::TetMesh *mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
-  if(mesh)
-  {
+  cleaver::TetMesh *mesh = this->mesher_.getTetMesh();
+  if(mesh) {
     mesh->computeAngles();
     std::cout << "Min Angle: " << mesh->min_angle << " degrees." << std::endl;
     std::cout << "Max Angle: " << mesh->max_angle << " degrees." << std::endl;
@@ -246,7 +273,7 @@ bool MyFileDialog::isSegmentation() {
 MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
     const QString& b, const QString& c) :
   QFileDialog( parent, a, b, c),
-  segmentation_check_(NULL)
+  segmentation_check_(nullptr)
 {
   setOption(QFileDialog::DontUseNativeDialog,true);
   setFileMode(QFileDialog::ExistingFiles);
@@ -266,12 +293,10 @@ MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
   mainLayout->addLayout( hbl, numRows,0,1,-1);
 }
 
-
 QSize MyFileDialog::sizeHint() const
 {
   return QSize(800,600);
 }
-
 //*********************END custom file dialog
 void MainWindow::importVolume()
 {
@@ -352,17 +377,18 @@ void MainWindow::importVolume()
 
     this->m_dataManagerWidget->setVolume(volume);
     this->window_->setVolume(volume);
+    this->mesher_.setVolume(volume);
 
     m_cleaverWidget->resetCheckboxes();
     status.setValue(100);
     this->m_sizingFieldWidget->setCreateButtonEnabled(true);
-    this->m_cleaverWidget->setMeshButtonEnabled(true);
+    this->m_cleaverWidget->setMeshButtonEnabled(false);
   }
 }
 
 void MainWindow::importSizingField()
 {
-  cleaver::Volume  *volume = this->m_cleaverWidget->getMesher()->getVolume();
+  cleaver::Volume  *volume = this->mesher_.getVolume();
 
   QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"),
       QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
@@ -414,7 +440,7 @@ void MainWindow::importMesh()
     {
       cleaver::TetMesh *mesh =
         cleaver::TetMesh::createFromNodeElePair(nodefilename, elefilename,false);
-      if(mesh == NULL){
+      if(mesh == nullptr){
         std::cerr << "Invalid Mesh" << std::endl;
         return;
       }
@@ -435,7 +461,6 @@ void MainWindow::importMesh()
     lastPath_ = file1.substr(0,pos);
   }
 }
-
 
 void MainWindow::exportField(cleaver::FloatField *field)
 {
@@ -463,7 +488,7 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
 {
   // If no mesh selected, get active window mesh
   if (!mesh)
-    mesh = this->m_cleaverWidget->getMesher()->getTetMesh();
+    mesh = this->mesher_.getTetMesh();
 
   // If still no mesh, return (TODO: Error MessageBox)
   if(!mesh)
@@ -512,31 +537,6 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   }
 }
 
-void MainWindow::resetCamera()
-{
-  if(this->window_ != NULL)
-  {
-    this->window_->resetView();
-  }
-}
-
-void MainWindow::saveCamera()
-{
-  if(this->window_ != NULL)
-  {
-    this->window_->saveView();
-  }
-}
-
-void MainWindow::loadCamera()
-{
-  if(this->window_ != NULL)
-  {
-    this->window_->loadView();
-  }
-}
-
-
 void MainWindow::about()
 {
   // TODO: Make this a better Modal Frame rather than MessageBox
@@ -571,4 +571,20 @@ void MainWindow::enableMeshedVolumeOptions() {
 
   this->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(true);
   this->exportAct->setEnabled(true);
+}
+
+void MainWindow::handleExportField(void* p) {
+  this->exportField(reinterpret_cast<cleaver::FloatField*>(p));
+}
+
+void MainWindow::handleExportMesh(void* p) {
+  this->exportMesh(reinterpret_cast<cleaver::TetMesh*>(p));
+}
+
+void MainWindow::handleDisableMeshing() {
+  this->m_cleaverWidget->setMeshButtonEnabled(false);
+}
+
+void MainWindow::handleDisableSizingField() {
+  this->m_sizingFieldWidget->setCreateButtonEnabled(false);
 }

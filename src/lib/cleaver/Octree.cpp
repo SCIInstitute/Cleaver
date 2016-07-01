@@ -6,8 +6,8 @@
 namespace cleaver
 {
 
-#ifndef NULL
-#define NULL 0
+#ifndef nullptr
+#define nullptr 0
 #endif
 
 const unsigned int MAX_LEVELS = 12;
@@ -35,7 +35,7 @@ const int DIR_OFFSETS[18][3] = {
     { 0,+1,+1}  // +y,+z   // upper front   17
 };
 
-OTCell::OTCell() : parent(NULL), celltype(Unknown)
+OTCell::OTCell() : parent(nullptr), celltype(Unknown)
 {
     memset(children, 0, 8*sizeof(OTCell*));
 }
@@ -88,7 +88,7 @@ void OTCell::subdivide()
 
 int OTCell::index()
 {
-    if(this->parent == NULL)
+    if(this->parent == nullptr)
         return 0;
 
 
@@ -130,11 +130,11 @@ OTCell* Octree::root() const
 
 OTCell* Octree::getCell(int xLocCode, int yLocCode, int zLocCode) const
 {
-    // if outside the tree, return NULL
+    // if outside the tree, return nullptr
     if(xLocCode < 0 || yLocCode < 0 || zLocCode < 0)
-        return NULL;
+        return nullptr;
     if(xLocCode > (int)maxCode || (int)yLocCode > (int)maxCode || zLocCode > (int)maxCode)
-        return NULL;
+        return nullptr;
 
     // branch to appropriate cell
     OTCell *pCell = this->root();
@@ -149,7 +149,7 @@ OTCell* Octree::getCell(int xLocCode, int yLocCode, int zLocCode) const
         pCell = (pCell->children[childIndex]);
     }
 
-    // return desired cell (or NULL)
+    // return desired cell (or nullptr)
     return pCell;
 }
 
@@ -173,9 +173,9 @@ OTCell* Octree::getNeighborAtLevel(const OTCell *cell, int dir, int level) const
     int zLocCode = cell->zLocCode + DIR_OFFSETS[dir][2]*shift;
 
     if(xLocCode < 0 || yLocCode < 0 || zLocCode < 0)
-        return NULL;
+        return nullptr;
     else if(xLocCode >= (int)maxCode || yLocCode >= (int)maxCode || zLocCode >= (int)maxCode)
-        return NULL;
+        return nullptr;
 
     // branch to appropriate cell
     OTCell *pCell = this->root();
@@ -190,7 +190,7 @@ OTCell* Octree::getNeighborAtLevel(const OTCell *cell, int dir, int level) const
         pCell = (pCell->children[childIndex]);
     }
 
-    // return desired cell (or NULL)
+    // return desired cell (or nullptr)
     return pCell;
 }
 

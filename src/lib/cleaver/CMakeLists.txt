@@ -51,11 +51,13 @@ FILE(GLOB Cleaver_HEADER_FILES *.h)
 SET(Cleaver_API_HEADER_FILES
     Cleaver.h
     CleaverMesher.h
+    CleaverMesherImpl.h
     Octree.h            # remove on release    
     AbstractField.h
     AbstractScalarField.h
     ScalarField.h
     SizingFieldCreator.h
+    SizingFieldOracle.h
     ConstantField.h
     InverseField.h
     ScaledField.h

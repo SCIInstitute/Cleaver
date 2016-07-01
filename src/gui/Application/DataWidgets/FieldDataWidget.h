@@ -19,7 +19,8 @@ public:
     ~FieldDataWidget();
     
     void setTitle(const std::string &title);
-
+  signals:
+    void exportField(void*);
 public slots:
 
     void showInfoClicked(bool checked);

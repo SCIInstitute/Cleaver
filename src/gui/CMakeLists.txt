@@ -85,7 +85,7 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 
-ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE WIN32
+ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE #WIN32
    ${srcs} ${hdrs} 
    ${moc_srcs} ${MOC_SRC}
    ${UI_SRC} ${RCC_SRC}

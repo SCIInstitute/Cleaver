@@ -4,11 +4,12 @@
 #include "MainWindow.h"
 #include <Cleaver/ScalarField.h>
 #include <Cleaver/BoundingBox.h>
+#include <NRRDTools.h>
 
 FieldDataWidget::FieldDataWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FieldDataWidget),
-    field(NULL)
+    field(nullptr)
 {
     ui->setupUi(this);
 
@@ -39,7 +40,6 @@ FieldDataWidget::FieldDataWidget(QWidget *parent) :
     selected = false;
     open = false;
 }
-
 
 FieldDataWidget::FieldDataWidget(cleaver::AbstractScalarField *field, QWidget *parent) :
     QWidget(parent),
@@ -166,8 +166,6 @@ FieldDataWidget::~FieldDataWidget()
     delete ui;
 }
 
-
-
 void FieldDataWidget::showInfoClicked(bool checked)
 {
     open = checked;
@@ -194,7 +192,6 @@ void FieldDataWidget::setTitle(const std::string &title)
 {
     ui->dataLabel->setText(title.c_str());
 }
-
 
 void FieldDataWidget::updateStyleSheet()
 {
@@ -227,29 +224,18 @@ void FieldDataWidget::updateStyleSheet()
 
     }
 }
-
-
 //============================================
 //  Event Handlers
 //============================================
-
 void FieldDataWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if(!event->modifiers().testFlag(Qt::ControlModifier))
         ui->detailViewButton->click();
 }
 
-
 void FieldDataWidget::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton)
-    {
-        //if(event->modifiers().testFlag(Qt::ControlModifier))
-        //    MainWindow::dataManager()->toggleAddSelection(reinterpret_cast<ulong>(field));
-        //else
-        //    MainWindow::dataManager()->setSelection(reinterpret_cast<ulong>(field));
-
-
+    if (event->button() == Qt::LeftButton) {
         updateStyleSheet();
     }
 
@@ -257,7 +243,6 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
     {
         QMenu contextMenu;
         QAction *exportAction = contextMenu.addAction("Export Field");
-        QAction *deleteAction = contextMenu.addAction("Delete Field");
         QAction *renameAction = contextMenu.addAction("Rename Field");
 
         cleaver::FloatField *floatField = dynamic_cast<cleaver::FloatField*>(field);
@@ -267,9 +252,7 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
         QAction *selectedItem = contextMenu.exec(mapToGlobal(event->pos()));
         if(selectedItem)
         {
-            if(selectedItem == deleteAction){
-                //MainWindow::dataManager()->removeField(field);
-            } else if(selectedItem == renameAction){
+            if(selectedItem == renameAction){
 
                 QDialog dialog;
                 dialog.setWindowTitle("Rename Field");
@@ -290,13 +273,10 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
                 }                
             }
             else if(selectedItem == exportAction){
-
                 cleaver::FloatField *floatField = dynamic_cast<cleaver::FloatField*>(field);
-                if(!floatField)
-                {
-                    // give error
+                if(floatField) {
+                  emit exportField(reinterpret_cast<void*>(floatField));
                 }
-                //this->exportField(floatField);
             }
         }
     }

@@ -49,7 +49,7 @@ namespace cleaver
 class SizingFieldOracle
 {
 public:
-    SizingFieldOracle(const AbstractScalarField *sizingField = NULL, const BoundingBox &bounds = BoundingBox());
+    SizingFieldOracle(const AbstractScalarField *sizingField = nullptr, const BoundingBox &bounds = BoundingBox());
 
     void setSizingField(const AbstractScalarField *sizingField);
     void setBoundingBox(const BoundingBox &bounds);

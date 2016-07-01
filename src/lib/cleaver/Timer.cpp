@@ -55,7 +55,7 @@ int64_t GetTime()
  /* Linux */
  struct timeval tv;
 
- gettimeofday(&tv, NULL);
+ gettimeofday(&tv, nullptr);
 
  uint64_t ret = tv.tv_usec;
  /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */

@@ -2,18 +2,14 @@
 #define CLEAVERMESHER_H
 
 #include "Octree.h"
+#include "CleaverMesherImpl.h"
 
-namespace cleaver
-{
-    class Volume;
-    class TetMesh;
-    class CleaverMesherImp;
-
+namespace cleaver {
 class CleaverMesher
 {
 public:
 
-    CleaverMesher(const Volume *volume);
+    CleaverMesher();
     ~CleaverMesher();
 
     void createTetMesh(bool verbose);
@@ -26,9 +22,7 @@ public:
     void cleanup();    
     //================================
 
-    enum TopologyMode { TopologyModeNone, TopologyModeSubdivide, TopologyModeCleave };
-
-    void setTopologyMode(TopologyMode mode);
+    void setTopologyMode(CleaverMesherImp::TopologyMode mode);
 		void setAlphaInit(double alpha);
 
     //================================
@@ -78,8 +72,7 @@ public:
     void setRegular(bool reg);
 
 private:
-
-    CleaverMesherImp *m_pimpl;
+    CleaverMesherImp m_pimpl;
     double m_alpha_long;
     double m_alpha_short;
     bool m_regular;

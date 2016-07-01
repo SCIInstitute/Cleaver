@@ -165,7 +165,7 @@ double Volume::valueAt(double x, double y, double z, int material) const
 
 int Volume::numberOfMaterials() const
 {
-    return m_valueFields.size();
+    return static_cast<int>(m_valueFields.size());
 }
 
 const BoundingBox& Volume::bounds() const

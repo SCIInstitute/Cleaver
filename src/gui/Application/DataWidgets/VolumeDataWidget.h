@@ -19,17 +19,17 @@ class VolumeDataWidget : public QWidget
     
 public:
     explicit VolumeDataWidget(QWidget *parent = 0);
-    VolumeDataWidget(cleaver::Volume *volume, QWidget *parent);
+    VolumeDataWidget(cleaver::Volume *volume, QWidget *parent = 0);
     ~VolumeDataWidget();
     
 
 void setTitle(const std::string &title);
-
+signals:
+    void updateDataWidget();
 public slots:
 
     void removeMaterial(cleaver::AbstractScalarField *field);
     void removeSizingField(cleaver::AbstractScalarField *field);
-    void replaceSizingField(cleaver::AbstractScalarField *field);
     void showInfoClicked(bool checked);
     void setSelected(bool value);
     void setDataName(const QString &name);

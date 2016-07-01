@@ -4,6 +4,7 @@
 #include <Cleaver/vec3.h>
 #include "../../lib/cleaver/Plane.h"
 #include <QMouseEvent>
+#include <QFileDialog>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -12,7 +13,6 @@
 #include <algorithm>
 #include "Shaders/Shaders.h"
 #include <QMatrix4x4>
-#include "MainWindow.h"
 #include <array>
 #include <boost/math/special_functions/fpclassify.hpp>
 
@@ -54,11 +54,11 @@ MeshWindow::MeshWindow(const QGLFormat& format, QObject *parent) :
   this->setMouseTracking(true);
   this->setFocusPolicy(Qt::ClickFocus);
   //this->setFocusPolicy(Qt::StrongFocus);
-  this->faceVAO_ = this->edgeVAO_ = this->cutVAO_ = this->violVAO_ = NULL;
-  this->faceVBO_ = this->edgeVBO_ = this->cutVBO_ = this->violVBO_ = NULL;
-  this->volume_ = NULL;
-  this->mesh_ = NULL;
-  this->mesher_ = NULL;
+  this->faceVAO_ = this->edgeVAO_ = this->cutVAO_ = this->violVAO_ = nullptr;
+  this->faceVBO_ = this->edgeVBO_ = this->cutVBO_ = this->violVBO_ = nullptr;
+  this->volume_ = nullptr;
+  this->mesh_ = nullptr;
+  this->mesher_ = nullptr;
   init = false;
 
   initializeOptions();
@@ -256,7 +256,7 @@ void MeshWindow::initializeOptions()
   m_currentEdge = 0;
   m_currentFace = 0;
   m_shrinkscale = 0.0;
-  //m_vertexData = NULL;
+  //m_vertexData = nullptr;
 
   this->resize(this->maximumSize());
 }
@@ -802,7 +802,7 @@ void MeshWindow::drawViolationPolytopesForVertices()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPolygonOffset(1.0f, 1.0f);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    drawViolationPolytopeForVertex(v);
+    drawViolationPolytopeForVertex(static_cast<int>(v));
     glDisable(GL_POLYGON_OFFSET_FILL);
 
     glColor3f(0.0f, 0.0f, 0.0f);
@@ -813,7 +813,7 @@ void MeshWindow::drawViolationPolytopesForVertices()
     glLineWidth(1.0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    drawViolationPolytopeForVertex(v);
+    drawViolationPolytopeForVertex(static_cast<int>(v));
 
 
     glDisable(GL_LINE_SMOOTH);
@@ -972,7 +972,7 @@ void MeshWindow::drawClippingPlane()
   vbo.create();
   vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
   vbo.bind();
-  vbo.allocate(pts.data(), sizeof(GL_FLOAT) * pts.size());
+  vbo.allocate(pts.data(), static_cast<int>(sizeof(GL_FLOAT) * pts.size()));
   QOpenGLVertexArrayObject vao(this);
   vao.create();
   vao.bind();
@@ -988,7 +988,7 @@ void MeshWindow::drawClippingPlane()
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   this->edgeProg_.bind();
   vao.bind();
-  this->edgeProg_.setUniformValue("uColor", .5, .5, .5, .6);
+  this->edgeProg_.setUniformValue("uColor", .5f, .5f, .5f, .6f);
   glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(pts.size() / 3));
   this->edgeProg_.release();
   vao.release();
@@ -1380,7 +1380,7 @@ void MeshWindow::build_bkgrnd_vbos()
   if (this->faceVBO_) {
     this->faceVBO_->destroy();
     delete this->faceVBO_;
-    this->faceVBO_ = NULL;
+    this->faceVBO_ = nullptr;
   }
   this->faceVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
   this->faceVBO_->create();
@@ -1395,7 +1395,7 @@ void MeshWindow::build_bkgrnd_vbos()
   if (this->faceVAO_) {
     this->faceVAO_->destroy();
     delete this->faceVAO_;
-    this->faceVAO_ = NULL;
+    this->faceVAO_ = nullptr;
   }
   this->faceVAO_ = new QOpenGLVertexArrayObject(this);
   this->faceVAO_->create();
@@ -1414,7 +1414,7 @@ void MeshWindow::build_bkgrnd_vbos()
   if (this->edgeVBO_) {
     this->edgeVBO_->destroy();
     delete this->edgeVBO_;
-    this->edgeVBO_ = NULL;
+    this->edgeVBO_ = nullptr;
   }
   this->edgeVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
   this->edgeVBO_->create();
@@ -1429,7 +1429,7 @@ void MeshWindow::build_bkgrnd_vbos()
   if (this->edgeVAO_) {
     this->edgeVAO_->destroy();
     delete this->edgeVAO_;
-    this->edgeVAO_ = NULL;
+    this->edgeVAO_ = nullptr;
   }
   this->edgeVAO_ = new QOpenGLVertexArrayObject(this);
   this->edgeVAO_->create();
@@ -1489,7 +1489,7 @@ void MeshWindow::build_bkgrnd_vbos()
     if (this->cutVBO_) {
       this->cutVBO_->destroy();
       delete this->cutVBO_;
-      this->cutVBO_ = NULL;
+      this->cutVBO_ = nullptr;
     }
     this->cutVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     this->cutVBO_->create();
@@ -1504,7 +1504,7 @@ void MeshWindow::build_bkgrnd_vbos()
     if (this->cutVAO_) {
       this->cutVAO_->destroy();
       delete this->cutVAO_;
-      this->cutVAO_ = NULL;
+      this->cutVAO_ = nullptr;
     }
     this->cutVAO_ = new QOpenGLVertexArrayObject(this);
     this->cutVAO_->create();
@@ -1519,7 +1519,7 @@ void MeshWindow::build_bkgrnd_vbos()
     if (this->violVBO_) {
       this->violVBO_->destroy();
       delete this->violVBO_;
-      this->violVBO_ = NULL;
+      this->violVBO_ = nullptr;
     }
     this->violVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     this->violVBO_->create();
@@ -1534,7 +1534,7 @@ void MeshWindow::build_bkgrnd_vbos()
     if (this->violVAO_) {
       this->violVAO_->destroy();
       delete this->violVAO_;
-      this->violVAO_ = NULL;
+      this->violVAO_ = nullptr;
     }
     this->violVAO_ = new QOpenGLVertexArrayObject(this);
     this->violVAO_->create();
@@ -1580,16 +1580,21 @@ void MeshWindow::build_output_vbos()
     int m2 = -2;
     if (t1 >= 0){
       m1 = this->mesh_->tets[t1]->mat_label;
-      if (m1 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m1])
+      if (m1 < (int)m_bMaterialCellLock.size() && m_bMaterialCellLock[m1])
         force = true;
     }
     if (t2 >= 0){
       m2 = this->mesh_->tets[t2]->mat_label;
-      if (m2 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m2])
+      if (m2 < (int)m_bMaterialCellLock.size() && m_bMaterialCellLock[m2])
         force = true;
     }
-    if (m1 == m2)
+    if (m1 == m2) {
       force = false;
+    }
+    if (surface) {
+      force = (m2 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m2]) ||
+        (m1 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m1]);
+    }
     if (m_bClipping)
     {
       cleaver::vec3 n(m_4fvClippingPlane[0], m_4fvClippingPlane[1], m_4fvClippingPlane[2]);
@@ -1727,7 +1732,7 @@ void MeshWindow::build_output_vbos()
   if (this->faceVBO_) {
     this->faceVBO_->destroy();
     delete this->faceVBO_;
-    this->faceVBO_ = NULL;
+    this->faceVBO_ = nullptr;
   }
   this->faceVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
   this->faceVBO_->create();
@@ -1742,7 +1747,7 @@ void MeshWindow::build_output_vbos()
   if (this->faceVAO_) {
     this->faceVAO_->destroy();
     delete this->faceVAO_;
-    this->faceVAO_ = NULL;
+    this->faceVAO_ = nullptr;
   }
   this->faceVAO_ = new QOpenGLVertexArrayObject(this);
   this->faceVAO_->create();
@@ -1761,7 +1766,7 @@ void MeshWindow::build_output_vbos()
   if (this->edgeVBO_) {
     this->edgeVBO_->destroy();
     delete this->edgeVBO_;
-    this->edgeVBO_ = NULL;
+    this->edgeVBO_ = nullptr;
   }
   this->edgeVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
   this->edgeVBO_->create();
@@ -1776,7 +1781,7 @@ void MeshWindow::build_output_vbos()
   if (this->edgeVAO_) {
     this->edgeVAO_->destroy();
     delete this->edgeVAO_;
-    this->edgeVAO_ = NULL;
+    this->edgeVAO_ = nullptr;
   }
   this->edgeVAO_ = new QOpenGLVertexArrayObject(this);
   this->edgeVAO_->create();
@@ -1823,7 +1828,7 @@ void MeshWindow::build_output_vbos()
     if (this->cutVBO_) {
       this->cutVBO_->destroy();
       delete this->cutVBO_;
-      this->cutVBO_ = NULL;
+      this->cutVBO_ = nullptr;
     }
     this->cutVBO_ = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     this->cutVBO_->create();
@@ -1838,7 +1843,7 @@ void MeshWindow::build_output_vbos()
     if (this->cutVAO_) {
       this->cutVAO_->destroy();
       delete this->cutVAO_;
-      this->cutVAO_ = NULL;
+      this->cutVAO_ = nullptr;
     }
     this->cutVAO_ = new QOpenGLVertexArrayObject(this);
     this->cutVAO_->create();

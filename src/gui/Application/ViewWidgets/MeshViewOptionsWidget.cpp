@@ -1,9 +1,11 @@
 #include "MeshViewOptionsWidget.h"
 #include "ui_MeshViewOptionsWidget.h"
 
-MeshViewOptionsWidget::MeshViewOptionsWidget(QWidget *parent, MeshWindow * window) :
-  QDockWidget(parent),
+MeshViewOptionsWidget::MeshViewOptionsWidget(
+  cleaver::CleaverMesher& mesher, MeshWindow* window, QWidget *parent) :
+  mesher_(mesher),
   window_(window),
+  QDockWidget(parent),
   ui(new Ui::MeshViewOptionsWidget)
 {
   ui->setupUi(this);
@@ -87,61 +89,57 @@ void MeshViewOptionsWidget::materialItemChanged(QStandardItem* item)
   this->window_->updateGL();
 }
 
-
 void MeshViewOptionsWidget::setShowCutsCheckboxEnabled(bool b)
 {
   this->ui->showCutsCheckbox->setEnabled(b);
 }
 
-void MeshViewOptionsWidget::focus(QMdiSubWindow* subwindow)
-{
-  /*
-  if (subwindow != NULL) {
+void MeshViewOptionsWidget::updateOptions() {
+  ui->showBBoxCheckbox->setChecked(this->window_->bboxVisible());
+  ui->showFacesCheckbox->setChecked(this->window_->facesVisible());
+  ui->showEdgesCheckbox->setChecked(this->window_->edgesVisible());
+  ui->showCutsCheckbox->setChecked(this->window_->cutsVisible());
+  auto vol = this->mesher_.getVolume();
+  auto msh = this->mesher_.getTetMesh();
 
-    MeshWindow *window = this->window_;
-
-      ui->showBBoxCheckbox->setChecked(window->bboxVisible());
-      ui->showFacesCheckbox->setChecked(window->facesVisible());
-      ui->showEdgesCheckbox->setChecked(window->edgesVisible());
-      ui->showCutsCheckbox->setChecked(window->cutsVisible());
-
-      // set material locks
-      if (!window->mesher()->getVolume() && !window->mesher()->getTetMesh())
-      {
-        m_materialViewModel->removeRows(0, m_materialViewModel->rowCount());
-      } else if ((window->mesher()->getVolume() && 
-        (window->mesher()->getVolume()->numberOfMaterials() != m_materialViewModel->rowCount())) ||
-        (window->mesher()->getTetMesh() && window->mesher()->getTetMesh()->material_count !=
-          m_materialViewModel->rowCount()))
-      {
-        m_materialViewModel->removeRows(0, m_materialViewModel->rowCount());
-        int material_count = 0;
-        if (window->mesher()->getVolume())
-          material_count = window->mesher()->getVolume()->numberOfMaterials();
-        else if (window->mesher()->getTetMesh())
-          material_count = window->mesher()->getTetMesh()->material_count;
-        for (int m = 0; m < material_count; m++)
-        {
-          addMaterialsItem(QString::number(m),
-            window->getMaterialFaceLock(m) ? Qt::Checked : Qt::Unchecked,
-            window->getMaterialCellLock(m) ? Qt::Checked : Qt::Unchecked);
-        }
-      } else {
-        int material_count = 0;
-        if (window->mesher()->getVolume())
-          material_count = window->mesher()->getVolume()->numberOfMaterials();
-        else if (window->mesher()->getTetMesh())
-          material_count = window->mesher()->getTetMesh()->material_count;
-
-        for (int m = 0; m < material_count; m++)
-        {
-          m_materialViewModel->setData(m_materialViewModel->index(m, 1),
-            window->getMaterialFaceLock(m) ? Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
-          m_materialViewModel->setData(m_materialViewModel->index(m, 2), 
-            window->getMaterialCellLock(m) ? Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
-        }
+  // set material locks
+  if (!vol && !msh)
+  {
+    m_materialViewModel->removeRows(0, m_materialViewModel->rowCount());
+  } else if ((vol &&
+    (vol->numberOfMaterials() != m_materialViewModel->rowCount())) ||
+    (msh && msh->material_count !=
+      m_materialViewModel->rowCount()))
+  {
+    m_materialViewModel->removeRows(0, m_materialViewModel->rowCount());
+    int material_count = 0;
+    if (vol)
+      material_count = vol->numberOfMaterials();
+    else if (msh)
+      material_count = msh->material_count;
+    for (int m = 0; m < material_count; m++)
+    {
+      addMaterialsItem(QString::number(m),
+        this->window_->getMaterialFaceLock(m) ? Qt::Checked : Qt::Unchecked,
+        this->window_->getMaterialCellLock(m) ? Qt::Checked : Qt::Unchecked);
     }
-  }*/
+  } else {
+    int material_count = 0;
+    if (vol)
+      material_count = vol->numberOfMaterials();
+    else if (msh)
+      material_count = msh->material_count;
+
+    for (int m = 0; m < material_count; m++)
+    {
+      m_materialViewModel->setData(m_materialViewModel->index(m, 1),
+        this->window_->getMaterialFaceLock(m) ?
+        Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
+      m_materialViewModel->setData(m_materialViewModel->index(m, 2),
+        this->window_->getMaterialCellLock(m) ?
+        Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
+    }
+  }
 }
 
 void MeshViewOptionsWidget::scrollingCheckboxClicked(int index)
@@ -191,7 +189,7 @@ void MeshViewOptionsWidget::clippingCheckboxClicked(bool value)
 
   MeshWindow *window = this->window_;
 
-  if (window != NULL) {
+  if (window != nullptr) {
     window->setClipping(value);
     if (ui->xCheckbox->isChecked())
       this->xSliderMoved(ui->xSlider->value());
@@ -208,7 +206,7 @@ void MeshViewOptionsWidget::syncClippingCheckboxClicked(bool value)
 {
   MeshWindow *window = this->window_;
 
-  if (window != NULL) {
+  if (window != nullptr) {
     window->setSyncedClipping(value);
   }
 }
@@ -243,7 +241,7 @@ void MeshViewOptionsWidget::zCheckboxClicked(bool value)
 void MeshViewOptionsWidget::xSliderMoved(int value)
 {
   MeshWindow *window = this->window_;
-  if (window != NULL) {
+  if (window != nullptr) {
 
     float margin = 0.01f;
     float t = (1 + margin)*(value / (float)ui->xSlider->maximum()) - margin / 2;
@@ -260,7 +258,7 @@ void MeshViewOptionsWidget::xSliderMoved(int value)
 void MeshViewOptionsWidget::ySliderMoved(int value)
 {
   MeshWindow *window = this->window_;
-  if (window != NULL)
+  if (window != nullptr)
   {
     float margin = 0.01f;
     float t = (1 + margin)*(value / (float)ui->ySlider->maximum()) - margin / 2;
@@ -277,7 +275,7 @@ void MeshViewOptionsWidget::ySliderMoved(int value)
 void MeshViewOptionsWidget::zSliderMoved(int value)
 {
   MeshWindow *window = this->window_;
-  if (window != NULL)
+  if (window != nullptr)
   {
     float margin = 0.01f;
     float t = (1 + margin)*(value / (float)ui->zSlider->maximum()) - margin / 2;
@@ -296,9 +294,9 @@ void MeshViewOptionsWidget::clippingSliderPressed()
   // TODO: Save Handle to window so this check doesn't
   //       have to be here. Will be safe since focus change
   //       will allow us chance to invalidate this button
-  //       so this function can't be called if window=NULL
+  //       so this function can't be called if window=nullptr
   MeshWindow *window = this->window_;
-  if (window != NULL) {
+  if (window != nullptr) {
     window->setClippingPlaneVisible(true);
     window->updateMesh();
     window->updateGL();
@@ -308,7 +306,7 @@ void MeshViewOptionsWidget::clippingSliderPressed()
 void MeshViewOptionsWidget::clippingSliderReleased()
 {
   MeshWindow *window = this->window_;
-  if (window != NULL) {
+  if (window != nullptr) {
     window->setClippingPlaneVisible(false);
     window->updateMesh();
     window->updateGL();

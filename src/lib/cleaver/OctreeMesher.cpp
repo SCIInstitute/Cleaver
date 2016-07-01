@@ -71,7 +71,7 @@ double vec3order::eps = 1E-8;
 class OctreeMesherImp
 {
 public:
-    OctreeMesherImp(const AbstractScalarField *sizing_field = NULL);
+    OctreeMesherImp(const AbstractScalarField *sizing_field = nullptr);
     ~OctreeMesherImp();
 
     void createOracle();
@@ -90,7 +90,7 @@ public:
 };
 
 OctreeMesherImp::OctreeMesherImp(const cleaver::AbstractScalarField *sizing_field) :
-    m_mesh(NULL), m_tree(NULL), m_sizing_field(sizing_field), m_sizing_oracle(NULL)
+    m_mesh(nullptr), m_tree(nullptr), m_sizing_field(sizing_field), m_sizing_oracle(nullptr)
 {
 }
 

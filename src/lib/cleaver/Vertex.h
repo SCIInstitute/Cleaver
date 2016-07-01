@@ -58,14 +58,14 @@ class Geometry{};
 class Vertex : public Geometry{
 
 public:
-    Vertex(int materials) : parent(NULL), conformedVertex(NULL), conformedEdge(NULL), conformedFace(NULL),
+    Vertex(int materials) : parent(nullptr), conformedVertex(nullptr), conformedEdge(nullptr), conformedFace(nullptr),
         isExterior(false), violating(false), warped(false), tm_v_index(-1), lbls(new bool[materials+1]), dual(false),
         m_order(0), m_pos(vec3::zero), m_pos_next(vec3::zero)
     {
         // increases lbls by 1 to account for background feb 20
         memset(lbls, 0, (materials+1)*sizeof(bool));
     }
-    Vertex() : parent(NULL), conformedVertex(NULL), conformedEdge(NULL), conformedFace(NULL),
+    Vertex() : parent(nullptr), conformedVertex(nullptr), conformedEdge(nullptr), conformedFace(nullptr),
         isExterior(false), violating(false), warped(false), tm_v_index(-1), lbls(0), dual(false),
         m_order(0), m_pos(vec3::zero),m_pos_next(vec3::zero){ }
     ~Vertex();

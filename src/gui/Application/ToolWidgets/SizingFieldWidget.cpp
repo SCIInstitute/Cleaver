@@ -1,7 +1,8 @@
 #include "SizingFieldWidget.h"
 #include "ui_SizingFieldWidget.h"
-#include "MainWindow.h"
 #include <QFileDialog>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QProgressDialog>
 #include <iostream>
 #include <string>
@@ -14,9 +15,10 @@
 #include <NRRDTools.h>
 #include <Cleaver/Timer.h>
 
-SizingFieldWidget::SizingFieldWidget(QWidget *parent, DataManagerWidget * data) :
+SizingFieldWidget::SizingFieldWidget(cleaver::CleaverMesher& mesher, 
+  QWidget *parent) :
   QDockWidget(parent),
-  data_(data),
+  mesher_(mesher),
   ui(new Ui::SizingFieldWidget)
 {
   ui->setupUi(this);
@@ -46,7 +48,8 @@ void SizingFieldWidget::loadSizingField()
   {
     std::vector<cleaver::AbstractScalarField*> sizingField =
       NRRDTools::loadNRRDFiles({ {fileName.toStdString()} });
-    this->data_->setSizingField(sizingField[0]);
+    this->mesher_.getVolume()->setSizingField(sizingField[0]);
+    emit sizingFieldDone();
   }
 }
 
@@ -57,7 +60,7 @@ void SizingFieldWidget::computeSizingField()
   int padding = ui->paddingSpinBox->value();
   bool adaptiveSurface = QString::compare(
     ui->surfaceComboBox->currentText(), 
-    QString("constant"), Qt::CaseInsensitive) == 0 ? false : true;
+    QString("constant"), Qt::CaseInsensitive) == 0 ? true : false;
 
   QProgressDialog status(QString("Computing Sizing Field..."), QString(), 0, 100, this);
   status.show();
@@ -68,15 +71,15 @@ void SizingFieldWidget::computeSizingField()
   QApplication::processEvents();
   cleaver::AbstractScalarField *sizingField = 
     cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-      this->data_->getVolume(), speed, 1., factor, padding, adaptiveSurface, true);
+      this->mesher_.getVolume(), speed, 1., factor, padding, adaptiveSurface, true);
   timer.stop();
+  this->mesher_.getVolume()->setSizingField(sizingField);
   status.setValue(50);
   QApplication::processEvents();
-  std::string sizingFieldName = this->data_->getVolume()->name() + "-computed-sizing-field";
+  std::string sizingFieldName = this->mesher_.getVolume()->name() + "-computed-sizing-field";
   sizingField->setName(sizingFieldName);
-  // Add new sizing field to data manager
-  this->data_->setSizingField(sizingField);
   status.setValue(100);
+  emit sizingFieldDone();
 } 
 
 void SizingFieldWidget::dragEnterEvent(QDragEnterEvent *event)

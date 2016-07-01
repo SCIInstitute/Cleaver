@@ -1,6 +1,5 @@
 #include "CleaverWidget.h"
 #include "ui_CleaverWidget.h"
-#include "MainWindow.h"
 #include <Cleaver/TetMesh.h>
 #include <Cleaver/Cleaver.h>
 #include <Cleaver/Timer.h>
@@ -9,12 +8,10 @@
 #include <QApplication>
 #include <QProgressDialog>
 
-CleaverWidget::CleaverWidget(QWidget *parent, 
-  DataManagerWidget* data, MeshWindow* window) :
+CleaverWidget::CleaverWidget(cleaver::CleaverMesher& mesher,
+  QWidget *parent) :
   QDockWidget(parent),
-  data_(data),
-  window_(window),
-  mesher(NULL),
+  mesher_(mesher),
   ui(new Ui::CleaverWidget) {
   this->ui->setupUi(this);
 }
@@ -26,15 +23,9 @@ CleaverWidget::~CleaverWidget() {
 void CleaverWidget::setMeshButtonEnabled(bool b) {
   this->ui->createMeshButton->setEnabled(b);
 }
-
-cleaver::CleaverMesher * CleaverWidget::getMesher() {
-  return this->mesher;
-}
-
 //========================
 //     Public Slots
 //========================
-
 void CleaverWidget::clear() {
   resetCheckboxes();
 }
@@ -49,13 +40,6 @@ void CleaverWidget::resetCheckboxes() {
   this->ui->snapCheck->setChecked(false);
   this->ui->stencilCheck->setChecked(false);
 }
-
-void CleaverWidget::updateOpenGL() {
-  this->window_->updateMesh();
-  this->window_->updateGL();
-  this->window_->repaint();
-}
-
 //=========================================
 // - createMesh()
 //=========================================
@@ -64,17 +48,12 @@ void CleaverWidget::createMesh() {
   //progress
   QProgressDialog status(QString("Meshing Indicator Functions..."),
     QString(), 0, 100, this);
-  if (this->mesher != NULL) {
-    delete this->mesher;
-  }
-  this->mesher = new cleaver::CleaverMesher(this->data_->getVolume());
-  this->window_->setMesher(this->mesher);
-  status.show();
   status.setWindowModality(Qt::WindowModal);
+  status.show();
   status.setValue(5);
   qApp->processEvents();
   //create background mesh
-  mesher->setRegular(false);
+  this->mesher_.setRegular(false);
   this->createBackgroundMesh();
   status.setValue(10);
   qApp->processEvents();
@@ -84,7 +63,7 @@ void CleaverWidget::createMesh() {
   qApp->processEvents();
   //sample vol
   this->sampleVolume();
-  this->updateOpenGL();
+  emit repaintGL();
   status.setValue(30);
   qApp->processEvents();
   //alphas
@@ -93,7 +72,7 @@ void CleaverWidget::createMesh() {
   qApp->processEvents();
   //interfaces
   this->computeInterfaces();
-  this->updateOpenGL();
+  emit repaintGL();
   status.setValue(50);
   qApp->processEvents();
   //generalize
@@ -102,33 +81,30 @@ void CleaverWidget::createMesh() {
   qApp->processEvents();
   //snap and warp
   this->snapAndWarp();
-  this->updateOpenGL();
+  emit repaintGL();
   status.setValue(70);
   qApp->processEvents();
   //stencil
   this->stencilTets();
-  this->updateOpenGL();
+  emit repaintGL();
   status.setValue(80);
   if (this->ui->fixJacobianCheckBox->isChecked()) {
-    this->mesher->fixVertexWindup(true);
+    this->mesher_.fixVertexWindup(true);
   }
   status.setValue(90);
   qApp->processEvents();
-  //MainWindow::instance()->enableMeshedVolumeOptions();
   status.setValue(100);
+  emit doneMeshing();
 }
 //=========================================
 // - createBackgroundMesh()
 //
 //=========================================
 void CleaverWidget::createBackgroundMesh() {
-  auto sf = this->data_->hasSizingField();
-  this->mesher->createBackgroundMesh(true);
-  cleaver::TetMesh *mesh = this->mesher->getBackgroundMesh();
-  mesh->name = "Adaptive-BCC-Mesh";
-  this->data_->setMesh(mesh);
-  this->window_->setMesh(mesh);
+  this->mesher_.createBackgroundMesh(true);
+  this->mesher_.getBackgroundMesh()->name = "Adaptive-BCC-Mesh";
   this->ui->backgroundCheck->setChecked(true);
+  emit newMesh();
   this->update();
 }
 //=========================================
@@ -136,7 +112,7 @@ void CleaverWidget::createBackgroundMesh() {
 //
 //=========================================
 void CleaverWidget::buildMeshAdjacency() {
-  this->mesher->buildAdjacency(true);
+  this->mesher_.buildAdjacency(true);
   this->ui->adjacencyCheck->setChecked(true);
   this->update();
 }
@@ -145,7 +121,7 @@ void CleaverWidget::buildMeshAdjacency() {
 //
 //=========================================
 void CleaverWidget::sampleVolume() {
-  this->mesher->sampleVolume(true);
+  this->mesher_.sampleVolume(true);
   this->ui->sampleCheck->setChecked(true);
   this->update();
 }
@@ -154,7 +130,7 @@ void CleaverWidget::sampleVolume() {
 //
 //=========================================
 void CleaverWidget::computeAlphas() {
-  this->mesher->computeAlphas();
+  this->mesher_.computeAlphas();
   this->ui->alphaCheck->setChecked(true);
   this->update();
 }
@@ -163,7 +139,7 @@ void CleaverWidget::computeAlphas() {
 //
 //=========================================
 void CleaverWidget::computeInterfaces() {
-  this->mesher->computeInterfaces(true);
+  this->mesher_.computeInterfaces(true);
   this->ui->interfaceCheck->setChecked(true);
   this->update();
 }
@@ -172,7 +148,7 @@ void CleaverWidget::computeInterfaces() {
 //
 //=========================================
 void CleaverWidget::generalizeTets() {
-  this->mesher->generalizeTets();
+  this->mesher_.generalizeTets();
   this->ui->generalizeCheck->setChecked(true);
   this->update();
 }
@@ -181,7 +157,7 @@ void CleaverWidget::generalizeTets() {
 //
 //=========================================
 void CleaverWidget::snapAndWarp() {
-  this->mesher->snapsAndWarp();
+  this->mesher_.snapsAndWarp();
   this->ui->snapCheck->setChecked(true);
   this->update();
 }
@@ -190,20 +166,7 @@ void CleaverWidget::snapAndWarp() {
 //
 //=========================================
 void CleaverWidget::stencilTets() {
-  this->mesher->stencilTets();
+  this->mesher_.stencilTets();
   this->ui->stencilCheck->setChecked(true);
   this->update();
 }
-
-void CleaverWidget::updateMeshList() {
-
-}
-
-void CleaverWidget::volumeSelected(int index) {
-
-}
-
-void CleaverWidget::meshSelected(int index) {
-
-}
-

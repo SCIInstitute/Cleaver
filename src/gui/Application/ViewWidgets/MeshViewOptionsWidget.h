@@ -5,13 +5,15 @@
 #include <QSignalMapper>
 #include <QStandardItemModel>
 #include "MeshWindow.h"
-#include <QMdiSubWindow>
+#include <ToolWidgets/CleaverWidget.h>
+#include <Cleaver/CleaverMesher.h>
 
 class CheckableItemModel : public QStandardItemModel
 {
 public:
 
-  CheckableItemModel(int rows, int columns, QObject *parent) : QStandardItemModel(rows, columns, parent) { };
+  CheckableItemModel(int rows, int columns, QObject *parent) :
+    QStandardItemModel(rows, columns, parent) { };
 
   Qt::ItemFlags flags(const QModelIndex& index) const {
     return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
@@ -28,11 +30,13 @@ class MeshViewOptionsWidget : public QDockWidget
   Q_OBJECT
 
 public:
-  explicit MeshViewOptionsWidget(QWidget *parent = NULL, MeshWindow * window = NULL);
+  explicit MeshViewOptionsWidget(cleaver::CleaverMesher& mesher,
+    MeshWindow* window,
+    QWidget *parent = NULL);
   ~MeshViewOptionsWidget();
 
   public slots:
-  void focus(QMdiSubWindow *);
+  void updateOptions();
 
   void scrollingCheckboxClicked(int index);
   void clippingCheckboxClicked(bool value);
@@ -56,7 +60,8 @@ private:
   Ui::MeshViewOptionsWidget *ui;
   QSignalMapper *signalMapper;
   CheckableItemModel *m_materialViewModel;
-  MeshWindow * window_;
+  cleaver::CleaverMesher& mesher_;
+  MeshWindow* window_;
 };
 
 #endif // MESHVIEWOPTIONSWIDGET_H

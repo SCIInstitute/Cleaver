@@ -371,13 +371,14 @@ int main(int argc,  char* argv[])
       fields.push_back(new cleaver::InverseScalarField(fields[0]));
   }
   cleaver::Volume *volume = new cleaver::Volume(fields);
-  cleaver::CleaverMesher mesher(volume);
+  cleaver::CleaverMesher mesher;
+  mesher.setVolume(volume);
   mesher.setAlphaInit(alpha);
 
   //-----------------------------------
   // Load background mesh if provided
   //-----------------------------------
-  cleaver::TetMesh *bgMesh = NULL;
+  cleaver::TetMesh *bgMesh = nullptr;
   if(have_background_mesh) {
     std::string nodeFileName = background_mesh + ".node";
     std::string eleFileName = background_mesh + ".ele";

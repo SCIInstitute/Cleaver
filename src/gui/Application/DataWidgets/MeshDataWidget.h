@@ -20,7 +20,8 @@ public:
 
     void setTitle(const std::string &title);
 
-
+  signals:
+    void exportMesh(void *);
 public slots:
 
     void showInfoClicked(bool checked);
@@ -31,7 +32,6 @@ protected:
 
     void mouseDoubleClickEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent *);
-    void mouseReleaseEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
 
     void updateStyleSheet();

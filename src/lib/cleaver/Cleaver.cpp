@@ -51,13 +51,14 @@ using namespace std;
 
 namespace cleaver
 {
-    const std::string VersionNumber = "2.0";
-    const std::string VersionDate = __DATE__;
-    const std::string Version = std::string("Cleaver") + " " + VersionNumber + " " + VersionDate;
+  const std::string VersionNumber = "2.0";
+  const std::string VersionDate = __DATE__;
+  const std::string Version = std::string("Cleaver") + " " + VersionNumber + " " + VersionDate;
 
-TetMesh* cleaveMeshToVolume(const Volume *volume, TetMesh *bgMesh, bool verbose)
-{
-    CleaverMesher mesher(volume);
+  TetMesh* cleaveMeshToVolume(const Volume *volume, TetMesh *bgMesh, bool verbose)
+  {
+    CleaverMesher mesher;
+    mesher.setVolume(volume);
 
     mesher.setBackgroundMesh(bgMesh);
     mesher.buildAdjacency();
@@ -69,50 +70,51 @@ TetMesh* cleaveMeshToVolume(const Volume *volume, TetMesh *bgMesh, bool verbose)
     mesher.stencilTets();
 
     return mesher.getTetMesh();
-}
+  }
 
-TetMesh* createMeshFromVolume(const Volume *volume, bool verbose)
-{    
-    CleaverMesher mesher(volume);
+  TetMesh* createMeshFromVolume(const Volume *volume, bool verbose)
+  {
+    CleaverMesher mesher;
+    mesher.setVolume(volume);
 
     mesher.createTetMesh(verbose);
 
     return mesher.getTetMesh();
-}
+  }
 
-Volume* createFloatFieldVolumeFromVolume(Volume *base_volume)
-{
-    int width  = base_volume->width();
+  Volume* createFloatFieldVolumeFromVolume(Volume *base_volume)
+  {
+    int width = base_volume->width();
     int height = base_volume->height();
-    int depth  = base_volume->depth();
+    int depth = base_volume->depth();
 
     std::vector<AbstractScalarField*> fields;
 
-    for(int m=0; m < base_volume->numberOfMaterials(); m++)
+    for (int m = 0; m < base_volume->numberOfMaterials(); m++)
     {
-        float *data = new float[width*height*depth];
+      float *data = new float[width*height*depth];
 
-        for(int d=0; d < depth; d++){
-            for(int h=0; h < height; h++){
-                for(int w=0; w < width; w++){
-                    data[d*width*height + h*width + w] = (float)base_volume->valueAt(w+0.5,h+0.5,d+0.5, m);
-                }
-            }
+      for (int d = 0; d < depth; d++) {
+        for (int h = 0; h < height; h++) {
+          for (int w = 0; w < width; w++) {
+            data[d*width*height + h*width + w] = (float)base_volume->valueAt(w + 0.5, h + 0.5, d + 0.5, m);
+          }
         }
+      }
 
-        ScalarField<float> *floatField = new ScalarField<float>(data,width,height,depth);
-        floatField->setName(base_volume->getMaterial(m)->name() + "_asFloat");
-        fields.push_back(floatField);
+      ScalarField<float> *floatField = new ScalarField<float>(data, width, height, depth);
+      floatField->setName(base_volume->getMaterial(m)->name() + "_asFloat");
+      fields.push_back(floatField);
     }
 
     cleaver::Volume *floatVolume = new Volume(fields);
     floatVolume->setName(base_volume->name());
 
     return floatVolume;
-}
+  }
 
-ScalarField<float>* createFloatFieldFromScalarField(AbstractScalarField *scalarField)
-{
+  ScalarField<float>* createFloatFieldFromScalarField(AbstractScalarField *scalarField)
+  {
     int w = (int)(scalarField->bounds().size.x);
     int h = (int)(scalarField->bounds().size.y);
     int d = (int)(scalarField->bounds().size.z);
@@ -122,25 +124,25 @@ ScalarField<float>* createFloatFieldFromScalarField(AbstractScalarField *scalarF
 
     float *data = new float[whd];
 
-    for(int k=0; k < d; k++)
+    for (int k = 0; k < d; k++)
     {
-        for(int j=0; j < h; j++)
+      for (int j = 0; j < h; j++)
+      {
+        for (int i = 0; i < w; i++)
         {
-            for(int i=0; i < w; i++)
-            {
-                data[k*wh + j*w + i] = (float)scalarField->valueAt(i+0.5, j+0.5, k+0.5);
-            }
+          data[k*wh + j*w + i] = (float)scalarField->valueAt(i + 0.5, j + 0.5, k + 0.5);
         }
+      }
     }
 
     ScalarField<float> *floatField = new ScalarField<float>(data, w, h, d);
     floatField->setBounds(scalarField->bounds());
 
     return floatField;
-}
+  }
 
-ScalarField<double>* createDoubleFieldFromScalarField(AbstractScalarField *scalarField)
-{
+  ScalarField<double>* createDoubleFieldFromScalarField(AbstractScalarField *scalarField)
+  {
     int w = (int)(scalarField->bounds().size.x);
     int h = (int)(scalarField->bounds().size.y);
     int d = (int)(scalarField->bounds().size.z);
@@ -150,27 +152,27 @@ ScalarField<double>* createDoubleFieldFromScalarField(AbstractScalarField *scala
 
     double *data = new double[whd];
 
-    for(int k=0; k < d; k++)
+    for (int k = 0; k < d; k++)
     {
-        for(int j=0; j < h; j++)
+      for (int j = 0; j < h; j++)
+      {
+        for (int i = 0; i < w; i++)
         {
-            for(int i=0; i < w; i++)
-            {
-                data[k*wh + j*w + i] = scalarField->valueAt(i+0.5, j+0.5, k+0.5);
-            }
+          data[k*wh + j*w + i] = scalarField->valueAt(i + 0.5, j + 0.5, k + 0.5);
         }
+      }
     }
 
     ScalarField<double> *doubleField = new ScalarField<double>(data, w, h, d);
     doubleField->setBounds(scalarField->bounds());
 
     return doubleField;
-}
+  }
 
-void stripExteriorTets(TetMesh *mesh, const Volume *volume, bool verbose)
-{
+  void stripExteriorTets(TetMesh *mesh, const Volume *volume, bool verbose)
+  {
     // exterior material is equal to material count
     mesh->stripMaterial(volume->numberOfMaterials(), verbose);
-}
+  }
 
 }

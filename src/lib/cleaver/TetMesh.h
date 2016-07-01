@@ -66,8 +66,8 @@ namespace cleaver
 class HalfEdge : public Geometry
 {
 public:
-    HalfEdge() : vertex(NULL), mate(NULL), cut(NULL), alpha(0.2f), evaluated(false), parity(false){}
-    HalfEdge(bool long_edge) : vertex(NULL), mate(NULL), cut(NULL),
+    HalfEdge() : vertex(nullptr), mate(nullptr), cut(nullptr), alpha(0.2f), evaluated(false), parity(false){}
+    HalfEdge(bool long_edge) : vertex(nullptr), mate(nullptr), cut(nullptr),
         alpha(0.2f), evaluated(false), parity(false), m_long_edge(long_edge){}
     Vertex *vertex;
     HalfEdge *mate;
@@ -98,7 +98,7 @@ public:
     }
 
     float edgeLength() {
-        return length(vertex->pos() - mate->vertex->pos());
+        return static_cast<float>(length(vertex->pos() - mate->vertex->pos()));
     }
 
     float alphaLengthForVertex(Vertex *v) {
@@ -120,7 +120,7 @@ public:
 class HalfFace : public Geometry
 {
 public:
-    HalfFace() : mate(NULL), triple(NULL), evaluated(false) { memset(halfEdges, 0, 3*sizeof(HalfEdge*)); }
+    HalfFace() : mate(nullptr), triple(nullptr), evaluated(false) { memset(halfEdges, 0, 3*sizeof(HalfEdge*)); }
 
     HalfEdge *halfEdges[3];
     HalfFace *mate;    
@@ -236,7 +236,7 @@ public:
 
     static TetMesh* createFromNodeElePair(const std::string &nodeFileName, const std::string &eleFileName, bool verbose = false);
 
-    HalfFace *halfFaces;
+    std::vector<HalfFace> halfFaces;
     std::map<std::pair<int, int>, HalfEdge*> halfEdges;
     HalfEdge* halfEdgeForVerts(Vertex *v1, Vertex *v2);
 

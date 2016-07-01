@@ -11,7 +11,7 @@ class OctreeMesherImp;
 class OctreeMesher
 {
 public:
-    OctreeMesher(const cleaver::AbstractScalarField *sizing_field = NULL);
+    OctreeMesher(const cleaver::AbstractScalarField *sizing_field = nullptr);
     ~OctreeMesher();
 
     void setSizingField(const cleaver::AbstractScalarField *sizing_field);

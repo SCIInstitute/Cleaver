@@ -105,19 +105,19 @@ namespace cleaver
   {
   }
 
-  Tet::Tet() : quadruple(NULL), mat_label(-1), output(false), evaluated(false), flagged(false)
+  Tet::Tet() : quadruple(nullptr), mat_label(-1), output(false), evaluated(false), flagged(false)
   {
-    faces[0] = faces[1] = faces[2] = faces[3] = NULL;
-    tets[0] = tets[1] = tets[2] = tets[3] = NULL;
+    faces[0] = faces[1] = faces[2] = faces[3] = nullptr;
+    tets[0] = tets[1] = tets[2] = tets[3] = nullptr;
     parent = -1;
   }
 
   Tet::Tet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int material) :
-    quadruple(NULL), mat_label(material), output(false), evaluated(false), flagged(false)
+    quadruple(nullptr), mat_label(material), output(false), evaluated(false), flagged(false)
   {
     // initialize face info to empty
-    faces[0] = faces[1] = faces[2] = faces[3] = NULL;
-    tets[0] = tets[1] = tets[2] = tets[3] = NULL;
+    faces[0] = faces[1] = faces[2] = faces[3] = nullptr;
+    tets[0] = tets[1] = tets[2] = tets[3] = nullptr;
     parent = -1;
 
     // add adjacency info
@@ -212,16 +212,16 @@ namespace cleaver
     return max;
   }
 
-  TetMesh::TetMesh() : halfFaces(NULL), imported(false), time(0)
+  TetMesh::TetMesh() : imported(false), time(0)
   {
   }
 
-  TetMesh::TetMesh(BoundingBox b) : halfFaces(NULL), imported(false), time(0), bounds(b)
+  TetMesh::TetMesh(BoundingBox b) : imported(false), time(0), bounds(b)
   {
   }
 
   TetMesh::TetMesh(const std::vector<Vertex*> &verts, const std::vector<Tet*> &tets) :
-    verts(verts), tets(tets), halfFaces(NULL),  imported(false), time(0)
+    verts(verts), tets(tets), imported(false), time(0)
   {
     computeBounds();
   }
@@ -229,23 +229,21 @@ namespace cleaver
   TetMesh::~TetMesh() {
 
     // delete tets verts, faces, etc
-    for(size_t f=0; f < faces.size(); f++)
+    for (size_t f = 0; f < faces.size(); f++) {
       delete faces[f];
-
-    //    std::cout << "TetMesh Going out of scope" << std::endl;
-    if (halfFaces != NULL){
-      delete [] halfFaces;
-      halfFaces = NULL;
     }
 
-    for(unsigned int v=0; v < verts.size(); v++)
+    for (unsigned int v = 0; v < verts.size(); v++) {
       delete verts[v];
-    for(unsigned int t=0; t < tets.size(); t++)
+    }
+    for (unsigned int t = 0; t < tets.size(); t++) {
       delete tets[t];
+    }
 
     verts.clear();
     faces.clear();
     tets.clear();
+    halfFaces.clear();
   }
 
   void TetMesh::computeBounds()
@@ -913,7 +911,7 @@ namespace cleaver
   {
     std::pair<int,int> key = std::make_pair(v1->tm_v_index,v2->tm_v_index);
     std::map<std::pair<int,int>, HalfEdge*>::iterator res = halfEdges.find(key);
-    HalfEdge *half_edge = NULL;
+    HalfEdge *half_edge = nullptr;
 
     // create new one if necessary
     if (res == halfEdges.end())
@@ -951,8 +949,8 @@ namespace cleaver
     {
       for(int f=0; f < FACES_PER_TET; f++)
       {
-        this->tets[t]->faces[f] = NULL;
-        this->tets[t]->tets[f] = NULL;
+        this->tets[t]->faces[f] = nullptr;
+        this->tets[t]->tets[f] = nullptr;
       }
     }
 
@@ -968,7 +966,7 @@ namespace cleaver
       for (int f=0; f < FACES_PER_TET; f++)
       {
         // if information for adjacent tet is null, attempt to fill it in
-        if (this->tets[i]->tets[f] == NULL)
+        if (this->tets[i]->tets[f] == nullptr)
         {
           // first grab the three vertices corresponding to the face[f] opposite vertex j
           Vertex *v0 = this->tets[i]->verts[(f+1) % FACES_PER_TET];
@@ -987,8 +985,8 @@ namespace cleaver
           for (size_t j=0; j < v0->tets.size(); j++)
           {
             Tet *tet = v0->tets[j];
-            if(tet == NULL){
-              std::cout << "PROBLEM! NULL TET" << std::endl;
+            if(tet == nullptr){
+              std::cout << "PROBLEM! nullptr TET" << std::endl;
             }
 
             // Skip self
@@ -1031,7 +1029,7 @@ namespace cleaver
                 if(tet->verts[m] != v0 && tet->verts[m] != v1 && tet->verts[m] != v2)
                 {
                   // make sure we're not overwriting a value that's already written
-                  if(tet->tets[m] != NULL)
+                  if(tet->tets[m] != nullptr)
                   {
                     if(tet->tets[m] == this->tets[i])
                       std::cout << "ALREADY SET! We're Actually SAFE" << std::endl;
@@ -1110,7 +1108,7 @@ namespace cleaver
         Face *face = faces[face_count] = new Face();
 
         // Face Is Shared?
-        if(this->tets[i]->tets[j] && this->tets[i]->faces[j] == NULL)
+        if(this->tets[i]->tets[j] && this->tets[i]->faces[j] == nullptr)
         {
           // make a new face
           face->tets[0] = this->tets[i]->tm_index;
@@ -1165,7 +1163,7 @@ namespace cleaver
           face_count++;
         }
         // Boundary Face
-        else if(this->tets[i]->tets[j] == NULL){
+        else if(this->tets[i]->tets[j] == nullptr){
           face->tets[0] = i;
           face->face_index[0] = j;
           face->tets[1] = -1;
@@ -2068,9 +2066,9 @@ namespace cleaver
   {
     // debugging check
     if(v1 == v2 || v1 == v3 || v1 == v4 || v2 == v3 || v2 == v4 || v3 == v4)
-      std::cout << "PROBLEM! Creating NULL Tet" << std::endl;
+      std::cout << "PROBLEM! Creating nullptr Tet" << std::endl;
     else if(v1 == 0 || v2 == 0 || v3 == 0 || v4 == 0)
-      std::cout << "PROBLEM! Creating NULL Tet" << std::endl;
+      std::cout << "PROBLEM! Creating nullptr Tet" << std::endl;
 
     //----------------------------
     //  Create Tet + Add to List
@@ -2089,7 +2087,7 @@ namespace cleaver
        v4->pos().x <= bounds.maxCorner().x && v4->pos().x >= bounds.minCorner().x &&
        v4->pos().y <= bounds.maxCorner().y && v4->pos().y >= bounds.minCorner().y &&
        v4->pos().z <= bounds.maxCorner().z && v4->pos().z >= bounds.minCorner().z))
-       return NULL;
+       return nullptr;
      */
     Tet *tet = new Tet(v1, v2, v3, v4, material);
     tet->tm_index = tets.size();
@@ -2172,7 +2170,7 @@ namespace cleaver
 
         // then free the tet
         delete tet;
-        tets[t] = NULL;
+        tets[t] = nullptr;
       }
 
 
@@ -2306,7 +2304,7 @@ namespace cleaver
       for(unsigned int f=0; f < he->halfFaces.size(); f++){
 
         // if no mate (border) always add
-        if(he->halfFaces[f]->mate == NULL){
+        if(he->halfFaces[f]->mate == nullptr){
           facelist.push_back(he->halfFaces[f]);
         }
         // otherwise only add face if positively oriented (to avoid mate duplicates)
@@ -2343,7 +2341,7 @@ namespace cleaver
     // now look at mate edge, add any incident faces that don't have face-mates
     HalfEdge *me = e->mate;
     for(unsigned int f=0; f < me->halfFaces.size(); f++){
-      if(me->halfFaces[f]->mate == NULL){
+      if(me->halfFaces[f]->mate == nullptr){
         facelist.push_back(me->halfFaces[f]);
       }
     }
@@ -2366,7 +2364,7 @@ namespace cleaver
     // now look at mate edge, add any incident faces that don't have face-mates
     HalfEdge *me = e->mate;
     for(unsigned int f=0; f < me->halfFaces.size(); f++){
-      if(me->halfFaces[f]->mate == NULL){
+      if(me->halfFaces[f]->mate == nullptr){
         unsigned int index = (me->halfFaces[f] - &this->halfFaces[0]) / 4;
         tetlist.push_back(tets[index]);
       }
@@ -2490,7 +2488,7 @@ namespace cleaver
       if(tets.size() > 1)
         return tets[1];
       else
-        return NULL;
+        return nullptr;
     }
     else
       return tets[0];
@@ -2569,9 +2567,9 @@ namespace cleaver
     {
     for(size_t j=0; j < tets[t]->verts[v]->tets.size(); j++)
     {
-    if(tets[t]->verts[v]->tets[j] == NULL)
+    if(tets[t]->verts[v]->tets[j] == nullptr)
     {
-    std::cout << "NULL TET stored in VERTS!!" << std::endl;
+    std::cout << "nullptr TET stored in VERTS!!" << std::endl;
     std::cout << " BAD MESH " << std::endl;
     }
     }
@@ -2601,7 +2599,7 @@ namespace cleaver
       // look for a tet sharing three verts opposite vert[j]
       for (int j=0; j < 4; j++)
       {
-        if (this->tets[i]->tets[j] == NULL)
+        if (this->tets[i]->tets[j] == nullptr)
         {
           // grab three vertices to compare against
           Vertex *v0 = this->tets[i]->verts[(j+1)%4];
@@ -2651,17 +2649,8 @@ namespace cleaver
         }
       }
     }
-
-    // free existing structure
-
-    if(halfFaces != NULL){
-      //        std::cout << "freeing existing halfFaces to recompute them" << std::endl;
-      delete [] halfFaces;
-      halfFaces = NULL;
-    }
-
     // allocate sufficient space
-    halfFaces = new HalfFace[4*tets.size()];
+    halfFaces = std::vector<HalfFace>(4*tets.size());
     halfEdges.clear();
 
     std::queue<Tet*> tq;
@@ -2703,11 +2692,11 @@ namespace cleaver
           half_face->halfEdges[e] = half_edge;
 
           // check if this edge has been assigned yet
-          if(half_edge->vertex == NULL){
+          if(half_edge->vertex == nullptr){
             half_edge->vertex = v2;
             v1->halfEdges.push_back(half_edge);
           }
-          if(pair_edge->vertex == NULL){
+          if(pair_edge->vertex == nullptr){
             pair_edge->vertex = v1;
             v2->halfEdges.push_back(pair_edge);
           }
@@ -2756,7 +2745,7 @@ namespace cleaver
       // get pointer to half face
       HalfFace *half_face = &halfFaces[f];
 
-      if(half_face->halfEdges[0] == NULL)
+      if(half_face->halfEdges[0] == nullptr)
       {
         std::cerr << "Found disconnected face! f=" << f << std::endl;
 

@@ -15,12 +15,14 @@
 #include "ToolWidgets/SizingFieldWidget.h"
 #include "DataWidgets/DataManagerWidget.h"
 #include <Cleaver/Cleaver.h>
+#include <Cleaver/CleaverMesher.h>
 #include "Data/DataManager.h"
 
 
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
+  enum  CleaverGUIDataType {VOLUME, SIZING_FIELD, MESH};
 public:
   MainWindow(const QString &title);
   ~MainWindow();
@@ -29,24 +31,24 @@ public:
   void enableMeshedVolumeOptions();
 
 public slots :
-
   void importVolume();
   void importSizingField();
   void importMesh();
   void exportField(cleaver::FloatField *field);
   void exportMesh(cleaver::TetMesh *mesh = NULL);
   void about();
-
-  // camera slots
-  void resetCamera();
-  void saveCamera();
-  void loadCamera();
-
-
+  void handleNewMesh();
+  void handleDoneMeshing();
+  void handleNewData(CleaverGUIDataType type);
+  void handleRepaintGL();
+  void handleSizingFieldDone();
+  void handleExportField(void*);
+  void handleExportMesh(void*);
+  void handleDisableSizingField();
+  void handleDisableMeshing();
   // edit functions
   void removeExternalTets();
   void removeLockedTets();
-
   // compute functions
   void computeMeshAngles();
 
@@ -57,17 +59,17 @@ private:
 
 private:
   MeshWindow *window_;
-
   MeshViewOptionsWidget *m_meshViewOptionsWidget;
   CleaverWidget *m_cleaverWidget;
   SizingFieldWidget *m_sizingFieldWidget;
   DataManagerWidget *m_dataManagerWidget;
 
+  cleaver::CleaverMesher mesher_;
+
   // File Menu Actions
   QAction *importVolumeAct;
   QAction *importSizingFieldAct;
   QAction *importMeshAct;
-  QAction *closeAct;
   QAction *exitAct;
 
   QAction *exportAct;
@@ -79,15 +81,11 @@ private:
   // Compute Menu Action
   QAction *computeAnglesAct;
 
-  // View Menu Actions
-  QAction *resetCameraAct;
-  QAction *saveCameraAct;
-  QAction *loadCameraAct;
-
   // Tool Menu Actions    
   QAction *cleaverAction;
   QAction *meshViewOptionsAction;
   QAction *sizingFieldAction;
+  QAction *dataViewAction;
 
   // About Menu Actions
   QAction *aboutAct;
@@ -95,9 +93,7 @@ private:
   // Top Level Menus
   QMenu *m_fileMenu;
   QMenu *m_editMenu;
-  QMenu *m_computeMenu;
   QMenu *m_viewMenu;
-  QMenu *m_toolsMenu;
   QMenu *m_helpMenu;
 
   std::string lastPath_, exePath_, scirun_path_, python_path_;

@@ -16,11 +16,13 @@ class SizingFieldWidget : public QDockWidget
     Q_OBJECT
     
 public:
-    explicit SizingFieldWidget(QWidget *parent = NULL, 
-      DataManagerWidget * data = NULL);
+    explicit SizingFieldWidget(
+      cleaver::CleaverMesher& mesher,
+      QWidget *parent = NULL);
     ~SizingFieldWidget();
     void setCreateButtonEnabled(bool b);
-
+  signals:
+    void sizingFieldDone();
 public slots:
 
     void loadSizingField();
@@ -34,7 +36,7 @@ protected:
     
 private:
     Ui::SizingFieldWidget *ui;
-    DataManagerWidget * data_;
+    cleaver::CleaverMesher& mesher_;
 };
 
 #endif // DATALOADERWIDGET_H

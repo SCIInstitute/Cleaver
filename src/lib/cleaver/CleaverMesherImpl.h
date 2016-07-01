@@ -1,16 +1,19 @@
+#ifndef __CLEAVERMESHIMP_H__
+#define __CLEAVERMESHIMP_H__
+
 #include "vec3.h"
 #include "TetMesh.h"
+#include "Volume.h"
 #include "Vertex.h"
 #include "ScalarField.h"
 #include "SizingFieldOracle.h"
 #include <cmath>
 #include <cstdlib>
-#include "CleaverMesher.h"
 
 namespace cleaver {
 
-#ifndef NULL
-#define NULL 0
+#ifndef nullptr
+#define nullptr 0
 #endif
 
 #define VERT 0
@@ -68,6 +71,9 @@ private:
 class CleaverMesherImp
 {
 public:
+
+    enum TopologyMode { TopologyModeNone, TopologyModeSubdivide, TopologyModeCleave };
+
     CleaverMesherImp();
     ~CleaverMesherImp();
     ScalarField<float>* createSizingField();
@@ -181,7 +187,7 @@ public:
     double m_background_time;
     double m_cleaving_time;
 
-    CleaverMesher::TopologyMode m_topologyMode;
+    TopologyMode m_topologyMode;
     double m_alpha_init;
 
     Volume *m_volume;
@@ -195,3 +201,5 @@ public:
 };
 
 } // namespace cleaver
+
+#endif // !__CLEAVERMESHIMP_H__

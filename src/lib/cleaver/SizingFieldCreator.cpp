@@ -502,7 +502,7 @@ namespace cleaver
       else
         oct->min = 1e10;
       for (int i = 0; i < 8; i++)
-        oct->child[i] = NULL;
+        oct->child[i] = nullptr;
       //if(oct->min!=1e10)
           //printf("%d %d %d %lf\n", oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->min);
       //printf("exiting %d %d %d %d %d %d\n", oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->b.index[0], oct->b.index[1], oct->b.index[2]);
@@ -740,7 +740,7 @@ namespace cleaver
 
           double a = 9.0 / 4, K;
           double val1, val2;
-          if (neighnext != NULL)
+          if (neighnext != nullptr)
           {
             val1 = mesh.dist[neigh->index[0]][neigh->index[1]][neigh->index[2]];
             val2 = mesh.dist[neighnext->index[0]][neighnext->index[1]][neighnext->index[2]];

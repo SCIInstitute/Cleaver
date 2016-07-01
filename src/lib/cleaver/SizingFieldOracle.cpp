@@ -338,7 +338,7 @@ void SizingFieldOracle::printTree(OTCell *myCell, int n)
 double SizingFieldOracle::getMinLFS(int xLocCode, int yLocCode, int zLocCode, int level) const
 {
     OTCell *pCell = m_tree->getCellAtLevel(xLocCode, yLocCode, zLocCode, level);
-    if(pCell!=NULL)
+    if(pCell!=nullptr)
         return pCell->minLFS;
     else
         return 1e10;
