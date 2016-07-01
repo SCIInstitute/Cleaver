@@ -23,16 +23,10 @@
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
-  enum  CleaverGUIDataType {VOLUME, SIZING_FIELD, MESH};
 public:
   MainWindow(const QString &title);
   ~MainWindow();
   explicit MainWindow(QWidget *parent = 0);
-  MeshWindow * createWindow(const QString &title);
-  void enableMeshedVolumeOptions();
-
-  void disableAllActions();
-  void enablePossibleActions();
 
 public slots :
   void importVolume();
@@ -43,7 +37,6 @@ public slots :
   void about();
   void handleNewMesh();
   void handleDoneMeshing();
-  void handleNewData(CleaverGUIDataType type);
   void handleRepaintGL();
   void handleSizingFieldDone();
   void handleExportField(void*);
@@ -53,6 +46,7 @@ public slots :
   void handleProgress(int);
   void handleError(std::string);
   void handleMessage(std::string);
+  void closeEvent(QCloseEvent* event);
   // edit functions
   void removeExternalTets();
   void removeLockedTets();
@@ -63,6 +57,11 @@ private:
   void createDockWindows();
   void createActions();
   void createMenus();
+  MeshWindow * createWindow(const QString &title);
+  void enableMeshedVolumeOptions();
+  void disableAllActions();
+  void enablePossibleActions();
+  bool checkSaved();
 
 private:
   MeshWindow *window_;
@@ -70,7 +69,6 @@ private:
   CleaverWidget *m_cleaverWidget;
   SizingFieldWidget *m_sizingFieldWidget;
   DataManagerWidget *m_dataManagerWidget;
-
   cleaver::CleaverMesher mesher_;
 
   // File Menu Actions
@@ -107,6 +105,9 @@ private:
   QProgressBar * progressBar_;
 
   std::string lastPath_, exePath_, scirun_path_, python_path_;
+
+  //save statuses
+  bool meshSaved_, sizingFieldSaved_;
 };
 
 #endif // MAINWINDOW_H

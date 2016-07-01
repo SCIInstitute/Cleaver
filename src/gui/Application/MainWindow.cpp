@@ -1,5 +1,4 @@
 #include "MainWindow.h"
-
 #include <Cleaver/Cleaver.h>
 #include <Cleaver/ConstantField.h>
 #include <Cleaver/InverseField.h>
@@ -14,7 +13,7 @@
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent) {}
 
-MainWindow::MainWindow(const QString &title)
+MainWindow::MainWindow(const QString &title) : meshSaved_(true), sizingFieldSaved_(true)
 {
   this->setWindowTitle(title);
   // Create Menus/Windows
@@ -192,6 +191,7 @@ void MainWindow::handleSizingFieldDone() {
     this->mesher_.getVolume()->getSizingField());
   this->m_cleaverWidget->setMeshButtonEnabled(true);
   this->mesher_.cleanup();
+  this->sizingFieldSaved_ = false;
 }
 
 void MainWindow::handleMessage(std::string str) {
@@ -251,6 +251,7 @@ void MainWindow::handleDoneMeshing() {
   this->computeAnglesAct->setEnabled(true);
   this->removeExternalTetsAct->setEnabled(true);
   this->removeLockedTetsAct->setEnabled(true);
+  this->meshSaved_ = false;
 }
 
 void MainWindow::handleNewMesh() {
@@ -262,19 +263,6 @@ void MainWindow::handleRepaintGL() {
   this->window_->updateMesh();
   this->window_->updateGL();
   this->window_->repaint();
-}
-
-void MainWindow::handleNewData(CleaverGUIDataType type) {
-  switch (type) {
-  case VOLUME:
-    break;
-  case SIZING_FIELD:
-    break;
-  case MESH:
-    break;
-  default:
-    break;
-  }
 }
 //--------------------------------------
 // - removeExternalTets()
@@ -295,6 +283,7 @@ void MainWindow::removeExternalTets()
     mesh->constructBottomUpIncidences();
 
     this->window_->setMesh(mesh);      // trigger update
+    this->meshSaved_ = false;
   }
 }
 //--------------------------------------
@@ -310,6 +299,7 @@ void MainWindow::removeLockedTets()
   {
     mesh->removeLockedTets();   // make it so
     this->window_->setMesh(mesh);      // trigger update
+    this->meshSaved_ = false;
   }
 }
 
@@ -366,8 +356,47 @@ QSize MyFileDialog::sizeHint() const
   return QSize(800,600);
 }
 //*********************END custom file dialog
-void MainWindow::importVolume()
-{
+
+bool MainWindow::checkSaved() {
+  if (!this->sizingFieldSaved_) {
+    // save the size of the window to preferences
+    QMessageBox msgBox;
+    msgBox.setText("You haven't saved your computed Sizing Field.");
+    msgBox.setInformativeText("Would you like to save your sizing field to file?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+    if (ret == QMessageBox::Save) {
+      this->exportField(reinterpret_cast<cleaver::FloatField*>(
+        this->mesher_.getVolume()->getSizingField()));
+      this->sizingFieldSaved_ = true;
+    } else if (ret == QMessageBox::Cancel) {
+      return false;
+    } else if (ret == QMessageBox::Discard) {
+      this->sizingFieldSaved_ = true;
+    }
+  }
+  if (!this->meshSaved_) {
+    // save the size of the window to preferences
+    QMessageBox msgBox;
+    msgBox.setText("You haven't saved your new Tet Mesh.");
+    msgBox.setInformativeText("Would you like to save your Tet Mesh to file?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+    if (ret == QMessageBox::Save) {
+      this->exportMesh(this->mesher_.getTetMesh());
+      this->meshSaved_ = true;
+    } else if (ret == QMessageBox::Cancel) {
+      return false;
+    } 
+  }
+  return true;
+}
+void MainWindow::importVolume() {
+  if (!this->checkSaved()) {
+    return;
+  }
   QStringList fileNames;
   MyFileDialog dialog(this, tr("Select Indicator Functions"),
       QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
@@ -455,8 +484,10 @@ void MainWindow::importVolume()
   }
 }
 
-void MainWindow::importSizingField()
-{
+void MainWindow::importSizingField() {
+  if (!this->checkSaved()) {
+    return;
+  }
   cleaver::Volume  *volume = this->mesher_.getVolume();
 
   QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"),
@@ -475,8 +506,10 @@ void MainWindow::importSizingField()
   this->enablePossibleActions();
 }
 
-void MainWindow::importMesh()
-{
+void MainWindow::importMesh() {
+  if (!this->checkSaved()) {
+    return;
+  }
   QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Import Tetgen Mesh"),
       QString::fromStdString(lastPath_), tr("Tetgen Mesh (*.node *.ele)"));
   if (fileNames.size() == 1) {
@@ -539,20 +572,18 @@ void MainWindow::importMesh()
   this->enablePossibleActions();
 }
 
-void MainWindow::exportField(cleaver::FloatField *field)
-{
-  std::cout << "Exporting Field!!" << std::endl;
+void MainWindow::exportField(cleaver::FloatField *field) {
   if(!field)
     return;
-
   QString ext;
   QString selectedFilter;
   std::string name = field->name() == "" ? "Untitled" : field->name();
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save Field As"),
       (lastPath_ + "/" + name).c_str(), tr("NRRD (*.nrrd);"), &selectedFilter);
-
   QString filter1("NRRD (*.nrrd)");
-
+  if (fileName.isEmpty()) {
+    return;
+  }
   NRRDTools::saveNRRDFile(field, std::string(fileName.toLatin1()));
   if (fileName != "") {
     std::string file1 = fileName.toStdString();
@@ -561,24 +592,21 @@ void MainWindow::exportField(cleaver::FloatField *field)
   }
 }
 
-void MainWindow::exportMesh(cleaver::TetMesh *mesh)
-{
+void MainWindow::exportMesh(cleaver::TetMesh *mesh) {
   // If no mesh selected, get active window mesh
   if (!mesh)
     mesh = this->mesher_.getTetMesh();
-
-  // If still no mesh, return (TODO: Error MessageBox)
   if(!mesh)
     return;
-
   QString ext;
   QString selectedFilter;
   std::string name = mesh->name == "" ? "Untitled" : mesh->name;
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save Mesh As"),
       (lastPath_ + "/" + name).c_str(),
       tr("Tetgen (*.node);;SCIRun (*.pts);;Surface PLY (*.ply);;Matlab (*.mat);;VTK Poly (*.vtk);;VTK Unstructured Grid (*.vtk)"), &selectedFilter);
-
-
+  if (fileName.isEmpty()) {
+    return;
+  }
   QString filter1("Tetgen (*.node)");
   QString filter2("SCIRun (*.pts)");
   QString filter3("Surface PLY (*.ply)");
@@ -626,8 +654,7 @@ void MainWindow::about() {
         "PARTICULAR PURPOSE."));
 }
 
-MeshWindow * MainWindow::createWindow(const QString &title)
-{
+MeshWindow * MainWindow::createWindow(const QString &title) {
     QGLFormat glFormat;
     glFormat.setVersion(3, 3);
     glFormat.setProfile(QGLFormat::CoreProfile); // Requires >=Qt-4.8.0
@@ -664,4 +691,11 @@ void MainWindow::handleDisableSizingField() {
   this->computeAnglesAct->setEnabled(false);
   this->removeExternalTetsAct->setEnabled(false);
   this->removeLockedTetsAct->setEnabled(false);
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+  if (!this->checkSaved()) {
+    event->ignore();
+    return;
+  }
 }
