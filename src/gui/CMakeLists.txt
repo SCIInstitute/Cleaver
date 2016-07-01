@@ -3,7 +3,7 @@ PROJECT(cleaver-gui)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 add_definitions(-DCLEAVER_VERSION_MAJOR="2")
-add_definitions(-DCLEAVER_VERSION_MINOR="1")
+add_definitions(-DCLEAVER_VERSION_MINOR="2")
 
 FIND_PACKAGE(OpenGL QUIET)
 
@@ -85,7 +85,7 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 
-ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE #WIN32
+ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE WIN32
    ${srcs} ${hdrs} 
    ${moc_srcs} ${MOC_SRC}
    ${UI_SRC} ${RCC_SRC}

@@ -1,10 +1,14 @@
 #include "FieldDataWidget.h"
 #include "ui_FieldDataWidget.h"
 #include <sstream>
-#include "MainWindow.h"
 #include <Cleaver/ScalarField.h>
 #include <Cleaver/BoundingBox.h>
 #include <NRRDTools.h>
+#include <QMouseEvent>
+#include <QMenu>
+#include <QMimeData>
+#include <QDrag>
+#include <QDialog>
 
 FieldDataWidget::FieldDataWidget(QWidget *parent) :
     QWidget(parent),

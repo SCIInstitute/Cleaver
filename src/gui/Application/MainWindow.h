@@ -17,6 +17,7 @@
 #include <Cleaver/Cleaver.h>
 #include <Cleaver/CleaverMesher.h>
 #include "Data/DataManager.h"
+#include <QProgressBar>
 
 
 class MainWindow : public QMainWindow
@@ -29,6 +30,9 @@ public:
   explicit MainWindow(QWidget *parent = 0);
   MeshWindow * createWindow(const QString &title);
   void enableMeshedVolumeOptions();
+
+  void disableAllActions();
+  void enablePossibleActions();
 
 public slots :
   void importVolume();
@@ -46,6 +50,9 @@ public slots :
   void handleExportMesh(void*);
   void handleDisableSizingField();
   void handleDisableMeshing();
+  void handleProgress(int);
+  void handleError(std::string);
+  void handleMessage(std::string);
   // edit functions
   void removeExternalTets();
   void removeLockedTets();
@@ -95,6 +102,9 @@ private:
   QMenu *m_editMenu;
   QMenu *m_viewMenu;
   QMenu *m_helpMenu;
+  
+  //status bar items
+  QProgressBar * progressBar_;
 
   std::string lastPath_, exePath_, scirun_path_, python_path_;
 };

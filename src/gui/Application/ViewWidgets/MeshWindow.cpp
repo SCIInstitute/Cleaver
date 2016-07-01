@@ -256,9 +256,6 @@ void MeshWindow::initializeOptions()
   m_currentEdge = 0;
   m_currentFace = 0;
   m_shrinkscale = 0.0;
-  //m_vertexData = nullptr;
-
-  this->resize(this->maximumSize());
 }
 
 void MeshWindow::initializeShaders()

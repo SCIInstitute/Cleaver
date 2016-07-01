@@ -4,8 +4,9 @@
 #include <sstream>
 #include <QMouseEvent>
 #include <QMenu>
-#include <MainWindow.h>
-
+#include <QDialog>
+#include <QDrag>
+#include <QMimeData>
 
 MeshDataWidget::MeshDataWidget(QWidget *parent) :
   QWidget(parent),

@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <NRRDTools.h>
+#include <QStatusBar>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent) {}
@@ -16,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::MainWindow(const QString &title)
 {
   this->setWindowTitle(title);
-  this->setMinimumWidth(1024);  
   // Create Menus/Windows
   this->createDockWindows();
   this->createActions();
@@ -30,7 +30,7 @@ MainWindow::MainWindow(const QString &title)
     path >> lastPath_ >> scirun_path_ >> python_path_;
     path.close();
   }
-
+  this->enablePossibleActions();
 }
 
 MainWindow::~MainWindow() {
@@ -53,6 +53,19 @@ void MainWindow::createDockWindows()
   addDockWidget(Qt::LeftDockWidgetArea, this->m_cleaverWidget);
   addDockWidget(Qt::RightDockWidgetArea, this->m_dataManagerWidget);
   addDockWidget(Qt::RightDockWidgetArea, this->m_meshViewOptionsWidget);
+  this->progressBar_ = new QProgressBar(this);
+  this->statusBar()->addPermanentWidget(this->progressBar_);
+  this->statusBar()->show();
+  this->progressBar_->setVisible(false);
+  this->handleMessage("Program Cleaver started normally.");
+
+  connect(this->m_cleaverWidget, SIGNAL(message(std::string)), this, SLOT(handleMessage(std::string)));
+  connect(this->m_cleaverWidget, SIGNAL(errorMessage(std::string)), this, SLOT(handleError(std::string)));
+  connect(this->m_cleaverWidget, SIGNAL(progress(int)), this, SLOT(handleProgress(int)));
+
+  connect(this->m_sizingFieldWidget, SIGNAL(message(std::string)), this, SLOT(handleMessage(std::string)));
+  connect(this->m_sizingFieldWidget, SIGNAL(errorMessage(std::string)), this, SLOT(handleError(std::string)));
+  connect(this->m_sizingFieldWidget, SIGNAL(progress(int)), this, SLOT(handleProgress(int)));
 }
 
 void MainWindow::createActions()
@@ -180,6 +193,55 @@ void MainWindow::handleSizingFieldDone() {
   this->m_cleaverWidget->setMeshButtonEnabled(true);
   this->mesher_.cleanup();
 }
+
+void MainWindow::handleMessage(std::string str) {
+  this->statusBar()->showMessage(QString::fromStdString(str));
+}
+
+void MainWindow::handleError(std::string str) {
+  QMessageBox::critical(this, "Critical Error", str.c_str());
+  this->handleMessage(str);
+  this->handleProgress(100);
+}
+
+void MainWindow::handleProgress(int value) {
+  if (value < 100) {
+    this->progressBar_->setVisible(true);
+    this->progressBar_->setValue(static_cast<int>(value));
+    this->disableAllActions(); 
+  } else {
+    this->progressBar_->setValue(100);
+    this->progressBar_->setVisible(false);
+    this->enablePossibleActions(); 
+  }
+  qApp->processEvents();
+}
+
+void MainWindow::disableAllActions() {
+  this->computeAnglesAct->setEnabled(false);
+  this->removeExternalTetsAct->setEnabled(false);
+  this->removeLockedTetsAct->setEnabled(false);
+  this->m_cleaverWidget->setMeshButtonEnabled(false);
+  this->m_sizingFieldWidget->setCreateButtonEnabled(false);
+  this->importMeshAct->setEnabled(false);
+  this->importVolumeAct->setEnabled(false);
+  this->importSizingFieldAct->setEnabled(false);
+  this->exportAct->setEnabled(false);
+}
+
+void MainWindow::enablePossibleActions() {
+  this->computeAnglesAct->setEnabled(this->mesher_.getTetMesh() != nullptr);
+  this->removeExternalTetsAct->setEnabled(this->mesher_.getTetMesh() != nullptr);
+  this->removeLockedTetsAct->setEnabled(this->mesher_.getTetMesh() != nullptr);
+  this->m_cleaverWidget->setMeshButtonEnabled(this->mesher_.getVolume() != nullptr &&
+    this->mesher_.getVolume()->getSizingField() != nullptr);
+  this->m_sizingFieldWidget->setCreateButtonEnabled(this->mesher_.getVolume() != nullptr);
+  this->importMeshAct->setEnabled(true);
+  this->importVolumeAct->setEnabled(true);
+  this->importSizingFieldAct->setEnabled(this->mesher_.getVolume() != nullptr);
+  this->exportAct->setEnabled(this->mesher_.getTetMesh() != nullptr);
+}
+
 void MainWindow::handleDoneMeshing() {
   this->window_->setMesh(this->mesher_.getTetMesh());
   this->m_dataManagerWidget->setMesh(this->mesher_.getTetMesh());
@@ -384,13 +446,12 @@ void MainWindow::importVolume()
     this->m_dataManagerWidget->setMesh(nullptr);
     this->m_dataManagerWidget->setSizingField(nullptr);
     this->m_dataManagerWidget->setVolume(volume);
-    this->window_->setVolume(volume);
     this->mesher_.setVolume(volume);
+    this->window_->setVolume(volume);
 
     m_cleaverWidget->resetCheckboxes();
     status.setValue(100);
-    this->m_sizingFieldWidget->setCreateButtonEnabled(true);
-    this->m_cleaverWidget->setMeshButtonEnabled(false);
+    this->enablePossibleActions();
   }
 }
 
@@ -411,6 +472,7 @@ void MainWindow::importSizingField()
     volume->setSizingField(sizingField[0]);
     std::cout << "Sizing Field Set" << std::endl;
   }
+  this->enablePossibleActions();
 }
 
 void MainWindow::importMesh()
@@ -461,6 +523,7 @@ void MainWindow::importMesh()
       this->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
       this->m_dataManagerWidget->setSizingField(nullptr);
       this->m_dataManagerWidget->setVolume(nullptr);
+      this->mesher_.setVolume(nullptr);
       this->window_->setMesh(mesh);
       this->m_dataManagerWidget->setMesh(mesh);
       this->m_meshViewOptionsWidget->setMesh(mesh);
@@ -473,9 +536,7 @@ void MainWindow::importMesh()
     auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
   }
-  this->computeAnglesAct->setEnabled(true);
-  this->removeExternalTetsAct->setEnabled(true);
-  this->removeLockedTetsAct->setEnabled(true);
+  this->enablePossibleActions();
 }
 
 void MainWindow::exportField(cleaver::FloatField *field)
@@ -553,14 +614,12 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh)
   }
 }
 
-void MainWindow::about()
-{
-  // TODO: Make this a better Modal Frame rather than MessageBox
-  QMessageBox::about(this, tr("About Cleaver 2.0 Beta"),
-      tr("<b>Cleaver 2.0 Beta</b><BR>"
+void MainWindow::about() {
+  QMessageBox::about(this, tr("About Cleaver 2"),
+      tr("<b>Cleaver 2.2</b><BR>"
         "<a href=\"http://www.sci.utah.edu/\">Scientific Computing & Imaging Institute</a><BR>"
         "<a href=\"http://www.cs.utah.edu/\">University of Utah, School of Computing</a><BR>"
-        "<P><b>Author:</b> Jonathan Bronson"
+        "<P><b>Author:</b> Jonathan Bronson, <b>Developer:</b> Brig Bagley"
         "<P>This program is provided AS IS with NO "
         "WARRANTY OF ANY KIND, INCLUDING THE WARRANTY"
         "OF DESIGN, MERCHANTABILITY AND FITNESS FOR A "
@@ -574,10 +633,6 @@ MeshWindow * MainWindow::createWindow(const QString &title)
     glFormat.setProfile(QGLFormat::CoreProfile); // Requires >=Qt-4.8.0
     glFormat.setSampleBuffers(true);
     MeshWindow *window = new MeshWindow(glFormat, this);
-    std::cout << "Current Context: " << 
-      window->format().majorVersion() << "." << 
-      window->format().minorVersion() << ", CORE? " << 
-      ((window->format().profile() == 1) ? "true" : "false") << std::endl;
     window->setAttribute(Qt::WA_DeleteOnClose);
     window->showMaximized();
     return window;

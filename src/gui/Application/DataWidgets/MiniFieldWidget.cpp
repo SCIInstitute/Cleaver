@@ -3,7 +3,9 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QMenu>
-#include <MainWindow.h>
+#include <QMimeData>
+#include <QDrag>
+#include <QDialog>
 
 MiniFieldWidget::MiniFieldWidget(QWidget *parent) :
     QWidget(parent),

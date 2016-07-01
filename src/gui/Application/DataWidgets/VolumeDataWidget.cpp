@@ -4,7 +4,8 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QMenu>
-#include <MainWindow.h>
+#include <QMimeData>
+#include <QDrag>
 
 VolumeDataWidget::VolumeDataWidget(QWidget *parent) :
     QWidget(parent),

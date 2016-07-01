@@ -46,9 +46,8 @@ signals:
 private:
   Ui::DataManagerWidget *ui;
   DataManager manager_;
-  QSpacerItem * spacer_;
   QVBoxLayout * vbox_;
-  std::vector<QWidget*> widgets_;
+  size_t addCount_;
 };
 
 #endif // DATAMANAGERWIDGET_H

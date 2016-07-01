@@ -70,8 +70,8 @@ const std::string vtkPoly = "vtkPoly";
 const std::string vtkUSG = "vtkUSG";
 const std::string ply = "ply";
 
-const std::string kDefaultOutputPath   = "./";
-const std::string kDefaultOutputName   = "output";
+const std::string kDefaultOutputPath = "./";
+const std::string kDefaultOutputName = "output";
 const cleaver::MeshFormat kDefaultOutputFormat = cleaver::Tetgen;
 
 
@@ -87,7 +87,7 @@ const int    kDefaultMaxIterations = 1000;
 namespace po = boost::program_options;
 
 // Entry Point
-int main(int argc,  char* argv[])
+int main(int argc, char* argv[])
 {
   bool verbose = false;
   bool fix_tets = false;
@@ -100,7 +100,6 @@ int main(int argc,  char* argv[])
   double alpha = kDefaultAlpha;
   double alpha_long = kDefaultAlphaLong;
   double alpha_short = kDefaultAlphaShort;
-  double scale = kDefaultScale;
   double lipschitz = kDefaultLipschitz;
   double multiplier = kDefaultMultiplier;
   int padding = kDefaultPadding;
@@ -120,7 +119,7 @@ int main(int argc,  char* argv[])
   //-------------------------------
   //  Parse Command Line Params
   //-------------------------------
-  try{
+  try {
     po::options_description description("Command line flags");
     description.add_options()
       ("help,h", "display help message")
@@ -128,14 +127,13 @@ int main(int argc,  char* argv[])
       ("version,V", "display version information")
       ("input_files,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths or segmentation path")
       ("background_mesh,b", po::value<std::string>(), "input background mesh")
-      ("mesh_mode,m", po::value<std::string>(), "background mesh mode (structured [default], regular)")
+      ("mesh_mode,m", po::value<std::string>(), "background mesh mode (adaptive [default], constant)")
       ("alpha,a", po::value<double>(), "initial alpha value")
       ("alpha_short,s", po::value<double>(), "alpha short value for regular mesh_mode")
       ("alpha_long,l", po::value<double>(), "alpha long value for regular mesh_mode")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
       ("grading,g", po::value<double>(), "sizing field grading")
       ("multiplier,x", po::value<double>(), "sizing field multiplier")
-      ("scale,c", po::value<double>(), "sizing field scale")
       ("padding,p", po::value<int>(), "volume padding")
       ("write_background_mesh,w", "write background mesh")
       ("fix_tet_windup,j", "Ensure positive Jacobians with proper vertex wind-up.")
@@ -179,8 +177,7 @@ int main(int argc,  char* argv[])
     // parse the material field input file names
     if (variables_map.count("input_files")) {
       material_fields = variables_map["input_files"].as<std::vector<std::string> >();
-    }
-    else{
+    } else {
       std::cerr << "Error: At least one material field file must be specified." << std::endl;
       return 1;
     }
@@ -193,7 +190,7 @@ int main(int argc,  char* argv[])
       have_sizing_field = true;
       sizing_field = variables_map["sizing_field"].as<std::string>();
 
-      if (variables_map.count("grading")){
+      if (variables_map.count("grading")) {
         if (!strict)
           std::cerr << "Warning: sizing field provided, grading will be ignored." << std::endl;
         else {
@@ -226,13 +223,10 @@ int main(int argc,  char* argv[])
     if (variables_map.count("multiplier")) {
       multiplier = variables_map["multiplier"].as<double>();
     }
-    if (variables_map.count("scale")) {
-      scale = variables_map["scale"].as<double>();
-    }
     if (variables_map.count("padding")) {
       padding = variables_map["padding"].as<int>();
     }
-    fix_tets = variables_map.count("fix_tet_windup")==0?false:true;
+    fix_tets = variables_map.count("fix_tet_windup") == 0 ? false : true;
 
     if (variables_map.count("alpha")) {
       alpha = variables_map["alpha"].as<double>();
@@ -262,10 +256,9 @@ int main(int argc,  char* argv[])
     // parse the background mesh mode
     if (variables_map.count("mesh_mode")) {
       std::string mesh_mode_string = variables_map["mesh_mode"].as<std::string>();
-      if(mesh_mode_string.compare("regular") == 0) {
+      if (mesh_mode_string.compare("adaptive") == 0) {
         mesh_mode = cleaver::Regular;
-      }
-      else if(mesh_mode_string.compare("structured") == 0) {
+      } else if (mesh_mode_string.compare("constant") == 0) {
         mesh_mode = cleaver::Structured;
       } else {
         std::cerr << "Error: invalid background mesh mode: " << mesh_mode_string << std::endl;
@@ -292,25 +285,19 @@ int main(int argc,  char* argv[])
     // set the proper output mesh format
     if (variables_map.count("output_format")) {
       std::string format_string = variables_map["output_format"].as<std::string>();
-      if(format_string.compare(tetgen) == 0){
+      if (format_string.compare(tetgen) == 0) {
         output_format = cleaver::Tetgen;
-      }
-      else if(format_string.compare(scirun) == 0){
+      } else if (format_string.compare(scirun) == 0) {
         output_format = cleaver::Scirun;
-      }
-      else if(format_string.compare(matlab) == 0){
+      } else if (format_string.compare(matlab) == 0) {
         output_format = cleaver::Matlab;
-      }
-      else if(format_string.compare(vtkPoly) == 0){
+      } else if (format_string.compare(vtkPoly) == 0) {
         output_format = cleaver::VtkPoly;
-      }
-      else if(format_string.compare(vtkUSG) == 0){
+      } else if (format_string.compare(vtkUSG) == 0) {
         output_format = cleaver::VtkUSG;
-      }
-      else if(format_string.compare(ply) == 0){
+      } else if (format_string.compare(ply) == 0) {
         output_format = cleaver::PLY;
-      }
-      else{
+      } else {
         std::cerr << "Error: unsupported output format: " << format_string << std::endl;
         return 7;
       }
@@ -326,12 +313,10 @@ int main(int argc,  char* argv[])
       output_name = variables_map["output_name"].as<std::string>();
     }
 
-  }
-  catch (std::exception& e) {
+  } catch (std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;
     return 8;
-  }
-  catch(...) {
+  } catch (...) {
     std::cerr << "Unhandled exception caught. Terminating." << std::endl;
     return 9;
   }
@@ -343,18 +328,18 @@ int main(int argc,  char* argv[])
   total_timer.start();
   bool add_inverse = false;
   std::vector<cleaver::AbstractScalarField*> fields;
-  if(material_fields.empty()){
+  if (material_fields.empty()) {
     std::cerr << "No material fields or segmentation files provided. Terminating."
       << std::endl;
     return 10;
-  } 
+  }
   if (segmentation) {
     if (material_fields.size() > 1) {
       std::cerr << "WARNING: More than 1 input provided for segmentation." <<
         " Only the first input will be used." << std::endl;
     }
-	  NRRDTools::segmentationToIndicatorFunctions(material_fields[0]);
-  } else if(material_fields.size() == 1) {
+    NRRDTools::segmentationToIndicatorFunctions(material_fields[0]);
+  } else if (material_fields.size() == 1) {
     add_inverse = true;
   } else {
     if (verbose) {
@@ -379,14 +364,14 @@ int main(int argc,  char* argv[])
   // Load background mesh if provided
   //-----------------------------------
   cleaver::TetMesh *bgMesh = nullptr;
-  if(have_background_mesh) {
+  if (have_background_mesh) {
     std::string nodeFileName = background_mesh + ".node";
     std::string eleFileName = background_mesh + ".ele";
     if (verbose) {
       std::cout << "Loading background mesh: \n\t" << nodeFileName
         << "\n\t" << eleFileName << std::endl;
     }
-    bgMesh =  cleaver::TetMesh::createFromNodeElePair(nodeFileName, eleFileName);
+    bgMesh = cleaver::TetMesh::createFromNodeElePair(nodeFileName, eleFileName);
     mesher.setBackgroundMesh(bgMesh);
   }
   //-----------------------------------
@@ -405,14 +390,14 @@ int main(int argc,  char* argv[])
     } else {
       cleaver::Timer sizing_field_timer;
       sizing_field_timer.start();
-      sizingField[0] = cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-          volume,
-          (float)(1.0/lipschitz),
-          (float)scale,
-          (float)multiplier,
-          (int)padding,
-          (mesh_mode==cleaver::Regular?false:true),
-          verbose);
+      sizingField.push_back(cleaver::SizingFieldCreator::createSizingFieldFromVolume(
+        volume,
+        (float)(1.0 / lipschitz),
+        1.f,
+        (float)multiplier,
+        (int)padding,
+        (mesh_mode == cleaver::Regular ? false : true),
+        verbose));
       sizing_field_timer.stop();
       sizing_field_time = sizing_field_timer.time();
     }
@@ -428,12 +413,12 @@ int main(int argc,  char* argv[])
     //-----------------------------------------------------------
     cleaver::Timer background_timer;
     background_timer.start();
-    if(verbose)
+    if (verbose)
       std::cout << "Creating Octree Mesh..." << std::endl;
-    switch(mesh_mode) {
+    switch (mesh_mode) {
 
     case cleaver::Regular:
-      mesher.setAlphas(alpha_long,alpha_short);
+      mesher.setAlphas(alpha_long, alpha_short);
       mesher.setRegular(true);
       bgMesh = mesher.createBackgroundMesh(verbose);
       break;
@@ -476,7 +461,7 @@ int main(int argc,  char* argv[])
   //-----------------------------------------------------------
   // Strip Exterior Tets
   //-----------------------------------------------------------
-  if(strip_exterior){
+  if (strip_exterior) {
     cleaver::stripExteriorTets(mesh, volume, verbose);
   }
 
@@ -500,7 +485,7 @@ int main(int argc,  char* argv[])
   total_timer.stop();
   double total_time = total_timer.time();
 
-  if(verbose) {
+  if (verbose) {
     std::cout << "Output Info" << std::endl;
     std::cout << "Size: " << volume->size().toString() << std::endl;
     std::cout << "Materials: " << volume->numberOfMaterials() << std::endl;
