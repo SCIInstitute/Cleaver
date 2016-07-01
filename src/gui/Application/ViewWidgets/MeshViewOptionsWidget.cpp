@@ -5,6 +5,7 @@ MeshViewOptionsWidget::MeshViewOptionsWidget(
   cleaver::CleaverMesher& mesher, MeshWindow* window, QWidget *parent) :
   mesher_(mesher),
   window_(window),
+  mesh_(nullptr),
   QDockWidget(parent),
   ui(new Ui::MeshViewOptionsWidget)
 {
@@ -54,7 +55,9 @@ MeshViewOptionsWidget::~MeshViewOptionsWidget()
   delete ui;
 }
 
-void MeshViewOptionsWidget::addMaterialsItem(const QString &name, const QVariant &faceVisible, const QVariant &cellVisible)
+void MeshViewOptionsWidget::addMaterialsItem(const QString &name, 
+  const QVariant &faceVisible,
+  const QVariant &cellVisible)
 {
   int row = m_materialViewModel->rowCount();
   m_materialViewModel->insertRow(row);
@@ -100,25 +103,22 @@ void MeshViewOptionsWidget::updateOptions() {
   ui->showEdgesCheckbox->setChecked(this->window_->edgesVisible());
   ui->showCutsCheckbox->setChecked(this->window_->cutsVisible());
   auto vol = this->mesher_.getVolume();
-  auto msh = this->mesher_.getTetMesh();
+  auto msh = this->mesh_;
 
   // set material locks
-  if (!vol && !msh)
-  {
+  if (!vol && !msh) {
     m_materialViewModel->removeRows(0, m_materialViewModel->rowCount());
   } else if ((vol &&
     (vol->numberOfMaterials() != m_materialViewModel->rowCount())) ||
     (msh && msh->material_count !=
-      m_materialViewModel->rowCount()))
-  {
+      m_materialViewModel->rowCount())) {
     m_materialViewModel->removeRows(0, m_materialViewModel->rowCount());
     int material_count = 0;
     if (vol)
       material_count = vol->numberOfMaterials();
     else if (msh)
       material_count = msh->material_count;
-    for (int m = 0; m < material_count; m++)
-    {
+    for (int m = 0; m < material_count; m++) {
       addMaterialsItem(QString::number(m),
         this->window_->getMaterialFaceLock(m) ? Qt::Checked : Qt::Unchecked,
         this->window_->getMaterialCellLock(m) ? Qt::Checked : Qt::Unchecked);
@@ -130,8 +130,7 @@ void MeshViewOptionsWidget::updateOptions() {
     else if (msh)
       material_count = msh->material_count;
 
-    for (int m = 0; m < material_count; m++)
-    {
+    for (int m = 0; m < material_count; m++)  {
       m_materialViewModel->setData(m_materialViewModel->index(m, 1),
         this->window_->getMaterialFaceLock(m) ?
         Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
@@ -140,6 +139,10 @@ void MeshViewOptionsWidget::updateOptions() {
         Qt::Checked : Qt::Unchecked, Qt::CheckStateRole);
     }
   }
+}
+
+void MeshViewOptionsWidget::setMesh(cleaver::TetMesh* msh) {
+  this->mesh_ = msh;
 }
 
 void MeshViewOptionsWidget::scrollingCheckboxClicked(int index)

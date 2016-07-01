@@ -92,6 +92,7 @@ void MainWindow::createActions()
   // Compute Menu Actions
   this->computeAnglesAct = new QAction(tr("Dihedral Angles"), this);
   connect(this->computeAnglesAct, SIGNAL(triggered()), this, SLOT(computeMeshAngles()));
+  this->computeAnglesAct->setEnabled(false);
 
   // Tool Menu Actions
   this->cleaverAction = this->m_cleaverWidget->toggleViewAction();
@@ -182,12 +183,17 @@ void MainWindow::handleSizingFieldDone() {
 void MainWindow::handleDoneMeshing() {
   this->window_->setMesh(this->mesher_.getTetMesh());
   this->m_dataManagerWidget->setMesh(this->mesher_.getTetMesh());
+  this->m_meshViewOptionsWidget->setMesh(this->mesher_.getTetMesh());
   this->enableMeshedVolumeOptions();
   this->m_meshViewOptionsWidget->updateOptions();
+  this->computeAnglesAct->setEnabled(true);
+  this->removeExternalTetsAct->setEnabled(true);
+  this->removeLockedTetsAct->setEnabled(true);
 }
 
 void MainWindow::handleNewMesh() {
-  this->window_->setMesh(this->mesher_.getBackgroundMesh()); 
+  this->window_->setMesh(this->mesher_.getBackgroundMesh());
+  this->m_meshViewOptionsWidget->setMesh(this->mesher_.getBackgroundMesh());
 }
 
 void MainWindow::handleRepaintGL() {
@@ -375,6 +381,8 @@ void MainWindow::importVolume()
     status.setValue(95);
     QApplication::processEvents();
 
+    this->m_dataManagerWidget->setMesh(nullptr);
+    this->m_dataManagerWidget->setSizingField(nullptr);
     this->m_dataManagerWidget->setVolume(volume);
     this->window_->setVolume(volume);
     this->mesher_.setVolume(volume);
@@ -451,8 +459,13 @@ void MainWindow::importMesh()
       mesh->imported = true;
 
       this->m_meshViewOptionsWidget->setShowCutsCheckboxEnabled(false);
-      this->m_dataManagerWidget->setMesh(mesh);
+      this->m_dataManagerWidget->setSizingField(nullptr);
+      this->m_dataManagerWidget->setVolume(nullptr);
       this->window_->setMesh(mesh);
+      this->m_dataManagerWidget->setMesh(mesh);
+      this->m_meshViewOptionsWidget->setMesh(mesh);
+      this->m_meshViewOptionsWidget->updateOptions();
+      this->m_dataManagerWidget->setIndicators(std::vector<cleaver::AbstractScalarField*>());
     }
   }
   if (!fileNames.empty()) {
@@ -460,6 +473,9 @@ void MainWindow::importMesh()
     auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
   }
+  this->computeAnglesAct->setEnabled(true);
+  this->removeExternalTetsAct->setEnabled(true);
+  this->removeLockedTetsAct->setEnabled(true);
 }
 
 void MainWindow::exportField(cleaver::FloatField *field)
@@ -583,8 +599,14 @@ void MainWindow::handleExportMesh(void* p) {
 
 void MainWindow::handleDisableMeshing() {
   this->m_cleaverWidget->setMeshButtonEnabled(false);
+  this->computeAnglesAct->setEnabled(false);
+  this->removeExternalTetsAct->setEnabled(false);
+  this->removeLockedTetsAct->setEnabled(false);
 }
 
 void MainWindow::handleDisableSizingField() {
   this->m_sizingFieldWidget->setCreateButtonEnabled(false);
+  this->computeAnglesAct->setEnabled(false);
+  this->removeExternalTetsAct->setEnabled(false);
+  this->removeLockedTetsAct->setEnabled(false);
 }

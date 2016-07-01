@@ -14,7 +14,9 @@ void DataManager::setMesh(cleaver::TetMesh *mesh) {
 
 void DataManager::setSizingField(cleaver::AbstractScalarField *field) {
   this->sizingField_ = field;
-  this->volume_->setSizingField(field);
+  if (this->volume_) {
+    this->volume_->setSizingField(field);
+  }
 }
 
 void DataManager::setIndicators(std::vector<cleaver::AbstractScalarField *> indicators) {

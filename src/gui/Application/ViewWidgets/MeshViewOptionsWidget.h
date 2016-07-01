@@ -34,7 +34,7 @@ public:
     MeshWindow* window,
     QWidget *parent = NULL);
   ~MeshViewOptionsWidget();
-
+  void setMesh(cleaver::TetMesh* mesh);
   public slots:
   void updateOptions();
 
@@ -62,6 +62,7 @@ private:
   CheckableItemModel *m_materialViewModel;
   cleaver::CleaverMesher& mesher_;
   MeshWindow* window_;
+  cleaver::TetMesh * mesh_;
 };
 
 #endif // MESHVIEWOPTIONSWIDGET_H
