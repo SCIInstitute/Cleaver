@@ -40,6 +40,7 @@
 #include <itkDiscreteGaussianImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
+#include <itkApproximateSignedDistanceMapImageFilter.h>
 #include "NRRDTools.h"
 
 //typedefs needed.
@@ -56,7 +57,8 @@ typedef itk::SubtractImageFilter <ImageType, ImageType >
 SubtractImageFilterType;
 typedef itk::DiscreteGaussianImageFilter<
   ImageType, ImageType >  GaussianBlurType;
-
+typedef itk::ApproximateSignedDistanceMapImageFilter
+<ImageType, ImageType> DMapType;
 std::vector<cleaver::AbstractScalarField*>
 NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
   // read file using ITK
@@ -92,30 +94,37 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
     multiplyImageFilter->SetInput(thresh->GetOutput());
     multiplyImageFilter->SetConstant(1. / static_cast<double>(i));
     multiplyImageFilter->Update();
-    //do some blur iterations
+    //do some blurring
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(multiplyImageFilter->GetOutput());
-    blur->SetVariance(2.);
+    blur->SetVariance(1.);
     blur->Update();
-    // change the values to be -1 to 1
+    //find the average value between
     ImageCalculatorFilterType::Pointer calc =
       ImageCalculatorFilterType::New();
     calc->SetImage(blur->GetOutput());
     calc->Compute();
     float mx = calc->GetMaximum();
     float mn = calc->GetMinimum();
-    MultiplyImageFilterType::Pointer mult =
-      MultiplyImageFilterType::New();
-    mult->SetInput(blur->GetOutput());
-    mult->SetConstant(2. / (mx - mn));
-    mult->Update();
-    SubtractImageFilterType::Pointer subtractFilter
+    auto md = (mx + mn) / 2.f;
+    //create a distance map with that minimum value as the levelset
+    DMapType::Pointer dm = DMapType::New();
+    dm->SetInput(blur->GetOutput());
+    dm->SetInsideValue(md + 0.1f);
+    dm->SetOutsideValue(md -0.1f);
+    dm->Update();
+    //MultiplyImageFilterType::Pointer mult =
+    //  MultiplyImageFilterType::New();
+    //mult->SetInput(blur->GetOutput());
+    //mult->SetConstant(-20. / (mx - mn));
+    //mult->Update();
+    /*SubtractImageFilterType::Pointer subtractFilter
       = SubtractImageFilterType::New();
     subtractFilter->SetInput1(mult->GetOutput());
     subtractFilter->SetConstant2(1.);
-    subtractFilter->Update();
+    subtractFilter->Update();*/
     //convert the image to a cleaver "abstract field"
-    auto img = subtractFilter->GetOutput();
+    auto img = dm->GetOutput();
     auto region = img->GetLargestPossibleRegion();
     auto numPixel = region.GetNumberOfPixels();
     float *data = new float[numPixel];
@@ -131,12 +140,13 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel
       float val = static_cast<float>(imageIterator.Get());
-      //clamp to +/- 1
-      val = std::min(std::max(-1.f, val), 1.f);
-      ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
+      ((cleaver::FloatField*)fields[num])->data()[pixel++] = -val;
       ++imageIterator;
     }
-    ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
+    auto spacing = img->GetSpacing();
+    ((cleaver::FloatField*)fields[num])->setScale(
+      cleaver::vec3(spacing[0], spacing[1], spacing[2]));
+    NRRDTools::saveNRRDFile(fields[num], "a" + std::to_string(num));
   }
   return fields;
 }
