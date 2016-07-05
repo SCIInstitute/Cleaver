@@ -385,7 +385,8 @@ int main(int argc, char* argv[])
     std::vector<cleaver::AbstractScalarField *> sizingField;
     if (have_sizing_field) {
       std::cout << "Loading sizing field: " << sizing_field << std::endl;
-      sizingField = NRRDTools::loadNRRDFiles({ {sizing_field} });
+      std::vector<std::string> tmp(1,sizing_field);
+      sizingField = NRRDTools::loadNRRDFiles(tmp);
       // todo(jon): add error handling
     } else {
       cleaver::Timer sizing_field_timer;

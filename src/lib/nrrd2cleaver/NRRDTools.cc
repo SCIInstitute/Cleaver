@@ -41,6 +41,7 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkApproximateSignedDistanceMapImageFilter.h>
+#include <sstream>
 #include "NRRDTools.h"
 
 //typedefs needed.
@@ -134,7 +135,9 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
     auto name = filename.substr(beg, filename.size() - beg);
     auto fin = name.find_last_of(".");
     name = name.substr(0, fin);
-    fields[num]->setName(name + std::to_string(i));
+    std::stringstream ss;
+    ss << name << i;
+    fields[num]->setName(ss.str());
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
     while (!imageIterator.IsAtEnd()) {
@@ -146,7 +149,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
     auto spacing = img->GetSpacing();
     ((cleaver::FloatField*)fields[num])->setScale(
       cleaver::vec3(spacing[0], spacing[1], spacing[2]));
-    NRRDTools::saveNRRDFile(fields[num], "a" + std::to_string(num));
+    //NRRDTools::saveNRRDFile(fields[num], "a" + std::to_string(num));
   }
   return fields;
 }
