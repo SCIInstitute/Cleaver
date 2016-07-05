@@ -14,7 +14,7 @@ class SizingFieldThread : public QThread {
   Q_OBJECT
 public:
   SizingFieldThread(cleaver::CleaverMesher& mesher,
-    QObject * parent,
+    QObject * parent, float scaling,
     float factor, float speed, int padding, bool adapt);
   ~SizingFieldThread();
   void run();
@@ -25,7 +25,7 @@ signals:
   void errorMessage(std::string);
 private:
   cleaver::CleaverMesher& mesher_;
-  float factor_, speed_;
+  float factor_, speed_, scaling_;
   int padding_;
   bool adapt_;
 };

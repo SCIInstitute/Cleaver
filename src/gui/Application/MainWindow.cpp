@@ -325,7 +325,7 @@ class MyFileDialog : public QFileDialog
 };
 
 bool MyFileDialog::isSegmentation() {
-  return this->segmentation_check_->isChecked();
+  return !this->segmentation_check_->isChecked();
 }
 
 MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
@@ -340,7 +340,7 @@ MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
   QHBoxLayout *hbl = new QHBoxLayout();
 
   // add some widgets
-  segmentation_check_ = new QCheckBox("This is a segmentation file", this);
+  segmentation_check_ = new QCheckBox("These are individual indicator functions", this);
   segmentation_check_->setChecked(false);
   hbl->addWidget(segmentation_check_);
 

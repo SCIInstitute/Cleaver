@@ -70,6 +70,58 @@
      </widget>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Scaling Factor:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="scaleFactor">
+        <property name="minimumSize">
+         <size>
+          <width>86</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>86</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QWidget" name="factorWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <property name="spacing">
@@ -373,27 +425,14 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="text">
-          <string>Sizing Type:</string>
+          <string>Element Sizing Method:</string>
          </property>
         </widget>
-       </item>
-       <item>
-        <spacer name="surfaceSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>10</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
        <item>
         <widget class="QComboBox" name="surfaceComboBox">
@@ -401,6 +440,12 @@
           <size>
            <width>86</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>86</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="currentIndex">

@@ -102,6 +102,7 @@ int main(int argc, char* argv[])
   double alpha_short = kDefaultAlphaShort;
   double lipschitz = kDefaultLipschitz;
   double multiplier = kDefaultMultiplier;
+  double scaling = kDefaultScale;
   int padding = kDefaultPadding;
   bool have_sizing_field = false;
   bool have_background_mesh = false;
@@ -133,6 +134,7 @@ int main(int argc, char* argv[])
       ("alpha_long,l", po::value<double>(), "alpha long value for regular mesh_mode")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
       ("grading,g", po::value<double>(), "sizing field grading")
+      ("scale,c", po::value<double>(), "sizing field scale factor")
       ("multiplier,x", po::value<double>(), "sizing field multiplier")
       ("padding,p", po::value<int>(), "volume padding")
       ("write_background_mesh,w", "write background mesh")
@@ -219,6 +221,9 @@ int main(int argc, char* argv[])
     // parse sizing field parameters
     if (variables_map.count("grading")) {
       lipschitz = variables_map["grading"].as<double>();
+    }
+    if (variables_map.count("scaling")) {
+      scaling = variables_map["scaling"].as<double>();
     }
     if (variables_map.count("multiplier")) {
       multiplier = variables_map["multiplier"].as<double>();
@@ -393,7 +398,7 @@ int main(int argc, char* argv[])
       sizingField.push_back(cleaver::SizingFieldCreator::createSizingFieldFromVolume(
         volume,
         (float)(1.0 / lipschitz),
-        1.f,
+        (float)scaling,
         (float)multiplier,
         (int)padding,
         (mesh_mode == cleaver::Regular ? false : true),

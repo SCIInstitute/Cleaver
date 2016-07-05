@@ -50,6 +50,7 @@ void SizingFieldWidget::loadSizingField() {
 }
 
 void SizingFieldWidget::computeSizingField() {
+  float scaling = ui->scaleFactor->value();
   float factor = ui->factorSpinBox->value();
   float speed = 1.0 / ui->lipschitzSpinBox->value();
   int padding = ui->paddingSpinBox->value();
@@ -57,7 +58,7 @@ void SizingFieldWidget::computeSizingField() {
     ui->surfaceComboBox->currentText(),
     QString("constant"), Qt::CaseInsensitive) == 0 ? true : false;
   SizingFieldThread *workerThread = new SizingFieldThread(this->mesher_, this,
-    factor, speed, padding, adaptiveSurface);
+    scaling, factor, speed, padding, adaptiveSurface);
   connect(workerThread, SIGNAL(sizingFieldDone()), this, SLOT(handleSizingFieldDone()));
   connect(workerThread, SIGNAL(message(std::string)), this, SLOT(handleMessage(std::string)));
   connect(workerThread, SIGNAL(errorMessage(std::string)), this, SLOT(handleErrorMessage(std::string)));
@@ -82,8 +83,9 @@ void SizingFieldWidget::handleProgress(int v) { emit progress(v); }
 
 SizingFieldThread::SizingFieldThread(
   cleaver::CleaverMesher& mesher, QObject * parent,
-  float factor, float speed, int padding, bool adapt) :
-  QThread(parent), mesher_(mesher),
+  float scaling, float factor, float speed,
+  int padding, bool adapt) :
+  QThread(parent), mesher_(mesher), scaling_(scaling),
   factor_(factor), speed_(speed), padding_(padding),
   adapt_(adapt) { }
 
@@ -95,7 +97,8 @@ void SizingFieldThread::run() {
   try {
     cleaver::AbstractScalarField *sizingField =
       cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-        this->mesher_.getVolume(), this->speed_, 1., this->factor_,
+        this->mesher_.getVolume(), this->speed_, 
+        this->scaling_, this->factor_,
         this->padding_, this->adapt_, true);
     this->mesher_.getVolume()->setSizingField(sizingField);
     emit progress(50);
