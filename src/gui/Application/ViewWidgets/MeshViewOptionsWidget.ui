@@ -94,13 +94,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>164</width>
+            <width>0</width>
             <height>21</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>164</width>
+            <width>16777215</width>
             <height>21</height>
            </size>
           </property>
@@ -116,13 +116,13 @@
          <widget class="QCheckBox" name="showBBoxCheckbox">
           <property name="minimumSize">
            <size>
-            <width>164</width>
+            <width>0</width>
             <height>21</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>164</width>
+            <width>16777215</width>
             <height>21</height>
            </size>
           </property>
@@ -150,7 +150,7 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>164</width>
+            <width>16777215</width>
             <height>21</height>
            </size>
           </property>
@@ -175,13 +175,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>164</width>
+            <width>0</width>
             <height>21</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>164</width>
+            <width>16777215</width>
             <height>21</height>
            </size>
           </property>
@@ -206,13 +206,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>164</width>
+            <width>0</width>
             <height>21</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>164</width>
+            <width>16777215</width>
             <height>21</height>
            </size>
           </property>
@@ -237,13 +237,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>164</width>
+            <width>0</width>
             <height>21</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>164</width>
+            <width>16777215</width>
             <height>21</height>
            </size>
           </property>
@@ -271,13 +271,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>164</width>
+            <width>0</width>
             <height>21</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>164</width>
+            <width>16777215</width>
             <height>21</height>
            </size>
           </property>

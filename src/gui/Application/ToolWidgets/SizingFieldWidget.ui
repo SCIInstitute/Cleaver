@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>186</width>
+    <width>228</width>
     <height>258</height>
    </size>
   </property>
@@ -34,7 +34,7 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
-     <number>1</number>
+     <number>3</number>
     </property>
     <property name="leftMargin">
      <number>4</number>
@@ -48,6 +48,69 @@
     <property name="bottomMargin">
      <number>4</number>
     </property>
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Scaling Factor:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>30</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="scaleFactor">
+         <property name="minimumSize">
+          <size>
+           <width>110</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="value">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item>
      <widget class="QWidget" name="VolumeWidget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -68,58 +131,6 @@
        </property>
       </layout>
      </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_8">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Scaling Factor:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="scaleFactor">
-        <property name="minimumSize">
-         <size>
-          <width>86</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>86</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="minimum">
-         <double>0.010000000000000</double>
-        </property>
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
     <item>
      <widget class="QWidget" name="factorWidget" native="true">
@@ -143,7 +154,7 @@
         <widget class="QLabel" name="factorLabel">
          <property name="minimumSize">
           <size>
-           <width>60</width>
+           <width>0</width>
            <height>0</height>
           </size>
          </property>
@@ -175,13 +186,13 @@
         <widget class="QDoubleSpinBox" name="factorSpinBox">
          <property name="minimumSize">
           <size>
-           <width>86</width>
+           <width>110</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>86</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -248,19 +259,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QLabel" name="lipschitzLabel">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>60</width>
-           <height>16777215</height>
-          </size>
-         </property>
+        <widget class="QLabel" name="label_2">
          <property name="text">
           <string>Lipschitz:</string>
          </property>
@@ -283,13 +282,13 @@
         <widget class="QDoubleSpinBox" name="lipschitzSpinBox">
          <property name="minimumSize">
           <size>
-           <width>86</width>
+           <width>110</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>86</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -335,13 +334,13 @@
         <widget class="QLabel" name="paddingLabel">
          <property name="minimumSize">
           <size>
-           <width>60</width>
+           <width>0</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -373,13 +372,13 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>86</width>
+           <width>110</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>86</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
@@ -419,7 +418,7 @@
         <widget class="QLabel" name="surfaceLabel">
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>110</width>
            <height>0</height>
           </size>
          </property>
@@ -435,16 +434,29 @@
         </widget>
        </item>
        <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QComboBox" name="surfaceComboBox">
          <property name="minimumSize">
           <size>
-           <width>86</width>
+           <width>110</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>86</width>
+           <width>16777215</width>
            <height>16777215</height>
           </size>
          </property>
