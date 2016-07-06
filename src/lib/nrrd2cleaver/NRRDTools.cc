@@ -61,7 +61,7 @@ typedef itk::DiscreteGaussianImageFilter<
 typedef itk::ApproximateSignedDistanceMapImageFilter
 <ImageType, ImageType> DMapType;
 std::vector<cleaver::AbstractScalarField*>
-NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
+NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) {
   // read file using ITK
   if (filename.find(".nrrd") != std::string::npos) {
     itk::NrrdImageIOFactory::RegisterOneFactory();
@@ -98,7 +98,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
     //do some blurring
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(multiplyImageFilter->GetOutput());
-    blur->SetVariance(1.);
+    blur->SetVariance(sigma * sigma);
     blur->Update();
     //find the average value between
     ImageCalculatorFilterType::Pointer calc =
@@ -155,7 +155,8 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename) {
 }
 
 std::vector<cleaver::AbstractScalarField*>
-NRRDTools::loadNRRDFiles(std::vector<std::string> files) {
+NRRDTools::loadNRRDFiles(std::vector<std::string> files,
+  double sigma) {
   std::vector<cleaver::AbstractScalarField*> fields;
   size_t num = 0;
   for (auto file : files) {
@@ -168,7 +169,12 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files) {
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(file);
     reader->Update();
-    ImageType::Pointer img = reader->GetOutput();
+    //do some blurring
+    GaussianBlurType::Pointer blur = GaussianBlurType::New();
+    blur->SetInput(reader->GetOutput());
+    blur->SetVariance(sigma * sigma);
+    blur->Update();
+    ImageType::Pointer img = blur->GetOutput();
     //convert the image to a cleaver "abstract field"
     auto region = img->GetLargestPossibleRegion();
     auto numPixel = region.GetNumberOfPixels();

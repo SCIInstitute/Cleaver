@@ -1173,7 +1173,7 @@ void MeshWindow::closeEvent(QCloseEvent *event)
 void MeshWindow::setMesh(cleaver::TetMesh *mesh)
 {
   this->mesh_ = mesh;
-  m_dataBounds = cleaver::BoundingBox::merge(m_dataBounds, mesh->bounds);
+  m_dataBounds = cleaver::BoundingBox::merge(cleaver::BoundingBox(), mesh->bounds);
 
   if (mesh->imported) {
 

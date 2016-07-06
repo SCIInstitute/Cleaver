@@ -7,8 +7,11 @@
 #include <QProgressDialog>
 #include <QApplication>
 #include <QCheckBox>
+#include <QDoubleSpinBox>
 #include <NRRDTools.h>
 #include <QStatusBar>
+#include <QLayoutItem>
+#include <QLabel>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent) {}
@@ -319,13 +322,19 @@ class MyFileDialog : public QFileDialog
     MyFileDialog(QWidget *, const QString& a,
         const QString& b, const QString& c);
     bool isSegmentation();
+    double sigma();
     QSize sizeHint() const;
   private:
-    QCheckBox *segmentation_check_;
+    QCheckBox * segmentation_check_;
+    QDoubleSpinBox * sigmaValue_;
 };
 
 bool MyFileDialog::isSegmentation() {
   return !this->segmentation_check_->isChecked();
+}
+
+double MyFileDialog::sigma() {
+  return this->sigmaValue_->value();
 }
 
 MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
@@ -342,7 +351,15 @@ MyFileDialog::MyFileDialog( QWidget *parent, const QString& a,
   // add some widgets
   segmentation_check_ = new QCheckBox("These are individual indicator functions", this);
   segmentation_check_->setChecked(false);
+  sigmaValue_ = new QDoubleSpinBox(this);
+  sigmaValue_->setValue(1.);
+  sigmaValue_->setMinimum(0.);
+  sigmaValue_->setMaximum(64.);
+  sigmaValue_->setSingleStep(1.);
   hbl->addWidget(segmentation_check_);
+  hbl->addItem(new QSpacerItem(30, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+  hbl->addWidget(new QLabel("Blending Function Sigma", this));
+  hbl->addWidget(sigmaValue_);
 
   int numRows = mainLayout->rowCount();
 
@@ -393,6 +410,7 @@ bool MainWindow::checkSaved() {
   }
   return true;
 }
+
 void MainWindow::importVolume() {
   if (!this->checkSaved()) {
     return;
@@ -403,6 +421,7 @@ void MainWindow::importVolume() {
   if (dialog.exec())
     fileNames = dialog.selectedFiles();
   bool segmentation = dialog.isSegmentation();
+  double sigma = dialog.sigma();
   if(!fileNames.isEmpty()) {
     std::string file1 = (*fileNames.begin()).toStdString();
     auto pos = file1.find_last_of('/');
@@ -431,7 +450,7 @@ void MainWindow::importVolume() {
         std::cerr << "WARNING: More than one inputs provided for segmentation." <<
           " Only the first input will be used." << std::endl;
       }
-      fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0]);
+      fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0], sigma);
       status.setValue(90);
       QApplication::processEvents();
     } else {

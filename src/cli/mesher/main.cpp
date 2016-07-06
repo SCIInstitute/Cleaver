@@ -83,6 +83,7 @@ const double kDefaultLipschitz = 0.2;
 const double kDefaultMultiplier = 1.0;
 const int    kDefaultPadding = 0;
 const int    kDefaultMaxIterations = 1000;
+const double kDefaultSigma = 1.;
 
 namespace po = boost::program_options;
 
@@ -111,6 +112,7 @@ int main(int argc, char* argv[])
   bool strip_exterior = false;
   enum cleaver::MeshType mesh_mode = cleaver::Structured;
   cleaver::MeshFormat output_format = kDefaultOutputFormat;
+  double sigma = kDefaultSigma;
 
   double sizing_field_time = 0;
   double   background_time = 0;
@@ -145,6 +147,7 @@ int main(int argc, char* argv[])
       ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [Surface mesh only])")
       ("strict,t", "warnings become errors")
       ("segmentation,S", "The input file is a segmentation file.")
+      ("blend_sigma,B", po::value<double>(), "blending sigma for input(s) to remove alias artifacts.")
       ;
 
     boost::program_options::variables_map variables_map;
@@ -241,6 +244,9 @@ int main(int argc, char* argv[])
     }
     if (variables_map.count("alpha_long")) {
       alpha_long = variables_map["alpha_long"].as<double>();
+    }
+    if (variables_map.count("blend_sigma")) {
+      sigma = variables_map["blend_sigma"].as<double>();
     }
 
     if (variables_map.count("background_mesh")) {
@@ -343,7 +349,7 @@ int main(int argc, char* argv[])
       std::cerr << "WARNING: More than 1 input provided for segmentation." <<
         " Only the first input will be used." << std::endl;
     }
-    NRRDTools::segmentationToIndicatorFunctions(material_fields[0]);
+    NRRDTools::segmentationToIndicatorFunctions(material_fields[0], sigma);
   } else if (material_fields.size() == 1) {
     add_inverse = true;
   } else {
