@@ -311,8 +311,8 @@ void MainWindow::computeMeshAngles()
   cleaver::TetMesh *mesh = this->mesher_.getTetMesh();
   if(mesh) {
     mesh->computeAngles();
-    std::cout << "Min Angle: " << mesh->min_angle << " degrees." << std::endl;
-    std::cout << "Max Angle: " << mesh->max_angle << " degrees." << std::endl;
+    this->handleMessage("Min Angle: " + std::to_string(mesh->min_angle) + " degrees." +
+      "Max Angle: " + std::to_string(mesh->min_angle) + " degrees.");
   }
 }
 //*************Custom file dialog for segmentation check

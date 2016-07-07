@@ -80,10 +80,10 @@ cmake ../src
 make
 ```
 
-**NOTE**: You may need to set your Qt build variables:
+**NOTE**: You may need to set your Qt/ITK build variables:
 
 ```bash
-cmake -DQt5Widgets_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5Widgets" -DQt5OpenGL_DIR="/usr/lib/Qt/5.3.0/gcc/lib/cmake/Qt5OpenGL"../src 
+cmake -DQt5Widgets_DIR="/path/to/Qt5Widgets" -DQt5OpenGL_DIR="/path/to/Qt5OpenGL" -DITK_DIR="/path/to/ITK" ../src 
 ```
 
 <h4>Windows</h4>
@@ -103,7 +103,7 @@ qt-creator, or pass library paths directly to command
 line like below, replacing paths with your library locations:<br/>
 
 ```bash
-cmake -G "NMake Makefiles" -DQt5Widgets_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5Widgets" -DQt5OpenGL_DIR="c:\Qt\5.3.0\5.3\msvc2013_opengl\lib\cmake\Qt5OpenGL" ..\src
+cmake -G "NMake Makefiles" cmake -DQt5Widgets_DIR="C:/path/to/Qt5Widgets" -DQt5OpenGL_DIR="C:/path/to/Qt5OpenGL" -DITK_DIR="C:/path/to/ITK" ..\src 
 ```
 
 <br/>
@@ -150,51 +150,39 @@ Command line flags:
                                   matlab, vtk, ply [Surface mesh only])
   -t [ --strict ]                 warnings become errors
   -S [ --segmentation ]           The input file is a segmentation file.
+  -B [ --blend_sigma ] arg        blending sigma for input(s) to remove alias
+                                  artifacts.
 ```
 <h3>Graphical Interface</h3>
 You can run the GUI from the command line, or by double-clicking it in a folder.
-<code> bin/cleaver-gui</code><br/>
+<code> gui/cleaver-gui</code><br/>
 You should see a window similar to this:<br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/application.png"><br/>
 Load the spheres in <code>src/test/test_data/input</code> 
 either with <code>ctrl+v</code> or <code>File -> Load Volume</code>,
-or load your own indicator functions or segmentation file (if included in the build).<br/>
+or load your own indicator functions or segmentation file. <br/>
+*Dialog Indicator Function Check* Click the check in the dialog if you are 
+importing individual indicator functions.<br/>
+*Blending Function Sigma* Choose a sigma for pre-process smoothing either
+your segmentation labels or indicator functions to avoid stair-step aliasing.<br/>
 **Sizing Field Creator**<br/>
 This tool allows a user to set parameters for the cleaving sizing field.<br/>
-*Volume* If you have loaded multiple volumes, you can switch between them here for the sizing field.<br/>
-*Size Multiplier* This is the multiplier for the sizing field creation.<br/>
-*Sample Scale* This is a tool to alter the sampling size of a volume. 
+*Scale Factor* This is a tool to alter the sampling size of a volume. 
 Smaller sampling creates coarser meshes faster.<br/>
+*Size Multiplier* This is the multiplier for the sizing field creation.<br/>
 *Lipschitz* This is the grading of the sizing field. <br/>
 *Padding* Added a volume buffer around the data. This is useful when volumes intersect near the boundary.<br/>
-*Surface Size* Select whether to adaptively resize tets for more detail at volume interactions, or 
+*Element Sizing Method* Select whether to adaptively resize tets for more detail at volume interactions, or 
 to keep tet sizes constant based on the sample scale.<br/>
 *Compute Sizing Field* Once you have your desired parameters, click this to create the sizing field. 
 This is assuming a volume has been loaded (ctrl+v or File->Import Volume). New information will be added 
 to the Data Manager at each step. If a sizing field is not created here, a default one will be 
 created for you automatically before cleaving. <br/>
 <img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/mesh.png"><br/>
-**Cleaving Tool : Adaptive**<br/>
-This tab runs the new adaptive technique of cleaving. Smaller tets occur near volume interactions 
-for more detail.<br/>
-*Volume* If you have loaded multiple volumes, you can switch between them here for cleaving.<br/>
-*Mesh* This feature is not currently available.<br/>
-*Octree Background Mesh* Check this to allow for octree creation of the background mesh.<br/>
-*Reorder inverted elements* Check this to ensure tets (after cleaving) have the proper vertex order.<br/>
+**Cleaving Tool**<br/>
+This tab runs the cleaving algorithm and displays steps that have completed.
 *Cleave Mesh* Run the cleaving algorithm. The steps are shown as complete with the check below. 
-The rendering window will also update with each step.<br/>
-**Cleaving Tool : Regular**<br/>
-This tab is for cleaving in a manner similar to Cleaver1. The sizing field is constant.<br/>
-*Volume* If you have loaded multiple volumes, you can switch between them here for cleaving.<br/>
-*Alpha Short* This is the distance (as a percent/100) of a short edge along a tet for which violations
-will be considered for warping.<br/>
-*Alpha Long* This is the distance (as a percent/100) of a long edge along a tet for which violations
-will be considered for warping.<br/>
-*Sample Scale* This is a tool to alter the sampling size of a volume. 
-Smaller sampling creates coarser meshes faster.<br/>
-*Padding* Added a volume buffer around the data. This is useful when volumes intersect near the boundary.<br/>
-*Construct Mesh* Run the cleaving algorithm. The steps are shown as complete with the check below. 
-The rendering window will also update with each step.<br/>
+The rendering window will also update with each applicable step.<br/>
 **Data Manager**<br/>
 This tool displays information about meshes, volumes, and sizing fields loaded and created. <br/>
 *Mesh* A mesh will have number of vertices, number of tetrahedra, and the min/max mesh boundaries.<br/>
@@ -218,20 +206,19 @@ faces will update once the clipping plane has stopped moving (mouse is released)
 *X-Y-Z Axes* Select which axis to clip the volume. The associated slider will permit clipping
 from one end of the bounding box to the other. <br/>
 *Material Visibility Locks* A list of the materials is here. When the faces of a material is locked, clipping
-is ignored for that material and it is always visible. Locked cells currently has no affect<br/>
+is ignored for that material and it is always visible. Locked cells refers to tets/volumes that
+will remain visible despite the clip.<br/>
 **File Menu**<br/>
 *Import Volume* Select 1-10 indicator function NRRDs, or 1 segmentation NRRD (if built in) to load in.<br/>
 *Import Sizing Field* Load a sizing field NRRD to use for a Volume.<br/>
 *Import Mesh* Import a tetgen mesh (*.node/*.ele pair) to visualize.<br/>
 *Export Mesh* Write the current mesh to file in either node/ele (tetgen) format, or VTK format. <br/>
-*Close* Close the current mesh rendering. (Known to have issues). <br/>
-*Close All* Close all the mesh renderings. (Known to have issues). <br/>
 **Edit Menu**<br/>
 *Remove External Tets* Removes tets that were created as padding around the volume.<br/>
 *Remove Locked Tets* Removes tets that were not warped during cleaving.<br/>
-**View** Reset, Load, and Save the current camera view of the mesh. <br/>
-**Tools** Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools. <br/> 
-**Window** Select which render window to view. (Known to have issues). <br/>
+*Dihedral Angles* Computes the min/max Dihedral angles. And displays them in the status bar.<br/>
+**View** Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools. <br/> 
+**Help** Show information abour Cleaver2. <br/> 
 <h3>Cleaver Library</h3>
 To include the cleaver library, you should link to the library built, <code>libcleaver.a</code> or
 <code>cleaver.lib</code> and include the following headers in your project: <br/>

@@ -1585,15 +1585,14 @@ void MeshWindow::build_output_vbos()
       if (m2 < (int)m_bMaterialCellLock.size() && m_bMaterialCellLock[m2])
         force = true;
     }
-    if (m1 == m2) {
-      force = false;
-    }
+    //if (m1 == m2) {
+    //  force = false;
+    //}
     if (surface) {
       force = (m2 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m2]) ||
         (m1 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m1]);
     }
-    if (m_bClipping)
-    {
+    if (m_bClipping) {
       cleaver::vec3 n(m_4fvClippingPlane[0], m_4fvClippingPlane[1], m_4fvClippingPlane[2]);
       float d = m_4fvClippingPlane[3];
 
