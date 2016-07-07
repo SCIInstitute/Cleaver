@@ -445,15 +445,15 @@ void MainWindow::importVolume() {
       std::cerr << "No material fields or segmentation files provided. Terminating."
         << std::endl;
       return;
-    } else if (segmentation) {
-      if (inputs.size() > 1) {
-        std::cerr << "WARNING: More than one inputs provided for segmentation." <<
-          " Only the first input will be used." << std::endl;
-      }
+    } else if (segmentation && inputs.size() == 1) {
       fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0], sigma);
       status.setValue(90);
       QApplication::processEvents();
     } else {
+      if (inputs.size() > 1) {
+        this->handleMessage("WARNING: More than one inputs provided for segmentation." +
+          std::string(" This will be assumed to be indicator functions."));
+      }
       if (inputs.size() == 1) {
         add_inverse = true;
       }

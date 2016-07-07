@@ -344,15 +344,16 @@ int main(int argc, char* argv[])
       << std::endl;
     return 10;
   }
-  if (segmentation) {
+  if (segmentation && material_fields.size() == 1) {
+    NRRDTools::segmentationToIndicatorFunctions(material_fields[0], sigma);
+  } else {
     if (material_fields.size() > 1) {
       std::cerr << "WARNING: More than 1 input provided for segmentation." <<
-        " Only the first input will be used." << std::endl;
+        " This will be assumed to be indicator functions." << std::endl;
     }
-    NRRDTools::segmentationToIndicatorFunctions(material_fields[0], sigma);
-  } else if (material_fields.size() == 1) {
-    add_inverse = true;
-  } else {
+    if (material_fields.size() == 1) {
+      add_inverse = true;
+    }
     if (verbose) {
       std::cout << " Loading input fields:" << std::endl;
       for (size_t i = 0; i < material_fields.size(); i++) {
