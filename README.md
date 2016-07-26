@@ -48,6 +48,7 @@ Sciences of the National Institutes of Health under grant number P41GM103545."
 <strong>Developer: </strong> Brig Bagley<br/>
 
 <h2>Requirements</h2>
+ * Dedicated Graphics Card (OpenGL 4.1+, Dedicated Shared Memory, no integrated graphics cards)
  * C++11 compatible compiler
  * Git (https://git-scm.com/)
  * CMake 2.8+ (http://www.cmake.org/)
@@ -289,4 +290,8 @@ Be sure to include all other necessary CMake definitions as annotated above.
  * On larger data sets with a potentially high number of quadruple points
   (> 3 material fields), some functions are failing to ensure valid tets
    and meshes, causing bad tets in the final output. This code is being 
-   debugged now for a future release.
+   debugged now for a future release.<br/>
+ * The following graphics cards are known to not support Cleaver:
+   - AMD Radeon HD 6310 (Integrated Card)
+   - AMD Radeon 7400 M 
+   - INTEL HD 3000 (Integrated Card)
