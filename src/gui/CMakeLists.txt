@@ -74,6 +74,7 @@ IF(APPLE)
   # include the icns file in the target
   SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaverIcon.icns)
 ELSEIF(WIN32)
+  ADD_DEFINITIONS(-DICON_RC_FILE="${CMAKE_CURRENT_SOURCE_DIR}/Resources/Icons/cleaverIcon.ico")
   SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
 ENDIF(APPLE)
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
