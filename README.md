@@ -1,297 +1,49 @@
-Cleaver2
-========
+<img src="http://www.sci.utah.edu/images/software/Cleaver/cleaver.png">
 
-**Cleaver - A MultiMaterial Tetrahedral Meshing Library and Application**
-The method is theoretically guaranteed to produce valid meshes with bounded
- dihedral angles, while still conforming to multimaterial material surfaces.
-  Empirically these bounds have been shown to be significant.
+## Cleaver2
+https://github.com/SCIInstitute/Cleaver2
 
-This is the open-source repository for Cleaver2, a tetrahedral meshing tool. 
-This distribution comes with both a command-line interface, and a GUI.
-<br/>
-Table of Contents
-========
+##### [Contents](#contents)
 
-- [Aknowledgements](#aknowledgements)
-- [Requirements](#requirements)
-- [Building](#building)<br/>
-		- [Building ITK](#building-itk)<br/>
-		- [Linux, OSX](#linux-osx)<br/>
-		- [Windows](#windows)<br/>
-			- [Qt 5](#for-qt-5)<br/>
-- [Running](#running)
-	- [Command line Tool](#command-line-tool)
-	- [Graphical Interface](#graphical-interface)
-	- [Cleaver Library](#cleaver-library)
-- [Testing](#testing)<br/>
-		- [Windows](#testing)<br/>
-- [Known Issues](#known-issues)<br/>
-
-Aknowledgements
-========
-The Cleaver Library is based on the 'Lattice Cleaving' algorithm:
-
-<strong>Bronson J., Levine, J., Whitaker R., "Lattice Cleaving: 
-Conforming Tetrahedral Meshes of Multimaterial Domains with Bounded Quality". 
-Proceedings of the 21st International Meshing Roundtable (San Jose, CA, Oct 7-10, 2012)</strong>
-
-Cleaver is an Open Source software project that is principally funded through 
-the SCI Institute's NIH/NIGMS CIBC Center. Please use the following acknowledgment 
-and send us references to any publications, presentations, or successful
- funding applications that make use of NIH/NIGMS CIBC software or data sets.
-
-"This project was supported by the National Institute of General Medical 
-Sciences of the National Institutes of Health under grant number P41GM103545."
-
-<strong>Author: </strong> Jonathan Bronson<br/>
-<strong>Contributors: </strong> Ross Whitaker, Josh Levine, Shankar Sastry<br/>
-<strong>Developer: </strong> Brig Bagley<br/>
-
-<h2>Requirements</h2>
- * Dedicated Graphics Card (OpenGL 4.1+, Dedicated Shared Memory, no integrated graphics cards)
- * C++11 compatible compiler
- * Git (https://git-scm.com/)
- * CMake 2.8+ (http://www.cmake.org/)
- * Insight Toolkit (ITK 4.7+ recommended) (http://www.itk.org/)
- * Qt 5.* (http://www.qt.io/developers/)
- * Windows 7+, OSX 10.9+, and OpenSuse 13.1+ Recommended. 
- Other platforms may work, but are not officially supported.
- 
-<br/>
-
-<h2>Building</h2>
-We recommend building cleaver outside of the source tree. <br/>
-From Cleaver2 directory:<br/>
-##Building ITK
-- Configure with:
-  - <code>CMAKE_CXX_FLAGS+="-std=c++11"</code> on UNIX
-  - <code>BUILD_SHARED_LIBS=FALSE</code>
-  - <code>BUILD_EXAMPLES=FALSE</code>
-  - <code>BUILD_TESTING=FALSE</code>
-  - <code>ITKV3_COMPATIBILTY=TRUE</code>
-- Build ITK:
-  - Make command: <code>make -j4 all</code><br/>
-
-<h4>Linux, OSX</h4>
-
-```bash
-mkdir build
-cd build
-cmake ../src
-make
-```
-
-**NOTE**: You may need to set your Qt/ITK build variables:
-
-```bash
-cmake -DQt5Widgets_DIR="/path/to/Qt5Widgets" -DQt5OpenGL_DIR="/path/to/Qt5OpenGL" -DITK_DIR="/path/to/ITK" ../src 
-```
-
-<h4>Windows</h4>
-From Developer Command Prompt: (e.g.  Visual Studio 10 (64bit)) <br/>
-
-```bash
-mkdir build
-cd build
-cmake ../src
-nmake
-```
+- [Documentation](#documentation)
+- [Build](#build)
+- [Questions and Answers](#questions-and-answers)
+- [License and Credits](#license-and-credits)
 
 
-**NOTE**: If you do not have your development environment 
-paths set up, you can set them with cmake-gui, 
-qt-creator, or pass library paths directly to command 
-line like below, replacing paths with your library locations:<br/>
+### Documentation
+For documentation, please see: http://sciinstitute.github.io/cleaver.pages
 
-```bash
-cmake -G "NMake Makefiles" cmake -DQt5Widgets_DIR="C:/path/to/Qt5Widgets" -DQt5OpenGL_DIR="C:/path/to/Qt5OpenGL" -DITK_DIR="C:/path/to/ITK" ..\src 
-```
+#### Build
+Please see http://sciinstitute.github.io/cleaver.pages/build.html
 
-<br/>
-**NOTE**: Turn Off <code>BUILD_CLEAVER_APP</code> in 
-CMake to disable building the GUI if Qt5 is not 
-supported by your OS (IE: OS < OSX 10.8).<br/>
+### Questions and Answers
+For help, email the testing mailing list at cleavers@sci.utah.edu.
 
-<h2>Running</h2>
-
-<h3>Command line Tool:</h3>
-Using the sphere indicator functions in 
-<code>src/test/test_data/input/</code>, you can generate a simple tet mesh
-using the following command: <br/>
+### License and Credits
+For more information, please see: http://software.sci.utah.edu
 ```c++
-bin/cleaver-cli --output_name spheres -i ../src/test/test_data/input/spheres*.nrrd 
+The MIT License
+
+Copyright (c) 2016 Scientific Computing and Imaging Institute,
+          University of Utah.
+
+
+          Permission is hereby granted, free of charge, to any person obtaining a
+          copy of this software and associated documentation files (the "Software"),
+          to deal in the Software without restriction, including without limitation
+          the rights to use, copy, modify, merge, publish, distribute, sublicense,
+          and/or sell copies of the Software, and to permit persons to whom the
+          Software is furnished to do so, subject to the following conditions:
+
+          The above copyright notice and this permission notice shall be included
+          in all copies or substantial portions of the Software.
+
+          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+          OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+          FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+          THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+          LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+          FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+          DEALINGS IN THE SOFTWARE.
 ```
-<code> bin/cleaver-cli --help</code><br/>
-For a list of command line tool options.
-
-```bash
-Command line flags:
-  -h [ --help ]                   display help message
-  -v [ --verbose ]                enable verbose output
-  -V [ --version ]                display version information
-  -i [ --input_files ] arg        material field paths or segmentation path
-  -b [ --background_mesh ] arg    input background mesh
-  -m [ --mesh_mode ] arg          background mesh mode (structured [default], 
-                                  regular)
-  -a [ --alpha ] arg              initial alpha value
-  -s [ --alpha_short ] arg        alpha short value for regular mesh_mode
-  -l [ --alpha_long ] arg         alpha long value for regular mesh_mode
-  -z [ --sizing_field ] arg       sizing field path
-  -g [ --grading ] arg            sizing field grading
-  -x [ --multiplier ] arg         sizing field multiplier
-  -c [ --scale ] arg              sizing field scale
-  -p [ --padding ] arg            volume padding
-  -w [ --write_background_mesh ]  write background mesh
-  -j [ --fix_tet_windup ]         Ensure positive Jacobians with proper vertex 
-                                  wind-up.
-  -e [ --strip_exterior ]         strip exterior tetrahedra
-  -o [ --output_path ] arg        output path prefix
-  -n [ --output_name ] arg        output mesh name [default 'output']
-  -f [ --output_format ] arg      output mesh format (tetgen [default], scirun,
-                                  matlab, vtk, ply [Surface mesh only])
-  -t [ --strict ]                 warnings become errors
-  -S [ --segmentation ]           The input file is a segmentation file.
-  -B [ --blend_sigma ] arg        blending sigma for input(s) to remove alias
-                                  artifacts.
-```
-<h3>Graphical Interface</h3>
-You can run the GUI from the command line, or by double-clicking it in a folder.
-<code> gui/cleaver-gui</code><br/>
-You should see a window similar to this:<br/>
-<img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/application.png"><br/>
-Load the spheres in <code>src/test/test_data/input</code> 
-either with <code>ctrl+v</code> or <code>File -> Load Volume</code>,
-or load your own indicator functions or segmentation file. <br/>
-*Dialog Indicator Function Check* Click the check in the dialog if you are 
-importing individual indicator functions.<br/>
-*Blending Function Sigma* Choose a sigma for pre-process smoothing either
-your segmentation labels or indicator functions to avoid stair-step aliasing.<br/>
-**Sizing Field Creator**<br/>
-This tool allows a user to set parameters for the cleaving sizing field.<br/>
-*Scale Factor* This is a tool to alter the sampling size of a volume. 
-Smaller sampling creates coarser meshes faster.<br/>
-*Size Multiplier* This is the multiplier for the sizing field creation.<br/>
-*Lipschitz* This is the grading of the sizing field. <br/>
-*Padding* Added a volume buffer around the data. This is useful when volumes intersect near the boundary.<br/>
-*Element Sizing Method* Select whether to adaptively resize tets for more detail at volume interactions, or 
-to keep tet sizes constant based on the sample scale.<br/>
-*Compute Sizing Field* Once you have your desired parameters, click this to create the sizing field. 
-This is assuming a volume has been loaded (ctrl+v or File->Import Volume). New information will be added 
-to the Data Manager at each step. If a sizing field is not created here, a default one will be 
-created for you automatically before cleaving. <br/>
-<img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/mesh.png"><br/>
-**Cleaving Tool**<br/>
-This tab runs the cleaving algorithm and displays steps that have completed.
-*Cleave Mesh* Run the cleaving algorithm. The steps are shown as complete with the check below. 
-The rendering window will also update with each applicable step.<br/>
-**Data Manager**<br/>
-This tool displays information about meshes, volumes, and sizing fields loaded and created. <br/>
-*Mesh* A mesh will have number of vertices, number of tetrahedra, and the min/max mesh boundaries.<br/>
-*Volume* A volume will display the dimensions, origin, number of materials, the file names,
-and the associated sizing field (if any other than the default).<br/>
-**Mesh View Options**<br/>
-Here are are a number of options for visualizing the generated mesh.<br/>
-*Show Axis* Toggle the rendering of the coordinate axis (x-y-z) <br/>
-*Show BBox* Toggle the rendering of the mesh/volume bounding box. <br/>
-*Show Mesh Faces* Toggle the rendering of the mesh's faces. <br/>
-*Show Edges* Toggle the rendering of the mesh's edges. <br/>
-*Show Cuts* Toggle the rendering of nodes where cuts took place. <br/>
-<img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/surface.png"><br/>
-*Show Surfaces Only* Toggle the rendering of the tets (volume) vs. the surface 
-representing the interface between volumes. <br/>
-*Color by Quality* Toggle the coloring of faces based on the quality of the tet vs. the material itself. <br/>
-<img src="https://raw.githubusercontent.com/SCIInstitute/Cleaver2/master/src/gui/Resources/clip.png"><br/>
-*Clipping* Toggle the clipping of tets based on the below sliders. <br/>
-*Sync* When checked, faces will update during slider movement (slower). Otherwise, 
-faces will update once the clipping plane has stopped moving (mouse is released). <br/>
-*X-Y-Z Axes* Select which axis to clip the volume. The associated slider will permit clipping
-from one end of the bounding box to the other. <br/>
-*Material Visibility Locks* A list of the materials is here. When the faces of a material is locked, clipping
-is ignored for that material and it is always visible. Locked cells refers to tets/volumes that
-will remain visible despite the clip.<br/>
-**File Menu**<br/>
-*Import Volume* Select 1-10 indicator function NRRDs, or 1 segmentation NRRD (if built in) to load in.<br/>
-*Import Sizing Field* Load a sizing field NRRD to use for a Volume.<br/>
-*Import Mesh* Import a tetgen mesh (*.node/*.ele pair) to visualize.<br/>
-*Export Mesh* Write the current mesh to file in either node/ele (tetgen) format, or VTK format. <br/>
-**Edit Menu**<br/>
-*Remove External Tets* Removes tets that were created as padding around the volume.<br/>
-*Remove Locked Tets* Removes tets that were not warped during cleaving.<br/>
-*Dihedral Angles* Computes the min/max Dihedral angles. And displays them in the status bar.<br/>
-**View** Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools. <br/> 
-**Help** Show information abour Cleaver2. <br/> 
-<h3>Cleaver Library</h3>
-To include the cleaver library, you should link to the library built, <code>libcleaver.a</code> or
-<code>cleaver.lib</code> and include the following headers in your project: <br/>
-```bash
-#CMake calls
-include_directories(Cleaver2/src/lib/cleaver)
-target_link_libraries(YOUR_TARGET ${your_libs} Cleaver2/build/lib/libcleaver.a)
-```
-There are other headers for different options, 
-such as converting NRRD files to cleaver indicator functions.
-You may wish to write your own indicator function creation methods. 
-The basic set of calls are the following:
-```c++
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/CleaverMesher.h>
-...
-  //obtain your image fields before this line
-  cleaver::Volume *volume = new cleaver::Volume(fields);
-  cleaver::CleaverMesher mesher(volume);
-  cleaver::AbstractScalarField *sizingField = 
-      cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-          volume,
-          (float)(1.0/lipschitz), //defined previously
-          (float)scale,           //defined previously
-          (float)multiplier,      //defined previously
-          (int)padding,           //defined previously
-          (mesh_mode==cleaver::Regular?false:true), //defined previously
-          verbose);               //defined previously
-  volume->setSizingField(sizingField);
-  mesher.setRegular(false);
-  bgMesh = mesher.createBackgroundMesh(verbose);
-  mesher.buildAdjacency(verbose);
-  mesher.sampleVolume(verbose);
-  mesher.computeAlphas(verbose);
-  mesher.computeInterfaces(verbose);
-  mesher.generalizeTets(verbose);
-  mesher.snapsAndWarp(verbose);
-  mesher.stencilTets(verbose);
-  cleaver::TetMesh *mesh = mesher.getTetMesh();
-  mesh->writeMesh(output_path + output_name, output_format, verbose);
-...
-```
-Look at the <code>Cleaver2/src/cli/mesher/main.cpp</code> file 
-for more details on how to apply
-and use the different options of the cleaver library.<br/>
-
-<h2>Testing</h2>
-
-The repo comes with a set of regression tests to see if recent 
-changes break expected results. To build the tests, you will
- need to set <code>BUILD_TESTING</code> to "ON" in either
-  <code>ccmake</code> or when calling CMake:
-
-```c++
-cmake -DBUILD_TESTING=ON ../src
-```
-<h4>Windows</h4>
-The gtest library included in the repo needs to be
- built with forced shared libraries on Windows, so use the following:
-
-```c++
-cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON ../src
-```
-Be sure to include all other necessary CMake definitions as annotated above.
-
-<h2>Known Issues</h2>
-
- * On larger data sets with a potentially high number of quadruple points
-  (> 3 material fields), some functions are failing to ensure valid tets
-   and meshes, causing bad tets in the final output. This code is being 
-   debugged now for a future release.<br/>
- * The following graphics cards are known to not support Cleaver:
-   - AMD Radeon HD 6310 (Integrated Card)
-   - AMD Radeon 7400 M 
-   - INTEL HD 3000 (Integrated Card)
