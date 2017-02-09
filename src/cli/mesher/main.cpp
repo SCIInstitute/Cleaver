@@ -225,8 +225,8 @@ int main(int argc, char* argv[])
     if (variables_map.count("grading")) {
       lipschitz = variables_map["grading"].as<double>();
     }
-    if (variables_map.count("scaling")) {
-      scaling = variables_map["scaling"].as<double>();
+    if (variables_map.count("scale")) {
+      scaling = variables_map["scale"].as<double>();
     }
     if (variables_map.count("multiplier")) {
       multiplier = variables_map["multiplier"].as<double>();
