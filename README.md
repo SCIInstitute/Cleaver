@@ -18,7 +18,7 @@ For documentation, please see: http://sciinstitute.github.io/cleaver.pages
 Please see http://sciinstitute.github.io/cleaver.pages/build.html
 
 ### Questions and Answers
-For help, email the testing mailing list at cleavers@sci.utah.edu.
+For help, email the testing mailing list at cleaver@sci.utah.edu.
 
 ### License and Credits
 For more information, please see: http://software.sci.utah.edu
