@@ -225,8 +225,8 @@ int main(int argc, char* argv[])
     if (variables_map.count("grading")) {
       lipschitz = variables_map["grading"].as<double>();
     }
-    if (variables_map.count("scaling")) {
-      scaling = variables_map["scaling"].as<double>();
+    if (variables_map.count("scale")) {
+      scaling = variables_map["scale"].as<double>();
     }
     if (variables_map.count("multiplier")) {
       multiplier = variables_map["multiplier"].as<double>();
@@ -345,7 +345,7 @@ int main(int argc, char* argv[])
     return 10;
   }
   if (segmentation && material_fields.size() == 1) {
-    NRRDTools::segmentationToIndicatorFunctions(material_fields[0], sigma);
+    fields = NRRDTools::segmentationToIndicatorFunctions(material_fields[0], sigma);
   } else {
     if (material_fields.size() > 1) {
       std::cerr << "WARNING: More than 1 input provided for segmentation." <<
