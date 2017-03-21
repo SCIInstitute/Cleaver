@@ -1,0 +1,15 @@
+sudo: required
+language: c++
+dist: trusty
+
+compiler:
+  - clang
+
+before_install:
+  - sudo apt-get install cmake
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ../src
+  - make
