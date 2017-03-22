@@ -1,15 +1,15 @@
 ########################################################################
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_definitions(-DAPPLE)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  add_definitions(-DWIN32)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  add_definitions(-DLINUX)
+IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  ADD_DEFINITIONS(-DAPPLE)
+ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  ADD_DEFINITIONS(-DWIN32)
+ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  ADD_DEFINITIONS(-DLINUX)
 endif()
 
 # Tests for cli
-add_definitions(-DBINARY_DIR="${CLEAVER2_BINARY_DIR}/bin/")
-add_definitions(-DTEST_DATA_DIR="${CLEAVER2_SOURCE_DIR}/test/test_data/")
+ADD_DEFINITIONS(-DBINARY_DIR="${CLEAVER2_BINARY_DIR}/bin/")
+ADD_DEFINITIONS(-DTEST_DATA_DIR="${CLEAVER2_SOURCE_DIR}/test/test_data/")
 #newtest(cli_basic)
 #cxx_test(cli_basic gtest_main cli_common.cc)
 #cxx_test(cli_scale gtest_main cli_common.cc)

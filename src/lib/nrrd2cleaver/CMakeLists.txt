@@ -26,8 +26,8 @@
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 #  USE OR OTHER DEALINGS IN THE SOFTWARE.
 #-------------------------------------------------------------------
-cmake_minimum_required(VERSION 2.6)
-project(SegmentationTools)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+PROJECT(SegmentationTools)
 
 #Find ITK
 FIND_PACKAGE(ITK COMPONENTS ITKCommon ITKIONRRD ITKIOMeta
@@ -40,6 +40,6 @@ MESSAGE(STATUS "** ITK_DIR: ${ITK_DIR}")
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
-add_library(nrrd2cleaver NRRDTools.cc NRRDTools.h)
+ADD_LIBRARY(nrrd2cleaver NRRDTools.cc NRRDTools.h)
 
-target_link_libraries(nrrd2cleaver ${ITK_LIBRARIES} cleaver)
+TARGET_LINK_LIBRARIES(nrrd2cleaver ${ITK_LIBRARIES} cleaver)

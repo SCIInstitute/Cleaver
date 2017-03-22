@@ -1,8 +1,8 @@
 ########################################################################
 
 # Tests for Cleaver2
-include_directories(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
-link_directories(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
+INCLUDE_DIRECTORIES(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
+LINK_DIRECTORIES(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
 
 # mesher unit tests
 newtest(mesher_unit_tests)
