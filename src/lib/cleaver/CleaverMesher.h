@@ -19,16 +19,16 @@ public:
     void setVolume(const Volume *volume);
     Volume* getVolume() const;
 
-    void cleanup();    
+    void cleanup();
     //================================
 
     void setTopologyMode(CleaverMesherImp::TopologyMode mode);
-		void setAlphaInit(double alpha);
+    void setAlphaInit(double alpha);
 
     //================================
     // Functions for development ONLY.
     // Remove after completion.
-    //================================    
+    //================================
     TetMesh* createBackgroundMesh(bool verbose = false);
     void setBackgroundMesh(TetMesh *);
     void buildAdjacency(bool verbose = false);
