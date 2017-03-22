@@ -2,36 +2,36 @@ PROJECT(cleaver-gui)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-add_definitions(-DCLEAVER_VERSION_MAJOR="2")
-add_definitions(-DCLEAVER_VERSION_MINOR="2")
+ADD_DEFINITIONS(-DCLEAVER_VERSION_MAJOR="2")
+ADD_DEFINITIONS(-DCLEAVER_VERSION_MINOR="2")
 
 FIND_PACKAGE(OpenGL QUIET)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-if(WIN32)
-  cmake_policy(SET CMP0020 OLD)
-endif()
+SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+SET(CMAKE_AUTOMOC ON)
+IF(WIN32)
+  CMAKE_POLICY(SET CMP0020 OLD)
+ENDIF()
 
 # Find QT5
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
+FIND_PACKAGE(Qt5Widgets REQUIRED)
+FIND_PACKAGE(Qt5OpenGL REQUIRED)
+FIND_PACKAGE(Qt5Core REQUIRED)
+FIND_PACKAGE(Qt5Gui REQUIRED)
 
 #headers
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
-include_directories(${Qt5OpenGL_INCLUDE_DIRS})
-include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Gui_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Qt5OpenGL_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${Qt5Gui_INCLUDE_DIRS})
 
 #defines
-add_definitions(${Qt5Widgets_DEFINITIONS})
-add_definitions(${Qt5OpenGL_DEFINITIONS})
-add_definitions(${Qt5Core_DEFINITIONS})
-add_definitions(${Qt5Gui_DEFINITIONS})
+ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
+ADD_DEFINITIONS(${Qt5OpenGL_DEFINITIONS})
+ADD_DEFINITIONS(${Qt5Core_DEFINITIONS})
+ADD_DEFINITIONS(${Qt5Gui_DEFINITIONS})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 # Ensure GUI and OpenGL Work
 ADD_DEFINITIONS(-DTETLIBRARY)
@@ -48,11 +48,11 @@ FILE(GLOB Forms_UIS ./Application/*.ui ./Application/DataWidgets/*.ui ./Applicat
 FILE(GLOB RCC_FILES ./Resources/*.qrc)
 FILE(GLOB APP_ICNS Resources/Icons/*.ico)
 FILE(GLOB WINDOW_ICNS Resources/Icons/cleaverIcon.png)
-add_definitions(-DWINDOW_ICON="${CMAKE_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.png")
+ADD_DEFINITIONS(-DWINDOW_ICON="${CMAKE_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.png")
 
 # Add library incl1udes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
 FILE(GLOB srcs *.cpp ./Main/*.cpp )
@@ -77,24 +77,24 @@ ELSEIF(WIN32)
   ADD_DEFINITIONS(-DICON_RC_FILE="${CMAKE_CURRENT_SOURCE_DIR}/Resources/Icons/cleaverIcon.ico")
   SET(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
 ENDIF(APPLE)
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif()
-endif()
+IF(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    SET(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+  ELSE()
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  ENDIF()
+ENDIF()
 
 
 ADD_EXECUTABLE(cleaver-gui MACOSX_BUNDLE WIN32
-   ${srcs} ${hdrs} 
+   ${srcs} ${hdrs}
    ${moc_srcs} ${MOC_SRC}
    ${UI_SRC} ${RCC_SRC}
-   ${APP_ICNS} 
-   ${WINDOW_ICNS} 
+   ${APP_ICNS}
+   ${WINDOW_ICNS}
    )
 
-if(WIN32)
+IF(WIN32)
   TARGET_LINK_LIBRARIES(cleaver-gui
     cleaver
     nrrd2cleaver
@@ -106,7 +106,7 @@ if(WIN32)
     Qt5::Gui
     Qt5::WinMain
     )
-else()
+ELSE()
   TARGET_LINK_LIBRARIES(cleaver-gui
     cleaver
     nrrd2cleaver
@@ -117,7 +117,7 @@ else()
     Qt5::Core
     Qt5::Gui
     ${OPTIONAL_LIBS})
-endif()
+ENDIF()
 
 INSTALL(TARGETS cleaver-gui
   BUNDLE DESTINATION . COMPONENT Runtime
