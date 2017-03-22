@@ -90,7 +90,7 @@ void MainWindow::createActions()
   this->exportAct->setShortcut(tr("Ctrl+S"));
   this->exportAct->setDisabled(true);
   connect(this->exportAct, SIGNAL(triggered()), this, SLOT(exportMesh()));
-  
+
   this->exitAct = new QAction(tr("E&xit"), this);
   this->exitAct->setShortcut(tr("Ctrl+Q"));
   connect(this->exitAct, SIGNAL(triggered()), this, SLOT(close()));
@@ -131,7 +131,7 @@ void MainWindow::createActions()
   connect(this->m_cleaverWidget, SIGNAL(doneMeshing()), this, SLOT(handleDoneMeshing()));
   connect(this->m_cleaverWidget, SIGNAL(newMesh()), this, SLOT(handleNewMesh()));
   connect(this->m_cleaverWidget, SIGNAL(repaintGL()), this, SLOT(handleRepaintGL()));
-  connect(this->m_sizingFieldWidget, SIGNAL(sizingFieldDone()), 
+  connect(this->m_sizingFieldWidget, SIGNAL(sizingFieldDone()),
     this, SLOT(handleSizingFieldDone()));
   connect(this->m_dataManagerWidget, SIGNAL(exportField(void*)),
     this, SLOT(handleExportField(void*)));
@@ -211,11 +211,11 @@ void MainWindow::handleProgress(int value) {
   if (value < 100) {
     this->progressBar_->setVisible(true);
     this->progressBar_->setValue(static_cast<int>(value));
-    this->disableAllActions(); 
+    this->disableAllActions();
   } else {
     this->progressBar_->setValue(100);
     this->progressBar_->setVisible(false);
-    this->enablePossibleActions(); 
+    this->enablePossibleActions();
   }
   qApp->processEvents();
 }
@@ -312,7 +312,7 @@ void MainWindow::computeMeshAngles()
   if(mesh) {
     mesh->computeAngles();
     this->handleMessage("Min Angle: " + std::to_string(mesh->min_angle) + " degrees." +
-      "Max Angle: " + std::to_string(mesh->min_angle) + " degrees.");
+      "Max Angle: " + std::to_string(mesh->max_angle) + " degrees.");
   }
 }
 //*************Custom file dialog for segmentation check
@@ -406,7 +406,7 @@ bool MainWindow::checkSaved() {
       this->meshSaved_ = true;
     } else if (ret == QMessageBox::Cancel) {
       return false;
-    } 
+    }
   }
   return true;
 }
