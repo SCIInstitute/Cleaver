@@ -14,4 +14,4 @@ FILE(GLOB hdrs *.h   )
 
 ADD_EXECUTABLE(sfcreator ${srcs} ${hdrs})
 
-TARGET_LINK_LIBRARIES(sfcreator cleaver nrrd2cleaver teem boostparts)
+TARGET_LINK_LIBRARIES(sfcreator cleaver nrrd2cleaver boostparts)
