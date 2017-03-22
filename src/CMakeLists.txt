@@ -57,20 +57,21 @@ IF(BUILD_EXTRAS)
   ADD_SUBDIRECTORY(examples)
 ENDIF()
 
-OPTION(BUILD_FULL_CLEAVER "doc" OFF)
-OPTION(BUILD_CLEAVER_APP "Build Cleaver GUI App (REQUIRES TEEM)" ON)
-IF(BUILD_FULL_CLEAVER)
+OPTION(BUILD_CLI "Build Cleaver CLI App (REQUIRES TEEM)" OFF)
+OPTION(BUILD_GUI "Build Cleaver GUI App (REQUIRES TEEM)" OFF)
+
+IF(BUILD_CLI OR BUILD_GUI)
   ADD_SUBDIRECTORY(lib/boost)
   ADD_SUBDIRECTORY(lib/nrrd2cleaver)
   include_directories(lib/boost)
   ADD_SUBDIRECTORY(cli/mesher)
-  
+
   IF(BUILD_EXTRAS)
     ADD_SUBDIRECTORY(lib/synthetic)
     ADD_SUBDIRECTORY(cli/sizingfieldcreator)
   ENDIF()
 
-  if (BUILD_CLEAVER_APP)
+  if (BUILD_GUI)
     ADD_SUBDIRECTORY(gui)
   endif()
   ########################################################################
