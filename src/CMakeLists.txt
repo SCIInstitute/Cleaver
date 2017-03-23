@@ -54,6 +54,9 @@ ADD_SUBDIRECTORY(lib/cleaver)
 
 # TODO(jonbronson): Change to not use ITK by default once teem is added.
 OPTION(USE_ITK "Use ITK instead of Teem for nrrd files." ON)
+IF(NOT USE_ITK)
+  ADD_SUBDIRECTORY(lib/teem)
+ENDIF()
 
 OPTION(BUILD_CLI "Build Cleaver CLI App (REQUIRES TEEM)" OFF)
 OPTION(BUILD_GUI "Build Cleaver GUI App (REQUIRES TEEM)" OFF)
