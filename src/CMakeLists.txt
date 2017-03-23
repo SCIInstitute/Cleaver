@@ -52,13 +52,16 @@ ENDIF()
 # Build Cleaver Library (no dependencies)
 ADD_SUBDIRECTORY(lib/cleaver)
 
+# TODO(jonbronson): Change to not use ITK by default once teem is added.
+OPTION(USE_ITK "Use ITK instead of Teem for nrrd files." ON)
+
+OPTION(BUILD_CLI "Build Cleaver CLI App (REQUIRES TEEM)" OFF)
+OPTION(BUILD_GUI "Build Cleaver GUI App (REQUIRES TEEM)" OFF)
+
 OPTION(BUILD_EXTRAS "Example use cases, tools" OFF)
 IF(BUILD_EXTRAS)
   ADD_SUBDIRECTORY(examples)
 ENDIF()
-
-OPTION(BUILD_CLI "Build Cleaver CLI App (REQUIRES TEEM)" OFF)
-OPTION(BUILD_GUI "Build Cleaver GUI App (REQUIRES TEEM)" OFF)
 
 IF(BUILD_CLI OR BUILD_GUI)
 
