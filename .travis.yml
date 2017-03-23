@@ -11,6 +11,6 @@ before_install:
 script:
   - mkdir build
   - cd build
-  - cmake ../src
+  - cmake -D USE_ITK=OFF -D BUILD_CLI=ON ../src
   - make
   - ctest
