@@ -45,5 +45,6 @@ function(NEWTEST name)
   ADD_DEPENDENCIES(${name} gtest cleaver)
 ENDFUNCTION()
 
-ADD_SUBDIRECTORY(cli)
 ADD_SUBDIRECTORY(cleaver)
+ADD_SUBDIRECTORY(cli)
+
