@@ -361,7 +361,7 @@ std::vector<cleaver::AbstractScalarField*> loadNRRDLabelMap(const std::string &f
 }
 
 
-void saveNRRDFile(const cleaver::FloatField *field, const std::string &filename)
+void NRRDTools::saveNRRDFile(const cleaver::FloatField *field, const std::string &filename)
 {
     std::string nrrdfilename = filename + std::string(".nrrd");
     std::ofstream nrrd_file(nrrdfilename.c_str(), ios::out | ios::binary);

@@ -197,7 +197,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
   return fields;
 }
 
-void NRRDTools::saveNRRDFile(cleaver::AbstractScalarField * field, std::string name) {
+void NRRDTools::saveNRRDFile(const cleaver::FloatField *field, const std::string &name) {
   auto dims = field->bounds().size;
   ImageType::Pointer img = ImageType::New();
   itk::Index<3> start; start.Fill(0);

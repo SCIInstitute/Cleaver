@@ -39,7 +39,7 @@ public:
     segmentationToIndicatorFunctions(std::string file, double sigma = 1.);
   static std::vector<cleaver::AbstractScalarField*>
     loadNRRDFiles(std::vector<std::string> files, double sigma = 1.);
-  static void saveNRRDFile(cleaver::AbstractScalarField* field,
-    std::string name);
+  static void saveNRRDFile(const cleaver::FloatField *field,
+    const std::string &name);
 };
 #endif
