@@ -40,20 +40,24 @@
 //  //-------------------------------------------------------------------
 #include "cli_common.h"
 TEST(CLIRegressionTests, SCIRun) {
-  //make sure there is a command interpreter
+  // Make sure there is a command interpreter.
   ASSERT_EQ(0,(int)!(std::system(NULL)));
-  //setup the line that calls the command line interface
+
+  // Setup the line that calls the command line interface.
   std::string log = "scirun_output.txt";
   std::string output = " > " + data_dir + log + " 2>&1";
-  std::string line = (command + name + path + 
+  std::string line = (command + name + path +
       " --output_format scirun " + input + output);
-  //make sure there was no error from the command line
+
+  // Make sure there was no error from the command line.
   ASSERT_EQ(0, std::system(line.c_str()));
-  //move the other generated files in the current dir to the test dir
+
+  // Move the other generated files in the current dir to the test dir.
   for(size_t i = 0; i < num_files; i++) {
     system_execute(MV_CMMD,files[i] + " " + data_dir);
   }
-  //compare all of the related files
+
+  // Compare all of the related files.
   EXPECT_NO_FATAL_FAILURE(comparePtsFiles(
         data_dir + "scirun/output.pts",
         data_dir + "output.pts"));
@@ -63,7 +67,8 @@ TEST(CLIRegressionTests, SCIRun) {
   EXPECT_NO_FATAL_FAILURE(compareElemFiles(
         data_dir + "scirun/output.txt",
         data_dir + "output.txt"));
-  //delete the output files from this test
+
+  // Delete the output files from this test.
   for(size_t i = 0; i < num_files - 4; i++) {
     system_execute(RM_CMMD,data_dir + files[i]);
   }

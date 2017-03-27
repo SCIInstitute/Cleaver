@@ -152,19 +152,22 @@ void compareVTKFiles(const std::string a, const std::string b) {
   int point_count0, poly_count0;
   int point_count1, poly_count1;
   char line[512];
-  //eat the first 3 lines
+
+  // eat the first 3 lines
   for(int i = 0; i < 3; i++) {
     test.getline(line,512);
     ans.getline(line,512);
   }
-  //test the vtk types
+
+  // test the vtk types
   char type0[256], type1[256];
   test.getline(line,512);
   sscanf(line,"DATASET %s",type0);
   ans.getline(line,512);
   sscanf(line,"DATASET %s",type1);
   ASSERT_EQ(strcmp(type1,type0),0);
-  //test the number of points
+
+  // test the number of points
   test.getline(line,512);
   sscanf(line,"POINTS %d float",&point_count0);
   ans.getline(line,512);
@@ -177,12 +180,14 @@ void compareVTKFiles(const std::string a, const std::string b) {
       ASSERT_FLOAT_EQ(tmp,tmp2);
     }
   }
-  //eat the new line
+
+  // eat the new line
   test.getline(line,512);
   ans.getline(line,512);
-  //tests based on VTK type
+
+  // tests based on VTK type
   if (strcmp("POLYDATA",type0)==0) {
-    //test the polygons (faces)
+    // test the polygons (faces)
     test.getline(line,512);
     sscanf(line,"POLYGONS %d %d",&point_count0,&poly_count0);
     ans.getline(line,512);
@@ -195,7 +200,7 @@ void compareVTKFiles(const std::string a, const std::string b) {
       ASSERT_EQ(num0,num1);
     }
   } else if (strcmp("UNSTRUCTURED_GRID",type0)==0) {
-    //test the cells (tets)
+    // test the cells (tets)
     test.getline(line,512);
     sscanf(line,"CELLS %d %d",&point_count0,&poly_count0);
     ans.getline(line,512);
@@ -207,10 +212,12 @@ void compareVTKFiles(const std::string a, const std::string b) {
       test >> num0; ans >> num1;
       ASSERT_EQ(num0,num1);
     }
-    //eat the newline
+
+    // eat the newline
     test.getline(line,512);
     ans.getline(line,512);
-    //test the cell types
+
+    // test the cell types
     test.getline(line,512);
     sscanf(line,"CELL_TYPES %d",&poly_count0);
     ans.getline(line,512);
@@ -221,16 +228,19 @@ void compareVTKFiles(const std::string a, const std::string b) {
       test >> num0; ans >> num1;
       ASSERT_EQ(num0,num1);
     }
-    //eat the newline
+
+    // eat the newline
     test.getline(line,512);
     ans.getline(line,512);
-    //test the cell data
+
+    // test the cell data
     test.getline(line,512);
     sscanf(line,"CELL_DATA %d",&poly_count0);
     ans.getline(line,512);
     sscanf(line,"CELL_DATA %d",&poly_count1);
     ASSERT_EQ(poly_count0,poly_count1);
-    //eat the newlines
+
+    // eat the newlines
     test.getline(line,512);
     ans.getline(line,512);
     test.getline(line,512);
@@ -297,113 +307,130 @@ void compareMatFiles(const std::string a, const std::string b) {
   ASSERT_FALSE(a == b);
   std::ifstream test(b.c_str(),std::ifstream::in),
     ans(a.c_str(),std::ifstream::in);
-  //consume the descrip buffer. don't care.
+  // Consume the descrip buffer. don't care.
   char desc[116];
   test.read(desc,116); ans.read(desc,116);
-  //check the offset
+
+  // Check the offset.
   char my_byte;
   for (size_t i = 0; i < 8; i++)
     testValue(test,ans,my_byte);
-  //check the version
+
+  // Check the version.
   int16_t my_short;
   testValue(test,ans,my_short);
-  //check the endianness
+
+  // Check the endianness.
   testValue(test,ans,my_short);
-  //get the maintype and totalsize
+
+  // Get the maintype and totalsize.
   int32_t totalSize;
   testValue(test,ans,totalSize);
   testValue(test,ans,totalSize);
-  //get the flags
+
+  // Get the flags.
   int32_t my_word;
   testValue(test,ans,my_word);
   testValue(test,ans,my_word);
-  //get the next eight bytes
+
+  // Get the next eight bytes.
   for(size_t i = 0; i < 8; i++)
     testValue(test,ans,my_byte);
-  //get the next six words
+  // Get the next six words.
   for(size_t i = 0; i < 6; i++)
     testValue(test,ans,my_word);
-  //get the next eight bytes
+  // Get the next eight bytes.
   for(size_t i = 0; i < 8; i++)
     testValue(test,ans,my_byte);
-  //get the next two shorts
+  // Get the next two shorts.
   for(size_t i = 0; i < 2; i++)
     testValue(test,ans,my_short);
-  //get the next three words
+  // Get the next three words.
   for(size_t i = 0; i < 3; i++)
     testValue(test,ans,my_word);
-  //get the next 24 bytes
+  // Get the next 24 bytes.
   for(size_t i = 0; i < 24; i++)
     testValue(test,ans,my_byte);
-  //the node info reading starts here.
-  //get the next 4 words
+
+  // The node info reading starts here.
+  // Get the next 4 words.
   for(size_t i = 0; i < 4; i++)
     testValue(test,ans,my_word);
-  //get the next eight bytes
+  // Get the next eight bytes.
   for(size_t i = 0; i < 8; i++)
     testValue(test,ans,my_byte);
-  //get the next 3 words
+  // Get the next 3 words.
   for(size_t i = 0; i < 3; i++)
     testValue(test,ans,my_word);
-  //now we're actually starting the data reading
+
+  // Now we're actually starting the data reading.
   int32_t num_verts;
   testValue(test,ans,num_verts);
-  //get the next 4 words
+
+  // Get the next 4 words.
   for(size_t i = 0; i < 4; i++)
     testValue(test,ans,my_word);
-  //get the node values xyz * node_size
+  // Get the node values xyz * node_size.
   for(int32_t i = 0; i < num_verts * 3; i++) {
     testValueFloat(test,ans);
   }
-  //possible padding
+
+  // Possible padding.
   int32_t data_size = 3 * num_verts * sizeof(float_t);
   int32_t padding = (8 - (data_size % 8)) % 8;
+
   for(int32_t i = 0; i < padding; i++)
     testValue(test,ans,my_byte);
-  //now the cell data
-  //get the next 4 words
+  // Get the cell data.
+  // Get the next 4 words.
   for(size_t i = 0; i < 4; i++)
     testValue(test,ans,my_word);
-  //get the next eight bytes
+  // Get the next eight bytes.
   for(size_t i = 0; i < 8; i++)
     testValue(test,ans,my_byte);
-  //get the next 3 words
+  // Get the next 3 words.
   for(size_t i = 0; i < 3; i++)
     testValue(test,ans,my_word);
-  //now we're actually starting the data reading
+
+  // Now we're actually starting the data reading.
   int32_t num_cells;
   testValue(test,ans, num_cells);
-  //get the next 4 words
+
+  // Get the next 4 words.
   for(size_t i = 0; i < 4; i++)
     testValue(test,ans,my_word);
-  //get the cell values ... 4 indicies
+  // Get the cell values ... 4 indicies
   for(int32_t i = 0; i < num_cells * 4; i++)
     testValue(test,ans,my_word);
-  //possible padding
+
+  // Possible padding
   data_size = 4 * num_cells * sizeof(int32_t);
   padding = (8 - (data_size % 8)) % 8;
   for(int32_t i = 0; i < padding; i++)
     testValue(test,ans,my_byte);
-  //now we're at the field field...
-  //get the next 4 words
+
+  // Now we're at the field field...
+  // Get the next 4 words.
   for(size_t i = 0; i < 4; i++)
     testValue(test,ans,my_word);
-  //get the next eight bytes
+  // Get the next eight bytes.
   for(size_t i = 0; i < 8; i++)
     testValue(test,ans,my_byte);
-  //get the next 8 words
+  // Get the next 8 words.
   for(size_t i = 0; i < 8; i++)
     testValue(test,ans,my_word);
-  //now we're actually starting the data reading
-  //get the cell field mat values ...
+  // Now we're actually starting the data reading.
+  // Get the cell field mat values ...
   for(int32_t i = 0; i < num_cells; i++)
     testValue(test,ans,my_byte);
-  //possible padding
+
+  // Possible padding
   data_size = num_cells * sizeof(int8_t);
   padding = (8 - (data_size % 8)) % 8;
   for(int32_t i = 0; i < padding; i++)
     testValue(test,ans,my_byte);
-  //that's all folks!
+
+  // That's all folks!
   test.close();
   ans.close();
 }
