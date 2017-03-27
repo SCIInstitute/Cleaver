@@ -51,48 +51,58 @@
 TEST(CLIRegressionTests, RegularStrict) {
   //make sure there is a command interpreter
   ASSERT_EQ(0,(int)!(std::system(NULL)));
+
   //setup the line that calls the command line interface
   std::string log = "strict_output.txt";
+
   //check for no material fields error.
   std::string output = "";// >> " + data_dir + log + " 2>&1";
   std::string option = " --strict ";
   std::string line = (command + option + output);
   EXPECT_EQ(1 * _MUL , std::system(line.c_str()));
+
   //check for sizing field grading error
-  option = " --strict --grading 0.2 --sizing_field " 
+  option = " --strict --grading 0.2 --sizing_field "
     + data_dir + "basic/sizing_field.nrrd " + input;
   line = (command + option + output);
   EXPECT_EQ(2 * _MUL , std::system(line.c_str()));
+
   //check for sizing field multiplier error
-  option = " --strict --multiplier 0.2 --sizing_field " 
+  option = " --strict --multiplier 0.2 --sizing_field "
     + data_dir + "basic/sizing_field.nrrd " + input;
   line = (command + option + output);
   EXPECT_EQ(3 * _MUL , std::system(line.c_str()));
+
   //check for sizing field scale error
-  option = " --strict --scale 0.2 --sizing_field " 
+  option = " --strict --scale 0.2 --sizing_field "
     + data_dir + "basic/sizing_field.nrrd " + input;
   line = (command + option + output);
   EXPECT_EQ(4 * _MUL , std::system(line.c_str()));
+
   //check for sizing field background error
-  option = " --strict --background_mesh " + 
-    data_dir + "basic/background  --sizing_field " 
+  option = " --strict --background_mesh " +
+    data_dir + "basic/background  --sizing_field "
     + data_dir + "basic/sizing_field.nrrd " + input;
   line = (command + option + output);
   EXPECT_EQ(5 * _MUL , std::system(line.c_str()));
+
   //check for wrong mesh mode error
   option = " --strict --mesh_mode unknown " + input;
   line = (command + option + output);
   EXPECT_EQ(6 * _MUL , std::system(line.c_str()));
+
   //check for unsupported output format error
   option = " --strict --output_format unknown " + input;
   line = (command + option + output);
   EXPECT_EQ(7 * _MUL , std::system(line.c_str()));
+
   //check for exception error (bad option)
   option = " --strict --badthing " + input;
   line = (command + option + output);
   EXPECT_EQ(8 * _MUL , std::system(line.c_str()));
+
   //check for bad input material field
-  option = " --strict --input_files " + data_dir + 
+  option = " --strict --input_files " + data_dir +
     "basic/basic_output.log " + input;
   line = (command + option + output);
   EXPECT_EQ(10 * _MUL , std::system(line.c_str()));

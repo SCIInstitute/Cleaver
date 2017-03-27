@@ -35,7 +35,7 @@ SET(GTEST_LIBRARY "${GTEST_INSTALL_DIR}/lib/googletest/${CMAKE_STATIC_LIBRARY_PR
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test/bin)
 #test macro
 function(NEWTEST name)
-  ADD_EXECUTABLE(${name} ${name}.cc)
+  ADD_EXECUTABLE(${name} ${name}.cc ${ARGN})
   IF(NOT WIN32)
     TARGET_LINK_LIBRARIES(${name} ${GTEST_LIBRARY} cleaver -lpthread)
   ELSE ()
