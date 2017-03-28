@@ -113,26 +113,26 @@ namespace cleaver
   {
     // -- set algorithm state --
     m_bBackgroundMeshCreated = false;
-    m_bAdjacencyBuilt = false;
-    m_bSamplingDone = false;
-    m_bAlphasComputed = false;
-    m_bInterfacesComputed = false;
-    m_bGeneralized = false;
-    m_bSnapsAndWarpsDone = false;
-    m_bStencilsDone = false;
-    m_bComplete = false;
+    m_bAdjacencyBuilt        = false;
+    m_bSamplingDone          = false;
+    m_bAlphasComputed        = false;
+    m_bInterfacesComputed    = false;
+    m_bGeneralized           = false;
+    m_bSnapsAndWarpsDone     = false;
+    m_bStencilsDone          = false;
+    m_bComplete              = false;
 
-    m_volume = nullptr;
-    m_sizingField = nullptr;
-    m_sizingOracle = nullptr;
-    m_tree = nullptr;
-    m_bgMesh = nullptr;
-    m_mesh = nullptr;
+    m_volume                 = nullptr;
+    m_sizingField            = nullptr;
+    m_sizingOracle           = nullptr;
+    m_tree                   = nullptr;
+    m_bgMesh                 = nullptr;
+    m_mesh                   = nullptr;
 
     m_sizing_field_time = 0;
-    m_background_time = 0;
-    m_cleaving_time = 0;
-    m_alpha_init = 0.4;
+    m_background_time   = 0;
+    m_cleaving_time     = 0;
+    m_alpha_init        = 0.4;
   }
 
   CleaverMesherImp::~CleaverMesherImp()
@@ -141,15 +141,15 @@ namespace cleaver
   }
 
   // -- state getters --
-  bool CleaverMesher::backgroundMeshCreated() const { return this->m_pimpl.m_bBackgroundMeshCreated; }
-  bool CleaverMesher::adjacencyBuilt()        const { return this->m_pimpl.m_bAdjacencyBuilt; }
-  bool CleaverMesher::samplingDone()          const { return this->m_pimpl.m_bSamplingDone; }
-  bool CleaverMesher::alphasComputed()        const { return this->m_pimpl.m_bAlphasComputed; }
-  bool CleaverMesher::interfacesComputed()    const { return this->m_pimpl.m_bInterfacesComputed; }
-  bool CleaverMesher::generalized()           const { return this->m_pimpl.m_bGeneralized; }
-  bool CleaverMesher::snapsAndWarpsDone()     const { return this->m_pimpl.m_bSnapsAndWarpsDone; }
-  bool CleaverMesher::stencilsDone()          const { return this->m_pimpl.m_bStencilsDone; }
-  bool CleaverMesher::completed()             const { return this->m_pimpl.m_bComplete; }
+  bool CleaverMesher::backgroundMeshCreated() const { return m_pimpl.m_bBackgroundMeshCreated; }
+  bool CleaverMesher::adjacencyBuilt()        const { return m_pimpl.m_bAdjacencyBuilt; }
+  bool CleaverMesher::samplingDone()          const { return m_pimpl.m_bSamplingDone; }
+  bool CleaverMesher::alphasComputed()        const { return m_pimpl.m_bAlphasComputed; }
+  bool CleaverMesher::interfacesComputed()    const { return m_pimpl.m_bInterfacesComputed; }
+  bool CleaverMesher::generalized()           const { return m_pimpl.m_bGeneralized; }
+  bool CleaverMesher::snapsAndWarpsDone()     const { return m_pimpl.m_bSnapsAndWarpsDone; }
+  bool CleaverMesher::stencilsDone()          const { return m_pimpl.m_bStencilsDone; }
+  bool CleaverMesher::completed()             const { return m_pimpl.m_bComplete; }
 
 
   CleaverMesher::~CleaverMesher() {
@@ -164,59 +164,59 @@ namespace cleaver
 
   void CleaverMesher::createTetMesh(bool verbose)
   {
-    this->m_pimpl.createBackgroundMesh(verbose);
-    this->m_pimpl.buildAdjacency(verbose);
-    this->m_pimpl.sampleVolume(verbose);
-    this->m_pimpl.computeAlphas(verbose);
-    this->m_pimpl.computeInterfaces(verbose);
-    this->m_pimpl.generalizeTets(verbose);
-    this->m_pimpl.snapAndWarpViolations(verbose);
-    this->m_pimpl.stencilBackgroundTets(verbose);
+    m_pimpl.createBackgroundMesh(verbose);
+    m_pimpl.buildAdjacency(verbose);
+    m_pimpl.sampleVolume(verbose);
+    m_pimpl.computeAlphas(verbose);
+    m_pimpl.computeInterfaces(verbose);
+    m_pimpl.generalizeTets(verbose);
+    m_pimpl.snapAndWarpViolations(verbose);
+    m_pimpl.stencilBackgroundTets(verbose);
   }
 
   size_t CleaverMesher::fixVertexWindup(bool verbose) {
-    return this->m_pimpl.m_mesh->fixVertexWindup(verbose);
+    return m_pimpl.m_mesh->fixVertexWindup(verbose);
   }
 
   TetMesh* CleaverMesher::getBackgroundMesh() const
   {
-    return this->m_pimpl.m_bgMesh;
+    return m_pimpl.m_bgMesh;
   }
 
   TetMesh* CleaverMesher::getTetMesh() const
   {
-    return this->m_pimpl.m_mesh;
+    return m_pimpl.m_mesh;
   }
 
 
   Volume* CleaverMesher::getVolume() const
   {
-    return this->m_pimpl.m_volume;
+    return m_pimpl.m_volume;
   }
 
   void CleaverMesher::cleanup()
   {
-    if (this->m_pimpl.m_bgMesh)
-      delete this->m_pimpl.m_bgMesh;
-    this->m_pimpl.m_bgMesh = nullptr;
+    if (m_pimpl.m_bgMesh)
+      delete m_pimpl.m_bgMesh;
+    m_pimpl.m_bgMesh = nullptr;
   }
 
   void CleaverMesher::setVolume(const Volume *volume)
   {
-    this->cleanup();
-    this->m_pimpl.m_volume = const_cast<Volume*>(volume);
-    this->m_pimpl.m_bgMesh = nullptr;
-    this->m_pimpl.m_mesh = nullptr;
+    cleanup();
+    m_pimpl.m_volume = const_cast<Volume*>(volume);
+    m_pimpl.m_bgMesh = nullptr;
+    m_pimpl.m_mesh = nullptr;
   }
 
   void CleaverMesher::setTopologyMode(CleaverMesherImp::TopologyMode mode)
   {
-    this->m_pimpl.m_topologyMode = mode;
+    m_pimpl.m_topologyMode = mode;
   }
 
   void CleaverMesher::setAlphaInit(double alpha)
   {
-    this->m_pimpl.m_alpha_init = alpha;
+    m_pimpl.m_alpha_init = alpha;
   }
 
   //============================================================================
@@ -382,13 +382,13 @@ namespace cleaver
       else {
         BoundingBox bounds = cell->bounds;
         vertexForPosition(bounds.minCorner());
-        vertexForPosition(bounds.minCorner() + vec3(bounds.size.x, 0, 0));
-        vertexForPosition(bounds.minCorner() + vec3(bounds.size.x, 0, bounds.size.z));
-        vertexForPosition(bounds.minCorner() + vec3(0, 0, bounds.size.z));
-        vertexForPosition(bounds.minCorner() + vec3(0, bounds.size.y, 0));
-        vertexForPosition(bounds.minCorner() + vec3(bounds.size.x, bounds.size.y, 0));
+        vertexForPosition(bounds.minCorner() + vec3(bounds.size.x,             0,             0));
+        vertexForPosition(bounds.minCorner() + vec3(bounds.size.x,             0, bounds.size.z));
+        vertexForPosition(bounds.minCorner() + vec3(            0,             0, bounds.size.z));
+        vertexForPosition(bounds.minCorner() + vec3(            0, bounds.size.y,             0));
+        vertexForPosition(bounds.minCorner() + vec3(bounds.size.x, bounds.size.y,             0));
         vertexForPosition(bounds.maxCorner());
-        vertexForPosition(bounds.minCorner() + vec3(0, bounds.size.y, bounds.size.z));
+        vertexForPosition(bounds.minCorner() + vec3(            0, bounds.size.y, bounds.size.z));
         Vertex *center = vertexForPosition(bounds.center());
 
         center->dual = true;
@@ -427,13 +427,13 @@ namespace cleaver
         // get original boundary positions
         vec3 original_positions[9];
         original_positions[0] = bounds.minCorner();
-        original_positions[1] = bounds.minCorner() + vec3(bounds.size.x, 0, 0);
-        original_positions[2] = bounds.minCorner() + vec3(bounds.size.x, bounds.size.y, 0);
-        original_positions[3] = bounds.minCorner() + vec3(0, bounds.size.y, 0);
-        original_positions[4] = bounds.minCorner() + vec3(0, 0, bounds.size.z);
-        original_positions[5] = bounds.minCorner() + vec3(bounds.size.x, 0, bounds.size.z);
+        original_positions[1] = bounds.minCorner() + vec3(bounds.size.x,             0,             0);
+        original_positions[2] = bounds.minCorner() + vec3(bounds.size.x, bounds.size.y,             0);
+        original_positions[3] = bounds.minCorner() + vec3(            0, bounds.size.y,             0);
+        original_positions[4] = bounds.minCorner() + vec3(            0,             0, bounds.size.z);
+        original_positions[5] = bounds.minCorner() + vec3(bounds.size.x,             0, bounds.size.z);
         original_positions[6] = bounds.maxCorner();
-        original_positions[7] = bounds.minCorner() + vec3(0, bounds.size.y, bounds.size.z);
+        original_positions[7] = bounds.minCorner() + vec3(            0, bounds.size.y, bounds.size.z);
         original_positions[8] = bounds.center();
 
         // Determine Ordered Verts
@@ -1762,7 +1762,7 @@ namespace cleaver
   //==============================
   Octree* CleaverMesher::getTree() const
   {
-    return this->m_pimpl.m_tree;
+    return m_pimpl.m_tree;
   }
 
   //========================================
@@ -1772,7 +1772,7 @@ namespace cleaver
   {
     cleaver::Timer timer;
     timer.start();
-    TetMesh* m = this->m_pimpl.createBackgroundMesh(verbose);
+    TetMesh* m = m_pimpl.createBackgroundMesh(verbose);
     timer.stop();
     setBackgroundTime(timer.time());
     return m;
@@ -1780,7 +1780,7 @@ namespace cleaver
 
   void CleaverMesher::setBackgroundMesh(TetMesh *m)
   {
-    this->m_pimpl.setBackgroundMesh(m);
+    m_pimpl.setBackgroundMesh(m);
   }
 
   //==================================
@@ -1788,7 +1788,7 @@ namespace cleaver
   //==================================
   void CleaverMesher::buildAdjacency(bool verbose)
   {
-    this->m_pimpl.buildAdjacency(verbose);
+    m_pimpl.buildAdjacency(verbose);
   }
 
   //================================
@@ -1796,7 +1796,7 @@ namespace cleaver
   //================================
   void CleaverMesher::sampleVolume(bool verbose)
   {
-    this->m_pimpl.sampleVolume(verbose);
+    m_pimpl.sampleVolume(verbose);
   }
 
   //=================================
@@ -1804,7 +1804,7 @@ namespace cleaver
   //=================================
   void CleaverMesher::computeAlphas(bool verbose)
   {
-    this->m_pimpl.computeAlphas(verbose, m_regular, m_alpha_long, m_alpha_short);
+    m_pimpl.computeAlphas(verbose, m_regular, m_alpha_long, m_alpha_short);
   }
 
   //=====================================
@@ -1812,7 +1812,7 @@ namespace cleaver
   //=====================================
   void CleaverMesher::computeInterfaces(bool verbose)
   {
-    this->m_pimpl.computeInterfaces(verbose);
+    m_pimpl.computeInterfaces(verbose);
   }
 
   //=====================================
@@ -1820,7 +1820,7 @@ namespace cleaver
   //=====================================
   void CleaverMesher::generalizeTets(bool verbose)
   {
-    this->m_pimpl.generalizeTets(verbose);
+    m_pimpl.generalizeTets(verbose);
   }
 
   //================================
@@ -1828,7 +1828,7 @@ namespace cleaver
   //================================
   void CleaverMesher::snapsAndWarp(bool verbose)
   {
-    this->m_pimpl.snapAndWarpViolations(verbose);
+    m_pimpl.snapAndWarpViolations(verbose);
   }
 
   //===============================
@@ -1836,7 +1836,7 @@ namespace cleaver
   //===============================
   void CleaverMesher::stencilTets(bool verbose)
   {
-    this->m_pimpl.stencilBackgroundTets(verbose);
+    m_pimpl.stencilBackgroundTets(verbose);
   }
 
 
@@ -6911,32 +6911,32 @@ namespace cleaver
   //=================================================
   void CleaverMesher::setSizingFieldTime(double time)
   {
-    this->m_pimpl.m_sizing_field_time = time;
+    m_pimpl.m_sizing_field_time = time;
   }
 
   void CleaverMesher::setBackgroundTime(double time)
   {
-    this->m_pimpl.m_background_time = time;
+    m_pimpl.m_background_time = time;
   }
 
   void CleaverMesher::setCleavingTime(double time)
   {
-    this->m_pimpl.m_cleaving_time = time;
+    m_pimpl.m_cleaving_time = time;
   }
 
   double CleaverMesher::getSizingFieldTime() const
   {
-    return this->m_pimpl.m_sizing_field_time;
+    return m_pimpl.m_sizing_field_time;
   }
 
   double CleaverMesher::getBackgroundTime() const
   {
-    return this->m_pimpl.m_background_time;
+    return m_pimpl.m_background_time;
   }
 
   double CleaverMesher::getCleavingTime() const
   {
-    return this->m_pimpl.m_cleaving_time;
+    return m_pimpl.m_cleaving_time;
   }
 
 }
