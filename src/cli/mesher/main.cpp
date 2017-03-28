@@ -347,9 +347,9 @@ int main(int argc, char* argv[])
   if (segmentation && material_fields.size() == 1) {
     fields = NRRDTools::segmentationToIndicatorFunctions(material_fields[0], sigma);
   } else {
-    if (material_fields.size() > 1) {
-      std::cerr << "WARNING: More than 1 input provided for segmentation." <<
-        " This will be assumed to be indicator functions." << std::endl;
+    if (segmentation && material_fields.size() > 1) {
+      std::cerr << "Warning: More than 1 input provided for segmentation." << std::endl
+                << "This will be assumed to be indicator functions." << std::endl;
     }
     if (material_fields.size() == 1) {
       add_inverse = true;
