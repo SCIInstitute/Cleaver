@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstdint>
+#include "CleaverMesher.h"
 
 namespace cleaver {
 
@@ -67,9 +68,6 @@ private:
 class CleaverMesherImp
 {
 public:
-
-    enum TopologyMode { TopologyModeNone, TopologyModeSubdivide, TopologyModeCleave };
-
     CleaverMesherImp();
     ~CleaverMesherImp();
     ScalarField<float>* createSizingField();
@@ -183,7 +181,7 @@ public:
     double m_background_time;
     double m_cleaving_time;
 
-    TopologyMode m_topologyMode;
+    CleaverMesher::TopologyMode m_topologyMode;
     double m_alpha_init;
 
     Volume *m_volume;
