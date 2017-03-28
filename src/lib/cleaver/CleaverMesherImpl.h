@@ -17,13 +17,6 @@ namespace cleaver {
 #define nullptr 0
 #endif
 
-enum class InterfaceOrder : std::int8_t {
-    VERT = 0,
-    CUT = 1,
-    TRIP = 2,
-    QUAD = 3
-};
-
 #define VERTS_PER_FACE 3
 #define EDGES_PER_FACE 3
 #define TETS_PER_FACE 2
