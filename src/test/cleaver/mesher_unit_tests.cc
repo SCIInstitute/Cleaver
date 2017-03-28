@@ -166,7 +166,7 @@ TEST_F(ViolationTest, TripleViolatesEdges)
     cleaver::HalfFace *face = faces[0];
     cleaver::Vertex *triple = new cleaver::Vertex();
     face->triple = triple;
-    face->triple->order() = TRIP;
+    face->triple->order() = cleaver::Order::TRIP;
 
     cleaver::Vertex   *face_verts[VERTS_PER_FACE];
     cleaver::HalfEdge *face_edges[EDGES_PER_FACE];
@@ -210,7 +210,7 @@ TEST_F(ViolationTest, QuadrupleViolatesVertices)
 {
     cleaver::Vertex *quadruple = new cleaver::Vertex();
     tet->quadruple = quadruple;
-    tet->quadruple->order() = QUAD;
+    tet->quadruple->order() = cleaver::Order::QUAD;
     tet->quadruple->violating = false;
 
     float alpha = 0.1f;
@@ -260,7 +260,7 @@ TEST_F(ViolationTest, QuadrupleViolatesEdges)
 {
     cleaver::Vertex *quadruple = new cleaver::Vertex();
     tet->quadruple = quadruple;
-    tet->quadruple->order() = QUAD;
+    tet->quadruple->order() = cleaver::Order::QUAD;
     tet->quadruple->violating = false;
 
     float alpha = 0.1f;
@@ -322,7 +322,7 @@ TEST_F(ViolationTest, QuadrupleViolatesFaces)
 {
     cleaver::Vertex *quadruple = new cleaver::Vertex();
     tet->quadruple = quadruple;
-    tet->quadruple->order() = QUAD;
+    tet->quadruple->order() = cleaver::Order::QUAD;
     tet->quadruple->violating = false;
 
     float alpha = 0.1f;

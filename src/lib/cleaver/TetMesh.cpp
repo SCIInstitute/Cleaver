@@ -1042,24 +1042,24 @@ namespace cleaver
                       std::cout << "overwriting a tet!! Aborting." << std::endl;
                       std::cout << "The three tets that share this face are: " << std::endl;
                       std::cout << "Tet1 (" << tet1 << "): {"
-                        << "v1(" << tet1->verts[0]->order() << "), "
-                        << "v2(" << tet1->verts[1]->order() << "), "
-                        << "v3(" << tet1->verts[2]->order() << "), "
-                        << "v4(" << tet1->verts[3]->order() << ")} "
+                        << "v1(" << (int)tet1->verts[0]->order() << "), "
+                        << "v2(" << (int)tet1->verts[1]->order() << "), "
+                        << "v3(" << (int)tet1->verts[2]->order() << "), "
+                        << "v4(" << (int)tet1->verts[3]->order() << ")} "
                         << " parent = " << tet1->parent
                         << std::endl;
                       std::cout << "Tet2 (" << tet2 << "): {"
-                        << "v1(" << tet2->verts[0]->order() << "), "
-                        << "v2(" << tet2->verts[1]->order() << "), "
-                        << "v3(" << tet2->verts[2]->order() << "), "
-                        << "v4(" << tet2->verts[3]->order() << ")}"
+                        << "v1(" << (int)tet2->verts[0]->order() << "), "
+                        << "v2(" << (int)tet2->verts[1]->order() << "), "
+                        << "v3(" << (int)tet2->verts[2]->order() << "), "
+                        << "v4(" << (int)tet2->verts[3]->order() << ")}"
                         << " parent = " << tet2->parent
                         << std::endl;
                       std::cout << "Tet3 (" << tet3 << "): "
-                        << "v1(" << tet3->verts[0]->order() << "), "
-                        << "v2(" << tet3->verts[1]->order() << "), "
-                        << "v3(" << tet3->verts[2]->order() << "), "
-                        << "v4(" << tet3->verts[3]->order() << ")}"
+                        << "v1(" << (int)tet3->verts[0]->order() << "), "
+                        << "v2(" << (int)tet3->verts[1]->order() << "), "
+                        << "v3(" << (int)tet3->verts[2]->order() << "), "
+                        << "v4(" << (int)tet3->verts[3]->order() << ")}"
                         << " parent = " << tet3->parent
                         << std::endl;
 
@@ -1274,10 +1274,10 @@ namespace cleaver
         t->flagged = true;
         std::cout << "ERROR, TET #: " << i << std::endl;
         std::cout << "bad tet, vert orders { "
-          << t->verts[0]->order() << ", "
-          << t->verts[1]->order() << ", "
-          << t->verts[2]->order() << ", "
-          << t->verts[3]->order() << " } " << std::endl;
+          << (int)t->verts[0]->order() << ", "
+          << (int)t->verts[1]->order() << ", "
+          << (int)t->verts[2]->order() << ", "
+          << (int)t->verts[3]->order() << " } " << std::endl;
         std::cout << "\t vertex positions: {"
           << t->verts[0]->pos() << ", "
           << t->verts[1]->pos() << ", "
@@ -1289,7 +1289,7 @@ namespace cleaver
           << t->verts[2]->isExterior << ", "
           << t->verts[3]->isExterior << "} " << std::endl;
       }
-      debug_output << "Tet# " << i << 
+      debug_output << "Tet# " << i <<
         ": \t{" << t->verts[0]->tm_v_index <<
         ", " << t->verts[1]->tm_v_index <<
         ", " << t->verts[2]->tm_v_index <<
@@ -2973,7 +2973,7 @@ namespace cleaver
         {
           HalfEdge *edge = incEdges[e];
 
-          if(edge->cut && edge->cut->order() == 1)
+          if(edge->cut && edge->cut->order() == Order::CUT)
           {
             safe = false;
             break;

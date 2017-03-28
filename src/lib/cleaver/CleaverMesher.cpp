@@ -321,7 +321,7 @@ namespace cleaver
       delete m_sizingOracle;
     }
     m_sizingOracle = new SizingFieldOracle(m_sizingField, m_volume->bounds());
-    
+
     // Create The Octree
     m_tree = createOctree();
 
@@ -764,7 +764,7 @@ namespace cleaver
   //======================================
   Octree* CleaverMesherImp::createOctree()
   {
-    // Get Bounds    
+    // Get Bounds
     BoundingBox bounds = m_volume->bounds();
 
     // Create Octree
@@ -1658,7 +1658,7 @@ namespace cleaver
         continue;
       }
 
-      // if no children check, if branch needed        
+      // if no children check, if branch needed
       if (!cell->hasChildren())
       {
         // look in all directions, excluding diagonals (need to subdivide?)
@@ -2281,7 +2281,7 @@ namespace cleaver
 
     //-------------------------------------
     // Compute Quadruples One Tet At A Time
-    //-------------------------------------    
+    //-------------------------------------
     for (unsigned int t = 0; t < m_bgMesh->tets.size(); t++)
     {
       cleaver::Tet *tet = m_bgMesh->tets[t];
@@ -2403,7 +2403,7 @@ namespace cleaver
 
       edge->cut = cut;
       edge->mate->cut = cut;
-      cut->order() = 1;
+      cut->order() = Order::CUT;
       return;
     }
 
@@ -2444,7 +2444,7 @@ namespace cleaver
 
     edge->cut = cut;
     edge->mate->cut = cut;
-    cut->order() = 1;
+    cut->order() = Order::CUT;
   }
 
   void CleaverMesherImp::computeTopologicalCutForEdge2(HalfEdge *edge)
@@ -2696,7 +2696,7 @@ namespace cleaver
         else
           cut->violating = false;
 
-        cut->order() = 1;
+        cut->order() = Order::CUT;
         cut->pos() = v1->pos()*(1 - tt) + v2->pos()*tt;
 
         if (tt < 0.5)
@@ -2714,7 +2714,7 @@ namespace cleaver
         else
           cut->violating = false;
 
-        cut->order() = 1;
+        cut->order() = Order::CUT;
 
         //---------------------
         // attach cut to edge
@@ -2847,7 +2847,7 @@ namespace cleaver
         else
           cut->violating = false;
 
-        cut->order() = 1;
+        cut->order() = Order::CUT;
         cut->pos() = (1 - tt)*v1->pos() + tt*v2->pos();
 
         if (tt < 0.5)
@@ -2996,7 +2996,7 @@ namespace cleaver
       triple->lbls[v1->label] = true;
       triple->lbls[v2->label] = true;
       triple->lbls[v3->label] = true;
-      triple->order() = TRIP;
+      triple->order() = Order::TRIP;
       triple->violating = false;
       triple->closestGeometry = nullptr;
       face->triple = triple;
@@ -3196,7 +3196,7 @@ namespace cleaver
     triple->lbls[v1->label] = true;
     triple->lbls[v2->label] = true;
     triple->lbls[v3->label] = true;
-    triple->order() = TRIP;
+    triple->order() = Order::TRIP;
     triple->violating = false;
     triple->closestGeometry = nullptr;
     face->triple = triple;
@@ -3274,7 +3274,7 @@ namespace cleaver
     triple->lbls[v1->label] = true;
     triple->lbls[v2->label] = true;
     triple->lbls[v3->label] = true;
-    triple->order() = TRIP;
+    triple->order() = Order::TRIP;
     triple->violating = false;
     triple->closestGeometry = nullptr;
     face->triple = triple;
@@ -3732,7 +3732,7 @@ namespace cleaver
   void CleaverMesherImp::checkIfQuadrupleViolatesVertices(Tet *tet)
   {
     // Return immediately if quadruple doesn't exist
-    if (!tet->quadruple || tet->quadruple->order() != QUAD)
+    if (!tet->quadruple || tet->quadruple->order() != Order::QUAD)
       return;
 
     Vertex *quad = tet->quadruple;
@@ -3866,7 +3866,7 @@ namespace cleaver
   void CleaverMesherImp::checkIfTripleViolatesEdges(HalfFace *face)
   {
     // Return immediately if triple doesn't exist
-    if (!face->triple || face->triple->order() != TRIP)
+    if (!face->triple || face->triple->order() != Order::TRIP)
       return;
 
     Vertex *triple = face->triple;
@@ -3999,7 +3999,7 @@ namespace cleaver
   void CleaverMesherImp::checkIfQuadrupleViolatesEdges(Tet *tet)
   {
     // Return immediately if quadruple doesn't exist
-    if (!tet->quadruple || tet->quadruple->order() != QUAD)
+    if (!tet->quadruple || tet->quadruple->order() != Order::QUAD)
       return;
 
     Vertex *quadruple = tet->quadruple;
@@ -4168,7 +4168,7 @@ namespace cleaver
   void CleaverMesherImp::checkIfQuadrupleViolatesFaces(Tet *tet)
   {
     // Return immediately if quadruple doesn't exist
-    if (!tet->quadruple || tet->quadruple->order() != QUAD)
+    if (!tet->quadruple || tet->quadruple->order() != Order::QUAD)
       return;
 
     Vertex *quadruple = tet->quadruple;
@@ -4331,7 +4331,7 @@ namespace cleaver
 
         int cut_count = 0;
         for (int e = 0; e < 6; e++)
-          cut_count += (edges[e]->cut && (edges[e]->cut->order() == CUT) ? 1 : 0);
+          cut_count += (edges[e]->cut && (edges[e]->cut->order() == Order::CUT) ? 1 : 0);
 
 
         //------------------------------
@@ -4367,7 +4367,7 @@ namespace cleaver
             int v_e = 0;
             for (int i = 0; i < 3; i++)
             {
-              if (e[i]->cut->order() != CUT)
+              if (e[i]->cut->order() != Order::CUT)
               {
                 v_count++;
                 v_e = i;   // save index to virtual edge
@@ -4434,7 +4434,7 @@ namespace cleaver
         {
           for (int f = 0; f < 4; f++)
           {
-            if (faces[f]->triple->order() < TRIP && (faces[(f + 1) % 4]->triple == faces[f]->triple ||
+            if (faces[f]->triple->order() < Order::TRIP && (faces[(f + 1) % 4]->triple == faces[f]->triple ||
               faces[(f + 2) % 4]->triple == faces[f]->triple ||
               faces[(f + 3) % 4]->triple == faces[f]->triple))
             {
@@ -4446,7 +4446,7 @@ namespace cleaver
         {
           for (int f = 0; f < 4; f++)
           {
-            if (faces[f]->triple->order() == TRIP)
+            if (faces[f]->triple->order() == Order::TRIP)
             {
               tet->quadruple = faces[f]->triple;
               break;
@@ -4456,7 +4456,7 @@ namespace cleaver
         {
           for (int f = 0; f < 4; f++)
           {
-            if (faces[f]->triple->order() < TRIP)
+            if (faces[f]->triple->order() < Order::TRIP)
             {
               tet->quadruple = faces[f]->triple;
               break;
@@ -4470,7 +4470,7 @@ namespace cleaver
           std::cerr << "problem tet contains " << cut_count << " cuts." << std::endl;
         }
 
-        if (tet->quadruple->order() < 0)
+        if (tet->quadruple->order() < Order::VERT)
           std::cerr << "GOT YA!" << std::endl;
 
       }
@@ -4515,7 +4515,7 @@ namespace cleaver
 
         int cut_count = 0;
         for (int e = 0; e < 6; e++)
-          cut_count += ((edges[e]->cut && (edges[e]->cut->order() == CUT)) ? 1 : 0);  // to do, this bug probably appaers in regular
+          cut_count += ((edges[e]->cut && (edges[e]->cut->order() == Order::CUT)) ? 1 : 0);  // to do, this bug probably appaers in regular
                                                                                       // generalization function, fix it!
       //------------------------------
       // determine virtual edge cuts
@@ -4549,7 +4549,7 @@ namespace cleaver
             int v_e = 0;
             for (int i = 0; i < 3; i++)
             {
-              if (e[i]->cut->order() != CUT)
+              if (e[i]->cut->order() != Order::CUT)
               {
                 virtual_count++;
                 v_e = i;   // save index to virtual edge
@@ -4564,7 +4564,7 @@ namespace cleaver
               // it does, let's just make a triple point in the center
               faces[f]->triple = new Vertex(m_volume->numberOfMaterials());
               faces[f]->triple->pos() = (1.0 / 3.0)*(v[0]->pos() + v[1]->pos() + v[2]->pos());
-              faces[f]->triple->order() = TRIP;
+              faces[f]->triple->order() = Order::TRIP;
               faces[f]->triple->lbls[v[0]->label] = true;
               faces[f]->triple->lbls[v[1]->label] = true;
               faces[f]->triple->lbls[v[2]->label] = true;
@@ -4600,7 +4600,7 @@ namespace cleaver
             {
               //if(cut_count == 1 || cut_count == 2 || cut_count == 3){
               for (int i = 0; i < 3; i++) {
-                if (e[i]->cut && e[i]->cut->order() == CUT)
+                if (e[i]->cut && e[i]->cut->order() == Order::CUT)
                 {
                   Vertex *v1 = e[i]->vertex;
                   Vertex *v2 = e[i]->mate->vertex;
@@ -4659,7 +4659,7 @@ namespace cleaver
           {
             // put quad on the cut edge
             for (int e = 0; e < 6; e++) {
-              if (edges[e]->cut && edges[e]->cut->order() == CUT)
+              if (edges[e]->cut && edges[e]->cut->order() == Order::CUT)
                 tet->quadruple = edges[e]->cut;
             }
           } else if (cut_count == 2)
@@ -4673,7 +4673,7 @@ namespace cleaver
 
               for (int i = 0; i < 3; i++)
               {
-                if (e[i]->cut->order() == CUT)
+                if (e[i]->cut->order() == Order::CUT)
                 {
                   count++;
                 }
@@ -4712,7 +4712,7 @@ namespace cleaver
             bool found = false;
             for (int f = 0; f < 4; f++)
             {
-              if (faces[f]->triple->order() < TRIP && (faces[(f + 1) % 4]->triple == faces[f]->triple ||
+              if (faces[f]->triple->order() < Order::TRIP && (faces[(f + 1) % 4]->triple == faces[f]->triple ||
                 faces[(f + 2) % 4]->triple == faces[f]->triple ||
                 faces[(f + 3) % 4]->triple == faces[f]->triple))
               {
@@ -4730,7 +4730,7 @@ namespace cleaver
             bool found = false;
             for (int f = 0; f < 4; f++)
             {
-              if (faces[f]->triple->order() == TRIP)
+              if (faces[f]->triple->order() == Order::TRIP)
               {
                 tet->quadruple = faces[f]->triple;
                 found = true;
@@ -4745,7 +4745,7 @@ namespace cleaver
           {
             for (int f = 0; f < 4; f++)
             {
-              if (faces[f]->triple && faces[f]->triple->order() < TRIP)
+              if (faces[f]->triple && faces[f]->triple->order() < Order::TRIP)
               {
                 tet->quadruple = faces[f]->triple;
                 break;
@@ -4774,13 +4774,13 @@ namespace cleaver
           bool around_v3 = false;
           bool around_v4 = false;
 
-          if (edges[0]->cut->order() == CUT && edges[1]->cut->order() == CUT && edges[2]->cut->order() == CUT)
+          if (edges[0]->cut->order() == Order::CUT && edges[1]->cut->order() == Order::CUT && edges[2]->cut->order() == Order::CUT)
             around_v1 = true;
-          if (edges[0]->cut->order() == CUT && edges[3]->cut->order() == CUT && edges[4]->cut->order() == CUT)
+          if (edges[0]->cut->order() == Order::CUT && edges[3]->cut->order() == Order::CUT && edges[4]->cut->order() == Order::CUT)
             around_v2 = true;
-          if (edges[1]->cut->order() == CUT && edges[3]->cut->order() == CUT && edges[5]->cut->order() == CUT)
+          if (edges[1]->cut->order() == Order::CUT && edges[3]->cut->order() == Order::CUT && edges[5]->cut->order() == Order::CUT)
             around_v3 = true;
-          if (edges[2]->cut->order() == CUT && edges[4]->cut->order() == CUT && edges[5]->cut->order() == CUT)
+          if (edges[2]->cut->order() == Order::CUT && edges[4]->cut->order() == Order::CUT && edges[5]->cut->order() == Order::CUT)
             around_v4 = true;
         }
 
@@ -4793,11 +4793,11 @@ namespace cleaver
 
           std::cerr << "v1, v2, v3, v4, ";
           for (int e = 0; e < 6; e++) {
-            if (edges[e]->cut && edges[e]->cut->order() == CUT)
+            if (edges[e]->cut && edges[e]->cut->order() == Order::CUT)
               std::cerr << "c" << e + 1 << ", ";
           }
           for (int f = 0; f < 4; f++) {
-            if (faces[f]->triple && faces[f]->triple->order() == TRIP)
+            if (faces[f]->triple && faces[f]->triple->order() == Order::TRIP)
               std::cerr << "t" << t + 1 << ", ";
           }
           std::cerr << std::endl;
@@ -5299,7 +5299,7 @@ namespace cleaver
     for (unsigned int e = 0; e < incidentEdges.size(); e++)
     {
       HalfEdge *edge = incidentEdges[e];
-      if (edge->cut->order() == CUT)
+      if (edge->cut->order() == Order::CUT)
       {
         if (edge->cut->violating && edge->cut->closestGeometry == vertex)
           viol_edges.push_back(edge);
@@ -5317,7 +5317,7 @@ namespace cleaver
     {
       HalfFace *face = incidentFaces[f];
 
-      if (face->triple->order() == TRIP)
+      if (face->triple->order() == Order::TRIP)
       {
         if (face->triple->violating && face->triple->closestGeometry == vertex)
           viol_faces.push_back(face);
@@ -5334,7 +5334,7 @@ namespace cleaver
     for (unsigned int t = 0; t < incidentTets.size(); t++)
     {
       Tet *tet = incidentTets[t];
-      if (tet->quadruple->order() == QUAD)
+      if (tet->quadruple->order() == Order::QUAD)
       {
         if (tet->quadruple->violating && tet->quadruple->closestGeometry == vertex)
           viol_tets.push_back(tet);
@@ -5409,13 +5409,13 @@ namespace cleaver
         conformQuadruple(innerTet, vertex, warp_point);
       }
       // coincide with Quad if it conformed to the face
-      else if (q->order() == QUAD && q->conformedFace->sameAs(face))
+      else if (q->order() == Order::QUAD && q->conformedFace->sameAs(face))
       {
         part_faces[f]->triple->pos_next() = q->pos_next();
         part_faces[f]->triple->conformedEdge = nullptr;
       }
       // coincide with Quad if it conformed to one of faces edges
-      else if (q->order() == QUAD && (q->conformedEdge->sameAs(face->halfEdges[0]) ||
+      else if (q->order() == Order::QUAD && (q->conformedEdge->sameAs(face->halfEdges[0]) ||
         q->conformedEdge->sameAs(face->halfEdges[1]) ||
         q->conformedEdge->sameAs(face->halfEdges[2])))
       {
@@ -5444,7 +5444,7 @@ namespace cleaver
       for (unsigned int f = 0; f < faces.size(); f++)
       {
         // if triple conformed to this edge, use it's position
-        if (faces[f]->triple->order() == TRIP && faces[f]->triple->conformedEdge->sameAs(part_edges[e])) {
+        if (faces[f]->triple->order() == Order::TRIP && faces[f]->triple->conformedEdge->sameAs(part_edges[e])) {
           part_edges[e]->cut->pos_next() = faces[f]->triple->pos_next();
           handled = true;
           break;
@@ -5531,7 +5531,7 @@ namespace cleaver
     {
       Vertex *cut = part_edges[e]->cut;
 
-      if (cut->order() == CUT && cut->violating)
+      if (cut->order() == Order::CUT && cut->violating)
       {
         // if now violating this vertex, snap to it
         if (cut->closestGeometry == vertex)
@@ -5557,7 +5557,7 @@ namespace cleaver
     {
       Vertex *triple = part_faces[f]->triple;
 
-      if (triple->order() == TRIP && triple->violating)
+      if (triple->order() == Order::TRIP && triple->violating)
       {
         // if now violating this vertex, snap to it
         if (triple->closestGeometry == vertex)
@@ -5583,7 +5583,7 @@ namespace cleaver
       Vertex *quadruple = part_tets[t]->quadruple;
 
       // TODO: This should follow same logic as Triple Deletion Above.
-      if (quadruple->order() == QUAD && quadruple->violating && quadruple->closestGeometry == vertex)
+      if (quadruple->order() == Order::QUAD && quadruple->violating && quadruple->closestGeometry == vertex)
       {
         snapQuadrupleForTetToVertex(part_tets[t], vertex);
       }
@@ -6074,7 +6074,7 @@ namespace cleaver
       if (verbose) status.printStatus();
       cleaver::HalfFace *face = &m_bgMesh->halfFaces[f];
 
-      if (face->triple && face->triple->order() == TRIP)
+      if (face->triple && face->triple->order() == Order::TRIP)
         checkIfTripleViolatesEdges(face);
     }
     // then check quadruples violating edges
@@ -6082,7 +6082,7 @@ namespace cleaver
     {
       if (verbose) status.printStatus();
       cleaver::Tet *tet = m_bgMesh->tets[t];
-      if (tet->quadruple && tet->quadruple->order() == QUAD)
+      if (tet->quadruple && tet->quadruple->order() == Order::QUAD)
         checkIfQuadrupleViolatesEdges(tet);
     }
 
@@ -6116,7 +6116,7 @@ namespace cleaver
     {
       Vertex *triple = faces[f]->triple;
 
-      if (triple->order() == TRIP &&
+      if (triple->order() == Order::TRIP &&
         triple->violating &&
         (triple->closestGeometry == edge || triple->closestGeometry == edge->mate))
       {
@@ -6125,7 +6125,7 @@ namespace cleaver
     }
 
     // If triples went to a vertex, resolve degeneracies on that vertex
-    if (edge->cut->order() == VERT)
+    if (edge->cut->order() == Order::VERT)
     {
       resolveDegeneraciesAroundVertex(edge->cut->root());
     }
@@ -6170,7 +6170,7 @@ namespace cleaver
     {
       Vertex *quadruple = tets[t]->quadruple;
 
-      if (quadruple->order() == QUAD && quadruple->violating && (quadruple->closestGeometry == face || quadruple->closestGeometry == face->mate))
+      if (quadruple->order() == Order::QUAD && quadruple->violating && (quadruple->closestGeometry == face || quadruple->closestGeometry == face->mate))
       {
         // Snap to triple point, wherever it happens to be
         snapQuadrupleForTetToTriple(tets[t], face->triple);
@@ -6179,13 +6179,13 @@ namespace cleaver
         // check order of vertex now pointed to
         switch (tets[t]->quadruple->order())
         {
-        case VERT:
+        case Order::VERT:
         {
           // If Triple_point is on a Vertex
           resolveDegeneraciesAroundVertex(tets[t]->quadruple->root());
           break;
         }
-        case CUT:
+        case Order::CUT:
         {
           for (unsigned int e = 0; e < EDGES_PER_FACE; e++)
           {
@@ -6199,14 +6199,14 @@ namespace cleaver
           }
           break;
         }
-        case TRIP:
+        case Order::TRIP:
         {
           // If Triple-Point is on a Face, do nothing
           break;
         }
         default:
         {
-          std::cerr << "Fatal Error - Quad order == " << tets[t]->quadruple->order() << std::endl;
+          std::cerr << "Fatal Error - Quad order == " << (int)tets[t]->quadruple->order() << std::endl;
           exit(-1);
         }
         }
@@ -6219,7 +6219,7 @@ namespace cleaver
   //================================================
   void CleaverMesherImp::snapCutForEdgeToVertex(HalfEdge *edge, Vertex* vertex)
   {
-    if (edge->cut->original_order() == CUT)
+    if (edge->cut->original_order() == Order::CUT)
       edge->cut->parent = vertex;
     else {
       edge->cut = vertex;
@@ -6232,7 +6232,7 @@ namespace cleaver
   //======================================================
   void CleaverMesherImp::snapTripleForFaceToVertex(HalfFace *face, Vertex* vertex)
   {
-    if (face->triple->original_order() == TRIP)
+    if (face->triple->original_order() == Order::TRIP)
       face->triple->parent = vertex;
     else {
       face->triple = vertex;
@@ -6247,7 +6247,7 @@ namespace cleaver
   //=====================================================================
   void CleaverMesherImp::snapTripleForFaceToCut(HalfFace *face, Vertex *cut)
   {
-    if (face->triple->original_order() == TRIP)
+    if (face->triple->original_order() == Order::TRIP)
       face->triple->parent = cut;
     else {
       face->triple = cut;
@@ -6261,7 +6261,7 @@ namespace cleaver
   //============================================================
   void CleaverMesherImp::snapQuadrupleForTetToVertex(Tet *tet, Vertex* vertex)
   {
-    if (tet->quadruple->original_order() == QUAD)
+    if (tet->quadruple->original_order() == Order::QUAD)
       tet->quadruple->parent = vertex;
     else
       tet->quadruple = vertex;
@@ -6273,7 +6273,7 @@ namespace cleaver
   //=====================================================================
   void CleaverMesherImp::snapQuadrupleForTetToCut(Tet *tet, Vertex *cut)
   {
-    if (tet->quadruple->original_order() == QUAD)
+    if (tet->quadruple->original_order() == Order::QUAD)
       tet->quadruple->parent = cut;
     else
       tet->quadruple = cut;
@@ -6284,7 +6284,7 @@ namespace cleaver
   //=====================================================================
   void CleaverMesherImp::snapQuadrupleForTetToTriple(Tet *tet, Vertex *triple)
   {
-    if (tet->quadruple->original_order() == QUAD)
+    if (tet->quadruple->original_order() == Order::QUAD)
       tet->quadruple->parent = triple;
     else
       tet->quadruple = triple;
@@ -6314,7 +6314,7 @@ namespace cleaver
     for (unsigned int f = 0; f < 2; f++)
     {
       // if still a triple, snap it
-      if (adjFaces[f]->triple->order() == TRIP)
+      if (adjFaces[f]->triple->order() == Order::TRIP)
       {
         snapTripleForFaceToCut(adjFaces[f], edge->cut);
 
@@ -6327,7 +6327,7 @@ namespace cleaver
       }
 
       // if snapped to a different edge
-      else if (adjFaces[f]->triple->order() == CUT && !(adjFaces[f]->triple->isEqualTo(edge->cut)))
+      else if (adjFaces[f]->triple->order() == Order::CUT && !(adjFaces[f]->triple->isEqualTo(edge->cut)))
       {
         Tet *opTet = m_bgMesh->oppositeTetAcrossFace(tet, adjFaces[f]);
 
@@ -6377,7 +6377,7 @@ namespace cleaver
           for (int e = 0; e < EDGES_PER_TET; e++)
           {
             // cut exists & spans the vertex in question
-            if (edges[e]->cut->order() == CUT && (edges[e]->vertex == vertex || edges[e]->mate->vertex == vertex))
+            if (edges[e]->cut->order() == Order::CUT && (edges[e]->vertex == vertex || edges[e]->mate->vertex == vertex))
             {
               snapCutForEdgeToVertex(edges[e], vertex);
               changed = true;
@@ -6389,7 +6389,7 @@ namespace cleaver
           for (int f = 0; f < FACES_PER_TET; f++)
           {
             // triple exists & spans the vertex in question
-            if (faces[f]->triple->order() == TRIP)
+            if (faces[f]->triple->order() == Order::TRIP)
             {
               std::vector<Vertex*> verts = m_bgMesh->vertsAroundFace(faces[f]);
               if (verts[0] == vertex || verts[1] == vertex || verts[2] == vertex)
@@ -6415,7 +6415,7 @@ namespace cleaver
           {
             HalfEdge *edge = faces[f]->halfEdges[e];
             // cut exists & spans the vertex in question
-            if (edge->cut->order() == CUT && (edge->vertex == vertex || edge->mate->vertex == vertex))
+            if (edge->cut->order() == Order::CUT && (edge->vertex == vertex || edge->mate->vertex == vertex))
             {
               snapCutForEdgeToVertex(edge, vertex);
               changed = true;
@@ -6430,7 +6430,7 @@ namespace cleaver
       //------------------------------------------------------------------------------------
       for (unsigned int f = 0; f < faces.size(); f++)
       {
-        if (faces[f] && faces[f]->triple->order() == TRIP)
+        if (faces[f] && faces[f]->triple->order() == Order::TRIP)
         {
           // count # cuts snapped to vertex
           int count = 0;
@@ -6453,7 +6453,7 @@ namespace cleaver
       //------------------------------------------------------------------------------------
       for (unsigned int t = 0; t < tets.size(); t++)
       {
-        if (tets[t] && tets[t]->quadruple->order() == QUAD)
+        if (tets[t] && tets[t]->quadruple->order() == Order::QUAD)
         {
           std::vector<HalfFace*> faces = m_bgMesh->facesAroundTet(tets[t]);
 
@@ -6497,7 +6497,7 @@ namespace cleaver
     //--------------------------------------------------------------------------
     for (unsigned int t = 0; t < tets.size(); t++)
     {
-      if (tets[t]->quadruple->order() == QUAD)
+      if (tets[t]->quadruple->order() == Order::QUAD)
       {
         std::vector<HalfFace*> faces = m_bgMesh->facesAroundTet(tets[t]);
 
@@ -6608,8 +6608,8 @@ namespace cleaver
       bool stencil = false;
       int cut_count = 0;
       for (int e = 0; e < EDGES_PER_TET; e++) {
-        cut_count += ((edges[e]->cut && edges[e]->cut->order()) == CUT ? 1 : 0);
-        if (edges[e]->cut && edges[e]->cut->original_order() == 1)
+        cut_count += ((edges[e]->cut && edges[e]->cut->order() == Order::CUT) ? 1 : 0);
+        if (edges[e]->cut && edges[e]->cut->original_order() == Order::CUT)
           stencil = true;
       }
 
@@ -6887,7 +6887,7 @@ namespace cleaver
       vert->conformedFace = nullptr;
       vert->conformedVertex = nullptr;
       vert->parent = nullptr;
-      vert->order() = VERT;
+      vert->order() = Order::VERT;
       vert->pos_next() = vert->pos();
       vert->violating = false;
       vert->warped = false;

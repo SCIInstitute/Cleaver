@@ -2,6 +2,7 @@
 #include "TrackballCamera.h"
 #include <Cleaver/BoundingBox.h>
 #include <Cleaver/vec3.h>
+#include <Cleaver/Vertex.h>
 #include "../../lib/cleaver/Plane.h"
 #include <QMouseEvent>
 #include <QFileDialog>
@@ -1460,7 +1461,7 @@ void MeshWindow::build_bkgrnd_vbos()
     while (edgesIter != this->mesh_->halfEdges.end())
     {
       cleaver::HalfEdge *edge = (*edgesIter).second;
-      if (edge->cut && edge->cut->order() == 1 && !edge->evaluated)
+      if (edge->cut && edge->cut->order() == cleaver::Order::CUT && !edge->evaluated)
       {
         this->cutData_.push_back(static_cast<float>(edge->cut->pos().x));
         this->cutData_.push_back(static_cast<float>(edge->cut->pos().y));
@@ -1568,7 +1569,7 @@ void MeshWindow::build_output_vbos()
     if (num_adj_tets == 1)
       exterior = true;
 
-    if (num_adj_tets == 2 && 
+    if (num_adj_tets == 2 &&
       this->mesh_->tets[t1]->mat_label !=
       this->mesh_->tets[t2]->mat_label)
       surface = true;
@@ -1809,7 +1810,7 @@ void MeshWindow::build_output_vbos()
     while (edgesIter != this->mesh_->halfEdges.end())
     {
       cleaver::HalfEdge *edge = (*edgesIter).second;
-      if (edge->cut && edge->cut->order() == 1 && !edge->evaluated)
+      if (edge->cut && edge->cut->order() == cleaver::Order::CUT && !edge->evaluated)
       {
         this->cutData_.push_back(static_cast<float>(edge->cut->pos().x));
         this->cutData_.push_back(static_cast<float>(edge->cut->pos().y));

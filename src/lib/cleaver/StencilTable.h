@@ -63,11 +63,6 @@
 
 #define _ABCD 14     // QuadPoint Vertex
 
-#define VERT 0
-#define CUT  1
-#define TRIP 2
-#define QUAD 3
-
 #endif
 
 const int stencilTable[24][4] =
