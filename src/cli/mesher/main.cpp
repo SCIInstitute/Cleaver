@@ -506,7 +506,7 @@ int main(int argc, char* argv[])
     std::cout << "Max Dihedral: " << mesh->max_angle << std::endl;
     std::cout << "Total Time: " << total_time << " seconds" << std::endl;
     std::cout << "Sizing Field Time: " << sizing_field_time << " seconds" << std::endl;
-    std::cout << "Backound Mesh Time: " << background_time << " seconds" << std::endl;
+    std::cout << "Background Mesh Time: " << background_time << " seconds" << std::endl;
     std::cout << "Cleaving Time: " << cleaving_time << " seconds" << std::endl;
   }
   return 0;
