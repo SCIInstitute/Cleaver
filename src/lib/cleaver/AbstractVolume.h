@@ -56,7 +56,8 @@ public:
     virtual std::string name() const = 0;
     virtual double valueAt(const vec3 &x, int material) const = 0;
     virtual double valueAt(double x, double y, double z, int material) const = 0;
-
+    virtual int maxAt(float x, float y, float z) const = 0;
+    virtual int maxAt(const vec3 &x) const = 0;
     virtual int     numberOfMaterials() const = 0;
     virtual const BoundingBox& bounds() const = 0;
 

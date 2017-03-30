@@ -62,10 +62,10 @@ public:
 
     void setName(const std::string &name);
     virtual std::string name() const;
-    int maxAt(float x, float y, float z) const;
-    int maxAt(const vec3 &x) const;
     virtual double valueAt(const vec3 &x, int material) const;
     virtual double valueAt(double x, double y, double z, int material) const;
+    virtual int maxAt(float x, float y, float z) const;
+    virtual int maxAt(const vec3 &x) const;
     virtual int numberOfMaterials() const;
     virtual const BoundingBox& bounds() const;
 
