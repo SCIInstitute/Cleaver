@@ -315,10 +315,9 @@ namespace cleaver
 
     m_sizingField = m_volume->getSizingField();
 
-    // Ensure We Have Sizing Field (in future, make this a prerequisite for continuing, don't create one.)
+    // Ensure We Have Sizing Field
     if (!m_sizingField) {
-      m_sizingField = createSizingField();
-      m_volume->setSizingField(m_sizingField);
+      throw std::runtime_error("Error: Sizing field missing from Volume.");
     }
     if (m_sizingOracle) {
       delete m_sizingOracle;
@@ -696,18 +695,6 @@ namespace cleaver
     m_vertex_tracker.clear();
 
     return m_bgMesh;
-  }
-
-
-
-  //================================================
-  // - createSizingField()
-  //================================================
-  ScalarField<float>* CleaverMesherImp::createSizingField()
-  {
-    ScalarField<float> *sizingField = SizingFieldCreator::createSizingFieldFromVolume(m_volume, 1.0 / 0.2, 2.0f);
-
-    return sizingField;
   }
 
   //============================================

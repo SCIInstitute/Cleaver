@@ -70,7 +70,6 @@ class CleaverMesherImp
 public:
     CleaverMesherImp();
     ~CleaverMesherImp();
-    ScalarField<float>* createSizingField();
     Octree* createOctree();
     Octree* createOctreeBottomUp();
     void resetCellsAroundPos(const vec3 &pos);
