@@ -131,6 +131,7 @@ namespace cleaver
     m_tree                   = nullptr;
     m_bgMesh                 = nullptr;
     m_mesh                   = nullptr;
+    m_interfaceCalculator    = nullptr;
 
     m_sizing_field_time = 0;
     m_background_time   = 0;
