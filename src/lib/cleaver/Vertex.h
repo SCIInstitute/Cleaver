@@ -44,6 +44,7 @@
 #include <vector>
 #include <cstring>
 #include "vec3.h"
+#include "Geometry.h"
 
 namespace cleaver
 {
@@ -60,7 +61,6 @@ class HalfEdge;
 class HalfFace;
 class Face;
 class Tet;
-class Geometry{};
 
 class Vertex : public Geometry{
 

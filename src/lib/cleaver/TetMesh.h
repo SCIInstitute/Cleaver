@@ -47,98 +47,20 @@
 #include <map>
 #include <set>
 #include "Vertex.h"
+#include "HalfEdge.h"
+#include "HalfFace.h"
 #include "BoundingBox.h"
 
 namespace cleaver
 {
-  //              BCCLattice   BCCOctree
-  enum MeshType { Regular, Structured };
-  enum MeshFormat { Tetgen, Scirun, Matlab, VtkUSG, VtkPoly, PLY };
+//              BCCLattice   BCCOctree
+enum MeshType { Regular,    Structured };
+enum MeshFormat { Tetgen, Scirun, Matlab, VtkUSG, VtkPoly, PLY };
 
-  // forward declare dependent types
-  class Edge;
-  class Face;
-  class Tet;
-
-  class HalfEdge;
-  class HalfFace;
-
-class HalfEdge : public Geometry
-{
-public:
-    HalfEdge() : vertex(nullptr), mate(nullptr), cut(nullptr), alpha(0.2f), evaluated(false), parity(false){}
-    HalfEdge(bool long_edge) : vertex(nullptr), mate(nullptr), cut(nullptr),
-        alpha(0.2f), evaluated(false), parity(false), m_long_edge(long_edge){}
-    Vertex *vertex;
-    HalfEdge *mate;
-    std::vector<HalfFace*> halfFaces;
-    Vertex *cut;
-    float alpha;
-    float alpha_length;
-    bool evaluated:1;
-    bool parity:1;
-    bool m_long_edge:1;
-
-    bool sameAs(HalfEdge *e){
-        return(e == this || e->mate == this);
-    }
-
-    // helper functions
-    bool incidentToVertex(Vertex *v) {
-        return(vertex == v || mate->vertex == v);
-    }
-
-    float alphaForVertex(Vertex *v) {
-        if(vertex == v)
-            return mate->alpha;
-        else if(mate->vertex == v)
-            return alpha;
-        else
-            return 0.0f;
-    }
-
-    float edgeLength() {
-        return static_cast<float>(length(vertex->pos() - mate->vertex->pos()));
-    }
-
-    float alphaLengthForVertex(Vertex *v) {
-        float alpha = alphaForVertex(v);
-        return alpha*edgeLength();
-    }
-
-    void setAlphaLengthForVertex(Vertex *v, float alpha_length) {
-
-        float alpha = alpha_length / edgeLength();
-
-        if(vertex == v)
-            mate->alpha = alpha;
-        else if(mate->vertex == v)
-            this->alpha = alpha;
-    }
-};
-
-class HalfFace : public Geometry
-{
-public:
-    HalfFace() : mate(nullptr), triple(nullptr), evaluated(false) { memset(halfEdges, 0, 3*sizeof(HalfEdge*)); }
-
-    HalfEdge *halfEdges[3];
-    HalfFace *mate;    
-    Vertex *triple;
-    bool evaluated:1;
-
-
-    bool sameAs(HalfFace *f){
-        return(f == this || f->mate == this);
-    }
-
-    // helper functions
-    bool incidentToVertex(Vertex *v){
-        return(halfEdges[0]->vertex == v || halfEdges[1]->vertex == v || halfEdges[2]->vertex == v);
-    }
-
-    vec3 normal() const;
-};
+// forward declare dependent types
+class Edge;
+class Face;
+class Tet;
 
 class Face
 {
@@ -179,14 +101,14 @@ public:
 
 
 class TetMesh
-{    
+{
 public:
 
     TetMesh();
     TetMesh(BoundingBox b);
     TetMesh(const std::vector<Vertex*> &verts, const std::vector<Tet*> &tets);
     ~TetMesh();
-    
+
     size_t fixVertexWindup(bool verbose);
 
     Tet* createTet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int material);
@@ -213,7 +135,7 @@ public:
     void constructBottomUpIncidences(bool verbose=false);
 
     void constructEdges();
-    void constructFaces();    
+    void constructFaces();
     void computeAngles();
     void computeDihedralHistograms();
     void computeBounds();
@@ -244,7 +166,7 @@ public:
     double min_angle;      // smallest dihedral angle
     double max_angle;      // largest dihedral angle
     double time;           // time taken to mesh
-    int material_count;    
+    int material_count;
     BoundingBox bounds;
     std::string name;
 
@@ -259,7 +181,7 @@ public:
     std::vector<Tet*>      tetsAroundVertex(Vertex *v);
     std::vector<HalfFace*> facesAroundEdge(HalfEdge *e);
     std::vector<Tet*>      tetsAroundEdge(HalfEdge *e);
-    std::vector<Tet*>      tetsAroundFace(HalfFace *f);    
+    std::vector<Tet*>      tetsAroundFace(HalfFace *f);
     std::vector<Vertex*>   vertsAroundFace(HalfFace *f);
     std::vector<Vertex*>   vertsAroundTet(Tet *t);
     std::vector<HalfFace*> facesAroundTet(Tet *t);
@@ -270,7 +192,7 @@ public:
     Tet* oppositeTetAcrossFace(Tet *tet, HalfFace *face);
 };
 
-}
+} // namespace cleaver
 
 #endif // TETMESH_H
 

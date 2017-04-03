@@ -52,7 +52,7 @@ SET(Cleaver_API_HEADER_FILES
     Cleaver.h
     CleaverMesher.h
     CleaverMesherImpl.h
-    Octree.h            # remove on release    
+    Octree.h            # remove on release
     AbstractField.h
     AbstractScalarField.h
     ScalarField.h
@@ -63,8 +63,11 @@ SET(Cleaver_API_HEADER_FILES
     ScaledField.h
     AbstractVolume.h
     Volume.h
-    TetMesh.h    
+    TetMesh.h
     Vertex.h
+    Geometry.h
+    HalfEdge.h
+    HalfFace.h
     BoundingBox.h
     vec3.h
     Timer.h

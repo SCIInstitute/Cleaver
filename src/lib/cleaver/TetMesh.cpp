@@ -2753,15 +2753,6 @@ namespace cleaver
     }
   }
 
-  vec3 HalfFace::normal() const
-  {
-    vec3 v1 = this->halfEdges[0]->vertex->pos();
-    vec3 v2 = this->halfEdges[1]->vertex->pos();
-    vec3 v3 = this->halfEdges[2]->vertex->pos();
-
-    return normalize(cross(v2 - v1, v3 - v1));
-  }
-
   std::string GetLineSkipComments(std::ifstream &stream)
   {
     std::string line;
