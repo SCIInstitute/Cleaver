@@ -267,9 +267,9 @@ int main(int argc, char* argv[])
     // parse the background mesh mode
     if (variables_map.count("mesh_mode")) {
       std::string mesh_mode_string = variables_map["mesh_mode"].as<std::string>();
-      if (mesh_mode_string.compare("adaptive") == 0) {
+      if (mesh_mode_string.compare("regular") == 0) {
         mesh_mode = cleaver::Regular;
-      } else if (mesh_mode_string.compare("constant") == 0) {
+      } else if (mesh_mode_string.compare("structured") == 0) {
         mesh_mode = cleaver::Structured;
       } else {
         std::cerr << "Error: invalid background mesh mode: " << mesh_mode_string << std::endl;
