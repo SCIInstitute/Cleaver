@@ -103,10 +103,6 @@ public:
 
     void computeLagrangePolynomial(const vec3 &p1, const vec3 &p2, const vec3 &p3, const vec3 &p4, double coefficients[4]);
     void computeTopologicalInterfaces(bool verbose = false);
-    void computeTopologicalCutForEdge(HalfEdge *edge);
-    void computeTopologicalCutForEdge2(HalfEdge *edge);
-    void computeTopologicalTripleForFace(HalfFace *face);
-    void computeTopologicalQuadrupleForTet(Tet *tet);
     void generalizeTopologicalTets(bool verbose = false);
 
     void buildAdjacency(bool verbose = false);
