@@ -44,18 +44,6 @@
 namespace cleaver
 {
 
-
-Face::Face() : normal(0,0,0)
-{
-  tets[0] = tets[1] = -1;
-  face_index[0] = face_index[1] = -1;
-  verts[0] = verts[1] = verts[2] = -1;
-}
-
-Face::~Face()
-{
-}
-
 Tet::Tet() : quadruple(nullptr), mat_label(-1), output(false), evaluated(false), flagged(false)
 {
   faces[0] = faces[1] = faces[2] = faces[3] = nullptr;
