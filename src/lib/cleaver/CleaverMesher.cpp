@@ -26,10 +26,6 @@ extern std::vector<cleaver::vec3>  viol_point_list;
 extern std::vector<cleaver::Plane> viol_plane_list;
 std::vector<cleaver::vec3> badEdges;
 
-int SolveQuadric(double c[3], double s[2]);
-int SolveCubic(double c[4], double s[3]);
-void clipRoots(double s[3], int &num_roots);
-
 namespace cleaver
 {
   static const double DEFAULT_ALPHA_LONG = 0.357;
