@@ -121,10 +121,6 @@ public:
     float computeSafeAlphaLength(Tet *tet, int v);
 
     void computeInterfaces(bool verbose = false);
-    void computeCutForEdge(HalfEdge *edge);
-    void computeTripleForFace(HalfFace *face);
-    void computeTripleForFace2(HalfFace *face);
-    void computeQuadrupleForTet(Tet* tet);
     void generalizeTets(bool verbose = false);
     void snapAndWarpViolations(bool verbose = false);
     void stencilBackgroundTets(bool verbose = false);
