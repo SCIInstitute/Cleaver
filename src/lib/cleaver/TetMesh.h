@@ -49,6 +49,7 @@
 #include "Vertex.h"
 #include "HalfEdge.h"
 #include "HalfFace.h"
+#include "Tet.h"
 #include "BoundingBox.h"
 
 namespace cleaver
@@ -56,49 +57,6 @@ namespace cleaver
 //              BCCLattice   BCCOctree
 enum MeshType { Regular,    Structured };
 enum MeshFormat { Tetgen, Scirun, Matlab, VtkUSG, VtkPoly, PLY };
-
-// forward declare dependent types
-class Edge;
-class Face;
-class Tet;
-
-class Face
-{
-public:
-    Face();
-    ~Face();
-
-    int face_index[2];   //which face of the tets[i] i am
-    int tets[2];         // two adjacent tets
-    int verts[3];        // the 3 verts composing this face
-    vec3 normal;
-};
-
-class Tet
-{
-public:
-    Tet(Vertex *v1, Vertex *v2, Vertex *v3, Vertex *v4, int material);
-    Tet();
-    ~Tet();
-
-    double volume() const;
-
-    Vertex *quadruple;
-    Vertex *verts[4];
-    Tet* tets[4];       // tet[i] is incident to face[i]
-    Face* faces[4];       // face[i] is opposite vertex[i]
-    int tm_index;
-    int parent;
-    char mat_label;
-    unsigned char key;
-    bool evaluated:1;
-    bool output:1;
-    bool flagged:1;  // for debugging
-
-    float minAngle();
-    float maxAngle();
-};
-
 
 class TetMesh
 {
@@ -150,11 +108,6 @@ public:
     std::vector<Tet*> tets;               // these arrays are probably cache-inefficient   // consider testing with non-pointer based arrays
     std::vector<Face*> faces;             // these arrays are probably cache-inefficient
 
-
-    //Face* faces;
-    //int nFaces;
-    Edge* edges;
-    int nEdges;
 
     static TetMesh* createFromNodeElePair(const std::string &nodeFileName, const std::string &eleFileName, bool verbose = false);
 

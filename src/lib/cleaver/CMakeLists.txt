@@ -68,6 +68,8 @@ SET(Cleaver_API_HEADER_FILES
     Geometry.h
     HalfEdge.h
     HalfFace.h
+    Face.h
+    Tet.h
     BoundingBox.h
     vec3.h
     Timer.h
