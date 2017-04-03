@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include "CleaverMesher.h"
+#include "InterfaceCalculator.h"
 
 namespace cleaver {
 
@@ -191,6 +192,7 @@ public:
     TetMesh *m_mesh;
     std::map<vec3, Vertex*, vec3order> m_vertex_tracker;
     std::map<vec3,    vec3, vec3order> m_warp_tracker;
+    InterfaceCalculator *m_interfaceCalculator;
 };
 
 } // namespace cleaver
