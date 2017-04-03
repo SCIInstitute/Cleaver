@@ -101,7 +101,6 @@ public:
     vec3    warpForPosition(const vec3 &position);
     void setWarpForPosition(const vec3 &position, const vec3 &warp);
 
-    void computeLagrangePolynomial(const vec3 &p1, const vec3 &p2, const vec3 &p3, const vec3 &p4, double coefficients[4]);
     void computeTopologicalInterfaces(bool verbose = false);
     void generalizeTopologicalTets(bool verbose = false);
 
