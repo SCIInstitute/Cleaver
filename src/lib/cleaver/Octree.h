@@ -58,7 +58,7 @@ class OTCell
 {
 public:
 
-    enum CellType { Unknown, Inside, Outside, Staddles };
+    enum CellType { Unknown, Inside, Outside, Straddles };
 
     OTCell();
     ~OTCell();

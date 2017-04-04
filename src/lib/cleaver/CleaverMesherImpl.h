@@ -71,35 +71,11 @@ class CleaverMesherImp
 public:
     CleaverMesherImp();
     ~CleaverMesherImp();
-    Octree* createOctree();
-    Octree* createOctreeBottomUp();
-    void resetCellsAroundPos(const vec3 &pos);
-    void resetPosForCell(OTCell *cell);
-    std::vector<OTCell*> cellsAroundPos(const vec3 &pos);
-    vec3 truePosOfPos(const vec3 &pos);
-    bool posWasWarped(const vec3 &pos);
-    bool checkSafetyBetween(const vec3 &v1_orig, const vec3 &v2_orig, bool v1_warpable = true, bool v2_warpable = true);
-    void createWarpedVertices(OTCell *cell);
-    void makeCellRespectTopology(OTCell *cell);
-    void subdivideTreeToTopology();
-    void conformCellToDomain(OTCell *cell);
-    void conformOctreeToDomain();
-    void balanceOctree();
-    void balanceOctreeNew();
-    void altBalanceOctree();
-    void createBackgroundVerts();
-    void createBackgroundTets();
+
     void topologicalCleaving();
     void resetMeshProperties();
     TetMesh* createBackgroundMesh(bool verbose = false);
     void setBackgroundMesh(TetMesh*);
-    void adaptCell(OTCell *cell);
-
-    void createVisualizationTets(OTCell *cell);
-    TetMesh* createVisualizationBackgroundMesh();
-    Vertex* vertexForPosition(const vec3 &pos, bool create=true);
-    vec3    warpForPosition(const vec3 &position);
-    void setWarpForPosition(const vec3 &position, const vec3 &warp);
 
     void computeTopologicalInterfaces(bool verbose = false);
     void generalizeTopologicalTets(bool verbose = false);
@@ -178,7 +154,6 @@ public:
     Volume *m_volume;
     AbstractScalarField *m_sizingField;
     SizingFieldOracle   *m_sizingOracle;
-    Octree *m_tree;
     TetMesh *m_bgMesh;
     TetMesh *m_mesh;
     std::map<vec3, Vertex*, vec3order> m_vertex_tracker;

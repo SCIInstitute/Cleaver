@@ -73,7 +73,7 @@ public:
     //================================
     // Data Getters / Setters
     //================================
-    Octree* getTree() const;
+    // Octree* getTree() const;
     void setAlphas(double l, double s);
     void setRegular(bool reg);
 
