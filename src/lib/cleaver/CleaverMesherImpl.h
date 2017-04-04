@@ -27,45 +27,6 @@ namespace cleaver {
 #define EDGES_PER_TET 6
 #define FACES_PER_TET 4
 
-class vec3order{
-public:
-
-    bool operator()(const vec3 &a, const vec3 &b) const
-    {
-
-        bool less = ( less_eps(a.x, b.x) ||
-                    (equal_eps(a.x, b.x) &&  less_eps(a.y, b.y)) ||
-                    (equal_eps(a.x, b.x) && equal_eps(a.y, b.y)  && less_eps(a.z, b.z)));
-
-
-        return less;
-    }
-
-private:
-
-    double equal_eps(double x, double y) const
-    {
-        double tol = std::max(x,y)*eps;
-
-        if(fabs(x-y) <= tol)
-            return true;
-        else
-            return false;
-    }
-
-    double less_eps(double x, double y) const
-    {
-        double tol = std::max(x,y)*eps;
-
-        if(fabs(x-y) <= tol)
-            return false;
-        else
-            return (x < y);
-    }
-    static double eps;
-};
-
-
 class CleaverMesherImp
 {
 public:
@@ -154,13 +115,11 @@ public:
     Volume *m_volume;
     AbstractScalarField *m_sizingField;
     SizingFieldOracle   *m_sizingOracle;
+    InterfaceCalculator *m_interfaceCalculator;
     TetMesh *m_bgMesh;
     TetMesh *m_mesh;
-    std::map<vec3, Vertex*, vec3order> m_vertex_tracker;
-    std::map<vec3,    vec3, vec3order> m_warp_tracker;
-    InterfaceCalculator *m_interfaceCalculator;
 };
 
 } // namespace cleaver
 
-#endif // !__CLEAVERMESHIMP_H__
+#endif // __CLEAVERMESHIMP_H__

@@ -24,6 +24,7 @@
 
 std::vector<cleaver::vec3> viol_point_list;
 std::vector<cleaver::Plane> viol_plane_list;
+std::vector<cleaver::vec3> badEdges;
 
 enum
 {
@@ -44,7 +45,7 @@ float color_for_label[][4] = { { 0.0f, 174 / 255.0f, 239 / 255.0f, 1.0f },   // 
 const char* starModeString[4] = { "No-Star Mode",
   "Vertex-Star Mode", "Edge-Star Mode", "Face-Star Mode" };
 
-extern std::vector<cleaver::vec3> badEdges;
+
 
 MeshWindow::MeshWindow(const QGLFormat& format, QObject *parent) :
   QGLWidget(format, qobject_cast<QWidget *>(parent)),

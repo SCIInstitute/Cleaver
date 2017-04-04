@@ -22,9 +22,6 @@
 #include <cmath>
 #include <cstdlib>
 
-extern std::vector<cleaver::vec3>  viol_point_list;
-extern std::vector<cleaver::Plane> viol_plane_list;
-std::vector<cleaver::vec3> badEdges;
 
 namespace cleaver
 {
@@ -160,7 +157,6 @@ namespace cleaver
     // set state
     m_bBackgroundMeshCreated = true;
 
-
     return m_bgMesh;
   }
 
@@ -246,8 +242,6 @@ namespace cleaver
     m_pimpl->stencilBackgroundTets(verbose);
   }
 
-
-
   //=================================================
   // - buildAdjacency()
   //=================================================
@@ -310,10 +304,14 @@ namespace cleaver
     m_alpha_long = l;
     m_alpha_short = s;
   }
+
   //================================================
   // - setRegular()
   //================================================
-  void CleaverMesher::setRegular(bool reg) { m_regular = reg; }
+  void CleaverMesher::setRegular(bool reg) {
+    m_regular = reg;
+  }
+
   //================================================
   // - computeAlphas()
   //================================================
