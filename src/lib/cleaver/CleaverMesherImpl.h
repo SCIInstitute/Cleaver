@@ -15,18 +15,6 @@
 
 namespace cleaver {
 
-#ifndef nullptr
-#define nullptr 0
-#endif
-
-#define VERTS_PER_FACE 3
-#define EDGES_PER_FACE 3
-#define TETS_PER_FACE 2
-
-#define VERTS_PER_TET 4
-#define EDGES_PER_TET 6
-#define FACES_PER_TET 4
-
 class CleaverMesherImp
 {
 public:
