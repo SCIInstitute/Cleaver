@@ -1979,7 +1979,6 @@ namespace cleaver
     //-------------------------------------
     //    Compute Barycentric Coordinates
     //-------------------------------------
-
     Vertex *trip = face->triple;
     Vertex *verts[VERTS_PER_FACE];
     HalfEdge *edges[EDGES_PER_FACE];
@@ -2021,20 +2020,20 @@ namespace cleaver
 
     // Solve Inverse
     double det = +A[0][0] * (A[1][1] * A[2][2] - A[2][1] * A[1][2])
-      - A[0][1] * (A[1][0] * A[2][2] - A[1][2] * A[2][0])
-      + A[0][2] * (A[1][0] * A[2][1] - A[1][1] * A[2][0]);
+                - A[0][1] * (A[1][0] * A[2][2] - A[1][2] * A[2][0])
+                + A[0][2] * (A[1][0] * A[2][1] - A[1][1] * A[2][0]);
     double invdet = 1 / det;
-    inv1.x = (A[1][1] * A[2][2] - A[2][1] * A[1][2])*invdet;
+    inv1.x =  (A[1][1] * A[2][2] - A[2][1] * A[1][2])*invdet;
     inv2.x = -(A[1][0] * A[2][2] - A[1][2] * A[2][0])*invdet;
-    inv3.x = (A[1][0] * A[2][1] - A[2][0] * A[1][1])*invdet;
+    inv3.x =  (A[1][0] * A[2][1] - A[2][0] * A[1][1])*invdet;
 
     inv1.y = -(A[0][1] * A[2][2] - A[0][2] * A[2][1])*invdet;
-    inv2.y = (A[0][0] * A[2][2] - A[0][2] * A[2][0])*invdet;
+    inv2.y =  (A[0][0] * A[2][2] - A[0][2] * A[2][0])*invdet;
     inv3.y = -(A[0][0] * A[2][1] - A[2][0] * A[0][1])*invdet;
 
-    inv1.z = (A[0][1] * A[1][2] - A[0][2] * A[1][1])*invdet;
+    inv1.z =  (A[0][1] * A[1][2] - A[0][2] * A[1][1])*invdet;
     inv2.z = -(A[0][0] * A[1][2] - A[1][0] * A[0][2])*invdet;
-    inv3.z = (A[0][0] * A[1][1] - A[1][0] * A[0][1])*invdet;
+    inv3.z =  (A[0][0] * A[1][1] - A[1][0] * A[0][1])*invdet;
 
     // Multiply Inverse*Coordinate to get Lambda (Barycentric)
     vec3 lambda;
@@ -2046,7 +2045,6 @@ namespace cleaver
     // Is any coordinate negative?
     // If so, make it 0, adjust other weights but keep ratio
     //--------------------------------------------------------------
-
     if (lambda.x < EPS) {
       lambda.x = 0;
 
