@@ -302,17 +302,6 @@ namespace cleaver
   //================================================
   TetMesh* CleaverMesherImp::createBackgroundMesh(bool verbose)
   {
-    //reset what has been done
-    m_bBackgroundMeshCreated = false;
-    m_bAdjacencyBuilt = false;
-    m_bSamplingDone = false;
-    m_bAlphasComputed = false;
-    m_bInterfacesComputed = false;
-    m_bGeneralized = false;
-    m_bSnapsAndWarpsDone = false;
-    m_bStencilsDone = false;
-    m_bComplete = false;
-
     m_sizingField = m_volume->getSizingField();
 
     // Ensure We Have Sizing Field
@@ -345,6 +334,10 @@ namespace cleaver
 
     // free vertex tracker list
     m_vertex_tracker.clear();
+
+    // clean up sizing oracle
+    delete m_sizingOracle;
+    m_sizingOracle = nullptr;
 
     // set state
     m_bBackgroundMeshCreated = true;
