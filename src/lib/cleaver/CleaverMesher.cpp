@@ -1949,18 +1949,22 @@ namespace cleaver
     //---------------------------------------------------
     //  Apply vertex warping to all vertices in lattice
     //---------------------------------------------------
-    if (verbose)
+    if (verbose) {
       std::cout << "preparing to examine " << m_bgMesh->verts.size() << " verts" << std::endl;
+    }
     Status status(m_bgMesh->verts.size());
     for (unsigned int v = 0; v < m_bgMesh->verts.size(); v++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       Vertex *vertex = m_bgMesh->verts[v];            // TODO: add check for vertex->hasAdjacentCuts
       snapAndWarpForViolatedVertex(vertex);           //       to reduce workload significantly.
     }
-    if (verbose) status.done();
-    if (verbose)
+    if (verbose) {
+      status.done();
       std::cout << "Phase 1 Complete" << std::endl;
+    }
   }
 
 
