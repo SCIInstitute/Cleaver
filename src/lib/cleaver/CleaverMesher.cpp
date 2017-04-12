@@ -458,35 +458,29 @@ namespace cleaver
       delete m_violationChecker;
     m_violationChecker = new LinearViolationChecker(m_bgMesh);
 
-
     if (verbose)
       std::cout << "Computing Cuts..." << std::flush;
 
     {// DEBUG TEST
-      std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator iter = m_bgMesh->halfEdges.begin();
-      while (iter != m_bgMesh->halfEdges.end())
+      for (auto &entry : m_bgMesh->halfEdges)
       {
-        cleaver::HalfEdge *edge = (*iter).second;
+        cleaver::HalfEdge *edge = entry.second;
         edge->evaluated = false;
-        iter++;
       }
     }
 
     //---------------------------------------
     //  Compute Cuts One Edge At A Time
     //---------------------------------------
-    std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator iter = m_bgMesh->halfEdges.begin();
-    while (iter != m_bgMesh->halfEdges.end())
+    for (auto &entry : m_bgMesh->halfEdges)
     {
-      cleaver::HalfEdge *edge = (*iter).second;
+      cleaver::HalfEdge *edge = entry.second;
 
       if (!edge->evaluated) {
         m_interfaceCalculator->computeCutForEdge(edge);
         if (edge->cut)
           cut_count++;
       }
-
-      iter++;
     }
 
     if (verbose) {
