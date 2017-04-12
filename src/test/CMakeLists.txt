@@ -61,7 +61,7 @@ add_dependencies(${GMOCK_MAIN_LIBRARY} ${GTEST_LIBRARY})
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test/bin)
 #test macro
 function(NEWTEST name)
-  ADD_EXECUTABLE(${name} ${name}.cc ${ARGN})
+  ADD_EXECUTABLE(${name} ${name}.cpp ${ARGN})
   IF(NOT WIN32)
     TARGET_LINK_LIBRARIES(${name} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${GMOCK_LIBRARY} ${GMOCK_MAIN_LIBRARY} cleaver -lpthread)
   ELSE ()
