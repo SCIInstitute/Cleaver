@@ -19,7 +19,6 @@
 #include "vec3.h"
 #include <queue>
 #include <stack>
-#include <map>
 #include <cmath>
 #include <cstdlib>
 
@@ -335,11 +334,9 @@ namespace cleaver
     //---------------------------------------------------
     // set alpha_init for all edges in background mesh
     //---------------------------------------------------
-    std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator edge_iter;
-
-    for (edge_iter = m_bgMesh->halfEdges.begin(); edge_iter != m_bgMesh->halfEdges.end(); edge_iter++)
+    for (auto &entry : m_bgMesh->halfEdges)
     {
-      HalfEdge *half_edge = (*edge_iter).second;
+      HalfEdge *half_edge = entry.second;
       if (regular) {
         half_edge->alpha = (float)(half_edge->m_long_edge ? alp_long : alp_short);
       } else {
@@ -2471,20 +2468,17 @@ namespace cleaver
         m_violationChecker->checkIfQuadrupleViolatesEdges(tet);
     }
 
-    //---------------------------------------------------
+    //---------------------------------------------------------
     //  Apply snapping to all remaining edge-cuts
-    //---------------------------------------------------
-    std::map<std::pair<int, int>, HalfEdge*>::iterator edgesIter = m_bgMesh->halfEdges.begin();
-
+    //---------------------------------------------------------
     // reset evaluation flag, so we can use to avoid duplicates
-    while (edgesIter != m_bgMesh->halfEdges.end())
+    for (auto &entry : m_bgMesh->halfEdges)
     {
       if (verbose) {
         status.printStatus();
       }
-      HalfEdge *edge = (*edgesIter).second;    // TODO: add  redundancy checks
+      HalfEdge *edge = entry.second;    // TODO: add  redundancy checks
       snapAndWarpForViolatedEdge(edge);        //           to reduce workload.
-      edgesIter++;
     }
     if (verbose) {
       status.done();
