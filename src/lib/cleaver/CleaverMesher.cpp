@@ -2254,7 +2254,8 @@ namespace cleaver
     {
       pt = vec3(-2, -2, -2); // Debug J.R.B. 11/22/11
       return false;
-    } else if (L2(v1->pos() - v2->pos()) < epsilon || L2(v2->pos() - v3->pos()) < epsilon || L2(v3->pos() - v1->pos()) < epsilon)
+    }
+    else if (L2(v1->pos() - v2->pos()) < epsilon || L2(v2->pos() - v3->pos()) < epsilon || L2(v3->pos() - v1->pos()) < epsilon)
     {
       pt = vec3(-3, -3, -3); // Debug J.R.B. 11/22/11
       return false;
@@ -2284,20 +2285,20 @@ namespace cleaver
 
     // Solve Inverse
     double det = +A[0][0] * (A[1][1] * A[2][2] - A[2][1] * A[1][2])
-      - A[0][1] * (A[1][0] * A[2][2] - A[1][2] * A[2][0])
-      + A[0][2] * (A[1][0] * A[2][1] - A[1][1] * A[2][0]);
+                - A[0][1] * (A[1][0] * A[2][2] - A[1][2] * A[2][0])
+                + A[0][2] * (A[1][0] * A[2][1] - A[1][1] * A[2][0]);
     double invdet = 1 / det;
-    inv1.x = (A[1][1] * A[2][2] - A[2][1] * A[1][2])*invdet;
+    inv1.x =  (A[1][1] * A[2][2] - A[2][1] * A[1][2])*invdet;
     inv2.x = -(A[1][0] * A[2][2] - A[1][2] * A[2][0])*invdet;
-    inv3.x = (A[1][0] * A[2][1] - A[2][0] * A[1][1])*invdet;
+    inv3.x =  (A[1][0] * A[2][1] - A[2][0] * A[1][1])*invdet;
 
     inv1.y = -(A[0][1] * A[2][2] - A[0][2] * A[2][1])*invdet;
-    inv2.y = (A[0][0] * A[2][2] - A[0][2] * A[2][0])*invdet;
+    inv2.y =  (A[0][0] * A[2][2] - A[0][2] * A[2][0])*invdet;
     inv3.y = -(A[0][0] * A[2][1] - A[2][0] * A[0][1])*invdet;
 
-    inv1.z = (A[0][1] * A[1][2] - A[0][2] * A[1][1])*invdet;
+    inv1.z =  (A[0][1] * A[1][2] - A[0][2] * A[1][1])*invdet;
     inv2.z = -(A[0][0] * A[1][2] - A[1][0] * A[0][2])*invdet;
-    inv3.z = (A[0][0] * A[1][1] - A[1][0] * A[0][1])*invdet;
+    inv3.z =  (A[0][0] * A[1][1] - A[1][0] * A[0][1])*invdet;
 
     // Multiply Inverse*Coordinate to get Lambda (Barycentric)
     vec3 lambda;
