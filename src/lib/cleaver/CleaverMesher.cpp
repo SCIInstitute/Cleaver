@@ -274,7 +274,9 @@ namespace cleaver
     // Sample Each Background Vertex
     for (unsigned int v = 0; v < m_bgMesh->verts.size(); v++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       // Get Vertex
       cleaver::Vertex *vertex = m_bgMesh->verts[v];
 
@@ -289,14 +291,16 @@ namespace cleaver
         vertex->isExterior = false;
       }
     }
-    if (verbose) status.done();
+
     m_bgMesh->material_count = m_volume->numberOfMaterials();
 
     // set state
     m_bSamplingDone = true;
 
-    if (verbose)
+    if (verbose) {
+      status.done();
       std::cout << " done." << std::endl;
+    }
   }
 
   //================================================
@@ -697,7 +701,9 @@ namespace cleaver
     Status status(m_bgMesh->tets.size());
     for (unsigned int t = 0; t < m_bgMesh->tets.size(); t++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       cleaver::Tet *tet = m_bgMesh->tets[t];
 
       //------------------------------
@@ -858,13 +864,14 @@ namespace cleaver
 
       }
     }
-    if (verbose) status.done();
 
     // set state
     m_bGeneralized = true;
 
-    if (verbose)
+    if (verbose) {
+      status.done();
       std::cout << " done." << std::endl;
+    }
   }
 
   //=======================================
@@ -2455,7 +2462,9 @@ namespace cleaver
     Status status(m_bgMesh->tets.size() * 5 + m_bgMesh->halfEdges.size());
     for (unsigned int f = 0; f < 4 * m_bgMesh->tets.size(); f++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       cleaver::HalfFace *face = &m_bgMesh->halfFaces[f];
 
       if (face->triple && face->triple->order() == Order::TRIP)
@@ -2464,7 +2473,9 @@ namespace cleaver
     // then check quadruples violating edges
     for (unsigned int t = 0; t < m_bgMesh->tets.size(); t++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       cleaver::Tet *tet = m_bgMesh->tets[t];
       if (tet->quadruple && tet->quadruple->order() == Order::QUAD)
         m_violationChecker->checkIfQuadrupleViolatesEdges(tet);
@@ -2478,14 +2489,17 @@ namespace cleaver
     // reset evaluation flag, so we can use to avoid duplicates
     while (edgesIter != m_bgMesh->halfEdges.end())
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       HalfEdge *edge = (*edgesIter).second;    // TODO: add  redundancy checks
       snapAndWarpForViolatedEdge(edge);        //           to reduce workload.
       edgesIter++;
     }
-    if (verbose) status.done();
-    if (verbose)
+    if (verbose) {
+      status.done();
       std::cout << "Phase 2 Complete" << std::endl;
+    }
   }
 
   //===============================================================
@@ -2532,13 +2546,16 @@ namespace cleaver
     Status status(4 * m_bgMesh->tets.size());
     for (unsigned int f = 0; f < 4 * m_bgMesh->tets.size(); f++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       HalfFace *face = &m_bgMesh->halfFaces[f];  // TODO: add  redundancy checks
       snapAndWarpForViolatedFace(face);         //           to reduce workload.
     }
-    if (verbose) status.done();
-    if (verbose)
+    if (verbose) {
+      status.done();
       std::cout << "Phase 3 Complete" << std::endl;
+    }
   }
 
 
@@ -2942,7 +2959,9 @@ namespace cleaver
     Status status(m_bgMesh->verts.size() + m_bgMesh->tets.size());
     for (unsigned int v = 0; v < m_bgMesh->verts.size(); v++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       Vertex *vertex = m_bgMesh->verts[v];
       vertex->tets.clear();
       vertex->tm_v_index = -1;
@@ -2963,7 +2982,9 @@ namespace cleaver
     //-------------------------------
     for (size_t t = 0; t < m_bgMesh->tets.size(); t++)
     {
-      if (verbose) status.printStatus();
+      if (verbose) {
+        status.printStatus();
+      }
       // ----------------------------------------
       // Grab Handle to Current Background Tet
       // ----------------------------------------
@@ -3172,8 +3193,9 @@ namespace cleaver
 
       }
     }
-    if (verbose) status.done();
-
+    if (verbose) {
+      status.done();
+    }
 
     // mesh is now 'done'
     m_mesh = m_bgMesh;
