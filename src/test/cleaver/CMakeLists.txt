@@ -4,9 +4,7 @@
 INCLUDE_DIRECTORIES(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
 LINK_DIRECTORIES(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
 
-#vec3 unit tests
 newtest(vec3_unit_tests)
-#tet mesh
 newtest(tetmesh_unit_tests)
-# mesher unit tests
+newtest(linearviolationchecker_tests)
 newtest(mesher_unit_tests)

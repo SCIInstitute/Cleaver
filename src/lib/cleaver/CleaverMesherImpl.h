@@ -12,6 +12,7 @@
 #include <cstdint>
 #include "CleaverMesher.h"
 #include "InterfaceCalculator.h"
+#include "ViolationChecker.h"
 
 namespace cleaver {
 
@@ -56,14 +57,6 @@ public:
     void conformQuadruple(Tet *tet, Vertex *warpVertex, const vec3 &warpPt);
     void conformTriple(HalfFace *face, Vertex *warpVertex, const vec3 &warpPt);
 
-    void checkIfCutViolatesVertices(HalfEdge *edge);
-    void checkIfTripleViolatesVertices(HalfFace *face);
-    void checkIfQuadrupleViolatesVertices(Tet *tet);
-
-    void checkIfTripleViolatesEdges(HalfFace *face);  // to write and use
-    void checkIfQuadrupleViolatesEdges(Tet *tet);     // to write and use
-    void checkIfQuadrupleViolatesFaces(Tet *tet);     // to write and use
-
     void snapCutForEdgeToVertex(HalfEdge *edge, Vertex* vertex);
     void snapTripleForFaceToVertex(HalfFace *face, Vertex* vertex);
     void snapQuadrupleForTetToVertex(Tet *tet, Vertex* vertex);
@@ -104,6 +97,7 @@ public:
     AbstractScalarField *m_sizingField;
     SizingFieldOracle   *m_sizingOracle;
     InterfaceCalculator *m_interfaceCalculator;
+    ViolationChecker    *m_violationChecker;
     TetMesh *m_bgMesh;
     TetMesh *m_mesh;
 };

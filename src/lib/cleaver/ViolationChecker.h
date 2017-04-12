@@ -3,14 +3,14 @@
 //
 // Cleaver - A MultiMaterial Conforming Tetrahedral Meshing Library
 //
-// -- CleaverMesher Unit Tests
+// -- Violation Checker
 //
-// Author: Jonathan Bronson (bronson@sci.utah.ed)
+// Author: Jonathan Bronson (bronson@sci.utah.edu)
 //
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 //
-//  Copyright (C) 2015, Jonathan Bronson
+//  Copyright (C) 2017 Jonathan Bronson
 //  Scientific Computing & Imaging Institute
 //  University of Utah
 //
@@ -38,54 +38,30 @@
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-#include "TetMesh.h"
-#include "CleaverMesherImpl.h"
+#ifndef VIOLATION_CHECKER_H_
+#define VIOLATION_CHECKER_H_
 
-class ViolationTest : public ::testing::Test {
-protected:
-    virtual void SetUp() {
-        this->mesh = createTetMesh();
-        this->mesher = new cleaver::CleaverMesherImp();
-        mesher->setBackgroundMesh(mesh);
-        mesher->buildAdjacency();
-        ASSERT_EQ(1, mesh->tets.size());
+#include "HalfEdge.h"
+#include "HalfFace.h"
+#include "Tet.h"
 
-        // get adjacency info
-        tet = mesh->tets[0];
-        mesh->getAdjacencyListsForTet(tet, verts, edges, faces);
+namespace cleaver
+{
 
-        // make tet regular
-        verts[0]->pos() = cleaver::vec3( 1, 1, 1);
-        verts[1]->pos() = cleaver::vec3( 1,-1,-1);
-        verts[2]->pos() = cleaver::vec3(-1, 1,-1);
-        verts[3]->pos() = cleaver::vec3(-1,-1, 1);
+class ViolationChecker
+{
+  public:
+    virtual ~ViolationChecker() {}
 
-        // ensure volume is what we expect
-        ASSERT_NEAR(2.666, tet->volume(), 1E-3);
-    }
-
-    virtual void TearDown() {
-        delete mesh;
-        delete mesher;
-    }
-
-    cleaver::TetMesh* createTetMesh()
-    {
-        cleaver::TetMesh *mesh = new cleaver::TetMesh();
-        cleaver::Vertex *v1 = new cleaver::Vertex();
-        cleaver::Vertex *v2 = new cleaver::Vertex();
-        cleaver::Vertex *v3 = new cleaver::Vertex();
-        cleaver::Vertex *v4 = new cleaver::Vertex();
-        mesh->createTet(v1, v2, v3, v4, 0);
-        return mesh;
-    }
-
-    cleaver::TetMesh *mesh;
-    cleaver::CleaverMesherImp *mesher;
-
-    cleaver::Tet      *tet;
-    cleaver::Vertex   *verts[VERTS_PER_TET];
-    cleaver::HalfEdge *edges[EDGES_PER_TET];
-    cleaver::HalfFace *faces[FACES_PER_TET];
+    virtual void checkIfCutViolatesVertices(HalfEdge *edge) = 0;
+    virtual void checkIfTripleViolatesVertices(HalfFace *face) = 0;
+    virtual void checkIfQuadrupleViolatesVertices(Tet *tet) = 0;
+    virtual void checkIfTripleViolatesEdges(HalfFace *face) = 0;
+    virtual void checkIfQuadrupleViolatesEdges(Tet *tet) = 0;
+    virtual void checkIfQuadrupleViolatesFaces(Tet *tet) = 0;
 };
+
+
+} // namespace cleaver
+
+#endif // VIOLATION_CHECKER_H_
