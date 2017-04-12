@@ -562,31 +562,26 @@ namespace cleaver
       std::cout << "Computing Topological Cuts..." << std::flush;
 
     {// DEBUG TEST
-      std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator iter = m_bgMesh->halfEdges.begin();
-      while (iter != m_bgMesh->halfEdges.end())
+      for (auto &entry : m_bgMesh->halfEdges)
       {
-        cleaver::HalfEdge *edge = (*iter).second;
+        cleaver::HalfEdge *edge = entry.second;
         edge->evaluated = false;
         edge->mate->evaluated = false;
-        iter++;
       }
     }
 
     //----------------------------------------------
     //  Compute Topological Cuts One Edge At A Time
     //----------------------------------------------
-    std::map<std::pair<int, int>, cleaver::HalfEdge*>::iterator iter = m_bgMesh->halfEdges.begin();
-    while (iter != m_bgMesh->halfEdges.end())
+    for (auto &entry : m_bgMesh->halfEdges)
     {
-      cleaver::HalfEdge *edge = (*iter).second;
+      cleaver::HalfEdge *edge = entry.second;
 
       if (!edge->evaluated) {
         m_interfaceCalculator->computeCutForEdge(edge);
         if (edge->cut)
           cut_count++;
       }
-
-      iter++;
     }
 
 
