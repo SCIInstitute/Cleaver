@@ -451,7 +451,7 @@ int main(int argc, char* argv[])
   // Write Background Mesh if requested
   //-----------------------------------------------------------
   if (bgMesh && write_background_mesh) {
-    bgMesh->writeNodeEle(output_path + "bgmesh", false, false, false);
+    bgMesh->writeNodeEle(output_path + "bgmesh", verbose, false, false);
   }
 
   //-----------------------------------------------------------
