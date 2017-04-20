@@ -2024,6 +2024,9 @@ namespace cleaver
 
     Vertex *static_vertex;
 
+    // TODO(jonbronson): This looks backwards. The static point can't also be
+    //  the warp point. Static_vertex stopped being used in favor of midpoint
+    //  to improve numerical stability. Find alternative way around stability.
     if (edge->vertex == warpVertex)
       static_vertex = edge->vertex;
     else
