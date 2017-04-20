@@ -154,4 +154,60 @@ double pow2(int p) {
   }
 }
 
+
+//--------------------------------------------------------------------------------------------
+//  triangle_intersect()
+//
+//  This method computes the intersection of a ray and triangle. The intersection point
+//  is stored in 'pt', while a boolean returned indicates whether or not the intersection
+//  occurred in the triangle. Epsilon tolerance is given to boundary case.
+//--------------------------------------------------------------------------------------------
+bool triangle_intersection(Vertex *v1, Vertex *v2, Vertex *v3, vec3 origin, vec3 ray, vec3 &pt, float epsilon)
+{
+    float epsilon2 = (float)1E-3;
+
+    //-------------------------------------------------
+    // if v1, v2, and v3 are not unique, return FALSE
+    //-------------------------------------------------
+    if (v1 == v2 || v2 == v3 || v1 == v3)
+      return false;
+    else if (L2(v1->pos() - v2->pos()) < epsilon || L2(v2->pos() - v3->pos()) < epsilon || L2(v1->pos() - v3->pos()) < epsilon)
+      return false;
+
+    //----------------------------------------------
+    // compute intersection with plane, store in pt
+    //----------------------------------------------
+    vec3 e1 = v1->pos() - v3->pos();
+    vec3 e2 = v2->pos() - v3->pos();
+
+    ray = normalize(ray);
+    vec3 r1 = ray.cross(e2);
+    double denom = e1.dot(r1);
+
+    if (fabs(denom) < epsilon)
+      return false;
+
+    double inv_denom = 1.0 / denom;
+    vec3 s = origin - v3->pos();
+    double b1 = s.dot(r1) * inv_denom;
+
+    if (b1 < (0.0 - epsilon2) || b1 >(1.0 + epsilon2))
+      return false;
+
+    vec3 r2 = s.cross(e1);
+    double b2 = ray.dot(r2) * inv_denom;
+
+    if (b2 < (0.0 - epsilon2) || (b1 + b2) >(1.0 + 2 * epsilon2))
+      return false;
+
+    double t = e2.dot(r2) * inv_denom;
+    pt = origin + t*ray;
+
+
+    if (t < 0.01)
+      return false;
+    else
+      return true;
 }
+
+} // namespace cleaver

@@ -43,6 +43,7 @@
 
 #include <string>
 #include <exception>
+#include "Vertex.h"
 #include "vec3.h"
 
 namespace cleaver
@@ -50,6 +51,9 @@ namespace cleaver
     enum ordering { row , col };
 
     double pow2(int p);
+
+    bool triangle_intersection(Vertex *v1, Vertex *v2, Vertex *v3,
+        vec3 origin, vec3 ray, vec3 &pt, float epsilon = 1E-8);
 
     class CleaverException : public std::exception
     {
