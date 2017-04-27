@@ -250,7 +250,7 @@ namespace cleaver
   void CleaverMesherImp::buildAdjacency(bool verbose)
   {
     if (verbose)
-      std::cout << "Building Adjacency..." << std::flush;
+      std::cout << "Building Adjacency..." << std::endl;
 
     m_bgMesh->constructFaces();
     m_bgMesh->constructBottomUpIncidences(verbose);
@@ -268,7 +268,7 @@ namespace cleaver
   void CleaverMesherImp::sampleVolume(bool verbose)
   {
     if (verbose)
-      std::cout << "Sampling Volume..." << std::flush;
+      std::cout << "Sampling Volume..." << std::endl;
 
     Status status(m_bgMesh->verts.size());
     // Sample Each Background Vertex
