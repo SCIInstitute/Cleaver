@@ -52,7 +52,8 @@ ELSE()
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
 ENDIF()
 
-# Build Cleaver Library (no dependencies)
+# Build Cleaver Library
+ADD_SUBDIRECTORY(lib/jsoncpp)
 ADD_SUBDIRECTORY(lib/cleaver)
 
 # TODO(jonbronson): Change to not use ITK by default once teem is added.

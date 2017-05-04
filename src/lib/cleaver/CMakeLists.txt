@@ -78,12 +78,8 @@ SET(Cleaver_API_HEADER_FILES
 
 ADD_DEFINITIONS(-DTETLIBRARY)
 
-INCLUDE_DIRECTORIES(
-    ${CUDA_SDK_ROOT_DIR}/common/inc
-    ${CUDA_SDK_ROOT_DIR}/C/common/inc
-    ${CUDA_TOOLKIT_ROOT_DIR}/include
-    ${CUDA_TOOLKIT_ROOT_DIR}/samples/common/inc
-)
+# Add library includes
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
 
 # copy header files over
 SET(Cleaver_INSTALLED_HEADER_FILES)
@@ -100,4 +96,4 @@ ENDFOREACH(header_file)
 
 # output library
 ADD_LIBRARY(cleaver STATIC ${Cleaver_HEADER_FILES} ${Cleaver_SOURCE_FILES})
-
+TARGET_LINK_LIBRARIES(cleaver jsoncpp)
