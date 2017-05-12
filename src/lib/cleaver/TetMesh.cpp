@@ -53,9 +53,12 @@
 #include <algorithm>
 #include <exception>
 #include <stdint.h>
+#include <jsoncpp/json.h>
 #include "Util.h"
 #include "Matlab.h"
 #include "Status.h"
+
+
 
 using namespace std;
 
@@ -1097,7 +1100,8 @@ namespace cleaver
     double min = 180;
     double max = 0;
     Status status(this->tets.size());
-    std::ofstream debug_output("TetDihedralAngles.txt");
+    std::ofstream debug_dump("debug.dump", ofstream::out);
+
     for (unsigned int i=0; i < this->tets.size(); i++)
     {
       status.printStatus();
@@ -1141,9 +1145,12 @@ namespace cleaver
           if (dihedral_angle > max) max = dihedral_angle;
         }
       }
-      //DEBUG debugging flat tets, remove when done.
-      if(max == 180){
 
+      // DEBUG for flat tets
+      if(max == 180){
+        Json::Value tet = tet_to_json(t, this);
+        tet["parent"] = t->parent;
+        debug_dump << tet << std::endl;
         t->flagged = true;
         std::cout << "ERROR, TET #: " << i << std::endl;
         std::cout << "bad tet, vert orders { "
@@ -1162,16 +1169,9 @@ namespace cleaver
           << t->verts[2]->isExterior << ", "
           << t->verts[3]->isExterior << "} " << std::endl;
       }
-      debug_output << "Tet# " << i <<
-        ": \t{" << t->verts[0]->tm_v_index <<
-        ", " << t->verts[1]->tm_v_index <<
-        ", " << t->verts[2]->tm_v_index <<
-        ", " << t->verts[3]->tm_v_index <<
-        "}, \tMIN ANG: " << local_min <<
-        ", \tMAX ANG: " << local_max << std::endl;
-      //END DEBUG
+      // END DEBUG
     }
-    debug_output.close();
+    debug_dump.close();
     status.done();
 
     min_angle = min;
