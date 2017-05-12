@@ -41,10 +41,14 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include "TetMesh.h"
+#include "vec3.h"
+#include "Vertex.h"
+#include <jsoncpp/json.h>
+
 #include <string>
 #include <exception>
-#include "Vertex.h"
-#include "vec3.h"
+
 
 namespace cleaver
 {
@@ -54,6 +58,9 @@ namespace cleaver
 
     bool triangle_intersection(Vertex *v1, Vertex *v2, Vertex *v3,
         vec3 origin, vec3 ray, vec3 &pt, float epsilon = 1E-8);
+
+    Json::Value vertex_to_json(Vertex *vertex);
+    Json::Value tet_to_json(Tet *tet, TetMesh *mesh);
 
     class CleaverException : public std::exception
     {

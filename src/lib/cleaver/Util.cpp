@@ -210,4 +210,58 @@ bool triangle_intersection(Vertex *v1, Vertex *v2, Vertex *v3, vec3 origin, vec3
       return true;
 }
 
+
+//-------------------------------------------------------------------
+// vertex_to_json()
+//-------------------------------------------------------------------
+// Creats a json representation of the Vertex in its current state.
+// This captures the position and material value of the vertex.
+//-------------------------------------------------------------------
+Json::Value vertex_to_json(Vertex *vertex) {
+  Json::Value root(Json::objectValue);
+  root["id"] = vertex->tm_v_index;
+  root["material"] = vertex->label;
+  root["position"] = Json::Value(Json::objectValue);
+  root["position"]["x"] = vertex->pos().x;
+  root["position"]["y"] = vertex->pos().y;
+  root["position"]["z"] = vertex->pos().z;
+  return root;
+}
+
+//-------------------------------------------------------------------
+// tet_to_json()
+//-------------------------------------------------------------------
+// Creats a json representation of the Tet in its current state.
+// All values, vertices and interfaces, are captured at the time of
+// this function call. Mesh object requred for adjacency information.
+//-------------------------------------------------------------------
+Json::Value tet_to_json(Tet *tet, TetMesh *mesh) {
+  Vertex *verts[4];
+  HalfEdge *edges[6];
+  HalfFace *faces[4];
+  mesh->getAdjacencyListsForTet(tet, verts, edges, faces);
+
+  Json::Value root(Json::objectValue);
+  root["id"] = tet->tm_index;
+  root["verts"] = Json::Value(Json::arrayValue);
+  for (int v = 0; v < VERTS_PER_TET; v++) {
+    root["verts"].append(vertex_to_json(verts[v]));
+  }
+
+  // TODO(jonbronson): Be smarter about how to record virtual interfaces
+  root["cuts"] = Json::Value(Json::arrayValue);
+  for (int e = 0; e < EDGES_PER_TET; e++) {
+    root["cuts"].append(vertex_to_json(edges[e]->cut));
+  }
+
+  root["triples"] = Json::Value(Json::arrayValue);
+  for (int f = 0; f < 4; f++) {
+    root["triples"].append(vertex_to_json(faces[f]->triple));
+  }
+
+  root["quadruple"] = vertex_to_json(tet->quadruple);
+  return root;
+}
+
+
 } // namespace cleaver
