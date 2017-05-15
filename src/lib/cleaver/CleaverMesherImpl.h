@@ -7,6 +7,7 @@
 #include "Vertex.h"
 #include "ScalarField.h"
 #include "SizingFieldOracle.h"
+#include <set>
 #include <cmath>
 #include <cstdlib>
 #include <cstdint>
@@ -24,6 +25,7 @@ public:
 
     void topologicalCleaving();
     void resetMeshProperties();
+    void recordOperations(std::string input);
     TetMesh* createBackgroundMesh(bool verbose = false);
     void setBackgroundMesh(TetMesh*);
 
@@ -85,6 +87,9 @@ public:
     bool m_bSnapsAndWarpsDone;
     bool m_bStencilsDone;
     bool m_bComplete;
+    bool m_bRecordOperations;
+
+    std::set<size_t> m_tets_to_record;
 
     double m_sizing_field_time;
     double m_background_time;

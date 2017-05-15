@@ -108,6 +108,8 @@ int main(int argc, char* argv[])
   bool have_sizing_field = false;
   bool have_background_mesh = false;
   bool write_background_mesh = false;
+  bool record_operations = false;
+  std::string recording_input;
   bool strict = false;
   bool strip_exterior = false;
   enum cleaver::MeshType mesh_mode = cleaver::Structured;
@@ -140,6 +142,7 @@ int main(int argc, char* argv[])
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
       ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [Surface mesh only])")
       ("padding,p", po::value<int>(), "volume padding")
+      ("record,r", po::value<std::string>(), "record operations on tets from input file.")
       ("scale,c", po::value<double>(), "sizing field scale factor")
       ("segmentation,S", "The input file is a segmentation file.")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
@@ -282,6 +285,11 @@ int main(int argc, char* argv[])
     //  improve_mesh = true;
     //}
 
+    if (variables_map.count("record")) {
+      record_operations = true;
+      recording_input = variables_map["record"].as<std::string>();
+    }
+
     // strip exterior tetra after mesh generation
     if (variables_map.count("strip_exterior")) {
       strip_exterior = true;
@@ -370,6 +378,12 @@ int main(int argc, char* argv[])
   cleaver::CleaverMesher mesher;
   mesher.setVolume(volume);
   mesher.setAlphaInit(alpha);
+
+
+  // Maybe enable recording on debug dump tets.
+  if (record_operations) {
+    mesher.recordOperations(recording_input);
+  }
 
   //-----------------------------------
   // Load background mesh if provided

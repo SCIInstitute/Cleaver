@@ -62,6 +62,7 @@ public:
     //================================
     // Temporary Experimental Methods
     //================================
+    void recordOperations(const std::string &input);
     void setSizingFieldTime(double time);
     void setBackgroundTime(double time);
     void setCleavingTime(double time);

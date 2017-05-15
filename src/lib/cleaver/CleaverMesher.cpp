@@ -19,6 +19,7 @@
 #include "vec3.h"
 #include "Util.h"
 #include <queue>
+#include <set>
 #include <stack>
 #include <cmath>
 #include <cstdlib>
@@ -41,6 +42,7 @@ namespace cleaver
     m_bSnapsAndWarpsDone     = false;
     m_bStencilsDone          = false;
     m_bComplete              = false;
+    m_bRecordOperations      = false;
 
     m_volume                 = nullptr;
     m_sizingField            = nullptr;
@@ -137,6 +139,24 @@ namespace cleaver
   void CleaverMesher::setAlphaInit(double alpha)
   {
     m_pimpl->m_alpha_init = alpha;
+  }
+
+  void CleaverMesherImp::recordOperations(std::string input)
+  {
+    Json::Value root;
+    Json::Reader reader;
+    std::ifstream file(input, std::ifstream::binary);
+    bool success = reader.parse(file, root);
+    if (!success) {
+      throw std::runtime_error("Error: Failed to parse debug dump: " + input);
+    }
+
+    Json::Value badTets = root["badtets"];
+    for (int i = 0; i < badTets.size(); i++) {
+      Json::Value tet = badTets[i];
+      m_tets_to_record.insert((size_t)tet["parent"].asUInt64());
+    }
+    this->m_bRecordOperations = true;
   }
 
   //================================================
@@ -3247,6 +3267,11 @@ namespace cleaver
   //        report the own times. The sizing
   // field creator should report its own time.
   //=================================================
+  void CleaverMesher::recordOperations(const std::string &input)
+  {
+    m_pimpl->recordOperations(input);
+  }
+
   void CleaverMesher::setSizingFieldTime(double time)
   {
     m_pimpl->m_sizing_field_time = time;

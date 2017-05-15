@@ -1101,6 +1101,8 @@ namespace cleaver
     double max = 0;
     Status status(this->tets.size());
     std::ofstream debug_dump("debug.dump", ofstream::out);
+    debug_dump << "{ \"badtets\": [" << std::endl;
+    int bad_tets = 0;
 
     for (unsigned int i=0; i < this->tets.size(); i++)
     {
@@ -1148,6 +1150,10 @@ namespace cleaver
 
       // DEBUG for flat tets
       if(max == 180){
+        if (bad_tets > 0)
+          debug_dump << "," << std::endl;
+        bad_tets++;
+
         Json::Value tet = tet_to_json(t, this);
         tet["parent"] = t->parent;
         debug_dump << tet << std::endl;
@@ -1170,7 +1176,8 @@ namespace cleaver
           << t->verts[3]->isExterior << "} " << std::endl;
       }
       // END DEBUG
-    }
+    }    
+    debug_dump << "]}" << std::endl;
     debug_dump.close();
     status.done();
 
