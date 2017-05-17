@@ -324,11 +324,9 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     bool success = planeIntersect(v1, v2, v3, origin, ray, result);
     if (!success)
     {
-      //std::cout << "Failed to Project Triple BACK into 3D: Using Barycenter" << std::endl;
-      //result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
-      //axis = 2;
-      std::cout << "Failed Axis==1, the most likely candidate to succeeed..." << std::endl;
-      exit(0);
+      std::cout << "Numerical Failure projecting triple into 3D: Fall back to Barycenter" << std::endl;
+      result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
+      // std::cout << "Failed Axis==1, the most likely candidate to succeeed..." << std::endl;
     }
 
   } else if (axis == 2)
@@ -378,9 +376,9 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     bool success = planeIntersect(v1, v2, v3, origin, ray, result);
     if (!success)
     {
-      //axis = 3;
-      std::cout << "Failed Axis==2, the most likely candidate to succeeed..." << std::endl;
-      exit(0);
+      std::cout << "Numerical Failure projecting triple into 3D: Fall back to Barycenter" << std::endl;
+      result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
+      // std::cout << "Failed Axis==2, the most likely candidate to succeeed..." << std::endl;
     }
   } else if (axis == 3)
   {
@@ -429,8 +427,9 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     bool success = planeIntersect(v1, v2, v3, origin, ray, result);
     if (!success)
     {
-      std::cout << "Failed Axis==3, the most likely candidate to succeeed..." << std::endl;
-      exit(0);
+      std::cout << "Numerical Failure projecting triple into 3D: Fall back to Barycenter" << std::endl;
+      result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
+      // std::cout << "Failed Axis==3, the most likely candidate to succeeed..." << std::endl;
     }
   }
 

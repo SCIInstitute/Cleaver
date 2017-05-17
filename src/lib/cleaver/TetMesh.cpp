@@ -1149,7 +1149,7 @@ namespace cleaver
       }
 
       // DEBUG for flat tets
-      if(max == 180){
+      if(local_max == 180){
         if (bad_tets > 0)
           debug_dump << "," << std::endl;
         bad_tets++;
@@ -1180,6 +1180,9 @@ namespace cleaver
     debug_dump << "]}" << std::endl;
     debug_dump.close();
     status.done();
+    if (bad_tets > 0) {
+      std::cout << "Errors: " << bad_tets << " degenerate tets." << std::endl;
+    }
 
     min_angle = min;
     max_angle = max;
