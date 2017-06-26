@@ -2391,15 +2391,15 @@ namespace cleaver
     }
 
     // Conform Point!!!
-    vec3 newray = pt - static_vertex->pos();
-    double t1 = newray.x / ray.x;
+    vec3 newray = pt - static_pt;
+    double t1 = length(newray) / length(warpPt - static_pt);
 
     if (t1 < 0 || t1 > 1)
     {
       // clamp it
       t1 = std::max(t1, 0.0);
       t1 = std::min(t1, 1.0);
-      pt = static_pt + t1*ray;
+      pt = static_pt + t1*(warpPt - static_pt);
     }
 
     return pt;
