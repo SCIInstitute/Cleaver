@@ -378,9 +378,11 @@ namespace cleaver
 
 
   //=============================================================
-  // - computeSafeAlphaLength()
+  // - computeSafeAlphaLength1()
+  //     This method computes safe alphas to prevent a tet from
+  // collapsing along its vertex altitudes. 
   //=============================================================
-  float CleaverMesherImp::computeSafeAlphaLength(Tet *tet, int v)
+  float CleaverMesherImp::computeSafeAlphaLength1(Tet *tet, int v)
   {
     double xi = std::max(0.0, std::min(0.5 - m_alpha_init, 0.5));
 
@@ -403,6 +405,61 @@ namespace cleaver
     double safe_length = (0.5 - xi)*altitude;
 
     return safe_length;
+  }
+
+
+  //=============================================================
+  // - computeEdgeAltitudeLength()
+  //    Given the four points of a tetrahedron, computes the edge
+  // altitude for the line segment orthogonal to the edges {p1,p2}
+  // and {p3,p4}
+  double computeEdgeAltitudeLength(const vec3 &p1, const vec3 &p2,
+                                   const vec3 &p3, const vec3 &p4) {
+    vec3 e1 = normalize(p1 - p2);
+    vec3 e2 = normalize(p3 - p4);
+    vec3 common_normal = normalize(cross(e1, e2));
+    vec3 a = p4 - p1;
+    return std::abs(dot(common_normal, a));
+  }
+
+  //=============================================================
+  // - computeSafeAlphaLength2()
+  //     This method computes safe alphas to prevent a tet from
+  // collapsing along its edge altitudes.
+  //=============================================================
+  float CleaverMesherImp::computeSafeAlphaLength2(Tet *tet, int v)
+  {
+    double xi = std::max(0.0, std::min(0.5 - m_alpha_init, 0.5));
+
+    // perform this action for all 3 edges incident to vertex v
+    Vertex *verts[4];   int idx = 0;
+    verts[idx++] = tet->verts[v];
+    for (int vid = 0; vid < 4; vid++)
+    {
+      if (vid == v)
+        continue;
+      verts[idx++] = tet->verts[vid];
+    }
+
+    double altitude1 = computeEdgeAltitudeLength(verts[0]->pos(),
+                                                 verts[1]->pos(),
+                                                 verts[2]->pos(),
+                                                 verts[3]->pos());
+
+    double altitude2 = computeEdgeAltitudeLength(verts[0]->pos(),
+                                                 verts[2]->pos(),
+                                                 verts[1]->pos(),
+                                                 verts[3]->pos());
+
+    double altitude3 = computeEdgeAltitudeLength(verts[0]->pos(),
+                                                 verts[3]->pos(),
+                                                 verts[1]->pos(),
+                                                 verts[2]->pos());
+
+    double safe_length1 = (0.5 - xi)*altitude1;
+    double safe_length2 = (0.5 - xi)*altitude2;
+    double safe_length3 = (0.5 - xi)*altitude3;
+    return std::min(std::min(safe_length1, safe_length2), safe_length3);
   }
 
 
@@ -432,7 +489,9 @@ namespace cleaver
     for (int v = 0; v < VERTS_PER_TET; v++)
     {
       // determine safe alpha
-      float safe_alpha_length = computeSafeAlphaLength(tet, v);
+      float safe_vertex_altitude_length = computeSafeAlphaLength1(tet, v);
+      float safe_edge_altitude_length = computeSafeAlphaLength2(tet, v);
+      float safe_alpha_length = std::min(safe_vertex_altitude_length, safe_edge_altitude_length);
 
       // set safe alpha for all edges around vertex
       updateAlphaLengthAroundVertex(tet->verts[v], safe_alpha_length);

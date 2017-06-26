@@ -41,7 +41,8 @@ public:
     void computeAlphasSafely(bool verbose = false);
     void makeTetAlphaSafe(Tet *tet);
     void updateAlphaLengthAroundVertex(Vertex *vertex, float alpha_length);
-    float computeSafeAlphaLength(Tet *tet, int v);
+    float computeSafeAlphaLength1(Tet *tet, int v);
+    float computeSafeAlphaLength2(Tet *tet, int v);
 
     void computeInterfaces(bool verbose = false);
     void generalizeTets(bool verbose = false);
