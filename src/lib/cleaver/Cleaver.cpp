@@ -51,7 +51,7 @@ using namespace std;
 
 namespace cleaver
 {
-  const std::string VersionNumber = "2.0";
+  const std::string VersionNumber = "2.3";
   const std::string VersionDate = __DATE__;
   const std::string Version = std::string("Cleaver") + " " + VersionNumber + " " + VersionDate;
 

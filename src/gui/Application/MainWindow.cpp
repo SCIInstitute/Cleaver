@@ -663,10 +663,13 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh) {
 
 void MainWindow::about() {
   QMessageBox::about(this, tr("About Cleaver 2"),
-      tr("<b>Cleaver 2.2</b><BR>"
+      tr("<b>Cleaver ") +
+      tr(cleaver::VersionNumber.c_str()) +
+      tr(" built ") +
+      tr(cleaver::VersionDate.c_str()) +
+      tr("</b><BR>"
         "<a href=\"http://www.sci.utah.edu/\">Scientific Computing & Imaging Institute</a><BR>"
         "<a href=\"http://www.cs.utah.edu/\">University of Utah, School of Computing</a><BR>"
-        "<P><b>Author:</b> Jonathan Bronson, <b>Developer:</b> Brig Bagley"
         "<P>This program is provided AS IS with NO "
         "WARRANTY OF ANY KIND, INCLUDING THE WARRANTY"
         "OF DESIGN, MERCHANTABILITY AND FITNESS FOR A "
