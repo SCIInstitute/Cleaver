@@ -422,7 +422,7 @@ void MainWindow::importVolume() {
     fileNames = dialog.selectedFiles();
   bool segmentation = dialog.isSegmentation();
   double sigma = dialog.sigma();
-  if(!fileNames.isEmpty()) {
+  if (!fileNames.isEmpty()) {
     std::string file1 = (*fileNames.begin()).toStdString();
     auto pos = file1.find_last_of('/');
     lastPath_ = file1.substr(0,pos);
@@ -430,7 +430,7 @@ void MainWindow::importVolume() {
 
     std::vector<std::string> inputs;
 
-    for(int i=0; i < fileNames.size(); i++){
+    for (int i=0; i < fileNames.size(); i++){
       inputs.push_back(fileNames[i].toStdString());
     }
 
@@ -441,7 +441,7 @@ void MainWindow::importVolume() {
     QApplication::processEvents();
     std::cout << " Loading input fields:" << std::endl;
     std::vector<cleaver::AbstractScalarField*> fields;
-    if(inputs.empty()){
+    if (inputs.empty()){
       std::cerr << "No material fields or segmentation files provided. Terminating."
         << std::endl;
       return;
@@ -489,7 +489,7 @@ void MainWindow::importVolume() {
 
     static int v = 0;
     std::string volumeName = std::string("Volume");
-    if(v > 0){
+    if (v > 0){
       volumeName += std::string(" ") + QString::number(v).toStdString();
     }
     volume->setName(volumeName);
@@ -517,7 +517,7 @@ void MainWindow::importSizingField() {
   QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"),
       QString::fromStdString(lastPath_), tr("NRRD (*.nrrd)"));
 
-  if(!fileName.isEmpty())
+  if (!fileName.isEmpty())
   {
     std::string file1 = QString((*fileName.begin())).toStdString();
     auto pos = file1.find_last_of('/');
@@ -544,17 +544,17 @@ void MainWindow::importMesh() {
     fileNames.push_back(QString::fromStdString(f + ".node"));
     fileNames.push_back(QString::fromStdString(f + ".ele"));
   }
-  if(fileNames.size() == 2)
+  if (fileNames.size() == 2)
   {
     std::string elefilename;
     std::string nodefilename;
 
-    for(int i=0; i < 2; i++)
+    for (int i=0; i < 2; i++)
     {
       std::string fn = fileNames[i].toStdString();
-      if(fn.substr(fn.find_last_of(".") + 1) == "ele")
+      if (fn.substr(fn.find_last_of(".") + 1) == "ele")
         elefilename = fn;
-      else if(fn.substr(fn.find_last_of(".") + 1) == "node")
+      else if (fn.substr(fn.find_last_of(".") + 1) == "node")
         nodefilename = fn;
       else
       {
@@ -563,11 +563,11 @@ void MainWindow::importMesh() {
       }
     }
 
-    if(elefilename.length() > 0 && nodefilename.length() > 0)
+    if (elefilename.length() > 0 && nodefilename.length() > 0)
     {
       cleaver::TetMesh *mesh =
         cleaver::TetMesh::createFromNodeElePair(nodefilename, elefilename,false);
-      if(mesh == nullptr){
+      if (mesh == nullptr){
         std::cerr << "Invalid Mesh" << std::endl;
         return;
       }
@@ -597,7 +597,7 @@ void MainWindow::importMesh() {
 }
 
 void MainWindow::exportField(cleaver::FloatField *field) {
-  if(!field)
+  if (!field)
     return;
   QString ext;
   QString selectedFilter;
@@ -620,7 +620,7 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh) {
   // If no mesh selected, get active window mesh
   if (!mesh)
     mesh = this->mesher_.getTetMesh();
-  if(!mesh)
+  if (!mesh)
     return;
   QString ext;
   QString selectedFilter;
@@ -641,22 +641,22 @@ void MainWindow::exportMesh(cleaver::TetMesh *mesh) {
   std::string f = fileName.toStdString();
   f = f.substr(0,f.rfind("."));
 
-  if(selectedFilter == filter1){
+  if (selectedFilter == filter1){
     mesh->writeNodeEle(f, true, true);
   }
-  else if(selectedFilter == filter2){
+  else if (selectedFilter == filter2){
     mesh->writePtsEle(f, true);
   }
-  else if(selectedFilter == filter3){
+  else if (selectedFilter == filter3){
     mesh->writePly(f, true);
   }
-  else if(selectedFilter == filter4){
+  else if (selectedFilter == filter4){
     mesh->writeMatlab(f, true);
   }
-  else if(selectedFilter == filter5){
+  else if (selectedFilter == filter5){
     mesh->writeVtkUnstructuredGrid(f, true);
   }
-  else if(selectedFilter == filter6){
+  else if (selectedFilter == filter6){
     mesh->writeVtkPolyData(f, true);
   }
   if (fileName != "") {
