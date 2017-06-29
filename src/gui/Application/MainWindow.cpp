@@ -447,6 +447,11 @@ void MainWindow::importVolume() {
       return;
     } else if (segmentation && inputs.size() == 1) {
       fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0], sigma);
+      if(fields.empty()) {
+        this->handleError("Input file cannot be read as a label map. It may be raw data.");
+        status.setValue(0);
+        return;
+      }
       status.setValue(90);
       QApplication::processEvents();
     } else {
