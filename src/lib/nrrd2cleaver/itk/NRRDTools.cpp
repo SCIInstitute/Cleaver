@@ -59,6 +59,7 @@ typedef itk::DiscreteGaussianImageFilter<
   ImageType, ImageType >  GaussianBlurType;
 typedef itk::ApproximateSignedDistanceMapImageFilter
 <ImageType, ImageType> DMapType;
+
 std::vector<cleaver::AbstractScalarField*>
 NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) {
   // read file using ITK
@@ -71,6 +72,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
   reader->SetFileName(filename);
   reader->Update();
   ImageType::Pointer image = reader->GetOutput();
+
   //determine the number of labels in the segmentations
   ImageCalculatorFilterType::Pointer imageCalculatorFilter
     = ImageCalculatorFilterType::New();
@@ -79,22 +81,23 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
   auto maxLabel = static_cast<size_t>(imageCalculatorFilter->GetMaximum());
   auto minLabel = static_cast<size_t>(imageCalculatorFilter->GetMinimum());
   std::vector<cleaver::AbstractScalarField*> fields;
-  //extract images from each label for an indicator function
+
+  // extract images from each label for an indicator function
   for (size_t i = minLabel, num = 0; i <= maxLabel; i++, num++) {
-    //pull out this label
+    // Pull out this label
     ThreshType::Pointer thresh = ThreshType::New();
     thresh->SetInput(image);
     thresh->SetOutsideValue(0);
     thresh->ThresholdOutside(static_cast<double>(i) - 0.001,
       static_cast<double>(i) + 0.001);
     thresh->Update();
-    //change the values to be from 0 to 1
+    // Change the values to be from 0 to 1.
     MultiplyImageFilterType::Pointer multiplyImageFilter =
       MultiplyImageFilterType::New();
     multiplyImageFilter->SetInput(thresh->GetOutput());
     multiplyImageFilter->SetConstant(1. / static_cast<double>(i));
     multiplyImageFilter->Update();
-    //do some blurring
+    // Do some blurring.
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(multiplyImageFilter->GetOutput());
     blur->SetVariance(sigma * sigma);
@@ -107,13 +110,14 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     float mx = calc->GetMaximum();
     float mn = calc->GetMinimum();
     auto md = (mx + mn) / 2.f;
+
     //create a distance map with that minimum value as the levelset
     DMapType::Pointer dm = DMapType::New();
     dm->SetInput(blur->GetOutput());
     dm->SetInsideValue(md + 0.1f);
     dm->SetOutsideValue(md -0.1f);
     dm->Update();
-    //MultiplyImageFilterType::Pointer mult =
+    // MultiplyImageFilterType::Pointer mult =
     //  MultiplyImageFilterType::New();
     //mult->SetInput(blur->GetOutput());
     //mult->SetConstant(-20. / (mx - mn));
@@ -123,7 +127,8 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     subtractFilter->SetInput1(mult->GetOutput());
     subtractFilter->SetConstant2(1.);
     subtractFilter->Update();*/
-    //convert the image to a cleaver "abstract field"
+
+    // Convert the image to a cleaver "abstract field".
     auto img = dm->GetOutput();
     auto region = img->GetLargestPossibleRegion();
     auto numPixel = region.GetNumberOfPixels();
@@ -137,10 +142,11 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     std::stringstream ss;
     ss << name << i;
     fields[num]->setName(ss.str());
+
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
     while (!imageIterator.IsAtEnd()) {
-      // Get the value of the current pixel
+      // Get the value of the current pixel.
       float val = static_cast<float>(imageIterator.Get());
       ((cleaver::FloatField*)fields[num])->data()[pixel++] = -val;
       ++imageIterator;
