@@ -602,12 +602,18 @@ void MainWindow::exportField(cleaver::FloatField *field) {
   QString ext;
   QString selectedFilter;
   std::string name = field->name() == "" ? "Untitled" : field->name();
+  name += ".nrrd";
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save Field As"),
       (lastPath_ + "/" + name).c_str(), tr("NRRD (*.nrrd);"), &selectedFilter);
   QString filter1("NRRD (*.nrrd)");
   if (fileName.isEmpty()) {
     return;
   }
+
+  if (!fileName.endsWith(".nrrd")) {
+    fileName += ".nrrd";
+  }
+
   NRRDTools::saveNRRDFile(field, std::string(fileName.toLatin1()));
   if (fileName != "") {
     std::string file1 = fileName.toStdString();
