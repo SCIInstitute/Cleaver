@@ -50,17 +50,17 @@ TEST(AngleTests, Regular) {
   v2.pos() = vec3(-.5f/sqrt(3.f),-.5f,-.5f/sqrt(6.f));
   v3.pos() = vec3(-.5f/sqrt(3.f),.5f,-.5f/sqrt(6.f));
   v4.pos() = vec3(1.f/sqrt(3.f),0.f,-.5f/sqrt(6.f));
-  Tet tri(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(70.5288f, tri.minAngle());
-  ASSERT_FLOAT_EQ(70.5288f, tri.maxAngle());
+  Tet tet(&v1,&v2,&v3,&v4,0);
+  ASSERT_FLOAT_EQ(70.5288f, tet.minAngle());
+  ASSERT_FLOAT_EQ(70.5288f, tet.maxAngle());
   //regular 2
   v1.pos() = vec3( 1.f, 0.f,-1.f/sqrt(2.f));
   v2.pos() = vec3(-1.f, 0.f,-1.f/sqrt(2.f));
   v3.pos() = vec3( 0.f, 1.f, 1.f/sqrt(2.f));
   v4.pos() = vec3( 0.f,-1.f, 1.f/sqrt(2.f));
-  Tet tri2(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(70.5288f, tri2.minAngle());
-  ASSERT_FLOAT_EQ(70.5288f, tri2.maxAngle());
+  Tet tet2(&v1,&v2,&v3,&v4,0);
+  ASSERT_FLOAT_EQ(70.5288f, tet2.minAngle());
+  ASSERT_FLOAT_EQ(70.5288f, tet2.maxAngle());
 }
 //Tests a right angled tet
 TEST(AngleTests,Right) {
@@ -69,9 +69,9 @@ TEST(AngleTests,Right) {
   v2.pos() = vec3(1.f,0.f,0.f);
   v3.pos() = vec3(0.f,1.f,0.f);
   v4.pos() = vec3(0.f,0.f,0.f);
-  Tet tri(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(54.7356103f, tri.minAngle());
-  ASSERT_FLOAT_EQ(90.0f, tri.maxAngle());
+  Tet tet(&v1,&v2,&v3,&v4,0);
+  ASSERT_FLOAT_EQ(54.7356103f, tet.minAngle());
+  ASSERT_FLOAT_EQ(90.0f, tet.maxAngle());
 }
 //Tests a flat tet
 TEST(AngleTests,Flat) {
@@ -80,14 +80,14 @@ TEST(AngleTests,Flat) {
   v2.pos() = vec3(1.f,0.f,0.f);
   v3.pos() = vec3(0.f,1.f,0.f);
   v4.pos() = vec3(0.f,0.f,0.f);
-  Tet tri(&v1,&v2,&v3,&v4,0);
-  ASSERT_FLOAT_EQ(0.f, tri.minAngle());
-  ASSERT_FLOAT_EQ(180.f, tri.maxAngle());
+  Tet tet(&v1,&v2,&v3,&v4,0);
+  ASSERT_FLOAT_EQ(0.f, tet.minAngle());
+  ASSERT_FLOAT_EQ(180.f,tet.maxAngle());
   v1.pos() = vec3(0.f,0.f,0.f);
   v2.pos() = vec3(0.f,0.f,0.f);
   v3.pos() = vec3(0.f,0.f,0.f);
   v4.pos() = vec3(0.f,0.f,0.f);
-  Tet tri2(&v1,&v2,&v3,&v4,0);
-  ASSERT_TRUE(tri2.minAngle() == 0.f || tri2.minAngle() == 180.f);
-  ASSERT_TRUE(tri2.maxAngle() == 0.f || tri2.maxAngle() == 180.f);
+  Tet tet2(&v1,&v2,&v3,&v4,0);
+  ASSERT_TRUE(tet2.minAngle() == 0.f || tet2.minAngle() == 180.f);
+  ASSERT_TRUE(tet2.maxAngle() == 0.f || tet2.maxAngle() == 180.f);
 }
