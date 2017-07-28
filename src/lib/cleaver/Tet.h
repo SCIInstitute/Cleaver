@@ -72,6 +72,8 @@ public:
 
     float minAngle();
     float maxAngle();
+
+    bool contains(Vertex *v) const;
 };
 
 } // namespace cleaver

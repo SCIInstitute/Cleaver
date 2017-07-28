@@ -167,4 +167,18 @@ double Tet::volume() const
   return dot(a - d, cross(b-d, c-d)) / 6.0;
 }
 
+//===================================================
+//  contains()
+//
+// Returns true if the given vertex is one of the 
+// four vertices composing this tetrahedron.
+//===================================================
+bool Tet::contains(Vertex *v) const
+{
+  return verts[0] == v || 
+         verts[1] == v || 
+         verts[2] == v ||
+         verts[3] == v;
+}
+
 } // namespace cleaver
