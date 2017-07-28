@@ -159,13 +159,6 @@ namespace cleaver
     this->m_bRecordOperations = true;
   }
 
-  void CleaverMesherImp::recordTetInitialization()
-  {
-    for (auto tet_index : m_tets_to_record) {
-      std::cout << tet_to_json(m_mesh->tets[tet_index]) << std::endl;
-    }
-  }
-
   //================================================
   // createBackgroundMesh()
   //================================================
