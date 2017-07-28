@@ -16,6 +16,7 @@
 #include "TopologicalInterfaceCalculator.h"
 #include "LinearViolationChecker.h"
 #include "Status.h"
+#include "Debug.h"
 #include "vec3.h"
 #include "Util.h"
 #include <queue>
@@ -156,7 +157,25 @@ namespace cleaver
       Json::Value tet = badTets[i];
       m_tets_to_record.insert((size_t)tet["parent"].asUInt64());
     }
-    this->m_bRecordOperations = true;
+    
+    if (m_tets_to_record.size() > 0) {
+      m_recorder_stream.open("recording.dump", std::ofstream::out);
+      m_recorder_stream << "{" << std::endl;
+      m_recorder_stream << "    operations: [" << std::endl;
+      this->m_bRecordOperations = true;
+    }
+  }
+
+  void CleaverMesherImp::recordTetInitialization()
+  {
+    std::cout << "total tet count to record: " << m_bgMesh->tets.size() << std::endl;
+    for(auto tet_index : m_tets_to_record) {
+      std::cout << "recording tet : " << tet_index << std::endl;
+      std::vector<Json::Value> operations = createTetSet(m_bgMesh->tets[tet_index], m_bgMesh);
+      for (auto operation : operations ) {
+        m_recorder_stream << operation << "," << std::endl;
+      }
+    }
   }
 
   //================================================
@@ -937,6 +956,10 @@ namespace cleaver
     if (verbose) {
       status.done();
       std::cout << " done." << std::endl;
+    }
+
+    if (m_bRecordOperations) {
+      this->recordTetInitialization();
     }
   }
 
@@ -1928,6 +1951,21 @@ namespace cleaver
     //------------------------------------
     vertex->pos() = warp_point;
     vertex->warped = true;
+    
+    if (m_bRecordOperations) {
+      // does this snap effect the active set?
+      bool shouldRecord = false;
+      for(auto tet_index : m_tets_to_record) {
+        if (m_bgMesh->tets[tet_index]->contains(vertex)) {
+          shouldRecord = true;
+          break;
+        }
+      }
+      if (shouldRecord) {    
+        auto operation = createVertexSnapOperation(vertex, warp_point, viol_edges, part_edges);
+        m_recorder_stream << operation << "," << std::endl;      
+      }
+    }
 
     // move remaining cuts and check for violation
     for (unsigned int e = 0; e < part_edges.size(); e++)
