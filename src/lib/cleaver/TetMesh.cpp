@@ -1154,7 +1154,7 @@ namespace cleaver
           debug_dump << "," << std::endl;
         bad_tets++;
 
-        Json::Value tet = tet_to_json(t, this);
+        Json::Value tet = tet_to_json(t, this, false /* includeInterfaces */);
         tet["parent"] = t->parent;
         debug_dump << tet << std::endl;
         t->flagged = true;

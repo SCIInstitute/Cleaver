@@ -60,7 +60,7 @@ namespace cleaver
         vec3 origin, vec3 ray, vec3 &pt, float epsilon = 1E-8);
 
     Json::Value vertex_to_json(Vertex *vertex);
-    Json::Value tet_to_json(Tet *tet, TetMesh *mesh);
+    Json::Value tet_to_json(Tet *tet, TetMesh *mesh, bool includeInterfaces = true);
 
     class CleaverException : public std::exception
     {

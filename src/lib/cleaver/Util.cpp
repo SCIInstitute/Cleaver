@@ -235,7 +235,7 @@ Json::Value vertex_to_json(Vertex *vertex) {
 // All values, vertices and interfaces, are captured at the time of
 // this function call. Mesh object requred for adjacency information.
 //-------------------------------------------------------------------
-Json::Value tet_to_json(Tet *tet, TetMesh *mesh) {
+Json::Value tet_to_json(Tet *tet, TetMesh *mesh, bool includeInterfaces) {
   Vertex *verts[4];
   HalfEdge *edges[6];
   HalfFace *faces[4];
@@ -249,17 +249,19 @@ Json::Value tet_to_json(Tet *tet, TetMesh *mesh) {
   }
 
   // TODO(jonbronson): Be smarter about how to record virtual interfaces
-  root["cuts"] = Json::Value(Json::arrayValue);
-  for (int e = 0; e < EDGES_PER_TET; e++) {
-    root["cuts"].append(vertex_to_json(edges[e]->cut));
-  }
+  if (includeInterfaces) {
+      root["cuts"] = Json::Value(Json::arrayValue);
+      for (int e = 0; e < EDGES_PER_TET; e++) {
+        root["cuts"].append(vertex_to_json(edges[e]->cut));
+      }
 
-  root["triples"] = Json::Value(Json::arrayValue);
-  for (int f = 0; f < 4; f++) {
-    root["triples"].append(vertex_to_json(faces[f]->triple));
-  }
+      root["triples"] = Json::Value(Json::arrayValue);
+      for (int f = 0; f < 4; f++) {
+        root["triples"].append(vertex_to_json(faces[f]->triple));
+      }
 
-  root["quadruple"] = vertex_to_json(tet->quadruple);
+      root["quadruple"] = vertex_to_json(tet->quadruple);
+  }
   return root;
 }
 
