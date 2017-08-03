@@ -525,6 +525,10 @@ void MainWindow::importSizingField() {
     std::vector<cleaver::AbstractScalarField*> sizingField =
       NRRDTools::loadNRRDFiles({ {fileName.toStdString()} });
     volume->setSizingField(sizingField[0]);
+    this->m_dataManagerWidget->setSizingField(sizingField[0]);
+    this->m_cleaverWidget->setMeshButtonEnabled(true);
+    this->mesher_.cleanup();
+    this->sizingFieldSaved_ = false;
     std::cout << "Sizing Field Set" << std::endl;
   }
   this->enablePossibleActions();
