@@ -83,6 +83,7 @@ IF(BUILD_CLI OR BUILD_GUI)
   IF(BUILD_EXTRAS)
       ADD_SUBDIRECTORY(lib/synthetic)
       ADD_SUBDIRECTORY(cli/sizingfieldcreator)
+      ADD_SUBDIRECTORY(cli/info)
   ENDIF()
 
   IF(BUILD_GUI)
