@@ -1195,7 +1195,7 @@ namespace cleaver
     //-----------------------------------
     std::string info_filename = filename + ".info";
     if(verbose)
-      std::cout << "Writing settings file: " << info_filename << std::endl;
+      std::cout << "Writing info file: " << info_filename << std::endl;
     std::ofstream info_file(info_filename.c_str());
 
     info_file.precision(8);
