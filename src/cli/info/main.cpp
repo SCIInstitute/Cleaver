@@ -124,7 +124,13 @@ int main(int argc, char* argv[])
   if (verbose) {
     std::cout << "Computing dihedral angles..." << std::endl;
   }
+
+  // TODO(jonbronson): Remove construction of bottom up incidences.
+  // Debug dump information is currently created in the compute angles method.
+  // This requires full bottom up incidences be built prior to angle
+  // computation. Otherwise, any flat tets will trigger a segfault.
   mesh->constructFaces();
+  mesh->constructBottomUpIncidences();
   mesh->computeAngles();
   std::cout << "Min Dihedral: " << mesh->min_angle << std::endl;
   std::cout << "Max Dihedral: " << mesh->max_angle << std::endl;
