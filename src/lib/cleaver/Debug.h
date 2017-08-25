@@ -54,13 +54,16 @@
 namespace cleaver
 {
   std::string idForEdge(HalfEdge *edge);
+  std::string idForEdge(HalfFace *face);
 	Json::Value createVertexOperation(Vertex *vertex);
 	Json::Value createEdgeOperation(HalfEdge *edge);
 	Json::Value createFaceOperation(HalfFace *face);
 	std::vector<Json::Value> createTetOperations(Tet *tet, TetMesh *mesh, bool debug=false);
 	std::vector<Json::Value> createTetSet(Tet *tet, TetMesh *mesh);
   Json::Value createVertexSnapOperation(Vertex *vertex,  const vec3 &warp_point, 
-      std::vector<HalfEdge*> violating_cuts,  std::vector<HalfEdge*> projected_cuts);
+      std::vector<HalfEdge*> violating_cuts,  std::vector<HalfEdge*> projected_cuts,
+      std::vector<HalfFace*> violating_trips, std::vector<HalfFace*> projected_trips,
+      std::vector<Tet*>      violating_quads, std::vector<Tet*>      projected_quads);
 }
 
 #endif // DEBUG_H

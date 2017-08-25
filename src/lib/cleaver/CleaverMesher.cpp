@@ -1962,7 +1962,8 @@ namespace cleaver
         }
       }
       if (shouldRecord) {    
-        auto operation = createVertexSnapOperation(vertex, warp_point, viol_edges, part_edges);
+        auto operation = createVertexSnapOperation(vertex, warp_point, viol_edges, part_edges,
+            viol_faces, part_faces, viol_tets, part_tets);
         m_recorder_stream << operation << "," << std::endl;      
       }
     }

@@ -84,6 +84,19 @@ namespace cleaver
     return catIds({ v1->tm_v_index, v2->tm_v_index});
   }
 
+  std::string idForFace(HalfFace *face) {
+    Vertex *v1 = face->halfEdges[0]->vertex;
+    Vertex *v2 = face->halfEdges[1]->vertex;
+    Vertex *v3 = face->halfEdges[2]->vertex;
+    std::vector<int> ids = { v1->tm_v_index, v2->tm_v_index, v3->tm_v_index };
+    std::sort(ids.begin(), ids.end());
+    return catIds(ids);
+  }
+
+  std::string idForTet(Tet *tet) {
+    return catIds({tet->tm_index});
+  }
+
 	//
 	Json::Value createEdgeOperation(HalfEdge *edge) {
     Vertex *v1 = edge->vertex;
@@ -207,8 +220,10 @@ namespace cleaver
 	}
 
   Json::Value createVertexSnapOperation(
-    Vertex *vertex, const vec3 &warp_point, std::vector<HalfEdge*> violating_cuts,
-    std::vector<HalfEdge*> projected_cuts) {
+    Vertex *vertex, const vec3 &warp_point, 
+    std::vector<HalfEdge*> violating_cuts,  std::vector<HalfEdge*> projected_cuts,
+    std::vector<HalfFace*> violating_trips, std::vector<HalfFace*> projected_trips,
+    std::vector<Tet*>      violating_quads, std::vector<Tet*>      projected_quads){
 
     Json::Value root(Json::objectValue);
     root["name"] = "SNAP_VERTEX";
@@ -217,22 +232,54 @@ namespace cleaver
     root["warp_point"]["x"] = warp_point.x;
     root["warp_point"]["y"] = warp_point.y;
     root["warp_point"]["z"] = warp_point.z;
+
+    // add involved cuts
     root["violating_cuts"] = Json::Value(Json::arrayValue);
-    for (size_t v = 0; v < violating_cuts.size(); v++) {
-      std::string id = idForEdge(violating_cuts[v]);
-      root["violating_cuts"].append(id.c_str());
+    for (HalfEdge *edge : violating_cuts) {
+      root["violating_cuts"].append(idForEdge(edge).c_str());
     }
     root["projected_cuts"] = Json::Value(Json::arrayValue);    
-    for (size_t v = 0; v < projected_cuts.size(); v++) {
-      std::string id = idForEdge(projected_cuts[v]);
+    for (HalfEdge *edge : projected_cuts) {
       Json::Value cut = Json::Value(Json::objectValue);
-      cut["id"] = id.c_str();
-      Json::Value position = Json::Value(Json::objectValue);      
-      position["x"] = projected_cuts[v]->cut->pos_next().x;
-      position["y"] = projected_cuts[v]->cut->pos_next().y;
-      position["z"] = projected_cuts[v]->cut->pos_next().z;
-      cut["position"] = position;
+      cut["id"] = idForEdge(edge).c_str();
+      cut["position"] = Json::Value(Json::objectValue);      
+      cut["position"]["x"] = edge->cut->pos_next().x;
+      cut["position"]["y"] = edge->cut->pos_next().y;
+      cut["position"]["z"] = edge->cut->pos_next().z;      
       root["projected_cuts"].append(cut);
+    }
+
+    // add involved triples
+    root["violating_triples"] = Json::Value(Json::arrayValue);
+    for (HalfFace *face : violating_trips) {
+      root["violating_triples"].append(idForFace(face).c_str());      
+    }
+    root["projected_triples"] = Json::Value(Json::arrayValue);
+    for (HalfFace *face : projected_trips) {
+      Json::Value triple = Json::Value(Json::objectValue);
+      triple["id"] = idForFace(face).c_str();
+      triple["position"] = Json::Value(Json::objectValue);
+      triple["position"]["x"] = face->triple->pos_next().x;
+      triple["position"]["y"] = face->triple->pos_next().y;
+      triple["position"]["z"] = face->triple->pos_next().z;      
+      root["projected_triples"].append(triple);
+    }
+
+    // add involved quadruples
+    root["violating_quadruples"] = Json::Value(Json::arrayValue);
+    for (Tet *tet : violating_quads) {
+      root["violating_quadruples"].append(idForTet(tet).c_str());
+    }
+
+    root["projected_quadruples"] = Json::Value(Json::arrayValue);
+    for (Tet *tet : projected_quads) {
+      Json::Value quadruple = Json::Value(Json::objectValue);
+      quadruple["id"] = idForTet(tet).c_str();
+      quadruple["position"] = Json::Value(Json::objectValue);
+      quadruple["position"]["x"] = tet->quadruple->pos_next().x;
+      quadruple["position"]["y"] = tet->quadruple->pos_next().y;
+      quadruple["position"]["z"] = tet->quadruple->pos_next().z;
+      root["projected_quadruples"].append(quadruple);      
     }
     
     return root;
