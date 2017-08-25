@@ -148,6 +148,7 @@ void MainWindow::createMenus()
   // Top Level Menus
   m_fileMenu = new QMenu(tr("&File"), this);
   m_editMenu = new QMenu(tr("&Edit"), this);
+  m_computeMenu = new QMenu(tr("&Compute"), this);
   m_viewMenu = new QMenu(tr("&View"), this);
   m_helpMenu = new QMenu(tr("&Help"), this);
 
@@ -164,9 +165,9 @@ void MainWindow::createMenus()
   // Edit Menu Actions
   m_editMenu->addAction(removeExternalTetsAct);
   m_editMenu->addAction(removeLockedTetsAct);
-  m_editMenu->addAction(computeAnglesAct);
-
+  
   // Compute Menu Actions
+  m_computeMenu->addAction(computeAnglesAct);
 
   // View Menu Actions
   m_viewMenu->addAction(sizingFieldAction);
@@ -184,6 +185,7 @@ void MainWindow::createMenus()
   // Add Menus To MenuBar
   menuBar()->addMenu(m_fileMenu);
   menuBar()->addMenu(m_editMenu);
+  menuBar()->addMenu(m_computeMenu);
   menuBar()->addMenu(m_viewMenu);
   menuBar()->addMenu(m_helpMenu);
 }

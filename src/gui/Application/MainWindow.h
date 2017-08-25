@@ -98,6 +98,7 @@ private:
   // Top Level Menus
   QMenu *m_fileMenu;
   QMenu *m_editMenu;
+  QMenu *m_computeMenu;
   QMenu *m_viewMenu;
   QMenu *m_helpMenu;
   
