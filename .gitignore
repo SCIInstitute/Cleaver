@@ -1,3 +1,4 @@
+src/CMakeLists.txt.user
 src/test/test_data/*.nrrd
 src/test/test_data/*.info
 src/test/test_data/*.txt
