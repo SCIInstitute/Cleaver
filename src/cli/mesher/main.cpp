@@ -93,6 +93,7 @@ int main(int argc, char* argv[])
   bool verbose = false;
   bool fix_tets = false;
   bool segmentation = false;
+  bool simple = false;
   std::vector<std::string> material_fields;
   std::string sizing_field;
   std::string background_mesh;
@@ -145,6 +146,7 @@ int main(int argc, char* argv[])
       ("record,r", po::value<std::string>(), "record operations on tets from input file.")
       ("scale,c", po::value<double>(), "sizing field scale factor")
       ("segmentation,S", "The input file is a segmentation file.")
+      ("simple", "Use simple interface approximation.")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
       ("strict,t", "warnings become errors")
       ("strip_exterior,e", "strip exterior tetrahedra")
@@ -171,6 +173,11 @@ int main(int argc, char* argv[])
     // enable verbose mode
     if (variables_map.count("verbose")) {
       verbose = true;
+    }
+
+    // enable simple interfaces
+    if (variables_map.count("simple")) {
+      simple = true;
     }
 
     // enable segmentation
@@ -375,7 +382,7 @@ int main(int argc, char* argv[])
       fields.push_back(new cleaver::InverseScalarField(fields[0]));
   }
   cleaver::Volume *volume = new cleaver::Volume(fields);
-  cleaver::CleaverMesher mesher;
+  cleaver::CleaverMesher mesher(simple);
   mesher.setVolume(volume);
   mesher.setAlphaInit(alpha);
 

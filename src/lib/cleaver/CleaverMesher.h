@@ -13,7 +13,7 @@ class CleaverMesher
 {
 public:
 
-    CleaverMesher();
+    CleaverMesher(bool simple = false);
     ~CleaverMesher();
 
     void createTetMesh(bool verbose);

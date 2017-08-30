@@ -3,9 +3,9 @@
 //
 // Cleaver - A MultiMaterial Conforming Tetrahedral Meshing Library
 //
-// -- Debug Tools
+// -- Simple Interface Calculator
 //
-// Author: Jonathan Bronson (bronson@sci.utah.ed)
+// Author: Jonathan Bronson (bronson@sci.utah.edu)
 //
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
@@ -38,41 +38,36 @@
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef SIMPLE_INTERFACE_CALCULATOR_H
+#define SIMPLE_INTERFACE_CALCULATOR_H
 
+#include "InterfaceCalculator.h"
 #include "TetMesh.h"
+#include "AbstractVolume.h"
 #include "vec3.h"
 #include "Vertex.h"
-#include "HalfEdge.h"
-#include <jsoncpp/json.h>
-
-#include <string>
-#include <exception>
-
 
 namespace cleaver
 {
-  std::string idForEdge(HalfEdge *edge);
-  std::string idForEdge(HalfFace *face);
-	Json::Value createVertexOperation(Vertex *vertex);
-	Json::Value createEdgeOperation(HalfEdge *edge);
-	Json::Value createFaceOperation(HalfFace *face);
-	std::vector<Json::Value> createTetOperations(Tet *tet, TetMesh *mesh, bool debug=false);
-	std::vector<Json::Value> createTetSet(Tet *tet, TetMesh *mesh);
-  Json::Value createVertexSnapOperation(Vertex *vertex,  const vec3 &warp_point, 
-      std::vector<HalfEdge*> violating_cuts,  std::vector<HalfEdge*> projected_cuts,
-      std::vector<HalfFace*> violating_trips, std::vector<HalfFace*> projected_trips,
-      std::vector<Tet*>      violating_quads, std::vector<Tet*>      projected_quads);
 
-  /*
-  // Operations ot resolve degeneracies.
-  Json::Value createPostProjectionCutSnapOperation();
-  Json::Value createPostProjectionTripSnapOperation();
-  Json::Value createPostProjectionQuadSnapOperation();
-  Json::Value createCollapseCutOperation();
-  Json::Value createCollapseTripOperation();  
-  */
-}
+/**
+ * This interface calculator avoids calculating interface positions
+ * and instead always returns interfaces in the centers of each
+ * k-cell of the graph. These interfaces will never be in violation.
+ */
+class SimpleInterfaceCalculator : public InterfaceCalculator
+{
+  public:
+    SimpleInterfaceCalculator(TetMesh *mesh, AbstractVolume *volume);
+    virtual void computeCutForEdge(HalfEdge *edge);
+    virtual void computeTripleForFace(HalfFace *face);
+    virtual void computeQuadrupleForTet(Tet *tet);
 
-#endif // DEBUG_H
+  private:
+    TetMesh *m_mesh;
+    AbstractVolume *m_volume;
+};
+
+} // namespace cleaver
+
+#endif // SIMPLE_INTERFACE_CALCULATOR_H

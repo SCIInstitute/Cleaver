@@ -13,6 +13,7 @@
 #include "SizingFieldCreator.h"
 #include "SizingFieldOracle.h"
 #include "LinearInterfaceCalculator.h"
+#include "SimpleInterfaceCalculator.h"
 #include "TopologicalInterfaceCalculator.h"
 #include "LinearViolationChecker.h"
 #include "Status.h"
@@ -31,7 +32,7 @@ namespace cleaver
   static const double DEFAULT_ALPHA_LONG = 0.357;
   static const double DEFAULT_ALPHA_SHORT = 0.203;
 
-  CleaverMesherImp::CleaverMesherImp()
+  CleaverMesherImp::CleaverMesherImp(bool simple)
   {
     // -- set algorithm state --
     m_bBackgroundMeshCreated = false;
@@ -45,6 +46,8 @@ namespace cleaver
     m_bComplete              = false;
     m_bRecordOperations      = false;
 
+    m_bSimple                = simple;
+
     m_volume                 = nullptr;
     m_sizingField            = nullptr;
     m_sizingOracle           = nullptr;
@@ -52,6 +55,7 @@ namespace cleaver
     m_mesh                   = nullptr;
     m_interfaceCalculator    = nullptr;
     m_violationChecker       = nullptr;
+
 
     m_sizing_field_time = 0;
     m_background_time   = 0;
@@ -78,7 +82,7 @@ namespace cleaver
     delete m_pimpl;
   }
 
-  CleaverMesher::CleaverMesher() : m_pimpl(new CleaverMesherImp)
+  CleaverMesher::CleaverMesher(bool simple) : m_pimpl(new CleaverMesherImp(simple))
   {
     m_alpha_long = DEFAULT_ALPHA_LONG;
     m_alpha_short = DEFAULT_ALPHA_SHORT;
@@ -364,7 +368,10 @@ namespace cleaver
     bool regular,
     double alp_long,
     double alp_short)
-  {
+  {    
+    if (m_bSimple) {
+      return;
+    }
     if (verbose)
       std::cout << "Computing Violation Alphas..." << std::flush;
 
@@ -548,7 +555,13 @@ namespace cleaver
     // setters to set the mesh and volume.
     if (m_interfaceCalculator)
       delete m_interfaceCalculator;
-    m_interfaceCalculator = new LinearInterfaceCalculator(m_bgMesh, m_volume);
+
+    if (m_bSimple) {
+      m_interfaceCalculator = new SimpleInterfaceCalculator(m_bgMesh, m_volume);  
+    } else {
+      m_interfaceCalculator = new LinearInterfaceCalculator(m_bgMesh, m_volume);  
+    }
+    
 
     if (m_violationChecker)
       delete m_violationChecker;
@@ -776,7 +789,7 @@ namespace cleaver
   void CleaverMesherImp::generalizeTets(bool verbose)
   {
     if (verbose)
-      std::cout << "Generalizing Tets..." << std::flush;
+      std::cout << "Generalizing Tets..." << std::endl;
 
     //--------------------------------------
     // Loop over all tets that contain cuts
@@ -1316,6 +1329,10 @@ namespace cleaver
   //=======================================
   void CleaverMesherImp::snapAndWarpViolations(bool verbose)
   {
+    if (m_bSimple) {
+      return;
+    }
+
     if (verbose)
       std::cout << "Beginning Snapping and Warping..." << std::endl;
 

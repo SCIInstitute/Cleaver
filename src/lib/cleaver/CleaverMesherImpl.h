@@ -21,7 +21,7 @@ namespace cleaver {
 class CleaverMesherImp
 {
 public:
-    CleaverMesherImp();
+    CleaverMesherImp(bool simple = false);
     ~CleaverMesherImp();
 
     void topologicalCleaving();
@@ -91,6 +91,9 @@ public:
     bool m_bStencilsDone;
     bool m_bComplete;
     bool m_bRecordOperations;
+
+    // Whether to use simple interface approximation.
+    bool m_bSimple;    
 
     std::set<size_t> m_tets_to_record;
     std::ofstream m_recorder_stream;
