@@ -135,7 +135,7 @@ namespace cleaver
     std::vector<Vertex*> vertexList = {v1, v2, v3};
     std::sort(vertexList.begin(), vertexList.end(), [](Vertex* a, Vertex* b) -> bool 
       { 
-        return (a->tm_v_index > b->tm_v_index);
+        return (a->tm_v_index < b->tm_v_index);
       });
     v1 = vertexList[0];
     v2 = vertexList[1];
