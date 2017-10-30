@@ -43,13 +43,14 @@
 
 #include <vector>
 #include <cstring>
+#include <stdint.h>
 #include "vec3.h"
 #include "Geometry.h"
 
 namespace cleaver
 {
 
-enum class Order : std::int8_t {
+enum class Order : int8_t {
     VERT = 0,
     CUT  = 1,
     TRIP = 2,
