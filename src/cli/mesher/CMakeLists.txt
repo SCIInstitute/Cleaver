@@ -19,3 +19,7 @@ TARGET_LINK_LIBRARIES(cleaver-cli
   nrrd2cleaver
   boostparts
   )
+
+INSTALL(TARGETS cleaver-cli
+  RUNTIME DESTINATION ${CLEAVER2_RUNTIME_DIR} COMPONENT RuntimeCLI
+  )
