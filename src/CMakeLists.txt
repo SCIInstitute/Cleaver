@@ -46,6 +46,12 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL
     "Single output directory for building all executables.")
 
+mark_as_advanced( CLEAVER2_RUNTIME_DIR CLEAVER2_BUNDLE_DIR)
+SET(CLEAVER2_RUNTIME_DIR "bin" CACHE STRING
+  "Directory for installing runtime files; path is relative to CMAKE_INSTALL_PREFIX")
+SET(CLEAVER2_BUNDLE_DIR "." CACHE STRING
+  "Directory for installing runtime files; path is relative to CMAKE_INSTALL_PREFIX")
+
 IF(NOT WIN32)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
 ELSE()
