@@ -42,7 +42,7 @@
 #include "TetMesh.h"
 #include "CleaverMesherImpl.h"
 
-class ViolationTest : public ::testing::Test {
+class MesherTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
         this->mesh = createTetMesh();
@@ -89,3 +89,9 @@ protected:
     cleaver::HalfEdge *edges[EDGES_PER_TET];
     cleaver::HalfFace *faces[FACES_PER_TET];
 };
+
+
+TEST_F(MesherTest, BasicTest)
+{
+    ASSERT_TRUE(true);
+}
