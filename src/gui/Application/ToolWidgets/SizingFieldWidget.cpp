@@ -14,7 +14,7 @@
 #include <NRRDTools.h>
 #include <stdexcept>
 
-SizingFieldWidget::SizingFieldWidget(cleaver::CleaverMesher& mesher, 
+SizingFieldWidget::SizingFieldWidget(cleaver::CleaverMesher& mesher,
   QWidget *parent) :
   QDockWidget(parent),
   mesher_(mesher),
@@ -38,7 +38,7 @@ void SizingFieldWidget::setCreateButtonEnabled(bool b) {
 }
 
 void SizingFieldWidget::loadSizingField() {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"), 
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Select Sizing Field"),
     QDir::currentPath(), tr("NRRD (*.nrrd)"));
 
   if (!fileName.isEmpty()) {
@@ -56,7 +56,7 @@ void SizingFieldWidget::computeSizingField() {
   int padding = ui->paddingSpinBox->value();
   bool adaptiveSurface = QString::compare(
     ui->surfaceComboBox->currentText(),
-    QString("constant"), Qt::CaseInsensitive) == 0 ? true : false;
+    QString("constant"), Qt::CaseInsensitive) == 0 ? false : true;
   SizingFieldThread *workerThread = new SizingFieldThread(this->mesher_, this,
     scaling, factor, speed, padding, adaptiveSurface);
   connect(workerThread, SIGNAL(sizingFieldDone()), this, SLOT(handleSizingFieldDone()));
@@ -97,7 +97,7 @@ void SizingFieldThread::run() {
   try {
     cleaver::AbstractScalarField *sizingField =
       cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-        this->mesher_.getVolume(), this->speed_, 
+        this->mesher_.getVolume(), this->speed_,
         this->scaling_, this->factor_,
         this->padding_, this->adapt_, true);
     this->mesher_.getVolume()->setSizingField(sizingField);
@@ -113,4 +113,4 @@ void SizingFieldThread::run() {
   emit message("Successfully computed Sizing Field.");
   emit progress(100);
   emit sizingFieldDone();
-} 
+}
