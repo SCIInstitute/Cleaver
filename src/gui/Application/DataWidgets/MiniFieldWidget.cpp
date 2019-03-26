@@ -6,6 +6,7 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QDialog>
+#include <QStyleOption>
 
 MiniFieldWidget::MiniFieldWidget(QWidget *parent) :
     QWidget(parent),
