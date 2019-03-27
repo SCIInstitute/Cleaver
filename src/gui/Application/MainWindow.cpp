@@ -471,7 +471,7 @@ void MainWindow::importVolume() {
       status.setValue(10);
       QApplication::processEvents();
 
-      fields = NRRDTools::loadNRRDFiles(inputs);
+      fields = NRRDTools::loadNRRDFiles(inputs, sigma);
 
       status.setValue(70);
       QApplication::processEvents();
