@@ -36,7 +36,7 @@
 class NRRDTools {
 public:
   static std::vector<cleaver::AbstractScalarField*>
-    segmentationToIndicatorFunctions(std::string file, double sigma = 1.);
+    segmentationToIndicatorFunctions(std::string file, int fileNum, double sigma = 1.);
   static std::vector<cleaver::AbstractScalarField*>
     loadNRRDFiles(std::vector<std::string> files, double sigma = 1.);
   static void saveNRRDFile(const cleaver::FloatField *field,

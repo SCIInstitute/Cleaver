@@ -448,7 +448,7 @@ void MainWindow::importVolume() {
         << std::endl;
       return;
     } else if (segmentation && inputs.size() == 1) {
-      fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0], sigma);
+      fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0], sigma, fileNames.size());
       if(fields.empty()) {
         this->handleError("Input file cannot be read as a label map. It may be raw data.");
         status.setValue(0);
