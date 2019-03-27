@@ -61,7 +61,7 @@ typedef itk::ApproximateSignedDistanceMapImageFilter
 <ImageType, ImageType> DMapType;
 
 std::vector<cleaver::AbstractScalarField*>
-NRRDTools::segmentationToIndicatorFunctions(std::string filename, int fileNum, double sigma) {
+NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) {
   // read file using ITK
   if (filename.find(".nrrd") != std::string::npos) {
     itk::NrrdImageIOFactory::RegisterOneFactory();
@@ -80,10 +80,6 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, int fileNum, d
   imageCalculatorFilter->Compute();
   auto maxLabel = static_cast<size_t>(imageCalculatorFilter->GetMaximum());
   auto minLabel = static_cast<size_t>(imageCalculatorFilter->GetMinimum());
-  if (fileNum == 1)
-  {
-    minLabel = maxLabel;
-  } 
   std::vector<cleaver::AbstractScalarField*> fields;
 
   // extract images from each label for an indicator function
