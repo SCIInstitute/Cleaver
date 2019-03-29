@@ -153,7 +153,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     }
     auto spacing = img->GetSpacing();
     ((cleaver::FloatField*)fields[num])->setScale(
-      cleaver::vec3(spacing[0], spacing[1], spacing[2]));
+      cleaver::vec3(1., 1., 1.));
     //NRRDTools::saveNRRDFile(fields[num], "a" + std::to_string(num));
   }
   return fields;
