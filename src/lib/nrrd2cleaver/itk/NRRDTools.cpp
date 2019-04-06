@@ -42,6 +42,7 @@
 #include <itkSubtractImageFilter.h>
 #include <itkApproximateSignedDistanceMapImageFilter.h>
 #include <sstream>
+#include <itkSmoothingRecursiveGaussianImageFilter.h>
 
 //typedefs needed.
 typedef float PixelType;
@@ -57,6 +58,8 @@ typedef itk::SubtractImageFilter <ImageType, ImageType >
 SubtractImageFilterType;
 typedef itk::DiscreteGaussianImageFilter<
   ImageType, ImageType >  GaussianBlurType;
+typedef itk::SmoothingRecursiveGaussianImageFilter<
+  ImageType, ImageType >  GaussianBlurTypeSmooth;
 typedef itk::ApproximateSignedDistanceMapImageFilter
 <ImageType, ImageType> DMapType;
 
@@ -148,13 +151,12 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel.
       float val = static_cast<float>(imageIterator.Get());
-      ((cleaver::FloatField*)fields[num])->data()[pixel++] = -val;
+      ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
       ++imageIterator;
     }
     auto spacing = img->GetSpacing();
     ((cleaver::FloatField*)fields[num])->setScale(
       cleaver::vec3(1., 1., 1.));
-    //NRRDTools::saveNRRDFile(fields[num], "a" + std::to_string(num));
   }
   return fields;
 }
@@ -175,10 +177,14 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     reader->SetFileName(file);
     reader->Update();
     //do some blurring
-    GaussianBlurType::Pointer blur = GaussianBlurType::New();
+    GaussianBlurTypeSmooth::Pointer blur = GaussianBlurTypeSmooth::New();
     blur->SetInput(reader->GetOutput());
-    blur->SetVariance(sigma * sigma);
+    blur->SetSigma(sigma);
     blur->Update();
+    //GaussianBlurType::Pointer blur = GaussianBlurType::New();
+    //blur->SetInput(reader->GetOutput());
+    //blur->SetVariance(sigma * sigma);
+    //blur->Update();
     ImageType::Pointer img = blur->GetOutput();
     //convert the image to a cleaver "abstract field"
     auto region = img->GetLargestPossibleRegion();
@@ -186,8 +192,9 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     float *data = new float[numPixel];
     auto x = region.GetSize()[0], y = region.GetSize()[1], z = region.GetSize()[2];
     fields.push_back(new cleaver::FloatField(data, x, y, z));
-    auto beg = file.find_last_of("/") + 1;
-    auto name = file.substr(beg, file.size() - beg);
+    auto nameBeg = file.find_last_of("/") + 1;
+    auto nameEnd = file.find_last_of(".");
+    auto name = file.substr(nameBeg, nameEnd - nameBeg);
     fields[num]->setName(name);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
@@ -200,6 +207,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
     num++;
   }
+
   return fields;
 }
 
