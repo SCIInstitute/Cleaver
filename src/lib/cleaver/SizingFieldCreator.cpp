@@ -72,37 +72,52 @@ namespace cleaver
   };
 
 
-  VoxelMesh::VoxelMesh(bool verbose) : m_verbose(verbose)
+  VoxelMesh::VoxelMesh(const std::string& name, bool verbose) : name_(name), m_verbose(verbose)
   {
-  }
-
-  VoxelMesh::~VoxelMesh()
-  {
-    //std::cout << "Deallocating VoxelMesh!: " << this << std::endl;
   }
 
   void VoxelMesh::init(int l, int m, int n)
   {
-    bool temp1 = false;
-    int i;
-    vector<bool> temp2;
-    vector<vector<bool> > temp3;
-    for (i = 0; i < n; i++)
-      temp2.push_back(temp1);
-    for (i = 0; i < m; i++)
-      temp3.push_back(temp2);
-    for (i = 0; i < l; i++)
-      known.push_back(temp3);
+    {
+      vector<bool> temp2(n, false);
+      vector<vector<bool> > temp3(m, temp2);
+      known.assign(l, temp3);
+    }
+    {
+      vector<double> temp2(n, 1e10);
+      vector<vector<double> > temp3(m, temp2);
+      dist.assign(l, temp3);
+    }
+  }
 
-    double temp5 = 1e10;
-    vector<double> temp6;
-    vector<vector<double> >temp7;
-    for (i = 0; i < n; i++)
-      temp6.push_back(temp5);
-    for (i = 0; i < m; i++)
-      temp7.push_back(temp6);
-    for (i = 0; i < l; i++)
-      dist.push_back(temp7);
+  static std::ofstream voxelMeshFile("C:\\voxelMeshLog.txt");
+
+  void VoxelMesh::setDist(int l, int m, int n, double value)
+  {
+    if (l == 0 && m == 0 && n == 0)
+    {
+      voxelMeshFile << name_ << " setDist 0,0,0 " << value << std::endl;
+    }
+    dist[l][m][n] = value;
+  }
+  double VoxelMesh::getDist(int l, int m, int n) const
+  {
+    return dist[l][m][n];
+  }
+
+  int VoxelMesh::distSizeX() const
+  {
+    return dist.size();
+  }
+
+  int VoxelMesh::distSizeY() const
+  {
+    return dist[0].size();
+  }
+
+  int VoxelMesh::distSizeZ() const
+  {
+    return dist[0][0].size();
   }
 
   ScalarField<float>* VoxelMesh::convertToFloatField(float factor, const cleaver::vec3 &padding, const cleaver::vec3 &offset)
@@ -144,8 +159,9 @@ namespace cleaver
 
 
   SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed,
-    float sampleFactor, float sizingFactor, int padding, bool adaptiveSurface, bool verbose) :
-    m_speed(speed), m_sampleFactor(sampleFactor), m_sizingFactor(sizingFactor), m_verbose(verbose)
+    float sampleFactor, float sizingFactor, int padding, bool adaptiveSurface, bool verbose) :  m_verbose(verbose),
+    m_speed(speed), m_sampleFactor(sampleFactor), m_sizingFactor(sizingFactor),
+    mesh_bdry("Boundary"), mesh_feature("Feature"), mesh_padded_feature("Padded")
   {
     m_padding[0] = m_padding[1] = m_padding[2] = 2 * padding;
     m_offset[0] = m_offset[1] = m_offset[2] = padding;
@@ -279,8 +295,8 @@ namespace cleaver
                   //printf("here %lf\n", dist);
               zeros.push_back(make_triple(i, j, k));
               myBdry[i][j][k] = true;
-              if (dist < mesh_bdry.dist[i][j][k])
-                mesh_bdry.dist[i][j][k] = dist;
+              if (dist < mesh_bdry.getDist(i,j,k))
+                mesh_bdry.setDist(i,j,k,dist);
             }
             if (verbose) status.printStatus();
           }
@@ -297,7 +313,7 @@ namespace cleaver
         int i0 = (*it).index[0];
         int j0 = (*it).index[1];
         int k0 = (*it).index[2];
-        mesh_feature.dist[i0][j0][k0] = 1;
+        mesh_feature.setDist(i0,j0,k0,1);
         mesh_feature.known[i0][j0][k0] = true;
       }
       vec3 mypadding = m_sampleFactor*m_padding;
@@ -321,7 +337,7 @@ namespace cleaver
         for (j = 1; j < h; j++) {
           for (k = 1; k < d; k++) {
             if (verbose) status.printStatus();
-            a = mesh_bdry.dist[i][j][k];
+            a = mesh_bdry.getDist(i,j,k);
 
             if (a < xdist || a < ydist || a < zdist)
               continue;
@@ -339,7 +355,7 @@ namespace cleaver
               QueueIndex temp_q = make_index(i1, j1, k1);
               if (!exists(temp_q, mesh_bdry)) {
                 flag = true;
-              } else if (voxel[i][j][k].mat != voxel[i1][j1][k1].mat && mesh_bdry.dist[i1][j1][k1] != 0) {
+              } else if (voxel[i][j][k].mat != voxel[i1][j1][k1].mat && mesh_bdry.getDist(i1,j1,k1) != 0) {
                 flag = true;
               }
             }
@@ -347,16 +363,16 @@ namespace cleaver
             if (flag)
               continue;
 
-            x = (mesh_bdry.dist[i - 1][j][k] - 2 * a + mesh_bdry.dist[i + 1][j][k]) / (xdist*xdist);
-            y = (mesh_bdry.dist[i][j - 1][k] - 2 * a + mesh_bdry.dist[i][j + 1][k]) / (ydist*ydist);
-            z = (mesh_bdry.dist[i][j][k - 1] - 2 * a + mesh_bdry.dist[i][j][k + 1]) / (zdist*zdist);
+            x = (mesh_bdry.getDist(i - 1,j,k) - 2 * a + mesh_bdry.getDist(i + 1,j,k)) / (xdist*xdist);
+            y = (mesh_bdry.getDist(i,j - 1,k) - 2 * a + mesh_bdry.getDist(i,j + 1,k)) / (ydist*ydist);
+            z = (mesh_bdry.getDist(i,j,k - 1) - 2 * a + mesh_bdry.getDist(i,j,k + 1)) / (zdist*zdist);
 
             //printf("%lf ", fabs(x*x+y*y+z*z));
             mesh_discont[i][j][k] = fabs(x*x + y*y + z*z);
 
             if (fabs(x*x + y*y + z*z) > discont) {
               medialaxis.push_back(make_triple(i, j, k));
-              mesh_feature.dist[i][j][k] = 0.0;
+              mesh_feature.setDist(i,j,k,0.0);
               mesh_feature.known[i][j][k] = true;
             }
           }
@@ -371,7 +387,7 @@ namespace cleaver
             if (verbose) status.printStatus();
             if (myBdry[i][j][k])
               continue;
-            a = mesh_bdry.dist[i][j][k];
+            a = mesh_bdry.getDist(i,j,k);
             if (a < xdist || a < ydist || a < zdist)
               continue;
             if (mesh_discont[i][j][k] < 0.8 || mesh_discont[i][j][k] > discont)
@@ -396,31 +412,31 @@ namespace cleaver
 
                 switch (l) {
                 case 1:
-                  x = (mesh_bdry.dist[i0][j0][k0] -
-                    (mesh_bdry.dist[i][j][k] + mesh_bdry.dist[i1][j1][k1]) +
-                    mesh_bdry.dist[i2][j2][k2]) / (xdist*xdist);
-                  y = (mesh_bdry.dist[i][j - 1][k] - 2 * a +
-                    mesh_bdry.dist[i][j + 1][k]) / (ydist*ydist);
-                  z = (mesh_bdry.dist[i][j][k - 1] - 2 * a +
-                    mesh_bdry.dist[i][j][k + 1]) / (zdist*zdist);
+                  x = (mesh_bdry.getDist(i0,j0,k0) -
+                    (mesh_bdry.getDist(i, j, k) + mesh_bdry.getDist(i1,j1,k1)) +
+                    mesh_bdry.getDist(i2,j2,k2)) / (xdist*xdist);
+                  y = (mesh_bdry.getDist(i,j - 1,k) - 2 * a +
+                    mesh_bdry.getDist(i,j + 1,k)) / (ydist*ydist);
+                  z = (mesh_bdry.getDist(i,j,k - 1) - 2 * a +
+                    mesh_bdry.getDist(i,j,k + 1)) / (zdist*zdist);
                   break;
 
                 case 3:
-                  x = (mesh_bdry.dist[i - 1][j][k] - 2 * a +
-                    mesh_bdry.dist[i + 1][j][k]) / (xdist*xdist);
-                  y = (mesh_bdry.dist[i0][j0][k0] - (mesh_bdry.dist[i][j][k] +
-                    mesh_bdry.dist[i1][j1][k1]) + mesh_bdry.dist[i2][j2][k2]) / (xdist*xdist);
-                  z = (mesh_bdry.dist[i][j][k - 1] - 2 * a +
-                    mesh_bdry.dist[i][j][k + 1]) / (zdist*zdist);
+                  x = (mesh_bdry.getDist(i - 1,j,k) - 2 * a +
+                    mesh_bdry.getDist(i + 1,j,k)) / (xdist*xdist);
+                  y = (mesh_bdry.getDist(i0,j0,k0) - (mesh_bdry.getDist(i, j, k) +
+                    mesh_bdry.getDist(i1,j1,k1)) + mesh_bdry.getDist(i2,j2,k2)) / (xdist*xdist);
+                  z = (mesh_bdry.getDist(i,j,k - 1) - 2 * a +
+                    mesh_bdry.getDist(i,j,k + 1)) / (zdist*zdist);
                   break;
 
                 case 5:
-                  x = (mesh_bdry.dist[i - 1][j][k] - 2 * a +
-                    mesh_bdry.dist[i + 1][j][k]) / (xdist*xdist);
-                  y = (mesh_bdry.dist[i][j - 1][k] - 2 * a +
-                    mesh_bdry.dist[i][j + 1][k]) / (ydist*ydist);
-                  z = (mesh_bdry.dist[i0][j0][k0] - (mesh_bdry.dist[i][j][k] +
-                    mesh_bdry.dist[i1][j1][k1]) + mesh_bdry.dist[i2][j2][k2]) /
+                  x = (mesh_bdry.getDist(i - 1,j,k) - 2 * a +
+                    mesh_bdry.getDist(i + 1,j,k)) / (xdist*xdist);
+                  y = (mesh_bdry.getDist(i,j - 1,k) - 2 * a +
+                    mesh_bdry.getDist(i,j + 1,k)) / (ydist*ydist);
+                  z = (mesh_bdry.getDist(i0,j0,k0) - (mesh_bdry.getDist(i,j,k) +
+                    mesh_bdry.getDist(i1,j1,k1)) + mesh_bdry.getDist(i2,j2,k2)) /
                     (xdist*xdist);
                 }
 
@@ -431,8 +447,8 @@ namespace cleaver
                   medialaxis.push_back(make_triple(i1, j1, k1));
 
 
-                  mesh_feature.dist[i][j][k] = 0.5;
-                  mesh_feature.dist[i1][j1][k1] = 0.5;
+                  mesh_feature.setDist(i,j,k,0.5);
+                  mesh_feature.setDist(i1,j1,k1,0.5);
                   mesh_feature.known[i][j][k] = true;
                   mesh_feature.known[i1][j1][k1] = true;
                 }
@@ -463,15 +479,15 @@ namespace cleaver
     //------------------------------------------
     if (m_sizingFactor != 1.0)
     {
-      int w = mesh_padded_feature.dist.size();
-      int h = mesh_padded_feature.dist[0].size();
-      int d = mesh_padded_feature.dist[0][0].size();
+      int w = mesh_padded_feature.distSizeX();
+      int h = mesh_padded_feature.distSizeY();
+      int d = mesh_padded_feature.distSizeZ();
 
       if (verbose) status = Status(w*h*d);
       for (int k = 0; k < d; k++) {
         for (int j = 0; j < h; j++) {
           for (int i = 0; i < w; i++) {
-            mesh_padded_feature.dist[i][j][k] *= m_sizingFactor;
+            mesh_padded_feature.setDist(i,j,k,mesh_padded_feature.getDist(i, j, k) * m_sizingFactor);
             if (verbose) status.printStatus();
           }
         }
@@ -497,8 +513,8 @@ namespace cleaver
     if (oct->a == oct->b)
     {
       //printf("equal\n");
-      if (meshborder.dist[oct->a.index[0]][oct->a.index[1]][oct->a.index[2]] == 0)
-        oct->min = meshfeature.dist[oct->a.index[0]][oct->a.index[1]][oct->a.index[2]];
+      if (meshborder.getDist(oct->a.index[0],oct->a.index[1],oct->a.index[2]) == 0)
+        oct->min = meshfeature.getDist(oct->a.index[0],oct->a.index[1],oct->a.index[2]);
       else
         oct->min = 1e10;
       for (int i = 0; i < 8; i++)
@@ -620,9 +636,9 @@ namespace cleaver
 
 
     int w, h, d;
-    w = mesh.dist.size();
-    h = mesh.dist[0].size();
-    d = mesh.dist[0][0].size();
+    w = mesh.distSizeX();
+    h = mesh.distSizeY();
+    d = mesh.distSizeZ();
 
     for (int i = 0; i < w; i++)
     {
@@ -641,7 +657,7 @@ namespace cleaver
       mySet.insert(w*h*zeros[i].index[0] + w*zeros[i].index[1] + zeros[i].index[2]);
       for (int j = 0; j < 3; j++)
         temp.index[j] = zeros[i].index[j];
-      temp.dist = mesh.dist[zeros[i].index[0]][zeros[i].index[1]][zeros[i].index[2]];
+      temp.dist = mesh.getDist(zeros[i].index[0],zeros[i].index[1],zeros[i].index[2]);
       //mesh.known[zeros[i].index[0]][zeros[i].index[1]][zeros[i].index[2]]=1;
       //printf("%lf\n", temp.dist);
       myqueue.push(temp);
@@ -661,7 +677,7 @@ namespace cleaver
 
       //update the vertex as known
       mesh.known[temp.index[0]][temp.index[1]][temp.index[2]] = true;
-      mesh.dist[temp.index[0]][temp.index[1]][temp.index[2]] = temp.dist;
+      mesh.setDist(temp.index[0],temp.index[1],temp.index[2],temp.dist);
       //if(temp.index[0]==23 && temp.index[1]==61 && temp.index[2]==84)
           //printf("we assign: %lf\n", temp.dist);
       //printf("updated!\n");
@@ -712,7 +728,7 @@ namespace cleaver
 
           if (flag0 && flag2)
           {
-            if (mesh.dist[left.index[0]][left.index[1]][left.index[2]] < mesh.dist[right.index[0]][right.index[1]][right.index[2]])
+            if (mesh.getDist(left.index[0],left.index[1],left.index[2]) < mesh.getDist(right.index[0],right.index[1],right.index[2]))
             {
               neigh = &left;
               if (flag1)
@@ -742,8 +758,8 @@ namespace cleaver
           double val1, val2;
           if (neighnext != nullptr)
           {
-            val1 = mesh.dist[neigh->index[0]][neigh->index[1]][neigh->index[2]];
-            val2 = mesh.dist[neighnext->index[0]][neighnext->index[1]][neighnext->index[2]];
+            val1 = mesh.getDist(neigh->index[0],neigh->index[1],neigh->index[2]);
+            val2 = mesh.getDist(neighnext->index[0],neighnext->index[1],neighnext->index[2]);
             if (val2 >= val1)
             {
               coeff[0] += 1;
@@ -762,7 +778,7 @@ namespace cleaver
             }
           } else
           {
-            val1 = mesh.dist[neigh->index[0]][neigh->index[1]][neigh->index[2]];
+            val1 = mesh.getDist(neigh->index[0],neigh->index[1],neigh->index[2]);
             coeff[0] += 1;
             coeff[1] -= 2 * val1;
             coeff[2] += val1*val1;
@@ -791,7 +807,7 @@ namespace cleaver
 
             if (flag0 && flag2)
             {
-              if (mesh.dist[left.index[0]][left.index[1]][left.index[2]] < mesh.dist[right.index[0]][right.index[1]][right.index[2]])
+              if (mesh.getDist(left.index[0],left.index[1],left.index[2]) < mesh.getDist(right.index[0],right.index[1],right.index[2]))
               {
                 neigh = &left;
               } else
@@ -810,7 +826,7 @@ namespace cleaver
             }
 
             double val1;
-            val1 = mesh.dist[neigh->index[0]][neigh->index[1]][neigh->index[2]];
+            val1 = mesh.getDist(neigh->index[0],neigh->index[1],neigh->index[2]);
             coeff[0] += 1;
             coeff[1] -= 2 * val1;
             coeff[2] += val1*val1;
@@ -839,22 +855,22 @@ namespace cleaver
   {
     for (size_t i = 0; i < zeros.size(); i++)
     {
-      double temp = mesh.dist[zeros[i].index[0]][zeros[i].index[1]][zeros[i].index[2]];
+      double temp = mesh.getDist(zeros[i].index[0],zeros[i].index[1],zeros[i].index[2]);
       //std::cout << "log10(" << temp << ") = " << log10(temp) << std::endl;
       if (temp != temp) {
         std::cerr << "NAN in takeTheLog()" << std::endl;
         exit(-1);
       }
-      mesh.dist[zeros[i].index[0]][zeros[i].index[1]][zeros[i].index[2]] = log10(temp) + 1;
+      mesh.setDist(zeros[i].index[0],zeros[i].index[1],zeros[i].index[2],log10(temp) + 1);
     }
   }
 
   void exponentiate(VoxelMesh &mesh)
   {
     int a, b, c, i, j, k;
-    a = mesh.dist.size();
-    b = mesh.dist[0].size();
-    c = mesh.dist[0][0].size();
+    a = mesh.distSizeX();
+    b = mesh.distSizeY();
+    c = mesh.distSizeZ();
 
     for (i = 0; i < a; i++)
     {
@@ -862,14 +878,14 @@ namespace cleaver
       {
         for (k = 0; k < c; k++)
         {
-          double temp = mesh.dist[i][j][k];
+          double temp = mesh.getDist(i,j,k);
           if (temp != temp) {
             std::cerr << "NAN in exponentiate()" << std::endl;
             std::cout << "pow(10," << temp << ") = " << pow(10, temp) << std::endl;
             exit(-1);
           }
           //std::cout << "pow(10," << temp << ") = " << pow(10,temp) << std::endl;
-          mesh.dist[i][j][k] = pow(10, temp - 1);
+          mesh.setDist(i,j,k,pow(10, temp - 1));
         }
       }
     }
@@ -905,31 +921,31 @@ namespace cleaver
     x1 = (int)floor(x); y1 = (int)floor(y); z1 = (int)floor(z);
     x2 = (int)ceil(x);  y2 = (int)floor(y); z2 = (int)floor(z);
     if (x2 - x1 != 0)
-      val_x[0] = ((x2 - x) / (x2 - x1))*mesh_feature.dist[x1][y1][z1] + ((x - x1) / (x2 - x1))*mesh_feature.dist[x2][y2][z2];
+      val_x[0] = ((x2 - x) / (x2 - x1))*mesh_feature.getDist(x1,y1,z1) + ((x - x1) / (x2 - x1))*mesh_feature.getDist(x2,y2,z2);
     else
-      val_x[0] = mesh_feature.dist[x1][y1][z1];
+      val_x[0] = mesh_feature.getDist(x1,y1,z1);
 
     x1 = (int)floor(x); y1 = (int)ceil(y); z1 = (int)floor(z);
     x2 = (int)ceil(x);  y2 = (int)ceil(y); z2 = (int)floor(z);
     if (x2 - x1 != 0)
-      val_x[1] = ((x2 - x) / (x2 - x1))*mesh_feature.dist[x1][y1][z1] + ((x - x1) / (x2 - x1))*mesh_feature.dist[x2][y2][z2];
+      val_x[1] = ((x2 - x) / (x2 - x1))*mesh_feature.getDist(x1,y1,z1) + ((x - x1) / (x2 - x1))*mesh_feature.getDist(x2,y2,z2);
     else
-      val_x[1] = mesh_feature.dist[x1][y1][z1];
+      val_x[1] = mesh_feature.getDist(x1,y1,z1);
 
 
     x1 = (int)floor(x); y1 = (int)floor(y); z1 = (int)ceil(z);
     x2 = (int)ceil(x);  y2 = (int)floor(y); z2 = (int)ceil(z);
     if (x2 - x1 != 0)
-      val_x[2] = ((x2 - x) / (x2 - x1))*mesh_feature.dist[x1][y1][z1] + ((x - x1) / (x2 - x1))*mesh_feature.dist[x2][y2][z2];
+      val_x[2] = ((x2 - x) / (x2 - x1))*mesh_feature.getDist(x1,y1,z1) + ((x - x1) / (x2 - x1))*mesh_feature.getDist(x2,y2,z2);
     else
-      val_x[2] = mesh_feature.dist[x1][y1][z1];
+      val_x[2] = mesh_feature.getDist(x1,y1,z1);
 
     x1 = (int)floor(x); y1 = (int)ceil(y); z1 = (int)ceil(z);
     x2 = (int)ceil(x);  y2 = (int)ceil(y); z2 = (int)ceil(z);
     if (x2 - x1 != 0)
-      val_x[3] = ((x2 - x) / (x2 - x1))*mesh_feature.dist[x1][y1][z1] + ((x - x1) / (x2 - x1))*mesh_feature.dist[x2][y2][z2];
+      val_x[3] = ((x2 - x) / (x2 - x1))*mesh_feature.getDist(x1,y1,z1) + ((x - x1) / (x2 - x1))*mesh_feature.getDist(x2,y2,z2);
     else
-      val_x[3] = mesh_feature.dist[x1][y1][z1];
+      val_x[3] = mesh_feature.getDist(x1,y1,z1);
 
     //along y
     y1 = (y1);
@@ -1223,9 +1239,9 @@ namespace cleaver
   {
     int full_w, full_h, full_d;
 
-    int w = mesh_feature.dist.size();
-    int h = mesh_feature.dist[0].size();
-    int d = mesh_feature.dist[0][0].size();
+    int w = mesh_feature.distSizeX();
+    int h = mesh_feature.distSizeY();
+    int d = mesh_feature.distSizeZ();
 
     full_w = w + (int)mypadding[0];
     full_h = h + (int)mypadding[1];
@@ -1245,8 +1261,7 @@ namespace cleaver
       for (int j = 0; j < h; j++)
         for (int k = 0; k < d; k++)
         {
-          mesh_padded_feature.dist[i + x_offset][j + y_offset][k + z_offset]
-            = mesh_feature.dist[i][j][k];
+          mesh_padded_feature.setDist(i + x_offset,j + y_offset,k + z_offset,mesh_feature.getDist[i][j][k]);
           mesh_padded_feature.known[i + x_offset][j + y_offset][k + z_offset]
             = mesh_feature.known[i][j][k];
         }

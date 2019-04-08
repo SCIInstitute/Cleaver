@@ -67,21 +67,25 @@ class Voxel
 class VoxelMesh
 {
 public:
-    VoxelMesh(bool verbose = false);
-    //VoxelMesh(const VoxelMesh &mesh, bool verbose = false);
-    ~VoxelMesh();
-
-    VoxelMesh& operator=(const VoxelMesh &mesh);
-
+    VoxelMesh(const std::string& name, bool verbose = false);
+   
     void init(int l, int m, int n);
     ScalarField<float>*  convertToFloatField(float factor,
       const cleaver::vec3 &padding, const cleaver::vec3 &offset);
 
     std::vector<std::vector<std::vector<bool> > > known;
-    std::vector<std::vector<std::vector<double> > > dist;
+   
+    void setDist(int l, int m, int n, double value);
+    double getDist(int l, int m, int n) const;
+    int distSizeX() const;
+    int distSizeY() const;
+    int distSizeZ() const;
 
     private:
+      std::string name_;
+      std::vector<std::vector<std::vector<double> > > dist;
     bool m_verbose;
+
 };
 
 class QueueIndex
