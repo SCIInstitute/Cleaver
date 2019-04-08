@@ -1261,7 +1261,7 @@ namespace cleaver
       for (int j = 0; j < h; j++)
         for (int k = 0; k < d; k++)
         {
-          mesh_padded_feature.setDist(i + x_offset,j + y_offset,k + z_offset,mesh_feature.getDist[i][j][k]);
+          mesh_padded_feature.setDist(i + x_offset,j + y_offset,k + z_offset,mesh_feature.getDist(i,j,k));
           mesh_padded_feature.known[i + x_offset][j + y_offset][k + z_offset]
             = mesh_feature.known[i][j][k];
         }
