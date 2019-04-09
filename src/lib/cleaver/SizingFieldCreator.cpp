@@ -45,6 +45,7 @@
 #include <iostream>
 #include <algorithm>
 #include <limits>
+#include <fstream>
 
 #include <queue>
 #include <cmath>
@@ -90,8 +91,9 @@ namespace cleaver
     }
   }
 
-  static std::ofstream voxelMeshFile("C:\\voxelMeshLog.txt");
 
+  static std::ofstream voxelMeshFile("voxelMeshLog.txt");
+ 
   void VoxelMesh::setDist(int l, int m, int n, double value)
   {
     if (l == 0 && m == 0 && n == 0)
@@ -100,6 +102,7 @@ namespace cleaver
     }
     dist[l][m][n] = value;
   }
+
   double VoxelMesh::getDist(int l, int m, int n) const
   {
     return dist[l][m][n];
@@ -189,6 +192,7 @@ namespace cleaver
     vector<vector<vector<Voxel> > > voxel;
     vector<Triple> zeros, medialaxis;
     vector<vector<vector<bool> > > myBdry;
+    bool foundBdry = false;
 
 
     //w = lattice->width();
@@ -295,6 +299,7 @@ namespace cleaver
                   //printf("here %lf\n", dist);
               zeros.push_back(make_triple(i, j, k));
               myBdry[i][j][k] = true;
+              foundBdry = true;
               if (dist < mesh_bdry.getDist(i,j,k))
                 mesh_bdry.setDist(i,j,k,dist);
             }
@@ -303,6 +308,12 @@ namespace cleaver
         }
       }
     }
+
+    if (!foundBdry)
+    {
+      throw std::runtime_error("Sigma is too large for volume resolution. Please choose smaller sigma.");
+    }
+
     if (verbose) status.done();
 
     if (!adaptiveSurface)
