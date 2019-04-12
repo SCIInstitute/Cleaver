@@ -72,6 +72,11 @@ namespace cleaver
     }
   };
 
+  template <typename T>
+  void fill3DVector(vector<vector<vector<T>>>& vec, const T& t, size_t w, size_t h, size_t d)
+  {
+    vec.assign(w, vector<vector<T>>(h, vector<T>(d, t)));
+  }
 
   VoxelMesh::VoxelMesh(const std::string& name, bool verbose) : name_(name), m_verbose(verbose)
   {
@@ -79,16 +84,9 @@ namespace cleaver
 
   void VoxelMesh::init(int l, int m, int n)
   {
-    {
-      vector<bool> temp2(n, false);
-      vector<vector<bool> > temp3(m, temp2);
-      known.assign(l, temp3);
-    }
-    {
-      vector<double> temp2(n, 1e10);
-      vector<vector<double> > temp3(m, temp2);
-      dist.assign(l, temp3);
-    }
+    fill3DVector(known, false, l, m, n);
+
+    fill3DVector(dist, 1e10, l, m, n);
   }
 
 
@@ -160,12 +158,6 @@ namespace cleaver
   //------------------------------------------------------------------
   //------------------------------------------------------------------
 
-  template <typename Vec, typename T>
-  void SizingFieldCreator::fill3DVector(Vec& vec, const T& t, size_t w, size_t h, size_t d)
-  {
-    vec.assign(w, typename Vec::value_type(h, typename typename Vec::value_type::value_type(d, t)));
-  }
-
   SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed,
     float sampleFactor, float sizingFactor, int padding, bool adaptiveSurface, bool verbose) : m_verbose(verbose),
     m_speed(speed), m_sampleFactor(sampleFactor), m_sizingFactor(sizingFactor),
@@ -213,31 +205,11 @@ namespace cleaver
     //}
 
     //w=15; h=15; d=15; m=2;
-    fill3DVector(mesh_discont, 0, w, h, d);
+    fill3DVector(mesh_discont, 0.0, w, h, d);
 
-    {
-      vector<double> meshTemp2(d, 0);
-      vector<vector<double>> meshTemp3(h, meshTemp2);
-      mesh_discont.assign(w, meshTemp3);
-    }
-
-    //fill3DVector(voxel, { 0, 0, 0, 0 }, w, h, d);
-
-    {
-      Voxel temp1{ 0,0,0,0 };
-      vector<Voxel> temp2(d, temp1);
-      vector<vector<Voxel>> temp3(h, temp2);
-      voxel.assign(w, temp3);
-    }
+    fill3DVector(voxel, { 0, 0, 0, 0 }, w, h, d);
 
     fill3DVector(myBdry, false , w, h, d);
-
-    myBdry.resize(w);
-    for (i = 0; i < w; i++)
-      myBdry[i].resize(h);
-    for (i = 0; i < w; i++)
-      for (j = 0; j < h; j++)
-        myBdry[i][j].resize(d, false);
 
     mesh_bdry.init(w, h, d);
     mesh_feature.init(w, h, d);

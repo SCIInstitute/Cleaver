@@ -213,9 +213,6 @@ class SizingFieldCreator
     double adaptCell(const Volume *volume, OTCell *cell, ScalarField<float> *sizingField);
     void printTree(OTCell *myCell, int n);
 
-    template <typename Vec, typename T>
-    void fill3DVector(Vec& vec, const T& t, size_t w, size_t h, size_t d);
-
     VoxelMesh mesh_bdry, mesh_feature, mesh_padded_feature;
     vec3 m_padding, m_offset;
 };
