@@ -42,7 +42,6 @@
 #include <itkSubtractImageFilter.h>
 #include <itkApproximateSignedDistanceMapImageFilter.h>
 #include <sstream>
-#include <itkSmoothingRecursiveGaussianImageFilter.h>
 
 //typedefs needed.
 typedef float PixelType;
@@ -58,8 +57,6 @@ typedef itk::SubtractImageFilter <ImageType, ImageType >
 SubtractImageFilterType;
 typedef itk::DiscreteGaussianImageFilter<
   ImageType, ImageType >  GaussianBlurType;
-typedef itk::SmoothingRecursiveGaussianImageFilter<
-  ImageType, ImageType >  GaussianBlurTypeSmooth;
 typedef itk::ApproximateSignedDistanceMapImageFilter
 <ImageType, ImageType> DMapType;
 
@@ -101,10 +98,6 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     multiplyImageFilter->SetConstant(1. / static_cast<double>(i));
     multiplyImageFilter->Update();
     // Do some blurring.
-    //GaussianBlurTypeSmooth::Pointer blur = GaussianBlurTypeSmooth::New();
-    //blur->SetInput(reader->GetOutput());
-    //blur->SetSigma(sigma);
-    //blur->Update();
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(multiplyImageFilter->GetOutput());
     blur->SetVariance(sigma * sigma);
@@ -181,10 +174,6 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     reader->SetFileName(file);
     reader->Update();
     //do some blurring
-    //GaussianBlurTypeSmooth::Pointer blur = GaussianBlurTypeSmooth::New();
-    //blur->SetInput(reader->GetOutput());
-    //blur->SetSigma(sigma);
-    //blur->Update();
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(reader->GetOutput());
     blur->SetVariance(sigma * sigma);
@@ -202,12 +191,33 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     fields[num]->setName(name);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
+    float min = static_cast<float>(imageIterator.Get());
+    float max = static_cast<float>(imageIterator.Get());
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel
       float val = static_cast<float>(imageIterator.Get());
+
+      if (isnan(val))
+      {
+        throw std::runtime_error("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
+      }
+      else if (val < min)
+      {
+        min = val;
+      } else if (val > max)
+      {
+        max = val;
+      }
+
       ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
       ++imageIterator;
     }
+
+    if (min > 0 || max < 0)
+    {
+      throw std::runtime_error("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
+    }
+
     ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
     num++;
   }
