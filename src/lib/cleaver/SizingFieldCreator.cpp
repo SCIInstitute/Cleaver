@@ -160,9 +160,14 @@ namespace cleaver
   //------------------------------------------------------------------
   //------------------------------------------------------------------
 
+  template <typename Vec, typename T>
+  void SizingFieldCreator::fill3DVector(Vec& vec, const T& t, size_t w, size_t h, size_t d)
+  {
+    vec.assign(w, typename Vec::value_type(h, typename typename Vec::value_type::value_type(d, t)));
+  }
 
   SizingFieldCreator::SizingFieldCreator(const Volume *volume, float speed,
-    float sampleFactor, float sizingFactor, int padding, bool adaptiveSurface, bool verbose) :  m_verbose(verbose),
+    float sampleFactor, float sizingFactor, int padding, bool adaptiveSurface, bool verbose) : m_verbose(verbose),
     m_speed(speed), m_sampleFactor(sampleFactor), m_sizingFactor(sizingFactor),
     mesh_bdry("Boundary"), mesh_feature("Feature"), mesh_padded_feature("Padded")
   {
@@ -208,25 +213,24 @@ namespace cleaver
     //}
 
     //w=15; h=15; d=15; m=2;
-    double myTemp1 = 0;
-    vector<double> myTemp2;
-    vector<vector<double> >myTemp3;
-    for (i = 0; i < d; i++)
-      myTemp2.push_back(myTemp1);
-    for (i = 0; i < h; i++)
-      myTemp3.push_back(myTemp2);
-    for (i = 0; i < w; i++)
-      mesh_discont.push_back(myTemp3);
+    fill3DVector(mesh_discont, 0, w, h, d);
 
-    Voxel temp1;
-    vector<Voxel> temp2;
-    vector<vector<Voxel> >temp3;
-    for (i = 0; i < d; i++)
-      temp2.push_back(temp1);
-    for (i = 0; i < h; i++)
-      temp3.push_back(temp2);
-    for (i = 0; i < w; i++)
-      voxel.push_back(temp3);
+    {
+      vector<double> meshTemp2(d, 0);
+      vector<vector<double>> meshTemp3(h, meshTemp2);
+      mesh_discont.assign(w, meshTemp3);
+    }
+
+    //fill3DVector(voxel, { 0, 0, 0, 0 }, w, h, d);
+
+    {
+      Voxel temp1{ 0,0,0,0 };
+      vector<Voxel> temp2(d, temp1);
+      vector<vector<Voxel>> temp3(h, temp2);
+      voxel.assign(w, temp3);
+    }
+
+    fill3DVector(myBdry, false , w, h, d);
 
     myBdry.resize(w);
     for (i = 0; i < w; i++)
