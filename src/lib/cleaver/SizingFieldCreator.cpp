@@ -311,7 +311,7 @@ namespace cleaver
 
     if (!foundBdry)
     {
-      throw std::runtime_error("Sigma is too large for volume resolution. Please choose smaller sigma.");
+      throw std::runtime_error("Sizing field error: No boundary found in indicator function.");
     }
 
     if (verbose) status.done();

@@ -101,6 +101,10 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     multiplyImageFilter->SetConstant(1. / static_cast<double>(i));
     multiplyImageFilter->Update();
     // Do some blurring.
+    //GaussianBlurTypeSmooth::Pointer blur = GaussianBlurTypeSmooth::New();
+    //blur->SetInput(reader->GetOutput());
+    //blur->SetSigma(sigma);
+    //blur->Update();
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(multiplyImageFilter->GetOutput());
     blur->SetVariance(sigma * sigma);
@@ -177,14 +181,14 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     reader->SetFileName(file);
     reader->Update();
     //do some blurring
-    GaussianBlurTypeSmooth::Pointer blur = GaussianBlurTypeSmooth::New();
-    blur->SetInput(reader->GetOutput());
-    blur->SetSigma(sigma);
-    blur->Update();
-    //GaussianBlurType::Pointer blur = GaussianBlurType::New();
+    //GaussianBlurTypeSmooth::Pointer blur = GaussianBlurTypeSmooth::New();
     //blur->SetInput(reader->GetOutput());
-    //blur->SetVariance(sigma * sigma);
+    //blur->SetSigma(sigma);
     //blur->Update();
+    GaussianBlurType::Pointer blur = GaussianBlurType::New();
+    blur->SetInput(reader->GetOutput());
+    blur->SetVariance(sigma * sigma);
+    blur->Update();
     ImageType::Pointer img = blur->GetOutput();
     //convert the image to a cleaver "abstract field"
     auto region = img->GetLargestPossibleRegion();
