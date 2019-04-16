@@ -196,26 +196,8 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel
       float val = static_cast<float>(imageIterator.Get());
-
-      if (isnan(val))
-      {
-        throw std::runtime_error("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
-      }
-      else if (val < min)
-      {
-        min = val;
-      } else if (val > max)
-      {
-        max = val;
-      }
-
       ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
       ++imageIterator;
-    }
-
-    if (min > 0 || max < 0)
-    {
-      throw std::runtime_error("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
     }
 
     ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
