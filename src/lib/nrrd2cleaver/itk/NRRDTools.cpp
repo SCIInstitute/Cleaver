@@ -60,6 +60,23 @@ typedef itk::DiscreteGaussianImageFilter<
 typedef itk::ApproximateSignedDistanceMapImageFilter
 <ImageType, ImageType> DMapType;
 
+bool checkImageSize(ImageType::Pointer inputImg, double sigma)
+{
+  auto inputImgRegion = inputImg->GetLargestPossibleRegion();
+  std::vector<double> dims{ (double)inputImgRegion.GetSize()[0], (double)inputImgRegion.GetSize()[1], (double)inputImgRegion.GetSize()[2] };
+  auto spacing = inputImg->GetSpacing();
+  std::vector<double> spacingVec{ (double)spacing[0], (double)spacing[1], (double)spacing[2] };
+  std::vector<double> imageSize{ dims[0] * spacingVec[0], dims[1] * spacingVec[1], dims[2] * spacingVec[2] };
+  float imageSizeMin = *(std::max_element(std::begin(imageSize), std::end(imageSize)));
+  double imageSizeMin_d = (double)imageSizeMin;
+  bool warning = false;
+  if (imageSizeMin_d / sigma >= 0.1)
+  {
+    warning = true;
+  }
+  return warning;
+}
+
 std::vector<cleaver::AbstractScalarField*>
 NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) {
   // read file using ITK
@@ -97,6 +114,10 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     multiplyImageFilter->SetInput(thresh->GetOutput());
     multiplyImageFilter->SetConstant(1. / static_cast<double>(i));
     multiplyImageFilter->Update();
+
+    ImageType::Pointer inputImg = multiplyImageFilter->GetOutput();
+    bool warning = checkImageSize(inputImg, sigma);
+
     // Do some blurring.
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(multiplyImageFilter->GetOutput());
@@ -142,7 +163,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     std::stringstream ss;
     ss << name << i;
     fields[num]->setName(ss.str());
-
+    fields[num]->setWarning(warning);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
     while (!imageIterator.IsAtEnd()) {
@@ -151,7 +172,6 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
       ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
       ++imageIterator;
     }
-    auto spacing = img->GetSpacing();
     ((cleaver::FloatField*)fields[num])->setScale(
       cleaver::vec3(1., 1., 1.));
   }
@@ -176,18 +196,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
 
     //Checking sigma vs the size of the image
     ImageType::Pointer inputImg = reader->GetOutput();
-    auto inputImgRegion = inputImg->GetLargestPossibleRegion();
-    std::vector<double> dims{ (double)inputImgRegion.GetSize()[0], (double)inputImgRegion.GetSize()[1], (double)inputImgRegion.GetSize()[2]};
-    auto spacing = inputImg->GetSpacing();
-    std::vector<double> spacingVec{ (double)spacing[0], (double)spacing[1], (double)spacing[2] };
-    std::vector<double> imageSize{ dims[0]*spacingVec[0], dims[1]*spacingVec[1], dims[2]*spacingVec[2] };
-    float imageSizeMin = *(std::max_element(std::begin(imageSize), std::end(imageSize)));
-    double imageSizeMin_d = (double)imageSizeMin;
-    bool warning = false;
-    if (imageSizeMin_d/sigma >= 0.1)
-    {
-      warning = true;
-    }
+    bool warning = checkImageSize(inputImg, sigma);
 
     //do some blurring
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
