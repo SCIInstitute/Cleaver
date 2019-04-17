@@ -493,37 +493,23 @@ void MainWindow::importVolume() {
     //Error checking for indicator function values.
     for(int i = 0; i < fields.size(); i++)
     {
+      //Skip if the segmentation value is 0 (background) or it is an inverse file
       std::size_t found = fields[i]->name().find("inverse");
       if ((segmentation && i == 0) || (found!=std::string::npos))
       {
         continue;
       }
-      auto bounds = ((cleaver::ScalarField<float>*)fields[i])->bounds();
-      std::vector<float> fieldData;
-      int numPixels = (int)(bounds.size.x * bounds.size.y * bounds.size.z);
-      for (int j = 0; j < numPixels; j++)
-      {
-        auto tempData = ((cleaver::ScalarField<float>*)fields[i])->data()[j];
 
-        if (isnan(tempData))
-        {
-          this->handleError("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
-          status.setValue(0);
-          return;
-        }
-
-        fieldData.push_back(tempData);
-      }
-
-      float fieldDataMax = *(std::max_element(std::begin(fieldData), std::end(fieldData)));
-      float fieldDataMin = *(std::min_element(std::begin(fieldData), std::end(fieldData)));
-      if (fieldDataMin >= 0 || fieldDataMax <= 0)
+      //Check for critical errors
+      auto error = ((cleaver::ScalarField<float>*)fields[i])->getError();
+      if (error.compare("nan") == 0 || error.compare("maxmin") == 0)
       {
         this->handleError("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
         status.setValue(0);
         return;
       }
 
+      //Check for warning
       auto warning = ((cleaver::ScalarField<float>*)fields[i])->getWarning();
       if (warning)
       {
