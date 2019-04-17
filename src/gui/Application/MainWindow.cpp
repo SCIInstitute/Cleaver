@@ -513,7 +513,7 @@ void MainWindow::importVolume() {
       auto warning = ((cleaver::ScalarField<float>*)fields[i])->getWarning();
       if (warning)
       {
-        this->handleMessage("Nrrd file read WARNING: Sigma is 10% of volume's size. Gaussian kernel will be truncated.");
+        this->handleMessage("Nrrd file read WARNING: Sigma is 10% of volume's size. Gaussian kernel may be truncated.");
       }
   }
 

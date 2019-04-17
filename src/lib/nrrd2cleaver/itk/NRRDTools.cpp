@@ -70,7 +70,7 @@ bool checkImageSize(ImageType::Pointer inputImg, double sigma)
   float imageSizeMin = *(std::max_element(std::begin(imageSize), std::end(imageSize)));
   double imageSizeMin_d = (double)imageSizeMin;
   bool warning = false;
-  if (imageSizeMin_d / sigma >= 0.1)
+  if ((sigma / imageSizeMin_d) >= 0.1)
   {
     warning = true;
   }
@@ -187,7 +187,8 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     // read file using ITK
     if (file.find(".nrrd") != std::string::npos) {
       itk::NrrdImageIOFactory::RegisterOneFactory();
-    } else if (file.find(".mha") != std::string::npos) {
+    }
+    else if (file.find(".mha") != std::string::npos) {
       itk::MetaImageIOFactory::RegisterOneFactory();
     }
     ReaderType::Pointer reader = ReaderType::New();
@@ -223,9 +224,9 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel
       float val = static_cast<float>(imageIterator.Get());
-      if (isnan(val))
+      /*if (isnan(val) && error.compare("none") == 0)
       {
-        std::string error = "nan";
+        error = "nan";
       }
       else if (val < min)
       {
@@ -240,17 +241,18 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
       ++imageIterator;
     }
 
-    if (min > 0 || max < 0)
+    if ((min >= 0 || max <= 0) && (error.compare("none") == 0))
     {
-      std::string error = "maxmin";
+      error = "maxmin";
+    }*/
+
+    fields[num]->setError(error);
+      ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
+      num++;
     }
 
-    fields[0]->setError(error);
-    ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
-    num++;
+    return fields;
   }
-
-  return fields;
 }
 
 void NRRDTools::saveNRRDFile(const cleaver::FloatField *field, const std::string &name) {
