@@ -37,66 +37,6 @@ const bool BoundingBox::intersects(const BoundingBox &box) const
            this->maxCorner() > box.minCorner());
 }
 
-/*
-vec3 BoundingBox::intersectionWithLine(vec3 &p1, vec3 &p2) const
-{
-    vec3 l = normalize(p2 - p1);
-    vec3 l0 = p1;
-
-    // 6 planes to check, find closest intersection that is ON the box
-    vec3 result;
-
-    Planes planes[6];
-    planes[0] = posXPlane();
-    planes[1] = negXPlane();
-    planes[2] = posYPlane();
-    planes[3] = negYPlane();
-    planes[4] = posZPlane();
-    planes[5] = negZPlane();
-
-    for(int p = 0; p < 6; p++)
-    {
-        // compute point
-
-        // is point on the face?
-
-        // is it closest so far?
-    }
-
-    return result;
-}
-
-Plane BoundingBox::posXPlane()
-{
-    return Plane(vec3(1,0,0), maxCorner());
-}
-
-Plane BoundingBox::negXPlane()
-{
-    return Plane(vec3(-1,0,0), minCorner());
-}
-
-Plane BoundingBox::posYPlane()
-{
-    return Plane(vec3(0,1,0), maxCorner());
-}
-
-Plane BoundingBox::negYPlane()
-{
-    return Plane(vec3(0,-1,0), minCorner());
-}
-
-Plane BoundingBox::posZPlane()
-{
-    return Plane(vec3(0,0,1), maxCorner());
-}
-
-Plane BoundingBox::negZPlane()
-{
-    return Plane(vec3(0,0,-1), minCorner());
-}
-*/
-
 BoundingBox BoundingBox::merge(const BoundingBox &a, const BoundingBox &b)
 {
     BoundingBox result;
@@ -113,4 +53,3 @@ BoundingBox BoundingBox::merge(const BoundingBox &a, const BoundingBox &b)
 }
 
 }
-

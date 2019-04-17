@@ -746,4 +746,4 @@ void LinearViolationChecker::checkIfQuadrupleViolatesFaces(Tet *tet)
 }
 
 
-} // namespace cleaver
+}

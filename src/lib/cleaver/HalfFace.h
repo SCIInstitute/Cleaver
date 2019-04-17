@@ -77,6 +77,6 @@ public:
     }
 };
 
-} // namespace cleaver
+}
 
 #endif // HALFFACE_H_

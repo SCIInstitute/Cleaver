@@ -153,7 +153,6 @@ public:
     Tet* oppositeTetAcrossFace(Tet *tet, HalfFace *face);
 };
 
-} // namespace cleaver
+}
 
 #endif // TETMESH_H
-

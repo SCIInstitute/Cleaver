@@ -20,7 +20,7 @@ VolumeDataWidget::VolumeDataWidget(QWidget *parent) :
 
     QObject::connect(this->ui->detailViewButton, SIGNAL(clicked(bool)),
             this, SLOT(showInfoClicked(bool)));
-    
+
     openStyle =
     "QWidget { background-color:rgb(177, 177, 177); \n"
     "          border: 1px solid black;\n             "
@@ -63,11 +63,8 @@ VolumeDataWidget::VolumeDataWidget(cleaver::Volume *volume, QWidget *parent) :
 
     this->ui->sizingFieldWidget->setAcceptDrops(true);
 
-    //this->ui->materialsWidget->setAcceptDrops(true);
-    //this->ui->materialsWidget->installEventFilter(this);
-
     connect(this->ui->detailViewButton, SIGNAL(clicked(bool)), this, SLOT(showInfoClicked(bool)));
-    connect(this->ui->sizingFieldWidget, SIGNAL(removeRequest(cleaver::AbstractScalarField*)), 
+    connect(this->ui->sizingFieldWidget, SIGNAL(removeRequest(cleaver::AbstractScalarField*)),
       this, SLOT(removeSizingField(cleaver::AbstractScalarField*)));
 
     //-------------------------------------------------//
@@ -91,7 +88,6 @@ VolumeDataWidget::VolumeDataWidget(cleaver::Volume *volume, QWidget *parent) :
     "         }                                       ";
 
     selectedOpenStyle =
-    //"QWidget { background-color:rgb(109, 124, 152); \n"
     "QWidget { background-color:rgb(137, 156, 191); \n"
     "          border: 1px solid black;\n             "
     "          border-top-left-radius: 10px;\n        "
@@ -100,7 +96,6 @@ VolumeDataWidget::VolumeDataWidget(cleaver::Volume *volume, QWidget *parent) :
 
 
     selectedClosedStyle =
-    //"QWidget { background-color:rgb(109, 124, 152); \n"
     "QWidget { background-color:rgb(137, 156, 191); \n"
     "          border: 1px solid black;\n             "
     "          border-top-left-radius: 10px;\n        "
@@ -134,22 +129,11 @@ VolumeDataWidget::VolumeDataWidget(cleaver::Volume *volume, QWidget *parent) :
     "          border-bottom-right-radius: 10px;    "
     "        }                                      ";
 
-
-//    normalMaterialWidgetStyle =
-//    "QWidget  {  background-color: rgb(240, 240, 240);"
-//    "           border: 1.0px solid black;           "
-//    "           border-radius: 10px;                 "
-//    "        }                                       ";
-
     selectedMaterialWidgetStyle =
-    //"QLabel  {  background-color: rgb(208, 255, 181);"
     "QWidget  {  background-color: rgb(240, 240, 240);"
     "           border: 1.0px solid black;           "
     "           border-radius: 10px;                 "
     "        }                                       ";
-
-    //materialLabelStyle =
-    //"border: none; background-color: rgba(255, 255, 255, 0);";
 
     ui->headerWidget->setStyleSheet(closedStyle.c_str());
 
@@ -248,20 +232,13 @@ void VolumeDataWidget::updateMaterialsWidgets()
 
             // create a material widget
             materialWidget = new MiniFieldWidget(field, this);
-            connect(materialWidget, SIGNAL(removeRequest(cleaver::AbstractScalarField*)), 
+            connect(materialWidget, SIGNAL(removeRequest(cleaver::AbstractScalarField*)),
               this, SLOT(removeMaterial(cleaver::AbstractScalarField*)));
 
             ui->materialsWidget->layout()->addWidget(materialWidget);
         }
 
-
-
-        //vbox->insertWidget((int)m, materialWidget);
         materialMap[reinterpret_cast<ulong>(field)] = materialWidget;
-
-        //ui->materialsWidget->adjustSize();
-        //ui->infoWidget->adjustSize();
-
     }
 
     // For anything left in temporary map, they are no longer needed.
@@ -340,8 +317,6 @@ void VolumeDataWidget::updateStyleSheet()
 
             // update info
             ui->infoWidget->setStyleSheet(selectedInfoStyle.c_str());
-
-
         }
         else
         {
@@ -350,9 +325,7 @@ void VolumeDataWidget::updateStyleSheet()
 
             // update info
             ui->infoWidget->setStyleSheet(normalInfoStyle.c_str());
-
         }
-
     }
 }
 
@@ -430,11 +403,9 @@ void VolumeDataWidget::mouseMoveEvent(QMouseEvent *event)
     mimeData->setText("text..");
     drag->setMimeData(mimeData);
 
-    QPixmap pixmap(this->size());    
-    //QPoint offset(30,0);
-    //QRegion region(30, 0, this->width-30, this->height());
+    QPixmap pixmap(this->size());
 
-    this->render(&pixmap); // offset, region);
+    this->render(&pixmap);
 
     drag->setPixmap(pixmap);
 

@@ -12,9 +12,8 @@ MiniFieldWidget::MiniFieldWidget(QWidget *parent) :
     m_field(NULL),
     ui(new Ui::MiniFieldWidget)
 {
-    ui->setupUi(this);     
+    ui->setupUi(this);
 
-    //setAcceptDrops(true);
 
     normalStyle = "background-color: rgb(240, 240, 240); border: 1px solid black; border-top: 1px solid black; border-radius: 10px;";
     dragEnterStyle = "background-color: rgb(240, 240, 128); border: 1px solid black; border-top: 1px solid black; border-radius: 10px;";
@@ -26,8 +25,6 @@ MiniFieldWidget::MiniFieldWidget(cleaver::AbstractScalarField *field, QWidget *p
     ui(new Ui::MiniFieldWidget)
 {
     ui->setupUi(this);
-
-    //setAcceptDrops(true);
 
     normalStyle = "background-color: rgb(240, 240, 240); border: 1px solid black; border-top: 1px solid black; border-radius: 10px;";
     dragEnterStyle = "background-color: rgb(240, 240, 128); border: 1px solid black; border-top: 1px solid black; border-radius: 10px;";
@@ -117,16 +114,10 @@ void MiniFieldWidget::mouseMoveEvent(QMouseEvent *event)
     drag->setMimeData(mimeData);
 
     QPixmap pixmap(this->size());
-    //QPoint offset(30,0);
-    //QRegion region(30, 0, this->width-30, this->height());
 
-    this->render(&pixmap); // offset, region);
+    this->render(&pixmap);
 
     drag->setPixmap(pixmap);
-
-    // makes it looks like element has been picked up
-//    this->setMinimumHeight(0);
-//    this->setMaximumHeight(0);
 
     Qt::DropAction dropAction = drag->exec();
 
@@ -150,8 +141,6 @@ void MiniFieldWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void MiniFieldWidget::dragLeaveEvent(QDragLeaveEvent *event)
 {
-//    if (event->mimeData()->hasFormat("text/plain"))
-    //event->
     std::cout << "Leave Event!" << std::endl;
     this->setStyleSheet(normalStyle.c_str());
 }
@@ -174,6 +163,4 @@ void MiniFieldWidget::dropEvent(QDropEvent *event)
     }
     else
         event->ignore();
-
-
 }

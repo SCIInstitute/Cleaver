@@ -93,7 +93,7 @@ public:
     bool m_bRecordOperations;
 
     // Whether to use simple interface approximation.
-    bool m_bSimple;    
+    bool m_bSimple;
 
     std::set<size_t> m_tets_to_record;
     std::ofstream m_recorder_stream;
@@ -114,6 +114,6 @@ public:
     TetMesh *m_mesh;
 };
 
-} // namespace cleaver
+}
 
 #endif // __CLEAVERMESHIMP_H__

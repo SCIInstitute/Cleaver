@@ -161,10 +161,10 @@ void LinearInterfaceCalculator::computeCutForEdge(HalfEdge *edge) {
   int b_mat = v2->label;
 
 
-  double a1 = m_volume->valueAt(v1->pos(), a_mat); //  v1->vals[a_mat];
-  double a2 = m_volume->valueAt(v2->pos(), a_mat); //  v2->vals[a_mat];
-  double b1 = m_volume->valueAt(v1->pos(), b_mat); //  v1->vals[b_mat];
-  double b2 = m_volume->valueAt(v2->pos(), b_mat); //  v2->vals[b_mat];
+  double a1 = m_volume->valueAt(v1->pos(), a_mat);
+  double a2 = m_volume->valueAt(v2->pos(), a_mat);
+  double b1 = m_volume->valueAt(v1->pos(), b_mat);
+  double b2 = m_volume->valueAt(v2->pos(), b_mat);
   double top = (a1 - b1);
   double bot = (b2 - a2 + a1 - b1);
   double t = top / bot;
@@ -257,10 +257,6 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     return;
   }
 
-  //computeTripleForFace2(face);
-  //return;
-
-
   // determine orientation, pick an axis
   vec3 n = normalize((v2->pos() - v1->pos()).cross(v3->pos() - v1->pos()));
 
@@ -302,13 +298,13 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     double A[2][2];
     double b[2];
 
-    A[0][0] = (a3 / b3 - a1 / b1);  //(a3/c3 - a1/c1);
-    A[0][1] = (c3 / b3 - c1 / b1);  //(b3/c3 - b1/c1);
-    A[1][0] = (a3 / b3 - a2 / b2);  //(a3/c3 - a2/c2);
-    A[1][1] = (c3 / b3 - c2 / b2);  //(b3/c3 - b2/c2);
+    A[0][0] = (a3 / b3 - a1 / b1);
+    A[0][1] = (c3 / b3 - c1 / b1);
+    A[1][0] = (a3 / b3 - a2 / b2);
+    A[1][1] = (c3 / b3 - c2 / b2);
 
-    b[0] = (d1 / b1 - d3 / b3);     //(d1/c1 - d3/c3);
-    b[1] = (d2 / b2 - d3 / b3);     //(d2/c2 - d3/c3);
+    b[0] = (d1 / b1 - d3 / b3);
+    b[1] = (d2 / b2 - d3 / b3);
 
     // solve using cramers rule
     vec3 result2d = vec3::zero;
@@ -326,7 +322,6 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     {
       std::cout << "Numerical Failure projecting triple into 3D: Fall back to Barycenter" << std::endl;
       result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
-      // std::cout << "Failed Axis==1, the most likely candidate to succeeed..." << std::endl;
     }
 
   } else if (axis == 2)
@@ -354,13 +349,13 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     double A[2][2];
     double b[2];
 
-    A[0][0] = (a3 / b3 - a1 / b1);  //(a3/c3 - a1/c1);
-    A[0][1] = (c3 / b3 - c1 / b1);  //(b3/c3 - b1/c1);
-    A[1][0] = (a3 / b3 - a2 / b2);  //(a3/c3 - a2/c2);
-    A[1][1] = (c3 / b3 - c2 / b2);  //(b3/c3 - b2/c2);
+    A[0][0] = (a3 / b3 - a1 / b1);
+    A[0][1] = (c3 / b3 - c1 / b1);
+    A[1][0] = (a3 / b3 - a2 / b2);
+    A[1][1] = (c3 / b3 - c2 / b2);
 
-    b[0] = (d1 / b1 - d3 / b3);     //(d1/c1 - d3/c3);
-    b[1] = (d2 / b2 - d3 / b3);     //(d2/c2 - d3/c3);
+    b[0] = (d1 / b1 - d3 / b3);
+    b[1] = (d2 / b2 - d3 / b3);
 
     // solve using cramers rule
     vec3 result2d = vec3::zero;
@@ -378,7 +373,6 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     {
       std::cout << "Numerical Failure projecting triple into 3D: Fall back to Barycenter" << std::endl;
       result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
-      // std::cout << "Failed Axis==2, the most likely candidate to succeeed..." << std::endl;
     }
   } else if (axis == 3)
   {
@@ -405,13 +399,13 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     double A[2][2];
     double b[2];
 
-    A[0][0] = (a3 / b3 - a1 / b1);  //(a3/c3 - a1/c1);
-    A[0][1] = (c3 / b3 - c1 / b1);  //(b3/c3 - b1/c1);
-    A[1][0] = (a3 / b3 - a2 / b2);  //(a3/c3 - a2/c2);
-    A[1][1] = (c3 / b3 - c2 / b2);  //(b3/c3 - b2/c2);
+    A[0][0] = (a3 / b3 - a1 / b1);
+    A[0][1] = (c3 / b3 - c1 / b1);
+    A[1][0] = (a3 / b3 - a2 / b2);
+    A[1][1] = (c3 / b3 - c2 / b2);
 
-    b[0] = (d1 / b1 - d3 / b3);     //(d1/c1 - d3/c3);
-    b[1] = (d2 / b2 - d3 / b3);     //(d2/c2 - d3/c3);
+    b[0] = (d1 / b1 - d3 / b3);
+    b[1] = (d2 / b2 - d3 / b3);
 
     // solve using cramers rule
     vec3 result2d = vec3::zero;
@@ -429,7 +423,6 @@ void LinearInterfaceCalculator::computeTripleForFace(HalfFace *face) {
     {
       std::cout << "Numerical Failure projecting triple into 3D: Fall back to Barycenter" << std::endl;
       result = (1.0/3.0)*(v1->pos() + v2->pos() + v3->pos());
-      // std::cout << "Failed Axis==3, the most likely candidate to succeeed..." << std::endl;
     }
   }
 
@@ -545,7 +538,6 @@ void LinearInterfaceCalculator::computeQuadrupleForTet(Tet *tet) {
   }
 
   // TODO:   Implement Compute Quadruple
-
   // for now, take middle
 
   Vertex *quadruple = new Vertex(m_volume->numberOfMaterials());
@@ -638,4 +630,4 @@ void LinearInterfaceCalculator::forcePointIntoTriangle(
 }
 
 
-} // namespace cleaver
+}

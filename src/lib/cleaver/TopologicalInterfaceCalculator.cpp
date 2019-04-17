@@ -129,10 +129,6 @@ void TopologicalInterfaceCalculator::computeCutForEdge(HalfEdge *edge) {
         << "(" << t4 << "," << y4 << ")]" << std::endl;
       std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
         << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-      //exit(0);
-      // badEdges.push_back(v1->pos());
-      // badEdges.push_back(v2->pos());
     }
 
     t_ab = s[0];
@@ -201,10 +197,6 @@ void TopologicalInterfaceCalculator::computeCutForEdge(HalfEdge *edge) {
             << "(" << t4 << "," << y4 << ")]" << std::endl;
           std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
             << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-          //exit(0);
-          // badEdges.push_back(v1->pos());
-          // badEdges.push_back(v2->pos());
         }
 
         t_ac = s[0];
@@ -269,10 +261,6 @@ void TopologicalInterfaceCalculator::computeCutForEdge(HalfEdge *edge) {
             << "(" << t4 << "," << y4 << ")]" << std::endl;
           std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
             << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-          //exit(0);
-          // badEdges.push_back(v1->pos());
-          // badEdges.push_back(v2->pos());
         }
 
         t_bc = s[0];
@@ -334,151 +322,6 @@ void TopologicalInterfaceCalculator::computeCutForEdge(HalfEdge *edge) {
     }
   }
 }
-
-/*
-void TopologicalInterfaceCalculator::computeCutForEdge2(HalfEdge *edge) {
-  // order verts
-  Vertex *v2 = edge->vertex;
-  Vertex *v1 = edge->mate->vertex;
-
-  // set as evaluated
-  edge->evaluated = true;
-  edge->mate->evaluated = true;
-
-  // do labels differ?
-  if (v1->label == v2->label)
-    return;
-
-  // added feb 20 to attempt boundary conforming
-  if ((v1->isExterior && !v2->isExterior) || (!v1->isExterior && v2->isExterior))
-  {
-
-
-  }
-
-  int a_mat = v1->label;
-  int b_mat = v2->label;
-
-  double a1 = m_volume->valueAt(v1->pos(), a_mat); //  v1->vals[a_mat];
-  double a2 = m_volume->valueAt(v2->pos(), a_mat); //  v2->vals[a_mat];
-  double b1 = m_volume->valueAt(v1->pos(), b_mat); //  v1->vals[b_mat];
-  double b2 = m_volume->valueAt(v2->pos(), b_mat); //  v2->vals[b_mat];
-  double top = (a1 - b1);
-  double bot = (b2 - a2 + a1 - b1);
-  double t = top / bot;
-
-  // Now Test If a 3rd material pops up, test
-  if (m_volume->numberOfMaterials() > 2)
-  {
-    bool ac_crossing = false;
-    bool bc_crossing = false;
-    double t_ac = -1;
-    double t_bc = -1;
-
-    // get 3rd material
-    int c_mat = -1;
-    for (int m = 0; m < m_volume->numberOfMaterials(); m++)
-    {
-      if (m != a_mat && m != b_mat)
-      {
-        c_mat = m;
-        break;
-      }
-    }
-
-    // compute crossing parameter t_ac (a,c crossing)
-    {
-      double a1 = m_volume->valueAt(v1->pos(), a_mat);
-      double a2 = m_volume->valueAt(v2->pos(), a_mat);
-      double c1 = m_volume->valueAt(v1->pos(), c_mat);
-      double c2 = m_volume->valueAt(v2->pos(), c_mat);
-
-      // since a is definitely maximum on v1, can only
-      // be a crossing if c is greater than a on v2
-      if (c2 > a2)
-      {
-        double top = (a1 - c1);
-        double bot = (c2 - a2 + a1 - c1);
-        double t = top / bot;
-
-        vec3   pos = v1->pos()*(1 - t) + v2->pos()*(t);
-        //double ac  = a1*(1-t) + a2*(t);
-        double ac = m_volume->valueAt(pos, c_mat);
-
-        if (ac >= m_volume->valueAt(pos, b_mat) && t >= 0.0 && t <= 1.0)
-        {
-          ac_crossing = true;
-          t_ac = t;
-        }
-      }
-    }
-
-    // compute crossing parameter t_bc (b,c crossing)
-    {
-      double c1 = m_volume->valueAt(v1->pos(), c_mat);
-      double c2 = m_volume->valueAt(v2->pos(), c_mat);
-      double b1 = m_volume->valueAt(v1->pos(), b_mat);
-      double b2 = m_volume->valueAt(v2->pos(), b_mat);
-
-      // since b is definitely maximum on v2, can only
-      // be a crossing if c is greater than b on v1
-      if (c1 > b1)
-      {
-        double top = (c1 - b1);
-        double bot = (b2 - c2 + c1 - b1);
-        double t = top / bot;
-
-        vec3   pos = v1->pos()*(1 - t) + v2->pos()*(t);
-        //double bc  = c1*(1-t) + c2*(t);
-        double bc = m_volume->valueAt(pos, c_mat);
-
-        if (bc >= m_volume->valueAt(pos, a_mat) && t >= 0.0 && t <= 1.0)
-        {
-          bc_crossing = true;
-          t_bc = t;
-        }
-      }
-    }
-
-    // if 3rd material pops up, handle it
-    if (ac_crossing && bc_crossing) {
-
-      // put topological cut haflway between ac/bc interfaces
-      double tt = 0.5f*(t_ac + t_bc);
-
-      Vertex *cut = new Vertex(m_volume->numberOfMaterials());
-      tt = std::max(tt, 0.0);
-      tt = std::min(tt, 1.0);
-
-      // check violating condition
-      if ((tt <= edge->alpha) || (tt >= (1 - edge->mate->alpha)))
-        cut->violating = true;
-      else
-        cut->violating = false;
-
-      cut->order() = Order::CUT;
-      cut->pos() = (1 - tt)*v1->pos() + tt*v2->pos();
-
-      if (tt < 0.5)
-        cut->closestGeometry = v1;
-      else
-        cut->closestGeometry = v2;
-
-      // doesn't really matter which
-      cut->label = c_mat;
-      cut->lbls[c_mat] = true;
-
-      //---------------------
-      // attach cut to edge
-      //---------------------
-      cut->phantom = false;   // does it actually split a topology?
-      edge->cut = cut;
-      edge->mate->cut = cut;
-
-    }
-  }
-}
-*/
 
 void TopologicalInterfaceCalculator::computeTripleForFace(HalfFace *face) {
  // set as evaluated
@@ -636,10 +479,6 @@ void TopologicalInterfaceCalculator::computeTripleForFace(HalfFace *face) {
             << "(" << t4 << "," << y4 << ")]" << std::endl;
           std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
             << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-          //exit(0);
-          // badEdges.push_back(v1->pos());
-          // badEdges.push_back(v2->pos());
         }
 
         t_ac = s[0];
@@ -684,10 +523,6 @@ void TopologicalInterfaceCalculator::computeTripleForFace(HalfFace *face) {
             << "(" << t4 << "," << y4 << ")]" << std::endl;
           std::cout << "Coefficients: a=" << c[0] << " ,b=" << c[1]
             << ", c=" << c[2] << ", d=" << c[3] << std::endl;
-
-          // exit(0);
-          // badEdges.push_back(near->pos());
-          // badEdges.push_back(far->pos());
         }
 
         t_bc = s[0];
@@ -782,8 +617,6 @@ void TopologicalInterfaceCalculator::computeLagrangePolynomial(const vec3 &p1,
 
   double L[4][4];
   double LX[4][3];
-  //double bot[4];  // unreferenced
-
 
   for (int k = 0; k < 4; k++)
   {
@@ -898,6 +731,4 @@ void TopologicalInterfaceCalculator::forcePointIntoTriangle(
   p = (1 - u - v)*a + v*b + u*c;
 }
 
-
-
-} // namespace cleaver
+}

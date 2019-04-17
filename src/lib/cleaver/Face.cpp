@@ -52,4 +52,4 @@ Face::Face() : normal(0,0,0)
 
 Face::~Face() {}
 
-} // namespace cleaver
+}

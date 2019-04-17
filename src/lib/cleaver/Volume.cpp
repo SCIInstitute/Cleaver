@@ -72,8 +72,6 @@ Volume::Volume(const std::vector<AbstractScalarField*> &fields, int width, int h
     }
 }
 
-
-
 Volume::Volume(const std::vector<AbstractScalarField*> &fields, vec3 &size) :
     m_valueFields(fields),m_sizingField(0),  m_bounds(BoundingBox(vec3::zero, size))
 {
@@ -105,7 +103,7 @@ void Volume::setSize(int width, int height, int depth)
 }
 
 void Volume::setSizingField(AbstractScalarField *field)
-{    
+{
     this->m_sizingField = field;
 }
 
@@ -148,7 +146,7 @@ int Volume::maxAt(const vec3 &x) const
 }
 
 double Volume::valueAt(const vec3 &x, int material) const
-{    
+{
     vec3 tx = vec3((x.x / m_bounds.size.x)*m_valueFields[material]->bounds().size.x,
                    (x.y / m_bounds.size.y)*m_valueFields[material]->bounds().size.y,
                    (x.z / m_bounds.size.z)*m_valueFields[material]->bounds().size.z);

@@ -78,7 +78,7 @@ namespace cleaver
 
 
   CleaverMesher::~CleaverMesher() {
-    // cleanup();
+    // cleanup
     delete m_pimpl;
   }
 
@@ -161,7 +161,7 @@ namespace cleaver
       Json::Value tet = badTets[i];
       m_tets_to_record.insert((size_t)tet["parent"].asUInt64());
     }
-    
+
     if (m_tets_to_record.size() > 0) {
       m_recorder_stream.open("recording.dump", std::ofstream::out);
       m_recorder_stream << "{" << std::endl;
@@ -368,7 +368,7 @@ namespace cleaver
     bool regular,
     double alp_long,
     double alp_short)
-  {    
+  {
     if (m_bSimple) {
       return;
     }
@@ -406,7 +406,7 @@ namespace cleaver
   //=============================================================
   // - computeSafeAlphaLength1()
   //     This method computes safe alphas to prevent a tet from
-  // collapsing along its vertex altitudes. 
+  // collapsing along its vertex altitudes.
   //=============================================================
   float CleaverMesherImp::computeSafeAlphaLength1(Tet *tet, int v)
   {
@@ -557,11 +557,11 @@ namespace cleaver
       delete m_interfaceCalculator;
 
     if (m_bSimple) {
-      m_interfaceCalculator = new SimpleInterfaceCalculator(m_bgMesh, m_volume);  
+      m_interfaceCalculator = new SimpleInterfaceCalculator(m_bgMesh, m_volume);
     } else {
-      m_interfaceCalculator = new LinearInterfaceCalculator(m_bgMesh, m_volume);  
+      m_interfaceCalculator = new LinearInterfaceCalculator(m_bgMesh, m_volume);
     }
-    
+
 
     if (m_violationChecker)
       delete m_violationChecker;
@@ -633,11 +633,9 @@ namespace cleaver
     {
       cleaver::Tet *tet = m_bgMesh->tets[t];
 
-      //if(!tet->evaluated){
       m_interfaceCalculator->computeQuadrupleForTet(tet);
       if (tet->quadruple)
         quadruple_count++;
-      // }
     }
 
     if (verbose)
@@ -696,7 +694,6 @@ namespace cleaver
 
     if (verbose) {
       std::cout << " done. [" << cut_count << "]" << std::endl;
-      //std::cout << "Computing Topological Triples..." << std::flush;
     }
 
     {// DEBUG TEST
@@ -715,7 +712,6 @@ namespace cleaver
       cleaver::HalfFace *face = &m_bgMesh->halfFaces[f];
 
       if (!face->evaluated) {
-        //m_interfaceCalculator->computeTripleForFace(face);
         if (face->triple)
           triple_count++;
       }
@@ -734,11 +730,9 @@ namespace cleaver
     {
       cleaver::Tet *tet = m_bgMesh->tets[t];
 
-      //if(!tet->evaluated){
       m_interfaceCalculator->computeQuadrupleForTet(tet);
       if (tet->quadruple)
         quadruple_count++;
-      // }
     }
 
 
@@ -939,7 +933,7 @@ namespace cleaver
               break;
             }
           }
-        } else // 0
+        } else
         {
           for (int f = 0; f < 4; f++)
           {
@@ -1181,8 +1175,6 @@ namespace cleaver
               }
             }
             if (tet->quadruple == nullptr) {
-              //std::cerr << "looks like 2 cuts aren't on incident edges" << std::endl;
-              //exit(1412);
 
               // put on either cut, both should have 2 triples on them
               tet->quadruple = faces[0]->triple;
@@ -1233,7 +1225,7 @@ namespace cleaver
               // there's no real triple, select any of them
               tet->quadruple = faces[0]->triple;
             }
-          } else // 0
+          } else
           {
             for (int f = 0; f < 4; f++)
             {
@@ -1245,8 +1237,6 @@ namespace cleaver
             }
           }
         }
-
-
 
         if (!(cut_count == 0 ||
           cut_count == 1 ||
@@ -1424,7 +1414,7 @@ namespace cleaver
 
     // Create Matrix A and solve for Inverse
     double A[3][3];
-    vec3 triple = trip->pos_next();   // was ->pos  8/11/11
+    vec3 triple = trip->pos_next();
     vec3 inv1, inv2, inv3;
     vec3 v1 = warpPt;
     vec3 v2 = verts[1]->pos();
@@ -1602,7 +1592,6 @@ namespace cleaver
         for (int i = 0; i < 6; i++) {
           if (edges[i]->incidentToVertex(verts[2]) && edges[i]->incidentToVertex(verts[3])) {
             quad->conformedEdge = edges[i];
-            //cout << "conformed to Edge" << endl;
             break;
           }
         }
@@ -1614,7 +1603,6 @@ namespace cleaver
         for (int i = 0; i < 6; i++) {
           if (edges[i]->incidentToVertex(verts[1]) && edges[i]->incidentToVertex(verts[3])) {
             quad->conformedEdge = edges[i];
-            //cout << "conformed to Edge" << endl;
             break;
           }
         }
@@ -1626,7 +1614,6 @@ namespace cleaver
         for (int i = 0; i < 6; i++) {
           if (edges[i]->incidentToVertex(verts[1]) && edges[i]->incidentToVertex(verts[2])) {
             quad->conformedEdge = edges[i];
-            //cout << "conformed to Edge" << endl;
             break;
           }
         }
@@ -1640,7 +1627,6 @@ namespace cleaver
         {
           if (!faces[i]->incidentToVertex(verts[0])) {
             quad->conformedFace = faces[i];
-            //cout << "Conformed to Face" << endl;
             break;
           }
         }
@@ -1656,7 +1642,6 @@ namespace cleaver
         for (int i = 0; i < 6; i++) {
           if (edges[i]->incidentToVertex(verts[0]) && edges[i]->incidentToVertex(verts[3])) {
             quad->conformedEdge = edges[i];
-            //cout << "conformed to Edge" << endl;
             break;
           }
         }
@@ -1668,7 +1653,6 @@ namespace cleaver
         for (int i = 0; i < 6; i++) {
           if (edges[i]->incidentToVertex(verts[0]) && edges[i]->incidentToVertex(verts[2])) {
             quad->conformedEdge = edges[i];
-            //cout << "conformed to Edge" << endl;
             break;
           }
         }
@@ -1682,7 +1666,6 @@ namespace cleaver
         {
           if (!faces[i]->incidentToVertex(verts[1])) {
             quad->conformedFace = faces[i];
-            //cout << "Conformed to Face" << endl;
             break;
           }
         }
@@ -1697,7 +1680,6 @@ namespace cleaver
         for (int i = 0; i < 6; i++) {
           if (edges[i]->incidentToVertex(verts[0]) && edges[i]->incidentToVertex(verts[1])) {
             quad->conformedEdge = edges[i];
-            //cout << "conformed to Edge" << endl;
             break;
           }
         }
@@ -1711,7 +1693,6 @@ namespace cleaver
         {
           if (!faces[i]->incidentToVertex(verts[2])) {
             quad->conformedFace = faces[i];
-            //cout << "Conformed to Face" << endl;
             break;
           }
         }
@@ -1725,7 +1706,6 @@ namespace cleaver
       {
         if (!faces[i]->incidentToVertex(verts[3])) {
           quad->conformedFace = faces[i];
-          //cout << "Conformed to Face" << endl;
           break;
         }
       }
@@ -1968,7 +1948,7 @@ namespace cleaver
     //------------------------------------
     vertex->pos() = warp_point;
     vertex->warped = true;
-    
+
     if (m_bRecordOperations) {
       // does this snap effect the active set?
       bool shouldRecord = false;
@@ -1978,10 +1958,10 @@ namespace cleaver
           break;
         }
       }
-      if (shouldRecord) {    
+      if (shouldRecord) {
         auto operation = createVertexSnapOperation(vertex, warp_point, viol_edges, part_edges,
             viol_faces, part_faces, viol_tets, part_tets);
-        m_recorder_stream << operation << "," << std::endl;      
+        m_recorder_stream << operation << "," << std::endl;
       }
     }
 
@@ -2186,7 +2166,6 @@ namespace cleaver
       }
     }
 
-
     // if none hit, make a less picky choice
     for (unsigned int t = 0; t < tets.size(); t++)
     {
@@ -2205,7 +2184,6 @@ namespace cleaver
 
     // if STILL none hit, we have a problem
     std::cerr << "WARNING: Failed to find Inner Tet for Edge" << std::endl;
-    //exit(-1);
 
     return nullptr;
   }
@@ -2251,7 +2229,6 @@ namespace cleaver
       return tets[0];
     else
       return tets[1];
-
 
     // if neither hit, we have a problem
     std::cerr << "Fatal Error:  Failed to find Inner Tet for Face" << std::endl;
@@ -2321,12 +2298,12 @@ namespace cleaver
     //-------------------------------------------------
     if (v1->isEqualTo(v2) || v2->isEqualTo(v3) || v3->isEqualTo(v1))
     {
-      pt = vec3(-2, -2, -2); // Debug J.R.B. 11/22/11
+      pt = vec3(-2, -2, -2);
       return false;
     }
     else if (L2(v1->pos() - v2->pos()) < epsilon || L2(v2->pos() - v3->pos()) < epsilon || L2(v3->pos() - v1->pos()) < epsilon)
     {
-      pt = vec3(-3, -3, -3); // Debug J.R.B. 11/22/11
+      pt = vec3(-3, -3, -3);
       return false;
     }
 
@@ -2406,10 +2383,6 @@ namespace cleaver
     // how far are we from the actual triangle pt?
     error = L2(tri_pt - pt);
 
-
-    //if(error != error)
-    //    cerr << "TriangleIntersect2 error = NaN" << endl;
-
     //----------------------------------------------
     //  If Made It This Far,  Return Success
     //----------------------------------------------
@@ -2419,8 +2392,6 @@ namespace cleaver
 
   //================================================================================================
   // - projectCut()
-  //
-  //
   //================================================================================================
   vec3 CleaverMesherImp::projectCut(HalfEdge *edge, Tet *tet, Vertex *warpVertex, const vec3 &warpPt)
   {
@@ -2505,7 +2476,7 @@ namespace cleaver
       pt = edge->cut->pos();
     }
 
-    // Conform Point!!!
+    // Conform Point!
     vec3 newray = pt - static_pt;
     double t1 = length(newray) / length(warpPt - static_pt);
 
@@ -2561,7 +2532,7 @@ namespace cleaver
         status.printStatus();
       }
       HalfEdge *edge = entry.second;    // TODO: add  redundancy checks
-      snapAndWarpForViolatedEdge(edge);        //           to reduce workload.
+      snapAndWarpForViolatedEdge(edge);        //to reduce workload.
     }
     if (verbose) {
       status.done();
@@ -2617,7 +2588,7 @@ namespace cleaver
         status.printStatus();
       }
       HalfFace *face = &m_bgMesh->halfFaces[f];  // TODO: add  redundancy checks
-      snapAndWarpForViolatedFace(face);         //           to reduce workload.
+      snapAndWarpForViolatedFace(face);         //to reduce workload.
     }
     if (verbose) {
       status.done();
@@ -2950,7 +2921,7 @@ namespace cleaver
     std::vector<Tet*> tets = m_bgMesh->tetsAroundEdge(edge);
 
     //--------------------------------------------------------------------------
-    //  Pull Adjacent Triples To Quadpoint  (revise: 11/16/11 J.R.B.)
+    //  Pull Adjacent Triples To Quadpoint
     //--------------------------------------------------------------------------
     for (unsigned int t = 0; t < tets.size(); t++)
     {
@@ -3108,8 +3079,6 @@ namespace cleaver
         stencil = false;
       }
 
-      //if((cut_count == 1 || cut_count == 2) && stencil == true)
-      //    std::cerr << "Success for cut_count == 1 and cut_count == 2!!" << std::endl;
       if (!stencil && cut_count > 0) {
         std::cerr << "Skipping ungeneralized tet with " << cut_count << " cuts." << std::endl;
         if (cut_count == 3) {
@@ -3184,7 +3153,6 @@ namespace cleaver
               {
                 // Question:  Could tet be there twice?
 
-
                 // remove this tet from the list of all its vertices
                 if (tet->verts[v]->tets[j] == tet) {
                   tet->verts[v]->tets.erase(tet->verts[v]->tets.begin() + j);
@@ -3229,14 +3197,6 @@ namespace cleaver
             total_output++;
           }
         }
-
-
-        /*
-        for(int v=0; v < 4; v++){
-            if(tet->verts[v]->tm_v_index < 0)
-                std::cerr << "AH HA  1 !!" << std::endl;
-        }
-        */
 
       } else {
 
@@ -3303,34 +3263,27 @@ namespace cleaver
     buildAdjacency(false);
 
     // Sample The Volume
-    //std::cout << "Sampling Volume for Topology" << std::endl;
     sampleVolume();
 
     // Compute Alphas
-    //std::cout << "Computing Alphas for Topology" << std::endl;
     computeAlphas();
 
     // Compute Topological Interfaces
     computeTopologicalInterfaces(true);
-    //computeInterfaces();
 
     // Generalize Tets
     generalizeTopologicalTets(true);
-    //generalizeTets();
 
     // Snap & Warp
     //snapAndWarpViolations();
 
     // Stencil Background Tets
-    //std::cout << "Stenciling background tets" << std::endl;
     stencilBackgroundTets(true);
 
-    //std::cout << "resetting background mesh properties" << std::endl;
     resetMeshProperties();
 
     // just incase adjacency is now bad
-    //buildAdjacency(true);
-
+  
     // correct state of the program
     m_bBackgroundMeshCreated = true;
     m_bAdjacencyBuilt = false;
