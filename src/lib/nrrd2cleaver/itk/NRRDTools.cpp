@@ -173,6 +173,22 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(file);
     reader->Update();
+
+    //Checking sigma vs the size of the image
+    ImageType::Pointer inputImg = reader->GetOutput();
+    auto inputImgRegion = inputImg->GetLargestPossibleRegion();
+    std::vector<double> dims{ (double)inputImgRegion.GetSize()[0], (double)inputImgRegion.GetSize()[1], (double)inputImgRegion.GetSize()[2]};
+    auto spacing = inputImg->GetSpacing();
+    std::vector<double> spacingVec{ (double)spacing[0], (double)spacing[1], (double)spacing[2] };
+    std::vector<double> imageSize{ dims[0]*spacingVec[0], dims[1]*spacingVec[1], dims[2]*spacingVec[2] };
+    float imageSizeMin = *(std::max_element(std::begin(imageSize), std::end(imageSize)));
+    double imageSizeMin_d = (double)imageSizeMin;
+    bool warning = false;
+    if (imageSizeMin_d/sigma >= 0.1)
+    {
+      warning = true;
+    }
+
     //do some blurring
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(reader->GetOutput());
@@ -189,6 +205,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     auto nameEnd = file.find_last_of(".");
     auto name = file.substr(nameBeg, nameEnd - nameBeg);
     fields[num]->setName(name);
+    fields[num]->setWarning(warning);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
     float min = static_cast<float>(imageIterator.Get());

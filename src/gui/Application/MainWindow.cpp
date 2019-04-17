@@ -490,7 +490,7 @@ void MainWindow::importVolume() {
       QApplication::processEvents();
     }
 
-    //Error checking for indicator function values. 
+    //Error checking for indicator function values.
     for(int i = 0; i < fields.size(); i++)
     {
       std::size_t found = fields[i]->name().find("inverse");
@@ -522,6 +522,12 @@ void MainWindow::importVolume() {
         this->handleError("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
         status.setValue(0);
         return;
+      }
+
+      auto warning = ((cleaver::ScalarField<float>*)fields[i])->getWarning();
+      if (warning)
+      {
+        this->handleMessage("Nrrd file read WARNING: Sigma is 10% of volume's size. Gaussian kernel will be truncated.");
       }
   }
 
