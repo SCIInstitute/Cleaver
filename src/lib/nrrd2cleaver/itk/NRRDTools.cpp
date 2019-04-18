@@ -222,7 +222,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
       ++imageIterator;
 
       //Error checking
-      if (isnan(val) && error.compare("none") == 0)
+      if (std::isnan(val) && error.compare("none") == 0)
       {
         error = "nan";
       }

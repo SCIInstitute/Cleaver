@@ -41,11 +41,11 @@
 //-------------------------------------------------------------------
 //
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/CleaverMesher.h>
-#include <Cleaver/InverseField.h>
-#include <Cleaver/SizingFieldCreator.h>
-#include <Cleaver/Timer.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/CleaverMesher.h>
+#include <cleaver/InverseField.h>
+#include <cleaver/SizingFieldCreator.h>
+#include <cleaver/Timer.h>
 #include <NRRDTools.h>
 
 #include <boost/program_options.hpp>

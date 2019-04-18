@@ -41,7 +41,7 @@
 //-------------------------------------------------------------------
 //
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-#include <Cleaver/Cleaver.h>
+#include <cleaver/Cleaver.h>
 #include <boost/program_options.hpp>
 
 // STL Includes

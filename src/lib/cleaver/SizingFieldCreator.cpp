@@ -89,7 +89,6 @@ namespace cleaver
     fill3DVector(dist, 1e10, l, m, n);
   }
 
-
   static std::ofstream voxelMeshFile("voxelMeshLog.txt");
  
   void VoxelMesh::setDist(int l, int m, int n, double value)
