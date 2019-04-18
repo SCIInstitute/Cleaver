@@ -224,7 +224,11 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel
       float val = static_cast<float>(imageIterator.Get());
-      /*if (isnan(val) && error.compare("none") == 0)
+      ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
+      ++imageIterator;
+
+      //Error checking
+      if (isnan(val) && error.compare("none") == 0)
       {
         error = "nan";
       }
@@ -236,23 +240,17 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
       {
         max = val;
       }
-
-      ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
-      ++imageIterator;
     }
 
     if ((min >= 0 || max <= 0) && (error.compare("none") == 0))
     {
       error = "maxmin";
-    }*/
-
-    fields[num]->setError(error);
-      ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
-      num++;
     }
 
-    return fields;
+    ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
+    num++;
   }
+  return fields;
 }
 
 void NRRDTools::saveNRRDFile(const cleaver::FloatField *field, const std::string &name) {
