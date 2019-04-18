@@ -247,6 +247,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
       error = "maxmin";
     }
 
+    fields[num]->setError(error);
     ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
     num++;
   }
