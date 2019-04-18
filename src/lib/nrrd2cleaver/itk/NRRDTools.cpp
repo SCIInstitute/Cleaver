@@ -42,6 +42,7 @@
 #include <itkSubtractImageFilter.h>
 #include <itkApproximateSignedDistanceMapImageFilter.h>
 #include <sstream>
+#include <cmath>
 
 //typedefs needed.
 typedef float PixelType;
