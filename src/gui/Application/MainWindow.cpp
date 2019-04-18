@@ -515,7 +515,7 @@ void MainWindow::importVolume() {
       {
         this->handleMessage("Nrrd file read WARNING: Sigma is 10% of volume's size. Gaussian kernel may be truncated.");
       }
-  }
+    }
 
     // Add Fields to Data Manager
     this->m_dataManagerWidget->setIndicators(fields);
