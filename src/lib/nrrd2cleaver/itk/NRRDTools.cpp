@@ -62,19 +62,12 @@ typedef itk::ApproximateSignedDistanceMapImageFilter
 
 bool checkImageSize(ImageType::Pointer inputImg, double sigma)
 {
-  auto inputImgRegion = inputImg->GetLargestPossibleRegion();
-  std::vector<double> dims{ (double)inputImgRegion.GetSize()[0], (double)inputImgRegion.GetSize()[1], (double)inputImgRegion.GetSize()[2] };
+  auto dims = inputImg->GetLargestPossibleRegion().GetSize();
   auto spacing = inputImg->GetSpacing();
-  std::vector<double> spacingVec{ (double)spacing[0], (double)spacing[1], (double)spacing[2] };
-  std::vector<double> imageSize{ dims[0] * spacingVec[0], dims[1] * spacingVec[1], dims[2] * spacingVec[2] };
-  float imageSizeMin = *(std::max_element(std::begin(imageSize), std::end(imageSize)));
-  double imageSizeMin_d = (double)imageSizeMin;
-  bool warning = false;
-  if ((sigma / imageSizeMin_d) >= 0.1)
-  {
-    warning = true;
-  }
-  return warning;
+  std::vector<double> imageSize{ dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2] };
+  double imageSizeMin = *(std::min_element(std::begin(imageSize), std::end(imageSize)));
+  
+  return (sigma / imageSizeMin) >= 0.1;
 }
 
 std::vector<cleaver::AbstractScalarField*>
