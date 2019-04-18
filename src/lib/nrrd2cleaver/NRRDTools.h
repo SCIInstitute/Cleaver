@@ -31,7 +31,7 @@
 #define __NRRDTOOLS_H__
 #include <string>
 #include <vector>
-#include <Cleaver/ScalarField.h>
+#include <cleaver/ScalarField.h>
 
 class NRRDTools {
 public:

@@ -32,7 +32,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(TEEM_NRRD2Cleaver)
 
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
@@ -59,7 +59,3 @@ ENDFOREACH(header_file)
 # output library
 ADD_LIBRARY(nrrd2cleaver STATIC ${srcs} ${hdrs})
 TARGET_LINK_LIBRARIES(nrrd2cleaver teem cleaver)
-
-
-
-
