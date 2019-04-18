@@ -51,7 +51,7 @@ FILE(GLOB WINDOW_ICNS Resources/Icons/cleaverIcon.png)
 ADD_DEFINITIONS(-DWINDOW_ICON="${CMAKE_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.png")
 
 # Add library includes
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
