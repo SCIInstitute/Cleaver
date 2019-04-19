@@ -160,12 +160,36 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     fields[num]->setWarning(warning);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
+    float min = static_cast<float>(imageIterator.Get());
+    float max = static_cast<float>(imageIterator.Get());
+    std::string error = "none";
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel.
       float val = static_cast<float>(imageIterator.Get());
       ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
       ++imageIterator;
+
+      //Error checking
+      if (std::isnan(val) && error.compare("none") == 0)
+      {
+        error = "nan";
+      }
+      else if (val < min)
+      {
+        min = val;
+      }
+      else if (val > max)
+      {
+        max = val;
+      }
     }
+
+    if ((min >= 0 || max <= 0) && (error.compare("none") == 0))
+    {
+      error = "maxmin";
+    }
+
+    fields[num]->setError(error);
     ((cleaver::FloatField*)fields[num])->setScale(
       cleaver::vec3(1., 1., 1.));
   }
