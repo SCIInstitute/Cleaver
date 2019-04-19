@@ -2298,12 +2298,12 @@ namespace cleaver
     //-------------------------------------------------
     if (v1->isEqualTo(v2) || v2->isEqualTo(v3) || v3->isEqualTo(v1))
     {
-      pt = vec3(-2, -2, -2);
+      pt = vec3(-2, -2, -2); //Debug J.R.B 11/22/11
       return false;
     }
     else if (L2(v1->pos() - v2->pos()) < epsilon || L2(v2->pos() - v3->pos()) < epsilon || L2(v3->pos() - v1->pos()) < epsilon)
     {
-      pt = vec3(-3, -3, -3);
+      pt = vec3(-3, -3, -3); //Debug J.R.B. 11/22/11
       return false;
     }
 
