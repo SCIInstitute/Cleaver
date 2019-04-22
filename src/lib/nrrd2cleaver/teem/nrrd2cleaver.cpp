@@ -4,8 +4,8 @@
 #include <teem/nrrd.h>
 #include <iostream>
 #include <fstream>
-#include <Cleaver/ScalarField.h>
-#include <Cleaver/Status.h>
+#include <cleaver/ScalarField.h>
+#include <cleaver/Status.h>
 
 using namespace cleaver;
 using namespace std;

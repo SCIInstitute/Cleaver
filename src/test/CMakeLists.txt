@@ -21,7 +21,7 @@ ExternalProject_Add(googletest
    INSTALL_COMMAND ""
 )
 
-# Copy and Specfy Include Directory
+# Copy and Specify Include Directory
 ExternalProject_Get_Property(googletest source_dir)
 ExternalProject_Add_Step(
    googletest
