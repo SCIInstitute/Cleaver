@@ -65,7 +65,7 @@ void SimpleInterfaceCalculator::computeCutForEdge(HalfEdge *edge) {
 
   Vertex *cut = new Vertex(m_volume->numberOfMaterials());
   cut->pos() = 0.5*v1->pos() + 0.5*v2->pos();
-   
+
   // doesn't really matter which
   cut->label = v1->label;
   cut->lbls[v1->label] = true;
@@ -98,7 +98,7 @@ void SimpleInterfaceCalculator::computeTripleForFace(HalfFace *face) {
   Vertex *v1 = verts[0];
   Vertex *v2 = verts[1];
   Vertex *v3 = verts[2];
-  
+
   //-------------------------------------------------------
   // Create the Triple Vertex
   //-------------------------------------------------------
@@ -148,4 +148,4 @@ void SimpleInterfaceCalculator::computeQuadrupleForTet(Tet *tet) {
   tet->quadruple->violating = false;
 }
 
-} // namespace cleaver
+}

@@ -167,4 +167,4 @@ Matrix3x3 operator-(const Matrix3x3 &A, const Matrix3x3 &B)
     return R;
 }
 
-} // namespace Cleaver
+}

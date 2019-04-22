@@ -12,9 +12,6 @@ SizingFieldOracle::SizingFieldOracle(const AbstractScalarField *sizingField, con
 
     if(sizingField)
         createOctree();
-
-    //sanityTest1();
-    //sanityTest2();
 }
 
 void recurseCheck1(OTCell *cell, Octree *tree)
@@ -186,8 +183,6 @@ void SizingFieldOracle::createOctree()
 
     // breadth first creation
     adaptCell(m_tree->root());
-    //std::cout<<"MinSF = "<<m_tree->root()->minLFS<<std::endl;
-    //printTree(m_tree->root(), 4);
 }
 
 //============================================
@@ -195,8 +190,6 @@ void SizingFieldOracle::createOctree()
 //============================================
 double SizingFieldOracle::adaptCell(OTCell *cell)
 {
-//    if(!cell)
-//        return 1e10;
 
     BoundingBox domainBounds = m_bounds;
 
@@ -227,10 +220,6 @@ double SizingFieldOracle::adaptCell(OTCell *cell)
 
     BoundingBox bounds = cell->bounds;
 
-//    vec3 tx = vec3((bounds.center().x / volume->bounds().size.x)*sizingField.bounds().size.x,
-//                   (bounds.center().y / volume->bounds().size.y)*sizingField.bounds().size.y,
-//                   (bounds.center().z / volume->bounds().size.z)*sizingField.bounds().size.z);
-
     //if(bounds.size.x>0.5)   // JRB  - Changed to 1, since should not go below voxel level
     //                        // TODO: Really, this check should be at the scale of the resolution
                               // of the sizing field. If the sizing field is computed at 3x, this
@@ -241,7 +230,6 @@ double SizingFieldOracle::adaptCell(OTCell *cell)
     // TODO:   What happens if sizing field is not a FloatField ??
     float voxel_scale = (float) ((cleaver::ScalarField<float>*)m_sizingField)->scale().x;
 
-    //if(bounds.size.x > 0.5)
     if(bounds.size.x > voxel_scale)
         cell->subdivide();
 
@@ -299,7 +287,6 @@ double SizingFieldOracle::adaptCell(OTCell *cell)
                 min=temp;
         }
 
-        //min = cell->minLFS = m_sizingField->valueAt(bounds.center()+0.5);
         if(min < bounds.size[0])
         {
             cell->subdivide();
@@ -313,14 +300,12 @@ double SizingFieldOracle::adaptCell(OTCell *cell)
             cell->minLFS = min;
         }
     }
-    //printf("%lf\n", min);
     return min;
 }
 
 void SizingFieldOracle::printTree(OTCell *myCell, int n)
 {
     unsigned int i;
-    //printf("Level:%d\n", myCell->level);
     if(myCell->level < (unsigned int)n)
         return;
     for(i=0; i<12-myCell->level; i++)
@@ -345,4 +330,4 @@ double SizingFieldOracle::getMinLFS(int xLocCode, int yLocCode, int zLocCode, in
 }
 
 
-} // namespace Cleaver
+} 

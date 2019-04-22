@@ -75,6 +75,6 @@ protected:
     ConstructionType m_constructionType;
 };
 
-} // namespace Cleaver
+}
 
 #endif // SIZINGFIELDORACLE_H

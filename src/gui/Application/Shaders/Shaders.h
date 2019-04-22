@@ -6,7 +6,6 @@
 //xxd -i default.vert > default_vert.h
 //xxd -i default.frag > default_frag.h
 
-
 #include "default_vert.h"
 #include "default_frag.h"
 #include "normaldepth_vert.h"

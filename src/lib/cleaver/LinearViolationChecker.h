@@ -66,6 +66,6 @@ class LinearViolationChecker : public ViolationChecker
     TetMesh *m_mesh;
 };
 
-} // namespace cleaver
+}
 
 #endif // LINEAR_VIOLATION_CHECKER_H_

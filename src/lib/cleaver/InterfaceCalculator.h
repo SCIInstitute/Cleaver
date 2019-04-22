@@ -59,6 +59,6 @@ class InterfaceCalculator
     virtual void computeQuadrupleForTet(Tet *tet) = 0;
 };
 
-} // namespace cleaver
+}
 
 #endif // INTERFACE_CALCULATOR_H

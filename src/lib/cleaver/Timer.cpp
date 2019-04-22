@@ -124,4 +124,4 @@ double Timer::time() const
     }
 }
 
-} // namespace cleaver
+}

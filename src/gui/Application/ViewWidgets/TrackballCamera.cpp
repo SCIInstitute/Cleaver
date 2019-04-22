@@ -25,8 +25,8 @@ void TrackballCamera::reset()
     float view_distance = 3.5*cleaver::length(m_targetBounds.center() - m_targetBounds.origin);
     vec3 target_center = m_targetBounds.center();
     m_target = QVector3D(target_center.x, target_center.y, target_center.z);
-    m_eye.setX(0); // m_target.x() +  view_distance);
-    m_eye.setY(0); //m_target.y() +  view_distance);
+    m_eye.setX(0);
+    m_eye.setY(0);
     m_eye.setZ(m_target.z() - view_distance);
 
     m_scale  = (m_target - m_eye).length();
@@ -40,11 +40,6 @@ void TrackballCamera::reset()
 
     m_orientation = QQuaternion();
     QMatrix4x4 matrix;
-    //0.261093 -0.435186 -0.861652 0
-    //-0.0523809 0.884911 -0.462805 0
-    //0.963891 0.165969 0.208249 0
-    // 0 0 0 1
-
 
     computeViewMatrix();
 }
@@ -153,15 +148,8 @@ void TrackballCamera::rotateBetween(const QVector2D &s1, const QVector2D &s2)
     m_orientation = delta * m_orientation;
     m_orientation.normalize();
 
-    //m_viewDir = delta.rotatedVector(m_viewDir);
-    //m_up      = delta.rotatedVector(m_up);
-    //m_right   = delta.rotatedVector(m_right);
-
-
     // WHY ARE NOT CALLING m.rotate(quaternion)?  WHERE IS THE QUATERNION EVEN APPLIED?
-    // ALSO, HOW CAN THERE BE ROTATION AT ALL????
-
-    //q *= delta;
+    // ALSO, HOW CAN THERE BE ROTATION AT ALL???
     // compose delta with the previous orientation
     computeViewMatrix();
 }

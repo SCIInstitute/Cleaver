@@ -18,7 +18,7 @@ public:
 		, m_Box(cleaver::vec3::zero, cleaver::vec3(1,1,1))
 	{}
 
-	virtual double valueAt( double x, double y, double z ) const 
+	virtual double valueAt( double x, double y, double z ) const
 	{
 		x -= m_Center[0];
 		y -= m_Center[1];
@@ -28,7 +28,7 @@ public:
 		return (m_Radius-d);
 	}
 
-	virtual cleaver::BoundingBox bounds() const 
+	virtual cleaver::BoundingBox bounds() const
 	{
 		return m_Box;
 	}
@@ -74,10 +74,10 @@ float sx,sy,sz;
 
 int main(int argc, char *argv[])
 {
-    //-------------------------------
-    //  Define volume
-    //-------------------------------
-    std::vector<cleaver::AbstractScalarField*> fields;// = loadNRRDFiles(inputs, verbose);
+  //-------------------------------
+  //  Define volume
+  //-------------------------------
+  std::vector<cleaver::AbstractScalarField*> fields;
 	fields.push_back( new MockupField(cleaver::vec3(0.5f,0.5f,0.5f)) );
 	fields.push_back( new MockupField(cleaver::vec3(0.4f,0.4f,0.4f)) );
 	fields.push_back( new MockupField(cleaver::vec3(0.3f,0.3f,0.6f)) );
@@ -86,33 +86,32 @@ int main(int argc, char *argv[])
 	scaled_resolution = true;
 	sx=sy=sz = 45;
 
-    if(fields.empty())
+  if(fields.empty())
 	{
-        std::cerr << "Failed to load image data. Terminating." << std::endl;
-        return 0;
-    }
-    else if(fields.size() == 1)
+      std::cerr << "Failed to load image data. Terminating." << std::endl;
+      return 0;
+  }
+  else if(fields.size() == 1)
 	{
-        fields.push_back(new cleaver::InverseScalarField(fields[0]));
+      fields.push_back(new cleaver::InverseScalarField(fields[0]));
 	}
 
-    cleaver::Volume *volume = new cleaver::Volume(fields);
+  cleaver::Volume *volume = new cleaver::Volume(fields);
 
+  if(absolute_resolution)
+      ((cleaver::Volume*)volume)->setSize(rx,ry,rz);
+  if(scaled_resolution)
+      ((cleaver::Volume*)volume)->setSize(sx*volume->size().x,
+                                          sy*volume->size().y,
+                                          sz*volume->size().z);
 
-    if(absolute_resolution)
-        ((cleaver::Volume*)volume)->setSize(rx,ry,rz);
-    if(scaled_resolution)
-        ((cleaver::Volume*)volume)->setSize(sx*volume->size().x,
-                                            sy*volume->size().y,
-                                            sz*volume->size().z);
+  std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
 
-    std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
-
-    //--------------------------------
-    //  Create Mesher & TetMesh
-    //--------------------------------
-    cleaver::TetMesh *mesh = cleaver::createMeshFromVolume(volume, verbose);
-	if( !mesh ) 
+  //--------------------------------
+  //  Create Mesher & TetMesh
+  //--------------------------------
+  cleaver::TetMesh *mesh = cleaver::createMeshFromVolume(volume, verbose);
+	if( !mesh )
 	{
 		for (size_t i=0; i<fields.size(); i++)
 			delete fields[i];

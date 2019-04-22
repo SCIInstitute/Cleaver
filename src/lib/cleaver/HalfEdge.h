@@ -100,6 +100,6 @@ public:
     }
 };
 
-} // namespace cleaver
+}
 
 #endif // HALFEDGE_H_

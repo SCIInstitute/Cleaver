@@ -58,7 +58,6 @@ public:
     vec3 normal;
 };
 
-} // namespace cleaver
+}
 
 #endif // FACE_H
-

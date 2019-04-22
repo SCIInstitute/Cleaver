@@ -41,6 +41,6 @@ Matrix3x3 operator-(const Matrix3x3 &A, const Matrix3x3 &B);
 Matrix3x3 operator+(const Matrix3x3 &A, const Matrix3x3 &B);
 
 
-} // namespace Cleaver
+}
 
 #endif // MATRIX3X3_H

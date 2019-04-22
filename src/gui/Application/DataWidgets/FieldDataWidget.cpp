@@ -49,7 +49,7 @@ FieldDataWidget::FieldDataWidget(cleaver::AbstractScalarField *field, QWidget *p
     QWidget(parent),
     ui(new Ui::FieldDataWidget),
     field(field)
-{    
+{
     ui->setupUi(this);
     ui->dimensionsWidget->layout()->setMargin(0);
     ui->dimensionsWidget->layout()->setSpacing(4);
@@ -62,9 +62,6 @@ FieldDataWidget::FieldDataWidget(cleaver::AbstractScalarField *field, QWidget *p
 
 
     this->ui->infoWidget->hide();
-
-    //QObject::connect(this->ui->infoButton, SIGNAL(clicked(bool)),
-    //        this, SLOT(showInfoClicked(bool)));
 
     QObject::connect(this->ui->detailViewButton, SIGNAL(clicked(bool)),
             this, SLOT(showInfoClicked(bool)));
@@ -90,7 +87,6 @@ FieldDataWidget::FieldDataWidget(cleaver::AbstractScalarField *field, QWidget *p
     "         }                                       ";
 
     selectedOpenStyle =
-    //"QWidget { background-color:rgb(109, 124, 152); \n"
     "QWidget { background-color:rgb(137, 156, 191); \n"
 
     "          border: 1px solid black;\n             "
@@ -100,7 +96,6 @@ FieldDataWidget::FieldDataWidget(cleaver::AbstractScalarField *field, QWidget *p
 
 
     selectedClosedStyle =
-    //"QWidget { background-color:rgb(109, 124, 152); \n"
     "QWidget { background-color:rgb(137, 156, 191); \n"
     "          border: 1px solid black;\n             "
     "          border-top-left-radius: 10px;\n        "
@@ -274,7 +269,7 @@ void FieldDataWidget::mousePressEvent(QMouseEvent *event)
                 if(dialog.exec() == QDialog::Accepted){
                     field->setName(std::string(lineEdit.text().toLatin1()));
                     ui->dataLabel->setText(lineEdit.text());
-                }                
+                }
             }
             else if(selectedItem == exportAction){
                 cleaver::FloatField *floatField = dynamic_cast<cleaver::FloatField*>(field);
@@ -307,7 +302,7 @@ void FieldDataWidget::mouseMoveEvent(QMouseEvent *event)
 
     QPixmap pixmap(this->size());
 
-    this->render(&pixmap); // offset, region);
+    this->render(&pixmap);
 
     drag->setPixmap(pixmap);
 

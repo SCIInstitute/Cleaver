@@ -16,12 +16,12 @@ class VolumeDataWidget;
 class VolumeDataWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     explicit VolumeDataWidget(QWidget *parent = 0);
     VolumeDataWidget(cleaver::Volume *volume, QWidget *parent = 0);
     ~VolumeDataWidget();
-    
+
 
 void setTitle(const std::string &title);
 signals:
@@ -67,10 +67,7 @@ private:
     std::string selectedInfoStyle;
     std::string highlightedInfoStyle;
 
-    //std::string normalMaterialWidgetStyle;
     std::string selectedMaterialWidgetStyle;
-
-    //std::string materialLabelStyle;
 
     cleaver::Volume *volume;
 

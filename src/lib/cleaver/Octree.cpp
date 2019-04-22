@@ -66,13 +66,13 @@ void OTCell::subdivide()
     for(int i=0; i < 8; i++)
     {
         if(!this->children[i])
-        {            
+        {
             OTCell *child = new OTCell();
             child->level = level - 1;
             child->xLocCode = xLocCode | (((i & _001) >> 0) << child->level);
             child->yLocCode = yLocCode | (((i & _010) >> 1) << child->level);
             child->zLocCode = zLocCode | (((i & _100) >> 2) << child->level);
-            child->parent = this;            
+            child->parent = this;
             this->children[i] = child;
 
             // child bounding box is exactly half the size
@@ -277,9 +277,9 @@ OTCell* Octree::addCellAtLevel(int x, int y, int z, unsigned int level)
 
 OTCell* Octree::getCellAtLevel(int x, int y, int z, unsigned int level)
 {
-    unsigned int xLocCode = (unsigned int)x; // (x * this->maxVal);
-    unsigned int yLocCode = (unsigned int)y; // (y * this->maxVal);
-    unsigned int zLocCode = (unsigned int)z; // (z * this->maxVal);
+    unsigned int xLocCode = (unsigned int)x;
+    unsigned int yLocCode = (unsigned int)y;
+    unsigned int zLocCode = (unsigned int)z;
 
     // figure out where this cell is
     OTCell *pCell = this->root();

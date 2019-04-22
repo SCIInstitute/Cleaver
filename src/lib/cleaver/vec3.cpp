@@ -61,7 +61,7 @@ vec3::vec3() : x(0), y(0), z(0)
 
 // default constructor
 vec3::vec3(double x, double  y, double z) : x(x), y(y), z(z)
-{    
+{
 }
 
 // copy constructor
@@ -264,7 +264,6 @@ vec3 operator/(const vec3 &a, double s)
 std::ostream &operator<<(std::ostream &stream, const vec3 &v)
 {
     stream << std::fixed;
-    //return stream << "[" << std::setprecision(3) << v.x << ", " << v.y << ", " << v.z << "]";
     return stream << std::setprecision(3) << v.x << " " << v.y << " " << v.z;
 }
 
