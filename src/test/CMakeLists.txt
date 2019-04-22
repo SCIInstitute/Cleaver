@@ -10,9 +10,12 @@ ENDIF()
 
 INCLUDE(ExternalProject)
 
+SET(googletest_GIT_TAG "origin/cleaver")
+
 ExternalProject_Add(googletest
    PREFIX "${GTEST_INSTALL_DIR}"
-   GIT_REPOSITORY "https://github.com/google/googletest.git"
+   GIT_REPOSITORY "https://github.com/CIBC-Internal/googletest.git"
+   GIT_TAG ${googletest_GIT_TAG}
    INSTALL_DIR "${GTEST_INSTALL_DIR}/include"
    BINARY_DIR "${GTEST_INSTALL_DIR}/lib"
    INSTALL_COMMAND ""
@@ -73,4 +76,3 @@ ENDFUNCTION()
 
 ADD_SUBDIRECTORY(cleaver)
 ADD_SUBDIRECTORY(cli)
-
