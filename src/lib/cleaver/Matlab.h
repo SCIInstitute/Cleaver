@@ -51,10 +51,7 @@
 #define   miINT32        5   //   32-bit, signed
 #define   miUINT32       6   //   32-bit, unsigned
 #define   miSINGLE       7   //   IEEE® 754 single format
-//#define Reserved       8
 #define   miDOUBLE       9   //   IEEE 754 double format
-//#define Reserved      10
-//#define Reserved      11
 #define   miINT64       12   //   64-bit, signed
 #define   miUINT64      13   //   64-bit, unsigned
 #define   miMATRIX      14   //   MATLAB array

@@ -132,16 +132,6 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     dm->SetInsideValue(md + 0.1f);
     dm->SetOutsideValue(md -0.1f);
     dm->Update();
-    // MultiplyImageFilterType::Pointer mult =
-    //  MultiplyImageFilterType::New();
-    //mult->SetInput(blur->GetOutput());
-    //mult->SetConstant(-20. / (mx - mn));
-    //mult->Update();
-    /*SubtractImageFilterType::Pointer subtractFilter
-      = SubtractImageFilterType::New();
-    subtractFilter->SetInput1(mult->GetOutput());
-    subtractFilter->SetConstant2(1.);
-    subtractFilter->Update();*/
 
     // Convert the image to a cleaver "abstract field".
     auto img = dm->GetOutput();

@@ -66,6 +66,6 @@ class LinearInterfaceCalculator : public InterfaceCalculator
     void forcePointIntoTriangle(vec3 a, vec3 b, vec3 c, vec3 &p);
 };
 
-} // namespace cleaver
+}
 
 #endif // LINEAR_INTERFACE_CALCULATOR_H

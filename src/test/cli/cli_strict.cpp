@@ -56,7 +56,7 @@ TEST(CLIRegressionTests, RegularStrict) {
   std::string log = "strict_output.txt";
 
   // Check for no material fields error.
-  std::string output = "";// >> " + data_dir + log + " 2>&1";
+  std::string output = "";
   std::string option = " --strict ";
   std::string line = (command + option + output);
   EXPECT_EQ(1 * _MUL , std::system(line.c_str()));
@@ -106,5 +106,4 @@ TEST(CLIRegressionTests, RegularStrict) {
     "basic/basic_output.log " + input;
   line = (command + option + output);
   EXPECT_EQ(10 * _MUL , std::system(line.c_str()));
-  //system_execute(RM_CMMD,data_dir + log);
 }

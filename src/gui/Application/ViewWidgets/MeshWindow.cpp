@@ -615,9 +615,6 @@ void MeshWindow::drawVertexStar(int v)
   glVertex3f(vertex->pos().x, vertex->pos().y, vertex->pos().z);
   glEnd();
 
-
-  //std::vector<Cleaver::Tet*> tetlist = m_mesh->tetsAroundVertex(vertex);
-
   glDisable(GL_LIGHTING);
 
 
@@ -716,8 +713,6 @@ void MeshWindow::drawEdgeStar(int edge)
   glEnd();
   glDisable(GL_POLYGON_OFFSET_FILL);
 
-  //std::cout << facelist.size() << " incident faces" << std::endl;
-
   // draw tets incident
   std::vector<cleaver::Tet*> tetlist = this->mesh_->tetsAroundEdge(e);
   glBegin(GL_TRIANGLES);
@@ -771,7 +766,6 @@ void MeshWindow::drawFaceStar(int face)
 
   // get 2 incident tets
   std::vector<cleaver::Tet*> tetlist = this->mesh_->tetsAroundFace(half_face);
-  //std::cout << tetlist.size() << " incident tets" << std::endl;
 
   // draw their lines, don't fill them
   // color them different colors?
@@ -826,7 +820,6 @@ void MeshWindow::drawViolationPolytopeForVertex(int v)
   cleaver::Vertex *vertex = this->mesh_->verts[v];
 
   // get adjacency data
-  //std::vector<Cleaver::HalfEdge*> adjEdges = m_mesh->edgesAroundVertex(vertex);
   std::vector<cleaver::Tet*>      adjTets = this->mesh_->tetsAroundVertex(vertex);
 
   glDisable(GL_LIGHTING);
@@ -1157,7 +1150,6 @@ void MeshWindow::wheelEvent(QWheelEvent *event)
     m_shrinkscale -= 0.0001f*event->delta();
     m_shrinkscale = std::max(m_shrinkscale, 0.0f);
     m_shrinkscale = std::min(m_shrinkscale, 1.0f);
-    //std::cout << "shrinkscale = " << m_shrinkscale << std::endl;
     update_vbos();
   } else{
     QMatrix4x4 mat;
@@ -1587,9 +1579,6 @@ void MeshWindow::build_output_vbos()
       if (m2 < (int)m_bMaterialCellLock.size() && m_bMaterialCellLock[m2])
         force = true;
     }
-    //if (m1 == m2) {
-    //  force = false;
-    //}
     if (surface) {
       force = (m2 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m2]) ||
         (m1 < (int)m_bMaterialFaceLock.size() && m_bMaterialFaceLock[m1]);

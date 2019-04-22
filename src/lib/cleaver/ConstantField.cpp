@@ -50,4 +50,4 @@ template class ConstantField<unsigned int>;
 template class ConstantField<long int>;
 template class ConstantField<long double>;
 
-}  // namespace Cleaver
+}

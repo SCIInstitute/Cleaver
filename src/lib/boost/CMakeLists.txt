@@ -103,7 +103,6 @@ SET(SOURCE_FILES
 #FILE(GLOB HEADER_FILES ../*.hpp)
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
-#add_definitions(-DBOOST_ALL_NO_LIB)
 # output library
 ADD_LIBRARY(boostparts  ${SOURCE_FILES} ${HEADER_FILES})
 MESSAGE(STATUS "creating library {boost}")
@@ -117,4 +116,3 @@ if( MSVC )
     set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL" )
     set_target_properties( boostparts PROPERTIES STATIC_LIBRARY_FLAGS "/LTCG" )
 endif()
-

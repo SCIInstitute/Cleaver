@@ -123,7 +123,6 @@ namespace cleaver
 
     w = dist.size(); h = dist[0].size(); d = dist[0][0].size();
 
-    //field = (float*)malloc(w*h*d*sizeof(float));
     field = new float[w*h*d];
     for (i = 0; i < w; i++)
     {
@@ -133,7 +132,6 @@ namespace cleaver
         {
           min = dist[i][j][k];
           field[k*(w*h) + j*w + i] = (float)(min / factor);
-          //printf("%d %d %d %lf\n", i,j,k,dist[i][j][k]);
         }
       }
     }
@@ -163,10 +161,8 @@ namespace cleaver
     //Variable Declaration
     int i, j, k, l;//,n;
     int w, h, d, m;
-    double a,/*b,c,*/x, y, z, discont = 275e-2, xdist = 1, ydist = 1, zdist = 1;
+    double a,x, y, z, discont = 275e-2, xdist = 1, ydist = 1, zdist = 1;
     vector<vector<vector<double> > > mesh_discont;
-    //double **image;
-    //std::cout<<"Factor = "<<samplefactor<<std::endl;
     int neighbour[6][3] =
     {
         {-1,0,0},
@@ -178,26 +174,16 @@ namespace cleaver
     };
 
     //Find Material
-    //Volume volume;
     vector<vector<vector<Voxel> > > voxel;
     vector<Triple> zeros, medialaxis;
     vector<vector<vector<bool> > > myBdry;
     bool foundBdry = false;
 
-
-    //w = lattice->width();
-    //h = lattice->height();
-    //d = lattice->depth();
-    //m = lattice->materials();
-//if(volume->getSizingField() > 0)
-//{
     w = (int)(volume->bounds().size.x*m_sampleFactor);
     h = (int)(volume->bounds().size.y*m_sampleFactor);
     d = (int)(volume->bounds().size.z*m_sampleFactor);
     m = (int)(volume->numberOfMaterials());
-    //}
 
-    //w=15; h=15; d=15; m=2;
     fill3DVector(mesh_discont, 0.0, w, h, d);
 
     fill3DVector(voxel, { 0, 0, 0, 0 }, w, h, d);
@@ -258,14 +244,6 @@ namespace cleaver
               double i_star, j_star, k_star;
               double dist = Newton(volume, make_triple(i, j, k), make_triple(i1, j1, k1), voxel[i][j][k].mat, voxel[i1][j1][k1].mat, i_star, j_star, k_star);
 
-              //if(dist>=sqrt(3))
-              //{//Sanity check
-              //    cout<<i<<" "<<j<<" "<<k<<" "<<dist<<endl;
-              //    dist = 2;
-              //}
-
-              //if(i==23 && j==61 && k==84)
-                  //printf("here %lf\n", dist);
               zeros.push_back(make_triple(i, j, k));
               myBdry[i][j][k] = true;
               foundBdry = true;
@@ -347,7 +325,6 @@ namespace cleaver
             y = (mesh_bdry.getDist(i,j - 1,k) - 2 * a + mesh_bdry.getDist(i,j + 1,k)) / (ydist*ydist);
             z = (mesh_bdry.getDist(i,j,k - 1) - 2 * a + mesh_bdry.getDist(i,j,k + 1)) / (zdist*zdist);
 
-            //printf("%lf ", fabs(x*x+y*y+z*z));
             mesh_discont[i][j][k] = fabs(x*x + y*y + z*z);
 
             if (fabs(x*x + y*y + z*z) > discont) {
@@ -356,9 +333,7 @@ namespace cleaver
               mesh_feature.known[i][j][k] = true;
             }
           }
-          //printf("\n");
         }
-        //printf("\n\n\n");
       }
 
       for (i = 1; i < w - 2; i++) {
@@ -420,7 +395,6 @@ namespace cleaver
                     (xdist*xdist);
                 }
 
-                //printf("%lf ", fabs(x*x+y*y+z*z));
                 mesh_discont[i][j][k] = fabs(x*x + y*y + z*z);
                 if (fabs(x*x + y*y + z*z) > discont) {
                   medialaxis.push_back(make_triple(i, j, k));
@@ -485,23 +459,17 @@ namespace cleaver
     double min, temp;
     if (oct->a.index[0] > oct->b.index[0] || oct->a.index[1] > oct->b.index[1] || oct->a.index[2] > oct->b.index[2])
     {
-      //printf("entering %d %d %d %d %d %d %d\n", stack, oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->b.index[0], oct->b.index[1], oct->b.index[2]);
-      //scanf("%lf", &min);
       return 1e10;
     }
-    //printf("entering %d %d %d %d %d %d %d\n", stack, oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->b.index[0], oct->b.index[1], oct->b.index[2]);
     if (oct->a == oct->b)
     {
-      //printf("equal\n");
+
       if (meshborder.getDist(oct->a.index[0],oct->a.index[1],oct->a.index[2]) == 0)
         oct->min = meshfeature.getDist(oct->a.index[0],oct->a.index[1],oct->a.index[2]);
       else
         oct->min = 1e10;
       for (int i = 0; i < 8; i++)
         oct->child[i] = nullptr;
-      //if(oct->min!=1e10)
-          //printf("%d %d %d %lf\n", oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->min);
-      //printf("exiting %d %d %d %d %d %d\n", oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->b.index[0], oct->b.index[1], oct->b.index[2]);
       return oct->min;
     }
 
@@ -532,22 +500,15 @@ namespace cleaver
         min = temp;
     }
     oct->min = min;
-    //if(min!=1e10)
-        //printf("%d %d %d %d %d %d %lf\n", oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->b.index[0], oct->b.index[1], oct->b.index[2], min);
-    //printf("exiting %d %d %d %d %d %d\n", oct->a.index[0], oct->a.index[1], oct->a.index[2], oct->b.index[0], oct->b.index[1], oct->b.index[2]);
     return min;
   }
 
   double SizingFieldCreator::search_size(VoxelMesh &mesh, const Triple &a, const Triple &b, FeatureOctant *c)
   {
     double temp, min;
-    //printf("%d %d %d %d %d %d\n", a.index[0],a.index[1],a.index[2],b.index[0],b.index[1],b.index[2]);
-    //printf("%d %d %d %d %d %d\n\n", c->a.index[0],c->a.index[1],c->a.index[2],c->b.index[0],c->b.index[1],c->b.index[2]);
 
     if (c->a == a && c->b == b)
     {
-      //if(!(a==b))
-          //printf("Here\n");
       return c->min;
     }
 
@@ -638,8 +599,6 @@ namespace cleaver
       for (int j = 0; j < 3; j++)
         temp.index[j] = zeros[i].index[j];
       temp.dist = mesh.getDist(zeros[i].index[0],zeros[i].index[1],zeros[i].index[2]);
-      //mesh.known[zeros[i].index[0]][zeros[i].index[1]][zeros[i].index[2]]=1;
-      //printf("%lf\n", temp.dist);
       myqueue.push(temp);
     }
 
@@ -653,25 +612,19 @@ namespace cleaver
         myqueue.pop();
         continue;
       }
-      //printf("%d %d %d %lf\n", temp.index[0],temp.index[1],temp.index[2], temp.dist);
 
       //update the vertex as known
       mesh.known[temp.index[0]][temp.index[1]][temp.index[2]] = true;
       mesh.setDist(temp.index[0],temp.index[1],temp.index[2],temp.dist);
-      //if(temp.index[0]==23 && temp.index[1]==61 && temp.index[2]==84)
-          //printf("we assign: %lf\n", temp.dist);
-      //printf("updated!\n");
 
       for (int i = 0; i < 6; i++)
       {
         bool flag0 = 0, flag1 = 0, flag2 = 0, flag3 = 0;
-        //printf("%d\n", i);
         for (int j = 0; j < 3; j++)
           newtemp.index[j] = temp.index[j] + neighbour[i][j];
 
         if (!exists(newtemp, mesh))
           continue;
-        //printf("%d %d %d\n", newtemp.index[0],newtemp.index[1],newtemp.index[2]);
         if (mesh.known[newtemp.index[0]][newtemp.index[1]][newtemp.index[2]])
           continue;
 
@@ -751,10 +704,6 @@ namespace cleaver
               coeff[0] += a;
               coeff[1] -= 2 * a*K;
               coeff[2] += a*K*K;
-
-              /*coeff[0]+=1;
-              coeff[1]-=2*val1;
-              coeff[2]+=val1*val1;*/
             }
           } else
           {
@@ -819,15 +768,10 @@ namespace cleaver
         if (isnan(x))
           printf("Problem with proceed\n");
 
-        //if(newtemp.index[0]==23 && newtemp.index[1]==61 && newtemp.index[2]==84)
-            //printf("inserting %lf\n", x);
         myqueue.push(newtemp);
-        //printf("\t%d %d %d %lf\n", newtemp.index[0], newtemp.index[1], newtemp.index[2], x);
       }
       myqueue.pop();
     }
-    //if (mySet.size()==doneSet.size())
-    //    printf("boo\n");
     return;
   }
 
@@ -836,7 +780,6 @@ namespace cleaver
     for (size_t i = 0; i < zeros.size(); i++)
     {
       double temp = mesh.getDist(zeros[i].index[0],zeros[i].index[1],zeros[i].index[2]);
-      //std::cout << "log10(" << temp << ") = " << log10(temp) << std::endl;
       if (temp != temp) {
         std::cerr << "NAN in takeTheLog()" << std::endl;
         exit(-1);
@@ -864,7 +807,6 @@ namespace cleaver
             std::cout << "pow(10," << temp << ") = " << pow(10, temp) << std::endl;
             exit(-1);
           }
-          //std::cout << "pow(10," << temp << ") = " << pow(10,temp) << std::endl;
           mesh.setDist(i,j,k,pow(10, temp - 1));
         }
       }
@@ -957,7 +899,6 @@ namespace cleaver
     double ret;
     ret = (volume->valueAt((float)x / m_sampleFactor, (float)y / m_sampleFactor, (float)z / m_sampleFactor, mat1) -
       volume->valueAt((float)x / m_sampleFactor, (float)y / m_sampleFactor, (float)z / m_sampleFactor, mat2));
-    //return (ret*ret);
     return (ret);
   }
 
@@ -997,7 +938,6 @@ namespace cleaver
 
   bool SizingFieldCreator::find_inv(vec3 hess[], vec3 *inv)
   {
-    //int i,j;
     //compute det
     double det;
     det = hess[0][0] * (hess[1][1] * hess[2][2] - hess[1][2] * hess[2][1]);
@@ -1026,10 +966,8 @@ namespace cleaver
   double SizingFieldCreator::Gradval(double x, double y, double z, ScalarField<float> *myField, int n)
   {
     double initVal, nextVal, myVal, h = 0.25;
-    int sign; //i,j,k,
+    int sign;
 
-    //for(i=0; i<3; i++)
-    //{
     switch (n)
     {
     case 0:
@@ -1082,13 +1020,13 @@ namespace cleaver
 
   double SizingFieldCreator::Newton(const Volume *volume, const Triple &vertex1, const Triple &vertex2, int mat1, int mat2, double &i_star, double &j_star, double &k_star)
   {
-    int i, /*j,*/ i1, j1, k1;
-    double grad[3], /*temp[3],*/ h, ret;
+    int i, i1, j1, k1;
+    double grad[3], h, ret;
 
     i1 = vertex1.index[0];
     j1 = vertex1.index[1];
     k1 = vertex1.index[2];
-    h = 0.5; //1e-3;
+    h = 0.5;
 
     vec3 gradient, hess[3], inv[3];
 
@@ -1096,7 +1034,6 @@ namespace cleaver
     double norm = 1, step = 1;
 
     double current_value = Fval(volume, i_star, j_star, k_star, mat1, mat2);
-    //while(norm>1e-6 && step>1e-6)
     int no_iter = 0;
     while (fabs(current_value) > 1e-3 && no_iter < 20)
     {
@@ -1120,8 +1057,6 @@ namespace cleaver
 
     }
     ret = (i_star - i1)*(i_star - i1) + (j_star - j1)*(j_star - j1) + (k_star - k1)*(k_star - k1);
-    //if(ret>=3)
-    //    cout<<i1<<" "<<j1<<" "<<k1<<" "<<sqrt(ret)<<endl;
     return sqrt(ret);
   }
 
@@ -1193,14 +1128,12 @@ namespace cleaver
         hess[i][j] = temp[j];
     }
 
-    //P = I - nn'
     for (i = 0; i < 3; i++)
       for (j = 0; j < 3; j++)
         P[i][j] = -gradient[i] * gradient[j];
     for (i = 0; i < 3; i++)
       P[i][i] += 1.0;
 
-    //G = -PHP/|g|
     vec3 dummy[3];
     mult(hess, P, dummy);
     mult(P, dummy, G);
@@ -1277,7 +1210,4 @@ namespace cleaver
 
     return fieldCreator.getField();
   }
-
-
-
 }

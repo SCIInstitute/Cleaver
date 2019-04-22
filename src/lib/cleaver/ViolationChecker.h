@@ -62,6 +62,6 @@ class ViolationChecker
 };
 
 
-} // namespace cleaver
+}
 
 #endif // VIOLATION_CHECKER_H_

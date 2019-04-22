@@ -68,7 +68,7 @@ class VoxelMesh
 {
 public:
     VoxelMesh(const std::string& name, bool verbose = false);
-   
+
     void init(int l, int m, int n);
     ScalarField<float>*  convertToFloatField(float factor,
       const cleaver::vec3 &padding, const cleaver::vec3 &offset);
@@ -145,7 +145,7 @@ class Triple
 class FeatureOctant
 {
     public:
-	Triple a, b; 
+	Triple a, b;
 	FeatureOctant *child[8];
 	double  min;
 	void assign(int i, int j, int c, int d, int e, int f)
@@ -162,9 +162,9 @@ class FeatureOctant
 
 class SizingFieldCreator
 {
-    public:    
+    public:
     SizingFieldCreator(const Volume*, float speed = 1.0f,
-      float sampleFactor = 2.0f, float sizingFactor = 1.0f, 
+      float sampleFactor = 2.0f, float sizingFactor = 1.0f,
       int padding = 0, bool adaptiveSurface=true, bool verbose=false);
     ~SizingFieldCreator();
 
@@ -172,7 +172,7 @@ class SizingFieldCreator
     double operator()(double x, double y, double z) const
     {
         return valueAt(x,y,z);
-    }    
+    }
     double valueAt(const vec3 &x) const
     {
         return valueAt(x.x,x.y,x.z);
@@ -185,7 +185,7 @@ class SizingFieldCreator
     static ScalarField<float>* createSizingFieldFromVolume(const Volume *volume,
       float speed = 1.0f, float sampleFactor = 2.0f, float sizingFactor = 1.0f,
       int m_padding = 0, bool featureSize=true, bool verbose=false);
-    
+
     private:
     bool   m_verbose;
     double m_speed;

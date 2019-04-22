@@ -30,4 +30,4 @@ Plane Plane::throughPoints(const vec3 &p1, const vec3 &p2, const vec3 &p3)
     return Plane(n,d);
 }
 
-}   // namespace Cleaver
+}

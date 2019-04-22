@@ -88,7 +88,6 @@ IF(COPY_HEADER_FILES) #TODO: Needs to be added to installation step for using as
   SET(Cleaver_INSTALLED_HEADER_FILES)
   FOREACH(header_file ${Cleaver_API_HEADER_FILES})
     # When debugging, uncomment this line
-    #MESSAGE(STATUS "Copy header file: ${header_file}")
     GET_FILENAME_COMPONENT(file_no_path "${header_file}" NAME)
     CONFIGURE_FILE("${header_file}"
       "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}" COPYONLY IMMEDIATE)

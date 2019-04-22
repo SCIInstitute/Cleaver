@@ -170,15 +170,15 @@ double Tet::volume() const
 //===================================================
 //  contains()
 //
-// Returns true if the given vertex is one of the 
+// Returns true if the given vertex is one of the
 // four vertices composing this tetrahedron.
 //===================================================
 bool Tet::contains(Vertex *v) const
 {
-  return verts[0] == v || 
-         verts[1] == v || 
+  return verts[0] == v ||
+         verts[1] == v ||
          verts[2] == v ||
          verts[3] == v;
 }
 
-} // namespace cleaver
+}

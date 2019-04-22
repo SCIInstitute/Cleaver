@@ -76,9 +76,6 @@ AbstractScalarField* loadNRRDFile(const std::string &filename, bool verbose)
     float *data = new float[w * h * d];
     AbstractScalarField *field = new FloatField(data,w,h,d);
 
-    //nrrdAlloc_va(nin, nin->type, 3, w, h, d);
-
-
     //----------------------------------------
     //  Deferred  Data Load/Copy
     //----------------------------------------
@@ -108,8 +105,6 @@ AbstractScalarField* loadNRRDFile(const std::string &filename, bool verbose)
     double xs = ((Nrrd*)nin)->axis[0].spacing;
     double ys = ((Nrrd*)nin)->axis[1].spacing;
     double zs = ((Nrrd*)nin)->axis[2].spacing;
-
-    //std::cout << "Spacings = " << xs << " " << ys << " " << zs << std::endl;
 
     // handle NaN cases
     if(xs != xs) xs = 1;
@@ -235,7 +230,6 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> filenames, double sigma)
             std::cout << "Padded to: " << w << " x " << h << " x " << d << std::endl;
     }
 
-
     //---------------------------------------
     //     Allocate Sufficient Data
     //---------------------------------------
@@ -247,7 +241,6 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> filenames, double sigma)
         fields.push_back(new FloatField(data,w,h,d));
         fields[f]->setName(condensed(filenames[f]));
     }
-
 
     if(pad)
     {
@@ -301,10 +294,6 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> filenames, double sigma)
 
         ((FloatField*)fields[f])->setScale(vec3(xs,ys,zs));
 
-        //if(verbose)
-        //  std::cout << "Spacings: " << xs << ", " << ys << ", " << zs << std::endl;
-
-
         // free local copy
         nrrdNuke(nins[f]);
     }
@@ -353,10 +342,8 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> filenames, double sigma)
 std::vector<cleaver::AbstractScalarField*> loadNRRDLabelMap(const std::string &filename, bool verbose = false)
 {
     // load the data
-
     // scan it and count the number of labels.
 
-    //
     return std::vector<cleaver::AbstractScalarField*>();
 }
 

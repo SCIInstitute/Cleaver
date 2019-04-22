@@ -68,6 +68,6 @@ class SimpleInterfaceCalculator : public InterfaceCalculator
     AbstractVolume *m_volume;
 };
 
-} // namespace cleaver
+}
 
 #endif // SIMPLE_INTERFACE_CALCULATOR_H

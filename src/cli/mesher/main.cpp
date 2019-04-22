@@ -287,11 +287,6 @@ int main(int argc, char* argv[])
       }
     }
 
-    // does user want background mesh improvement?
-    //if (variables_map.count("mesh_improve")) {
-    //  improve_mesh = true;
-    //}
-
     if (variables_map.count("record")) {
       record_operations = true;
       recording_input = variables_map["record"].as<std::string>();

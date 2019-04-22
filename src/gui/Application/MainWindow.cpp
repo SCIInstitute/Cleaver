@@ -166,7 +166,7 @@ void MainWindow::createMenus()
   // Edit Menu Actions
   m_editMenu->addAction(removeExternalTetsAct);
   m_editMenu->addAction(removeLockedTetsAct);
-  
+
   // Compute Menu Actions
   m_computeMenu->addAction(computeAnglesAct);
 
@@ -288,7 +288,7 @@ void MainWindow::removeExternalTets()
     mesh->constructFaces();
     mesh->constructBottomUpIncidences();
 
-    this->window_->setMesh(mesh);      // trigger update
+    this->window_->setMesh(mesh);   // trigger update
     this->meshSaved_ = false;
   }
 }
@@ -318,7 +318,7 @@ void MainWindow::computeMeshAngles()
       "Max Angle: " + std::to_string(mesh->max_angle) + " degrees.");
   }
 }
-//*************Custom file dialog for segmentation check
+//Custom file dialog for segmentation check
 class MyFileDialog : public QFileDialog
 {
   public:
@@ -375,7 +375,7 @@ QSize MyFileDialog::sizeHint() const
 {
   return QSize(800,600);
 }
-//*********************END custom file dialog
+//END custom file dialog
 
 bool MainWindow::checkSaved() {
   if (!this->sizingFieldSaved_) {

@@ -76,6 +76,6 @@ public:
     bool contains(Vertex *v) const;
 };
 
-} // namespace cleaver
+}
 
 #endif // TET_H

@@ -16,27 +16,11 @@ namespace{
 class vec3order{
 public:
 
-    /*
-    bool operator()(const vec3 &a, const vec3 &b)
-    {
-        return
-                ((a.x < b.x) ||
-                 (a.x == b.x && a.y < b.y) ||
-                 (a.x == b.x && a.y == b.y && a.z < b.z));
-    }
-    */
     bool operator()(const vec3 &a, const vec3 &b) const
     {
-        //if(fabs(a.x - 100) < 1E-3 && fabs(b.x - 12.5) < 1E-3)
-        //    std::cout << "here" << std::endl;
-
         bool less = ( less_eps(a.x, b.x) ||
                     (equal_eps(a.x, b.x) &&  less_eps(a.y, b.y)) ||
                     (equal_eps(a.x, b.x) && equal_eps(a.y, b.y)  && less_eps(a.z, b.z)));
-
-        //if(less)
-        //   std::cout << a.toString() << " < " << b.toString() << std::endl;
-
         return less;
     }
 
@@ -137,7 +121,7 @@ int heightPaths[18][4] =
     {_110,_111,_110,_111}, // +y,+z   // upper front   17
 };
 
-} // namespace
+}
 
 
 
@@ -348,14 +332,6 @@ void OctreeMesherImp::adaptCell(OTCell *cell)
 
   BoundingBox bounds = cell->bounds;
 
-    /*
-    vec3 tx = vec3((bounds.center().x / m_volume->bounds().size.x)*m_sizingField->bounds().size.x,
-                   (bounds.center().y / m_volume->bounds().size.y)*m_sizingField->bounds().size.y,
-                   (bounds.center().z / m_volume->bounds().size.z)*m_sizingField->bounds().size.z);
-
-    float LFS = m_sizingField->valueAt(tx);
-    */
-
   double LFS = m_sizing_oracle->getMinLFS(cell->xLocCode, cell->yLocCode, cell->zLocCode, cell->level);
 
   if(LFS < bounds.size.x)
@@ -484,7 +460,6 @@ void OctreeMesherImp::createBackgroundTets()
             vec3 original_v1 = original_positions[FACE_VERTICES[f][(e + 0) % 4]];
             vec3 original_v2 = original_positions[FACE_VERTICES[f][(e + 1) % 4]];
 
-            //Vertex * m = vertexForPosition(0.5*(v1->pos() + v2->pos()), false);
             Vertex * m = vertexForPosition(0.5*(original_v1 + original_v2), false);
 
             if (m) {
@@ -505,7 +480,6 @@ void OctreeMesherImp::createBackgroundTets()
               vec3 original_v1 = original_positions[FACE_VERTICES[f][(e + 0) % 4]];
               vec3 original_v2 = original_positions[FACE_VERTICES[f][(e + 1) % 4]];
 
-              //Vertex * m = vertexForPosition(0.5*(v1->pos() + v2->pos()), false);
               Vertex * m = vertexForPosition(0.5*(original_v1 + original_v2), false);
 
               // if edge is split
@@ -557,12 +531,10 @@ void OctreeMesherImp::createBackgroundTets()
               vec3 original_v1 = original_positions[FACE_VERTICES[f][(e + 0) % 4]];
               vec3 original_v2 = original_positions[FACE_VERTICES[f][(e + 1) % 4]];
 
-              //Vertex*  m = vertexForPosition(0.5*(v1->pos() + v2->pos()), false);
               Vertex*  m = vertexForPosition(0.5*(original_v1 + original_v2), false);
               Vertex* c2 = vertexForPosition(fn[f]->bounds.center(), false);
 
               vec3 original_c2 = fn[f]->bounds.center();
-              //Vertex* b = vertexForPosition(0.5f*(original_c1 + original_c2));
               Vertex* b = vertexForPosition(0.25f*original_positions[FACE_VERTICES[f][(e + 0) % 4]] +
                 0.25f*original_positions[FACE_VERTICES[f][(e + 1) % 4]] +
                 0.25f*original_positions[FACE_VERTICES[f][(e + 2) % 4]] +
@@ -598,12 +570,6 @@ void OctreeMesherImp::createBackgroundTets()
         // neighbor is lower level (should only be one lower...)
         else
         {
-
-          // grab vertex in middle of face on boundary
-          //Vertex *b = vertexForPosition(0.25*(verts[FACE_VERTICES[f][0]]->pos() +
-          //                                    verts[FACE_VERTICES[f][1]]->pos() +
-          //                                    verts[FACE_VERTICES[f][2]]->pos() +
-          //                                    verts[FACE_VERTICES[f][3]]->pos()), false);
           Vertex *b = vertexForPosition(0.25*(original_positions[FACE_VERTICES[f][0]] +
             original_positions[FACE_VERTICES[f][1]] +
             original_positions[FACE_VERTICES[f][2]] +
@@ -618,19 +584,11 @@ void OctreeMesherImp::createBackgroundTets()
             vec3 original_v1 = original_positions[FACE_VERTICES[f][(e + 0) % 4]];
             vec3 original_v2 = original_positions[FACE_VERTICES[f][(e + 1) % 4]];
 
-            //Vertex*  m = vertexForPosition(0.5*(v1->pos() + v2->pos()), false);
             Vertex*  m = vertexForPosition(0.5*(original_v1 + original_v2), false);
 
             // output 2 quadrisected tets
-            // MODIFIED on Sun 17th
-            //if(m){
             m_mesh->createTet(c1, v1, m, b, 4);
             m_mesh->createTet(c1, m, v2, b, 4);
-            //}
-            //else{
-                // What should go here?  looks like 1 bisected tet?
-            //}
-
           }
         }
       }
@@ -679,8 +637,6 @@ Vertex* OctreeMesherImp::vertexForPosition(const vec3 &position, bool create)
   Vertex *vertex = nullptr;
 
   std::map<vec3, Vertex*, vec3order>::iterator res = m_vertex_tracker.find(pos);
-
-  //std::cout << "checking position: " << position.toString() << std::endl;
 
   // create new one if necessary
   if (res == m_vertex_tracker.end())
@@ -756,7 +712,4 @@ cleaver::TetMesh* OctreeMesher::getMesh()
     return m_pimpl->m_mesh;
 }
 
-
-
-
-} // namespace cleaver
+}

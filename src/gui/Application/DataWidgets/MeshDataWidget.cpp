@@ -25,9 +25,6 @@ MeshDataWidget::MeshDataWidget(QWidget *parent) :
 
   this->ui->infoWidget->hide();
 
-  //QObject::connect(this->ui->infoButton, SIGNAL(clicked(bool)),
-  //        this, SLOT(showInfoClicked(bool)));
-
   QObject::connect(this->ui->detailViewButton, SIGNAL(clicked(bool)),
     this, SLOT(showInfoClicked(bool)));
 
@@ -72,9 +69,6 @@ MeshDataWidget::MeshDataWidget(cleaver::TetMesh *mesh, QWidget *parent) :
 
   this->ui->infoWidget->hide();
 
-  //QObject::connect(this->ui->infoButton, SIGNAL(clicked(bool)),
-  //        this, SLOT(showInfoClicked(bool)));
-
   QObject::connect(this->ui->detailViewButton, SIGNAL(clicked(bool)),
     this, SLOT(showInfoClicked(bool)));
 
@@ -99,7 +93,6 @@ MeshDataWidget::MeshDataWidget(cleaver::TetMesh *mesh, QWidget *parent) :
     "         }                                       ";
 
   selectedOpenStyle =
-    //"QWidget { background-color:rgb(109, 124, 152); \n"
     "QWidget { background-color:rgb(137, 156, 191); \n"
     "          border: 1px solid black;\n             "
     "          border-top-left-radius: 10px;\n        "
@@ -108,7 +101,6 @@ MeshDataWidget::MeshDataWidget(cleaver::TetMesh *mesh, QWidget *parent) :
 
 
   selectedClosedStyle =
-    //"QWidget { background-color:rgb(109, 124, 152); \n"
     "QWidget { background-color:rgb(137, 156, 191); \n"
     "          border: 1px solid black;\n             "
     "          border-top-left-radius: 10px;\n        "
@@ -172,8 +164,6 @@ MeshDataWidget::MeshDataWidget(cleaver::TetMesh *mesh, QWidget *parent) :
 
   selected = false;
   open = false;
-
-  //grabGesture(Qt::TapAndHoldGesture);      Takes too long
 }
 
 MeshDataWidget::~MeshDataWidget()
@@ -296,10 +286,8 @@ void MeshDataWidget::mouseMoveEvent(QMouseEvent *event)
   drag->setMimeData(mimeData);
 
   QPixmap pixmap(this->size());
-  //QPoint offset(30,0);
-  //QRegion region(30, 0, this->width-30, this->height());
 
-  this->render(&pixmap); // offset, region);
+  this->render(&pixmap);
 
   drag->setPixmap(pixmap);
 

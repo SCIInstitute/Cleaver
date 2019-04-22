@@ -284,11 +284,6 @@ namespace cleaver
 
       for(int f=0; f < 4; f++)
       {
-
-        //Vertex *v1 = tet->verts[(f+0)%4];
-        //Vertex *v2 = tet->verts[(f+1)%4];
-        //Vertex *v3 = tet->verts[(f+2)%4];
-
         // output 3 vertices
         file << "3 " << (idx + 0) << " " << (idx + 1) << " " << (idx + 2) << " ";
         idx += 3;
@@ -532,10 +527,6 @@ namespace cleaver
 
       if(t1->mat_label != t2->mat_label)
       {
-        // skip boundary padding
-        //if(lattice->padded() && (t1->mat_label == lattice->materials() - 1 || t2->mat_label == lattice->materials() - 1))
-        //    continue;
-
         interfaces.push_back(f);
 
         unsigned int color_key = (1 << (int)t1->mat_label) + (1 << (int)t2->mat_label);
@@ -620,9 +611,6 @@ namespace cleaver
       //-----------------------------------
       for(unsigned int f=0; f < meshes[m].size(); f++)
       {
-        //Face &face = faces[interfaces[f]];
-        //int f = meshes[m][ff];
-
         // output 3 vertices
         file << "3 " << (3*f + 0) << " " << (3*f + 1) << " " << (3*f + 2) << " ";
 
@@ -641,8 +629,6 @@ namespace cleaver
       file.close();
     }
   }
-
-
 
   //===================================================
   // writeNodeEle()
@@ -1073,10 +1059,6 @@ namespace cleaver
       Vertex *v1 = this->verts[face->verts[1]];
       Vertex *v2 = this->verts[face->verts[2]];
 
-      //int v0_index = f.verts[0];
-      //int v1_index = f.verts[1];
-      //int v2_index = f.verts[2];
-
       vec3 e10 = v1->pos() - v0->pos();
       vec3 e20 = v2->pos() - v0->pos();
       face->normal = normalize(e10.cross(e20));
@@ -1093,7 +1075,6 @@ namespace cleaver
       }
     }
   }
-
 
   void TetMesh::computeAngles()
   {
@@ -1154,7 +1135,7 @@ namespace cleaver
           debug_dump << "," << std::endl;
         bad_tets++;
 
-        Json::Value tet = tet_to_json(t, this, false /* includeInterfaces */);
+        Json::Value tet = tet_to_json(t, this, false);
         tet["parent"] = t->parent;
         debug_dump << tet << std::endl;
         t->flagged = true;
@@ -1176,7 +1157,7 @@ namespace cleaver
           << t->verts[3]->isExterior << "} " << std::endl;
       }
       // END DEBUG
-    }    
+    }
     debug_dump << "]}" << std::endl;
     debug_dump.close();
     status.done();
@@ -1242,9 +1223,7 @@ namespace cleaver
              }
     }
   }
-  //==================================================================
-  //
-  //==================================================================
+
   void TetMesh::writeVtkPolyData(const std::string &filename, bool verbose)
   {
     std::string path = filename.substr(0,filename.find_last_of("/")+1);
@@ -1376,9 +1355,6 @@ namespace cleaver
     }
   }
 
-  //==================================================================
-  //
-  //==================================================================
   void TetMesh::writeVtkUnstructuredGrid(const std::string &filename, bool verbose)
   {
     std::string filepath = filename + ".vtk";
@@ -1482,16 +1458,6 @@ namespace cleaver
       Tet* t = this->tets.at(f);
       output << (int)t->mat_label << "\n";
     }
-
-    /* \todo make optional
-    output << "POINT_DATA " << this->verts.size() << "\n";
-    output << "SCALARS labels int 1\n";
-    output << "LOOKUP_TABLE default\n";
-    for(size_t f=0; f < this->verts.size(); f++)
-    {
-      Vertex* v = this->verts.at(f);
-      output << (int)v->label << "\n";
-    }*/
 
     //CLOSE
     output.close();
@@ -1940,22 +1906,7 @@ namespace cleaver
     //----------------------------
     //  Create Tet + Add to List
     //----------------------------
-    /* (JRB) This Code is unnecessary and just adds computational cost.
-       if(!(
-       v1->pos().x <= bounds.maxCorner().x && v1->pos().x >= bounds.minCorner().x &&
-       v1->pos().y <= bounds.maxCorner().y && v1->pos().y >= bounds.minCorner().y &&
-       v1->pos().z <= bounds.maxCorner().z && v1->pos().z >= bounds.minCorner().z &&
-       v2->pos().x <= bounds.maxCorner().x && v2->pos().x >= bounds.minCorner().x &&
-       v2->pos().y <= bounds.maxCorner().y && v2->pos().y >= bounds.minCorner().y &&
-       v2->pos().z <= bounds.maxCorner().z && v2->pos().z >= bounds.minCorner().z &&
-       v3->pos().x <= bounds.maxCorner().x && v3->pos().x >= bounds.minCorner().x &&
-       v3->pos().y <= bounds.maxCorner().y && v3->pos().y >= bounds.minCorner().y &&
-       v3->pos().z <= bounds.maxCorner().z && v3->pos().z >= bounds.minCorner().z &&
-       v4->pos().x <= bounds.maxCorner().x && v4->pos().x >= bounds.minCorner().x &&
-       v4->pos().y <= bounds.maxCorner().y && v4->pos().y >= bounds.minCorner().y &&
-       v4->pos().z <= bounds.maxCorner().z && v4->pos().z >= bounds.minCorner().z))
-       return nullptr;
-     */
+
     Tet *tet = new Tet(v1, v2, v3, v4, material);
     tet->tm_index = tets.size();
     tets.push_back(tet);
@@ -2039,11 +1990,7 @@ namespace cleaver
         delete tet;
         tets[t] = nullptr;
       }
-
-
     }
-
-
     // prepare to free unused vertices
     for(size_t v=0; v < candidate_verts.size(); v++) {
       Vertex *vertex = candidate_verts[v];
@@ -2422,30 +2369,8 @@ namespace cleaver
           more_count++;
       }
     }
-    //    std::cout << "Faces with 1 adjacent tet  : " << one_count << std::endl;
-    //    std::cout << "Faces with 2 adjacent tets : " << two_count << std::endl;
-    //    std::cout << "Faces with 3+ adjacent tets: " << more_count << std::endl;
-
-    /*
-    // now check that there are no null tets stored
-    for(size_t t=0; t < tets.size(); t++)
-    {
-    for(size_t v=0; v < 4; v++)
-    {
-    for(size_t j=0; j < tets[t]->verts[v]->tets.size(); j++)
-    {
-    if(tets[t]->verts[v]->tets[j] == nullptr)
-    {
-    std::cout << "nullptr TET stored in VERTS!!" << std::endl;
-    std::cout << " BAD MESH " << std::endl;
-    }
-    }
-    }
-    }
-     */
 
     if(more_count == 0){
-      //        std::cout << "TetMesh IS VALID!" << std::endl;
       return true;
     }
     else
@@ -2575,9 +2500,6 @@ namespace cleaver
           half_edge->mate = pair_edge;
           pair_edge->mate = half_edge;
         }
-
-        // set up 'face next pointer' (not strictly necesary)
-        //half_face->next = &halfFaces[4*tet->tm_index+((f+1)%4)];
 
         // set up face mate pointer if it exists
         if(tet->tets[f]){
@@ -2798,9 +2720,6 @@ namespace cleaver
 
     constructFaces();
     constructBottomUpIncidences();
-
-    //    std::cout << "Removed " << afterCount - beforeCount <<
-    //    " external tets from mesh." << std::endl;
   }
 
   //------------------------------
@@ -2858,9 +2777,6 @@ namespace cleaver
 
     constructFaces();
     constructBottomUpIncidences();
-
-
-    //    std::cout << "Removed " << beforeCount - afterCount << " locked tets from mesh." << std::endl;
   }
 
   //------------------------------
@@ -2891,8 +2807,6 @@ namespace cleaver
 
     constructFaces();
     constructBottomUpIncidences();
-
-    //    std::cout << "Removed " << afterCount - beforeCount << " material " << m << " tets from mesh." << std::endl;
   }
 
   //------------------------------
@@ -2930,25 +2844,8 @@ namespace cleaver
 
     int afterCount = tets.size();
 
-    // remove any remaining vertices with no tets
-    /*
-       std::vector<Vertex*>::iterator vertex_iter = verts.begin();
-       while(vertex_iter != verts.end())
-       {
-       Vertex *vertex = *vertex_iter;
-
-       if(vertex->tets.empty())
-       verts.erase(vertex_iter);
-       else
-       vertex_iter++;
-       }
-     */
-
-
     constructFaces();
     constructBottomUpIncidences(true);
-
-    //    std::cout << "Removed " << afterCount - beforeCount << " tets from outside the bounds: [" << box.origin.toString() << " to " << box.maxCorner().toString() << std::endl;
   }
 
   //----------------------------------------------------------------

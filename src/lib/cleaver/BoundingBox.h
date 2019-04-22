@@ -44,14 +44,6 @@
 namespace cleaver
 {
 
-//class Plane
-//{
-//public:
-//    Plane(const vec3 &n, const vec3 &p) : n(n), p(p){ }
-//    vec3   n;
-//    vec3   p;
-//};
-
 class BoundingBox
 {
 public:
@@ -70,15 +62,6 @@ public:
     vec3 center() const;
     vec3 minCorner() const;
     vec3 maxCorner() const;
-
-    /*
-    Plane posXPlane();
-    Plane negXPlane();
-    Plane posYPlane();
-    Plane negYPlane();
-    Plane posZPlane();
-    Plane negZPlane();
-    */
 
     static BoundingBox merge(const BoundingBox &a, const BoundingBox &b);
 
