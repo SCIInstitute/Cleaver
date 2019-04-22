@@ -32,8 +32,7 @@ ExternalProject_Add_Step(
 )
 INCLUDE_DIRECTORIES("${GTEST_INSTALL_DIR}/include")
 
-
-# Set up librarie paths
+# Set up library paths
 ExternalProject_Get_Property(googletest binary_dir)
 SET(GTEST_LIBRARY_PATH ${binary_dir}/googlemock/gtest/${CMAKE_FIND_LIBRARY_PREFIXES}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
 SET(GTEST_LIBRARY gtest)
