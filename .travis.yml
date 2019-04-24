@@ -3,6 +3,7 @@ dist: trusty
 
 compiler:
   - clang
+  - gcc
 
 script:
   - mkdir build
