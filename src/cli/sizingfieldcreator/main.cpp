@@ -41,9 +41,9 @@
 //-------------------------------------------------------------------
 //
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/InverseField.h>
-#include <Cleaver/SizingFieldCreator.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/InverseField.h>
+#include <cleaver/SizingFieldCreator.h>
 #include <NRRDTools.h>
 
 #include <boost/program_options.hpp>

@@ -41,11 +41,11 @@
 //-------------------------------------------------------------------
 //
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/CleaverMesher.h>
-#include <Cleaver/InverseField.h>
-#include <Cleaver/SizingFieldCreator.h>
-#include <Cleaver/Timer.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/CleaverMesher.h>
+#include <cleaver/InverseField.h>
+#include <cleaver/SizingFieldCreator.h>
+#include <cleaver/Timer.h>
 #include <NRRDTools.h>
 
 #include <boost/program_options.hpp>
@@ -369,13 +369,39 @@ int main(int argc, char* argv[])
         std::cout << " - " << material_fields[i] << std::endl;
       }
     }
-    fields = NRRDTools::loadNRRDFiles(material_fields);
+    fields = NRRDTools::loadNRRDFiles(material_fields,sigma);
     if (fields.empty()) {
       std::cerr << "Failed to load image data. Terminating." << std::endl;
       return 10;
     } else if (add_inverse)
       fields.push_back(new cleaver::InverseScalarField(fields[0]));
+      fields.back()->setName(fields[0]->name() + "-inverse");
   }
+
+  //Error checking for indicator function values.
+  for (int i = 0; i < fields.size(); i++)
+  {
+    //Skip if the segmentation value is 0 (background) or it is an inverse file
+    std::size_t found = fields[i]->name().find("inverse");
+    if ((segmentation && i == 0) || (found != std::string::npos))
+    {
+      continue;
+    }
+    //Check for critical errors
+    auto error = ((cleaver::ScalarField<float>*)fields[i])->getError();
+    if (error.compare("nan") == 0 || error.compare("maxmin") == 0)
+    {
+      std::cerr << "Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value." << std::endl;
+      return 11;
+    }
+    //Check for warning
+    auto warning = ((cleaver::ScalarField<float>*)fields[i])->getWarning();
+    if (warning)
+    {
+      std::cerr << "Nrrd file read WARNING: Sigma is 10% of volume's size. Gaussian kernel may be truncated." << std::endl;
+    }
+  }
+
   cleaver::Volume *volume = new cleaver::Volume(fields);
   cleaver::CleaverMesher mesher(simple);
   mesher.setVolume(volume);

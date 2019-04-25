@@ -12,6 +12,7 @@
 #include <QStatusBar>
 #include <QLayoutItem>
 #include <QLabel>
+#include <Cleaver/ScalarField.h>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent) {}
@@ -427,12 +428,12 @@ void MainWindow::importVolume() {
   if (!fileNames.isEmpty()) {
     std::string file1 = (*fileNames.begin()).toStdString();
     auto pos = file1.find_last_of('/');
-    lastPath_ = file1.substr(0,pos);
+    lastPath_ = file1.substr(0, pos);
     bool add_inverse = false;
 
     std::vector<std::string> inputs;
 
-    for (int i=0; i < fileNames.size(); i++){
+    for (int i = 0; i < fileNames.size(); i++) {
       inputs.push_back(fileNames[i].toStdString());
     }
 
@@ -443,20 +444,22 @@ void MainWindow::importVolume() {
     QApplication::processEvents();
     std::cout << " Loading input fields:" << std::endl;
     std::vector<cleaver::AbstractScalarField*> fields;
-    if (inputs.empty()){
+    if (inputs.empty()) {
       std::cerr << "No material fields or segmentation files provided. Terminating."
         << std::endl;
       return;
-    } else if (segmentation && inputs.size() == 1) {
+    }
+    else if (segmentation && inputs.size() == 1) {
       fields = NRRDTools::segmentationToIndicatorFunctions(inputs[0], sigma);
-      if(fields.empty()) {
+      if (fields.empty()) {
         this->handleError("Input file cannot be read as a label map. It may be raw data.");
         status.setValue(0);
         return;
       }
       status.setValue(90);
       QApplication::processEvents();
-    } else {
+    }
+    else {
       if (inputs.size() > 1) {
         this->handleMessage("WARNING: More than one inputs provided for segmentation." +
           std::string(" This will be assumed to be indicator functions."));
@@ -471,20 +474,49 @@ void MainWindow::importVolume() {
       status.setValue(10);
       QApplication::processEvents();
 
-      fields = NRRDTools::loadNRRDFiles(inputs);
+      fields = NRRDTools::loadNRRDFiles(inputs, sigma);
 
       status.setValue(70);
       QApplication::processEvents();
       if (fields.empty()) {
         std::cerr << "Failed to load image data. Terminating." << std::endl;
         return;
-      } else if (add_inverse) {
+      }
+      else if (add_inverse) {
         fields.push_back(new cleaver::InverseScalarField(fields[0]));
         fields.back()->setName(fields[0]->name() + "-inverse");
       }
       status.setValue(90);
       QApplication::processEvents();
     }
+
+    //Error checking for indicator function values.
+    for(int i = 0; i < fields.size(); i++)
+    {
+      //Skip if the segmentation value is 0 (background) or it is an inverse file
+      std::size_t found = fields[i]->name().find("inverse");
+      if ((segmentation && i == 0) || (found!=std::string::npos))
+      {
+        continue;
+      }
+
+      //Check for critical errors
+      auto error = ((cleaver::ScalarField<float>*)fields[i])->getError();
+      if (error.compare("nan") == 0 || error.compare("maxmin") == 0)
+      {
+        this->handleError("Nrrd file read error: No zero crossing in indicator function. Not a valid file or need a lower sigma value.");
+        status.setValue(0);
+        return;
+      }
+
+      //Check for warning
+      auto warning = ((cleaver::ScalarField<float>*)fields[i])->getWarning();
+      if (warning)
+      {
+        this->handleMessage("Nrrd file read WARNING: Sigma is 10% of volume's size. Gaussian kernel may be truncated.");
+      }
+    }
+
     // Add Fields to Data Manager
     this->m_dataManagerWidget->setIndicators(fields);
     cleaver::Volume *volume = new cleaver::Volume(fields);

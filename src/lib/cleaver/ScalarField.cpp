@@ -217,7 +217,6 @@ void ScalarField<T>::setData(T *data)
     m_data = data;
 }
 
-
 // explicit instantion of acceptable types
 // TODO: find way to hide implementation but allow aribtrary instantion
 template class ScalarField<char>;

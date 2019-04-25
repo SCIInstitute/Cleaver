@@ -81,17 +81,21 @@ ADD_DEFINITIONS(-DTETLIBRARY)
 # Add library includes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
 
-# copy header files over
-SET(Cleaver_INSTALLED_HEADER_FILES)
-FOREACH(header_file ${Cleaver_API_HEADER_FILES})
-  # When debugging, uncomment this line
-  GET_FILENAME_COMPONENT(file_no_path "${header_file}" NAME)
-  CONFIGURE_FILE("${header_file}"
-    "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}" COPYONLY IMMEDIATE)
-  SET(Cleaver_INSTALLED_HEADER_FILES
-    ${Cleaver_INSTALLED_HEADER_FILES}
-    "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}")
-ENDFOREACH(header_file)
+OPTION(COPY_HEADER_FILES OFF)
+
+IF(COPY_HEADER_FILES) #TODO: Needs to be added to installation step for using as a lib
+  # copy header files over
+  SET(Cleaver_INSTALLED_HEADER_FILES)
+  FOREACH(header_file ${Cleaver_API_HEADER_FILES})
+    # When debugging, uncomment this line
+    GET_FILENAME_COMPONENT(file_no_path "${header_file}" NAME)
+    CONFIGURE_FILE("${header_file}"
+      "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}" COPYONLY IMMEDIATE)
+    SET(Cleaver_INSTALLED_HEADER_FILES
+      ${Cleaver_INSTALLED_HEADER_FILES}
+      "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}")
+  ENDFOREACH(header_file)
+ENDIF()
 
 # output library
 ADD_LIBRARY(cleaver STATIC ${Cleaver_HEADER_FILES} ${Cleaver_SOURCE_FILES})

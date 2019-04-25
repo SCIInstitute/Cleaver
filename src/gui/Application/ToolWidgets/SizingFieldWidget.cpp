@@ -105,7 +105,7 @@ void SizingFieldThread::run() {
     std::string sizingFieldName =
       this->mesher_.getVolume()->name() + "-computed-sizing-field";
     sizingField->setName(sizingFieldName);
-  } catch (std::exception e) {
+  } catch (std::exception& e) {
     emit errorMessage(e.what());
   } catch (...) {
     emit errorMessage("There was a problem creating the sizing field!");

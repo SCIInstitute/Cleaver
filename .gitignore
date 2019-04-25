@@ -16,6 +16,7 @@ WIN32_DLLS
 .cproject
 *~
 build
+buildR
 .svn
 msvc
 src/test/test_data/input/mickey_material_fields

@@ -42,6 +42,7 @@
 #include <itkSubtractImageFilter.h>
 #include <itkApproximateSignedDistanceMapImageFilter.h>
 #include <sstream>
+#include <cmath>
 
 //typedefs needed.
 typedef float PixelType;
@@ -59,6 +60,16 @@ typedef itk::DiscreteGaussianImageFilter<
   ImageType, ImageType >  GaussianBlurType;
 typedef itk::ApproximateSignedDistanceMapImageFilter
 <ImageType, ImageType> DMapType;
+
+bool checkImageSize(ImageType::Pointer inputImg, double sigma)
+{
+  auto dims = inputImg->GetLargestPossibleRegion().GetSize();
+  auto spacing = inputImg->GetSpacing();
+  std::vector<double> imageSize{ dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2] };
+  double imageSizeMin = *(std::min_element(std::begin(imageSize), std::end(imageSize)));
+  
+  return (sigma / imageSizeMin) >= 0.1;
+}
 
 std::vector<cleaver::AbstractScalarField*>
 NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) {
@@ -97,6 +108,10 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     multiplyImageFilter->SetInput(thresh->GetOutput());
     multiplyImageFilter->SetConstant(1. / static_cast<double>(i));
     multiplyImageFilter->Update();
+
+    ImageType::Pointer inputImg = multiplyImageFilter->GetOutput();
+    bool warning = checkImageSize(inputImg, sigma);
+
     // Do some blurring.
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(multiplyImageFilter->GetOutput());
@@ -132,18 +147,41 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     std::stringstream ss;
     ss << name << i;
     fields[num]->setName(ss.str());
-
+    fields[num]->setWarning(warning);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
+    float min = static_cast<float>(imageIterator.Get());
+    float max = static_cast<float>(imageIterator.Get());
+    std::string error = "none";
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel.
       float val = static_cast<float>(imageIterator.Get());
-      ((cleaver::FloatField*)fields[num])->data()[pixel++] = -val;
+      ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
       ++imageIterator;
+
+      //Error checking
+      if (std::isnan(val) && error.compare("none") == 0)
+      {
+        error = "nan";
+      }
+      else if (val < min)
+      {
+        min = val;
+      }
+      else if (val > max)
+      {
+        max = val;
+      }
     }
-    auto spacing = img->GetSpacing();
+
+    if ((min >= 0 || max <= 0) && (error.compare("none") == 0))
+    {
+      error = "maxmin";
+    }
+
+    fields[num]->setError(error);
     ((cleaver::FloatField*)fields[num])->setScale(
-      cleaver::vec3(spacing[0], spacing[1], spacing[2]));
+      cleaver::vec3(1., 1., 1.));
   }
   return fields;
 }
@@ -157,12 +195,18 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     // read file using ITK
     if (file.find(".nrrd") != std::string::npos) {
       itk::NrrdImageIOFactory::RegisterOneFactory();
-    } else if (file.find(".mha") != std::string::npos) {
+    }
+    else if (file.find(".mha") != std::string::npos) {
       itk::MetaImageIOFactory::RegisterOneFactory();
     }
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(file);
     reader->Update();
+
+    //Checking sigma vs the size of the image
+    ImageType::Pointer inputImg = reader->GetOutput();
+    bool warning = checkImageSize(inputImg, sigma);
+
     //do some blurring
     GaussianBlurType::Pointer blur = GaussianBlurType::New();
     blur->SetInput(reader->GetOutput());
@@ -175,17 +219,43 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     float *data = new float[numPixel];
     auto x = region.GetSize()[0], y = region.GetSize()[1], z = region.GetSize()[2];
     fields.push_back(new cleaver::FloatField(data, x, y, z));
-    auto beg = file.find_last_of("/") + 1;
-    auto name = file.substr(beg, file.size() - beg);
+    auto nameBeg = file.find_last_of("/") + 1;
+    auto nameEnd = file.find_last_of(".");
+    auto name = file.substr(nameBeg, nameEnd - nameBeg);
     fields[num]->setName(name);
+    fields[num]->setWarning(warning);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
+    float min = static_cast<float>(imageIterator.Get());
+    float max = static_cast<float>(imageIterator.Get());
+    std::string error = "none";
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel
       float val = static_cast<float>(imageIterator.Get());
       ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
       ++imageIterator;
+
+      //Error checking
+      if (std::isnan(val) && error.compare("none") == 0)
+      {
+        error = "nan";
+      }
+      else if (val < min)
+      {
+        min = val;
+      }
+      else if (val > max)
+      {
+        max = val;
+      }
     }
+
+    if ((min >= 0 || max <= 0) && (error.compare("none") == 0))
+    {
+      error = "maxmin";
+    }
+
+    fields[num]->setError(error);
     ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
     num++;
   }
