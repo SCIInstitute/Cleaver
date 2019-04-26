@@ -37,7 +37,7 @@ public:
     void buildAdjacency(bool verbose = false);
     void sampleVolume(bool verbose = false);
     void computeAlphas(bool verbose = false,
-                       bool regular = false,
+                       bool constant = false,
                        double alp_long = 0.4,
                        double alp_short = 0.4);
     void computeAlphasSafely(bool verbose = false);

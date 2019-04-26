@@ -58,7 +58,7 @@ void SizingFieldWidget::computeSizingField() {
     ui->surfaceComboBox->currentText(),
     QString("constant"), Qt::CaseInsensitive) == 0 ? false : true;
   SizingFieldThread *workerThread = new SizingFieldThread(this->mesher_, this,
-    refinement, sizeMultiplier, lipschitz, padding, adaptiveSurface);
+    refinementFactor, sizeMultiplier, lipschitz, padding, adaptiveSurface);
   connect(workerThread, SIGNAL(sizingFieldDone()), this, SLOT(handleSizingFieldDone()));
   connect(workerThread, SIGNAL(message(std::string)), this, SLOT(handleMessage(std::string)));
   connect(workerThread, SIGNAL(errorMessage(std::string)), this, SLOT(handleErrorMessage(std::string)));

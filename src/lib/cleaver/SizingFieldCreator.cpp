@@ -150,10 +150,10 @@ namespace cleaver
   //------------------------------------------------------------------
 
   SizingFieldCreator::SizingFieldCreator(const Volume *volume, float lipschitz,
-    float refinementFactor, float sizeMultiplierFactor, int padding,
+    float refinementFactor, float sizeMultiplier, int padding,
     bool adaptiveSurface, bool verbose) : m_verbose(verbose),
     m_lipschitz(lipschitz), m_refinementFactor(refinementFactor),
-    m_sizeMultiplierFactor(sizeMultiplierFactor), mesh_bdry("Boundary"),
+    m_sizeMultiplier(sizeMultiplier), mesh_bdry("Boundary"),
     mesh_feature("Feature"), mesh_padded_feature("Padded")
   {
     m_padding[0] = m_padding[1] = m_padding[2] = 2 * padding;
@@ -431,9 +431,9 @@ namespace cleaver
     proceed(mesh_padded_feature, zeros, lipschitz, 1e6);
 
     //------------------------------------------
-    //       Apply Scaling Multiplier
+    //       Apply Size Multiplier
     //------------------------------------------
-    if (m_sizeMultiplierFactor != 1.0)
+    if (m_sizeMultiplier != 1.0)
     {
       int w = mesh_padded_feature.distSizeX();
       int h = mesh_padded_feature.distSizeY();
@@ -443,7 +443,7 @@ namespace cleaver
       for (int k = 0; k < d; k++) {
         for (int j = 0; j < h; j++) {
           for (int i = 0; i < w; i++) {
-            mesh_padded_feature.setDist(i,j,k,mesh_padded_feature.getDist(i, j, k) * m_sizeMultiplierFactor);
+            mesh_padded_feature.setDist(i,j,k,mesh_padded_feature.getDist(i, j, k) * m_sizeMultiplier);
             if (verbose) status.printStatus();
           }
         }
@@ -1194,19 +1194,19 @@ namespace cleaver
 
   ScalarField<float>* SizingFieldCreator::createSizingFieldFromVolume(
     const Volume *volume, float lipschitz, float refinementFactor,
-    float sizeMultiplierFactor, int padding, bool adaptiveSurface, bool verbose)
+    float sizeMultiplier, int padding, bool adaptiveSurface, bool verbose)
   {
     if (verbose)
       std::cout << "Creating sizing field at " << refinementFactor
        << "x resolution, with "
       << "Lipschitz=" << lipschitz
-      << ", sizeMultiplierFactor=" << sizeMultiplierFactor
+      << ", sizeMultiplier=" << sizeMultiplier
       << ", padding=" << padding
       << ", adaptive=" << adaptiveSurface
       << std::endl;
 
     SizingFieldCreator fieldCreator(volume, lipschitz, refinementFactor,
-      sizeMultiplierFactor, padding, adaptiveSurface, verbose);
+      sizeMultiplier, padding, adaptiveSurface, verbose);
 
     if (verbose)
       std::cout << "Sizing Field Creating! Returning it.." << std::endl;

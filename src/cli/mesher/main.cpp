@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
       lipschitz = variables_map["lipschitz"].as<double>();
     }
     if (variables_map.count("refinement_factor")) {
-      mesh_refinement_factor = variables_map["refinement_factor"].as<double>();
+      refinement_factor = variables_map["refinement_factor"].as<double>();
     }
     if (variables_map.count("size_multiplier")) {
       size_multiplier = variables_map["size_multiplier"].as<double>();
@@ -471,12 +471,12 @@ int main(int argc, char* argv[])
 
     case cleaver::Constant:
       mesher.setAlphas(alpha_long, alpha_short);
-      mesher.setRegular(true);
+      mesher.setConstant(true);
       bgMesh = mesher.createBackgroundMesh(verbose);
       break;
     default:
-    case cleaver::Adpative:
-      mesher.setRegular(false);
+    case cleaver::Adaptive:
+      mesher.setConstant(false);
       bgMesh = mesher.createBackgroundMesh(verbose);
       break;
     }

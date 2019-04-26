@@ -86,7 +86,7 @@ namespace cleaver
   {
     m_alpha_long = DEFAULT_ALPHA_LONG;
     m_alpha_short = DEFAULT_ALPHA_SHORT;
-    m_regular = false;
+    m_constant = false;
   }
 
   void CleaverMesher::createTetMesh(bool verbose)
@@ -252,7 +252,7 @@ namespace cleaver
   //=================================
   void CleaverMesher::computeAlphas(bool verbose)
   {
-    m_pimpl->computeAlphas(verbose, m_regular, m_alpha_long, m_alpha_short);
+    m_pimpl->computeAlphas(verbose, m_constant, m_alpha_long, m_alpha_short);
   }
 
   //=====================================
@@ -355,17 +355,17 @@ namespace cleaver
   }
 
   //================================================
-  // - setRegular()
+  // - setConstant()
   //================================================
-  void CleaverMesher::setRegular(bool reg) {
-    m_regular = reg;
+  void CleaverMesher::setConstant(bool con) {
+    m_constant = con;
   }
 
   //================================================
   // - computeAlphas()
   //================================================
   void CleaverMesherImp::computeAlphas(bool verbose,
-    bool regular,
+    bool constant,
     double alp_long,
     double alp_short)
   {
@@ -384,14 +384,14 @@ namespace cleaver
     for (auto &entry : m_bgMesh->halfEdges)
     {
       HalfEdge *half_edge = entry.second;
-      if (regular) {
+      if (constant) {
         half_edge->alpha = (float)(half_edge->m_long_edge ? alp_long : alp_short);
       } else {
         half_edge->alpha = (float)m_alpha_init;
       }
       half_edge->alpha_length = (float)(half_edge->alpha*length(half_edge->vertex->pos() - half_edge->mate->vertex->pos()));
 
-      if (regular) {
+      if (constant) {
         half_edge->alpha = half_edge->alpha_length;
       }
     }
@@ -1001,7 +1001,7 @@ namespace cleaver
 
         int cut_count = 0;
         for (int e = 0; e < 6; e++)
-          cut_count += ((edges[e]->cut && (edges[e]->cut->order() == Order::CUT)) ? 1 : 0);  // to do, this bug probably appaers in regular
+          cut_count += ((edges[e]->cut && (edges[e]->cut->order() == Order::CUT)) ? 1 : 0);  // to do, this bug probably appears in constant
                                                                                       // generalization function, fix it!
       //------------------------------
       // determine virtual edge cuts
@@ -3283,7 +3283,7 @@ namespace cleaver
     resetMeshProperties();
 
     // just incase adjacency is now bad
-  
+
     // correct state of the program
     m_bBackgroundMeshCreated = true;
     m_bAdjacencyBuilt = false;
