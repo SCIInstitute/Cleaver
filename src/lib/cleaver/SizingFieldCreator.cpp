@@ -150,9 +150,9 @@ namespace cleaver
   //------------------------------------------------------------------
 
   SizingFieldCreator::SizingFieldCreator(const Volume *volume, float lipschitz,
-    float meshRefinementFactor, float sizeMultiplierFactor, int padding,
+    float refinementFactor, float sizeMultiplierFactor, int padding,
     bool adaptiveSurface, bool verbose) : m_verbose(verbose),
-    m_lipschitz(lipschitz), m_meshRefinementFactor(meshRefinementFactor),
+    m_lipschitz(lipschitz), m_refinementFactor(refinementFactor),
     m_sizeMultiplierFactor(sizeMultiplierFactor), mesh_bdry("Boundary"),
     mesh_feature("Feature"), mesh_padded_feature("Padded")
   {
@@ -181,9 +181,9 @@ namespace cleaver
     vector<vector<vector<bool> > > myBdry;
     bool foundBdry = false;
 
-    w = (int)(volume->bounds().size.x*m_meshRefinementFactor);
-    h = (int)(volume->bounds().size.y*m_meshRefinementFactor);
-    d = (int)(volume->bounds().size.z*m_meshRefinementFactor);
+    w = (int)(volume->bounds().size.x*m_refinementFactor);
+    h = (int)(volume->bounds().size.y*m_refinementFactor);
+    d = (int)(volume->bounds().size.z*m_refinementFactor);
     m = (int)(volume->numberOfMaterials());
 
     fill3DVector(mesh_discont, 0.0, w, h, d);
@@ -202,9 +202,9 @@ namespace cleaver
       {
         for (i = 0; i < w; i++)
         {
-          double ii = (double)(i + 0.5) / m_meshRefinementFactor;
-          double jj = (double)(j + 0.5) / m_meshRefinementFactor;
-          double kk = (double)(k + 0.5) / m_meshRefinementFactor;
+          double ii = (double)(i + 0.5) / m_refinementFactor;
+          double jj = (double)(j + 0.5) / m_refinementFactor;
+          double kk = (double)(k + 0.5) / m_refinementFactor;
           int dom = 0;
           double max = volume->valueAt(ii, jj, kk, dom);
           for (int mat = 1; mat < m; mat++)
@@ -276,8 +276,8 @@ namespace cleaver
         mesh_feature.setDist(i0,j0,k0,1);
         mesh_feature.known[i0][j0][k0] = true;
       }
-      vec3 mypadding = m_meshRefinementFactor*m_padding;
-      vec3 myoffset = m_meshRefinementFactor*m_offset;
+      vec3 mypadding = m_refinementFactor*m_padding;
+      vec3 myoffset = m_refinementFactor*m_offset;
       appendPadding(mypadding, myoffset, zeros);
     } else {
       if (verbose) status.done();
@@ -421,8 +421,8 @@ namespace cleaver
       if (verbose) printf("\tComputing the feature size at the boundary vertices\n");
       proceed(mesh_feature, medialaxis, 1, 1e6);
 
-      vec3 mypadding = m_meshRefinementFactor*m_padding;
-      vec3 myoffset = m_meshRefinementFactor*m_offset;
+      vec3 mypadding = m_refinementFactor*m_padding;
+      vec3 myoffset = m_refinementFactor*m_offset;
       appendPadding(mypadding, myoffset, zeros);
     }
     if (verbose) status.done();
@@ -899,8 +899,8 @@ namespace cleaver
   double SizingFieldCreator::Fval(const Volume *volume, double x, double y, double z, int mat1, int mat2)
   {
     double ret;
-    ret = (volume->valueAt((float)x / m_meshRefinementFactor, (float)y / m_meshRefinementFactor, (float)z / m_meshRefinementFactor, mat1) -
-      volume->valueAt((float)x / m_meshRefinementFactor, (float)y / m_meshRefinementFactor, (float)z / m_meshRefinementFactor, mat2));
+    ret = (volume->valueAt((float)x / m_refinementFactor, (float)y / m_refinementFactor, (float)z / m_refinementFactor, mat1) -
+      volume->valueAt((float)x / m_refinementFactor, (float)y / m_refinementFactor, (float)z / m_refinementFactor, mat2));
     return (ret);
   }
 
@@ -1193,11 +1193,11 @@ namespace cleaver
   }
 
   ScalarField<float>* SizingFieldCreator::createSizingFieldFromVolume(
-    const Volume *volume, float lipschitz, float meshRefinementFactor,
+    const Volume *volume, float lipschitz, float refinementFactor,
     float sizeMultiplierFactor, int padding, bool adaptiveSurface, bool verbose)
   {
     if (verbose)
-      std::cout << "Creating sizing field at " << meshRefinementFactor
+      std::cout << "Creating sizing field at " << refinementFactor
        << "x resolution, with "
       << "Lipschitz=" << lipschitz
       << ", sizeMultiplierFactor=" << sizeMultiplierFactor
@@ -1205,7 +1205,7 @@ namespace cleaver
       << ", adaptive=" << adaptiveSurface
       << std::endl;
 
-    SizingFieldCreator fieldCreator(volume, lipschitz, meshRefinementFactor,
+    SizingFieldCreator fieldCreator(volume, lipschitz, refinementFactor,
       sizeMultiplierFactor, padding, adaptiveSurface, verbose);
 
     if (verbose)

@@ -77,7 +77,7 @@ const cleaver::MeshFormat kDefaultOutputFormat = cleaver::Tetgen;
 const double kDefaultAlpha = 0.4;
 const double kDefaultAlphaLong = 0.357;
 const double kDefaultAlphaShort = 0.203;
-const double kDefaultMeshRefinementFactor = 1.0;
+const double kDefaultRefinementFactor = 1.0;
 const double kDefaultLipschitz = 0.2;
 const double kDefaultSizeMultiplier = 1.0;
 const int    kDefaultPadding = 0;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
   double alpha_short = kDefaultAlphaShort;
   double lipschitz = kDefaultLipschitz;
   double size_multiplier = kDefaultSizeMultiplier;
-  double mesh_refinement_factor = kDefaultMeshRefinementFactor;
+  double refinement_factor = kDefaultRefinementFactor;
   int padding = kDefaultPadding;
   bool have_sizing_field = false;
   bool have_background_mesh = false;
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
       ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [Surface mesh only])")
       ("padding,p", po::value<int>(), "volume padding")
       ("record,r", po::value<std::string>(), "record operations on tets from input file.")
-      ("mesh_refinement_factor,c", po::value<double>(), "sizing field scale factor")//fix description
+      ("refinement_factor,c", po::value<double>(), "sizing field scale factor")//fix description
       ("segmentation,S", "The input file is a segmentation file.")
       ("simple", "Use simple interface approximation.")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
@@ -219,11 +219,11 @@ int main(int argc, char* argv[])
           return 3;
         }
       }
-      if (variables_map.count("mesh_refinement_factor")) {
+      if (variables_map.count("refinement_factor")) {
         if (!strict)
-          std::cerr << "Warning: sizing field provided, mesh refinement factor will be ignored." << std::endl;
+          std::cerr << "Warning: sizing field provided, refinement factor will be ignored." << std::endl;
         else {
-          std::cerr << "Error: both sizing field and mesh refinement factor parameter provided." << std::endl;
+          std::cerr << "Error: both sizing field and refinement factor parameter provided." << std::endl;
           return 4;
         }
       }
@@ -233,8 +233,8 @@ int main(int argc, char* argv[])
     if (variables_map.count("lipschitz")) {
       lipschitz = variables_map["lipschitz"].as<double>();
     }
-    if (variables_map.count("mesh_refinement_factor")) {
-      mesh_refinement_factor = variables_map["mesh_refinement_factor"].as<double>();
+    if (variables_map.count("refinement_factor")) {
+      mesh_refinement_factor = variables_map["refinement_factor"].as<double>();
     }
     if (variables_map.count("size_multiplier")) {
       size_multiplier = variables_map["size_multiplier"].as<double>();
@@ -446,7 +446,7 @@ int main(int argc, char* argv[])
       sizingField.push_back(cleaver::SizingFieldCreator::createSizingFieldFromVolume(
         volume,
         (float)(1.0 / lipschitz),
-        (float)mesh_refinement_factor,
+        (float)refinement_factor,
         (float)size_multiplier,
         (int)padding,
         (element_sizing_method != cleaver::Constant),
