@@ -50,6 +50,9 @@
        </property>
        <item>
         <widget class="QLabel" name="label">
+         <property name="toolTip">
+          <string>Higher values give a finer mesh.</string>
+         </property>
          <property name="text">
           <string>Refinement Factor:</string>
          </property>
@@ -123,7 +126,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string/>
+          <string>Lower values give a finer mesh.</string>
          </property>
          <property name="whatsThis">
           <string/>
@@ -281,6 +284,9 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string/>
+         </property>
          <property name="text">
           <string>Padding:</string>
          </property>
@@ -355,6 +361,9 @@
            <width>16777215</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Constant: Uniform size, Adaptive: nonuniform size</string>
          </property>
          <property name="text">
           <string>Element Sizing Method:</string>
