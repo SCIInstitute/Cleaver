@@ -50,7 +50,7 @@ void SizingFieldWidget::loadSizingField() {
 }
 
 void SizingFieldWidget::computeSizingField() {
-  float scaling = ui->scaleFactor->value();
+  float scaling = ui->refinementFactor->value();
   float factor = ui->factorSpinBox->value();
   float speed = 1.0 / ui->lipschitzSpinBox->value();
   int padding = ui->paddingSpinBox->value();
