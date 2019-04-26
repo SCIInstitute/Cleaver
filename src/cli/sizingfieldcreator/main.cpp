@@ -59,26 +59,26 @@
 
 const std::string kDefaultOutputName   = "sizingfield";
 
-const double kDefaultScale = 2.0;
+const double kDefaultMeshRefinementFactor = 2.0;
 const double kDefaultLipschitz = 0.2;
-const double kDefaultMultiplier = 1.0;
+const double kDefaultSizeMultiplier = 1.0;
 const int    kDefaultPadding = 0;
 
-const std::string kDefaultScaleString = "2.0";
+const std::string kDefaultMeshRefinementFactorString = "2.0";
 const std::string kDefaultLipschitzString = "0.2";
-const std::string kDefaultMultiplierString = "1.0";
+const std::string kDefaultSizeMultiplierString = "1.0";
 
 namespace po = boost::program_options;
 
 // Entry Point
 int main(int argc,	char* argv[])
-{  
+{
     bool verbose = false;
     std::vector<std::string> material_fields;
     std::string output_path = kDefaultOutputName;
-    double scale      = kDefaultScale;
+    double scale      = kDefaultMeshRefinementFactor;
     double lipschitz  = kDefaultLipschitz;
-    double multiplier = kDefaultMultiplier;
+    double multiplier = kDefaultSizeMultiplier;
     int    padding    = kDefaultPadding;
 
     //-------------------------------
@@ -91,9 +91,9 @@ int main(int argc,	char* argv[])
                 ("verbose,v", "enable verbose output")
                 ("version", "display version information")
                 ("material_fields", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
-                ("grading", po::value<double>(&lipschitz)->default_value(kDefaultLipschitz, kDefaultLipschitzString), "sizing field grading")
-                ("multiplier", po::value<double>(&multiplier)->default_value(kDefaultMultiplier), "sizing field multiplier")
-                ("scale", po::value<double>(&scale)->default_value(kDefaultScale), "sizing field scale")
+                ("lipschitz", po::value<double>(&lipschitz)->default_value(kDefaultLipschitz, kDefaultLipschitzString), "sizing field grading")//fix description
+                ("size_multiplier", po::value<double>(&multiplier)->default_value(kDefaultMultiplier), "sizing field multiplier")//fix description
+                ("mesh_refinement_factor", po::value<double>(&scale)->default_value(kDefaultScale), "sizing field scale")//fix description
                 ("output", po::value<std::string>()->default_value(kDefaultOutputName, "sizingfield"), "output path")
                 ("padding", po::value<int>()->default_value(kDefaultPadding), "padding")
         ;
@@ -126,7 +126,7 @@ int main(int argc,	char* argv[])
         else{
             std::cout << "Error: At least one material field file must be specified." << std::endl;
             return 0;
-        }       
+        }
 
         // set output path
         if (variables_map.count("output")) {
@@ -150,7 +150,7 @@ int main(int argc,	char* argv[])
         std::cout << " - " << material_fields[i] << std::endl;
     }
 
-    std::vector<cleaver::AbstractScalarField*> fields = NRRDTools::loadNRRDFiles(material_fields);
+    std::vector<cleaver::AbstractScalarField*> fields = NRRDTools::loadNRRDFiles(material_fields);//does this need a sigma?
     if(fields.empty()){
         std::cerr << "Failed to load image data. Terminating." << std::endl;
         return 0;
@@ -168,8 +168,8 @@ int main(int argc,	char* argv[])
             cleaver::SizingFieldCreator::createSizingFieldFromVolume(
                 volume,
                 (float)(1.0/lipschitz),
-                (float)scale,
-                (float)multiplier,
+                (float)mesh_refinement_factor,
+                (float)size_multiplier,
                 (int)padding,
                 false);
 
@@ -184,4 +184,3 @@ int main(int argc,	char* argv[])
     std::cout << " Done." << std::endl;
     return 0;
 }
-
