@@ -2,7 +2,7 @@
 #define DATALOADERWIDGET_H
 
 #include <QDockWidget>
-#include <Cleaver/CleaverMesher.h> 
+#include <Cleaver/CleaverMesher.h>
 #include <QThread>
 
 namespace Ui {
@@ -14,8 +14,8 @@ class SizingFieldThread : public QThread {
   Q_OBJECT
 public:
   SizingFieldThread(cleaver::CleaverMesher& mesher,
-    QObject * parent, float scaling,
-    float factor, float speed, int padding, bool adapt);
+    QObject * parent, float refinementFactor,
+    float sizeMultiplier, float lipschitz, int padding, bool adapt);
   ~SizingFieldThread();
   void run();
 signals:
@@ -25,7 +25,7 @@ signals:
   void errorMessage(std::string);
 private:
   cleaver::CleaverMesher& mesher_;
-  float factor_, speed_, scaling_;
+  float sizeMultiplier_, lipschitz_, refinementFactor_;
   int padding_;
   bool adapt_;
 };

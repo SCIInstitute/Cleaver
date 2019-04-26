@@ -50,15 +50,15 @@ void SizingFieldWidget::loadSizingField() {
 }
 
 void SizingFieldWidget::computeSizingField() {
-  float scaling = ui->refinementFactor->value();
-  float factor = ui->factorSpinBox->value();
-  float speed = 1.0 / ui->lipschitzSpinBox->value();
+  float refinementFactor = ui->refinementFactor->value();
+  float sizeMultiplier = ui->factorSpinBox->value();
+  float lipschitz = 1.0 / ui->lipschitzSpinBox->value();
   int padding = ui->paddingSpinBox->value();
   bool adaptiveSurface = QString::compare(
     ui->surfaceComboBox->currentText(),
     QString("constant"), Qt::CaseInsensitive) == 0 ? false : true;
   SizingFieldThread *workerThread = new SizingFieldThread(this->mesher_, this,
-    scaling, factor, speed, padding, adaptiveSurface);
+    refinement, sizeMultiplier, lipschitz, padding, adaptiveSurface);
   connect(workerThread, SIGNAL(sizingFieldDone()), this, SLOT(handleSizingFieldDone()));
   connect(workerThread, SIGNAL(message(std::string)), this, SLOT(handleMessage(std::string)));
   connect(workerThread, SIGNAL(errorMessage(std::string)), this, SLOT(handleErrorMessage(std::string)));
@@ -83,10 +83,10 @@ void SizingFieldWidget::handleProgress(int v) { emit progress(v); }
 
 SizingFieldThread::SizingFieldThread(
   cleaver::CleaverMesher& mesher, QObject * parent,
-  float scaling, float factor, float speed,
+  float refinementFactor, float sizeMultiplier, float lipschitz,
   int padding, bool adapt) :
-  QThread(parent), mesher_(mesher), scaling_(scaling),
-  factor_(factor), speed_(speed), padding_(padding),
+  QThread(parent), mesher_(mesher), refinementFactor_(refinementFactor),
+  sizeMultiplier_(sizeMultiplier), lipschitz_(lipschitz), padding_(padding),
   adapt_(adapt) { }
 
 SizingFieldThread::~SizingFieldThread() {}
@@ -97,8 +97,8 @@ void SizingFieldThread::run() {
   try {
     cleaver::AbstractScalarField *sizingField =
       cleaver::SizingFieldCreator::createSizingFieldFromVolume(
-        this->mesher_.getVolume(), this->speed_,
-        this->scaling_, this->factor_,
+        this->mesher_.getVolume(), this->lipschitz_,
+        this->refinementFactor_, this->sizeMultiplier_,
         this->padding_, this->adapt_, true);
     this->mesher_.getVolume()->setSizingField(sizingField);
     emit progress(50);
