@@ -23,7 +23,7 @@ std::vector<cleaver::AbstractScalarField*>
 
 NRRDTools::segmentationToIndicatorFunctions(std::string file, double sigma)
 {
-  cerr << "NRRD file read error: Cleaver2 does not currently support segmentation files with teem. Please use ITK." << endl";
+  cerr << "NRRD file read error: Cleaver2 does not currently support segmentation files with teem. Please use ITK." << endl;";
     return {};
 }
 
@@ -343,7 +343,7 @@ std::vector<cleaver::AbstractScalarField*> loadNRRDLabelMap(const std::string &f
 {
     // load the data
     // scan it and count the number of labels.
-    
+
     return std::vector<cleaver::AbstractScalarField*>();
 }
 
