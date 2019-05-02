@@ -51,10 +51,10 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="toolTip">
-          <string>Higher values give a finer mesh.</string>
+          <string>Volume sampling rate. Lower values make a coarser mesh.</string>
          </property>
          <property name="text">
-          <string>Refinement Factor:</string>
+          <string>Sampling Rate:</string>
          </property>
         </widget>
        </item>
@@ -126,13 +126,13 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Lower values give a finer mesh.</string>
+          <string>Feature size scaling. Higher values make a coarser mesh.</string>
          </property>
          <property name="whatsThis">
           <string/>
          </property>
          <property name="text">
-          <string>Size Multiplier:</string>
+          <string>Feature Scaling</string>
          </property>
         </widget>
        </item>
@@ -209,6 +209,9 @@
        </property>
        <item>
         <widget class="QLabel" name="label_2">
+         <property name="toolTip">
+          <string>Maximum rate of change of element size. 1 is uniform.</string>
+         </property>
          <property name="text">
           <string>Lipschitz:</string>
          </property>
@@ -363,7 +366,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Constant: Uniform size, Adaptive: nonuniform size</string>
+          <string>Constant: uniform elements, Adaptive: nonuniform elements</string>
          </property>
          <property name="text">
           <string>Element Sizing Method:</string>
