@@ -150,10 +150,10 @@ namespace cleaver
   //------------------------------------------------------------------
 
   SizingFieldCreator::SizingFieldCreator(const Volume *volume, float lipschitz,
-    float refinementFactor, float sizeMultiplier, int padding,
+    float samplingRate, float featureScaling, int padding,
     bool adaptiveSurface, bool verbose) : m_verbose(verbose),
-    m_lipschitz(lipschitz), m_refinementFactor(refinementFactor),
-    m_sizeMultiplier(sizeMultiplier), mesh_bdry("Boundary"),
+    m_lipschitz(lipschitz), m_samplingRate(samplingRate),
+    m_featureScaling(featureScaling), mesh_bdry("Boundary"),
     mesh_feature("Feature"), mesh_padded_feature("Padded")
   {
     m_padding[0] = m_padding[1] = m_padding[2] = 2 * padding;
@@ -181,9 +181,9 @@ namespace cleaver
     vector<vector<vector<bool> > > myBdry;
     bool foundBdry = false;
 
-    w = (int)(volume->bounds().size.x*m_refinementFactor);
-    h = (int)(volume->bounds().size.y*m_refinementFactor);
-    d = (int)(volume->bounds().size.z*m_refinementFactor);
+    w = (int)(volume->bounds().size.x*m_samplingRate);
+    h = (int)(volume->bounds().size.y*m_samplingRate);
+    d = (int)(volume->bounds().size.z*m_samplingRate);
     m = (int)(volume->numberOfMaterials());
 
     fill3DVector(mesh_discont, 0.0, w, h, d);
@@ -202,9 +202,9 @@ namespace cleaver
       {
         for (i = 0; i < w; i++)
         {
-          double ii = (double)(i + 0.5) / m_refinementFactor;
-          double jj = (double)(j + 0.5) / m_refinementFactor;
-          double kk = (double)(k + 0.5) / m_refinementFactor;
+          double ii = (double)(i + 0.5) / m_samplingRate;
+          double jj = (double)(j + 0.5) / m_samplingRate;
+          double kk = (double)(k + 0.5) / m_samplingRate;
           int dom = 0;
           double max = volume->valueAt(ii, jj, kk, dom);
           for (int mat = 1; mat < m; mat++)
@@ -276,8 +276,8 @@ namespace cleaver
         mesh_feature.setDist(i0,j0,k0,1);
         mesh_feature.known[i0][j0][k0] = true;
       }
-      vec3 mypadding = m_refinementFactor*m_padding;
-      vec3 myoffset = m_refinementFactor*m_offset;
+      vec3 mypadding = m_samplingRate *m_padding;
+      vec3 myoffset = m_samplingRate *m_offset;
       appendPadding(mypadding, myoffset, zeros);
     } else {
       if (verbose) status.done();
@@ -421,8 +421,8 @@ namespace cleaver
       if (verbose) printf("\tComputing the feature size at the boundary vertices\n");
       proceed(mesh_feature, medialaxis, 1, 1e6);
 
-      vec3 mypadding = m_refinementFactor*m_padding;
-      vec3 myoffset = m_refinementFactor*m_offset;
+      vec3 mypadding = m_samplingRate *m_padding;
+      vec3 myoffset = m_samplingRate *m_offset;
       appendPadding(mypadding, myoffset, zeros);
     }
     if (verbose) status.done();
@@ -431,9 +431,9 @@ namespace cleaver
     proceed(mesh_padded_feature, zeros, lipschitz, 1e6);
 
     //------------------------------------------
-    //       Apply Size Multiplier
+    //       Apply Feature Scaling
     //------------------------------------------
-    if (m_sizeMultiplier != 1.0)
+    if (m_featureScaling != 1.0)
     {
       int w = mesh_padded_feature.distSizeX();
       int h = mesh_padded_feature.distSizeY();
@@ -443,7 +443,7 @@ namespace cleaver
       for (int k = 0; k < d; k++) {
         for (int j = 0; j < h; j++) {
           for (int i = 0; i < w; i++) {
-            mesh_padded_feature.setDist(i,j,k,mesh_padded_feature.getDist(i, j, k) * m_sizeMultiplier);
+            mesh_padded_feature.setDist(i,j,k,mesh_padded_feature.getDist(i, j, k) * m_featureScaling);
             if (verbose) status.printStatus();
           }
         }
@@ -899,8 +899,8 @@ namespace cleaver
   double SizingFieldCreator::Fval(const Volume *volume, double x, double y, double z, int mat1, int mat2)
   {
     double ret;
-    ret = (volume->valueAt((float)x / m_refinementFactor, (float)y / m_refinementFactor, (float)z / m_refinementFactor, mat1) -
-      volume->valueAt((float)x / m_refinementFactor, (float)y / m_refinementFactor, (float)z / m_refinementFactor, mat2));
+    ret = (volume->valueAt((float)x / m_samplingRate, (float)y / m_samplingRate, (float)z / m_samplingRate, mat1) -
+      volume->valueAt((float)x / m_samplingRate, (float)y / m_samplingRate, (float)z / m_samplingRate, mat2));
     return (ret);
   }
 
@@ -1193,20 +1193,20 @@ namespace cleaver
   }
 
   ScalarField<float>* SizingFieldCreator::createSizingFieldFromVolume(
-    const Volume *volume, float lipschitz, float refinementFactor,
-    float sizeMultiplier, int padding, bool adaptiveSurface, bool verbose)
+    const Volume *volume, float lipschitz, float samplingRate,
+    float featureScaling, int padding, bool adaptiveSurface, bool verbose)
   {
     if (verbose)
-      std::cout << "Creating sizing field at " << refinementFactor
+      std::cout << "Creating sizing field at " << samplingRate
        << "x resolution, with "
       << "Lipschitz=" << lipschitz
-      << ", sizeMultiplier=" << sizeMultiplier
+      << ", featureScaling=" << featureScaling
       << ", padding=" << padding
       << ", adaptive=" << adaptiveSurface
       << std::endl;
 
-    SizingFieldCreator fieldCreator(volume, lipschitz, refinementFactor,
-      sizeMultiplier, padding, adaptiveSurface, verbose);
+    SizingFieldCreator fieldCreator(volume, lipschitz, samplingRate,
+      featureScaling, padding, adaptiveSurface, verbose);
 
     if (verbose)
       std::cout << "Sizing Field Creating! Returning it.." << std::endl;

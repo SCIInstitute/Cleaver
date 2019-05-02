@@ -164,7 +164,7 @@ class SizingFieldCreator
 {
     public:
     SizingFieldCreator(const Volume*, float lipschitz = 1.0f,
-      float refinementFactor = 2.0f, float sizeMultiplier = 1.0f,
+      float samplingRate = 2.0f, float featureScaling = 1.0f,
       int padding = 0, bool adaptiveSurface=true, bool verbose=false);
     ~SizingFieldCreator();
 
@@ -179,18 +179,18 @@ class SizingFieldCreator
     }
     ScalarField<float>* getField()
     {
-        return mesh_padded_feature.convertToFloatField((float)m_refinementFactor, m_padding, m_offset);
+        return mesh_padded_feature.convertToFloatField((float)m_samplingRate, m_padding, m_offset);
     }
 
     static ScalarField<float>* createSizingFieldFromVolume(const Volume *volume,
-      float lipschitz = 1.0f, float refinementFactor = 2.0f, float sizeMultiplier = 1.0f,
+      float lipschitz = 1.0f, float samplingRate = 2.0f, float featureScaling = 1.0f,
       int m_padding = 0, bool featureSize=true, bool verbose=false);
 
     private:
     bool   m_verbose;
     double m_lipschitz;
-    double m_refinementFactor;
-    double m_sizeMultiplier;
+    double m_samplingRate;
+    double m_featureScaling;
 
     double compute_size(VoxelMesh&, VoxelMesh&, FeatureOctant*, int);
     double search_size(VoxelMesh&, const Triple&, const Triple&, FeatureOctant*);

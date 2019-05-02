@@ -77,9 +77,9 @@ const cleaver::MeshFormat kDefaultOutputFormat = cleaver::Tetgen;
 const double kDefaultAlpha = 0.4;
 const double kDefaultAlphaLong = 0.357;
 const double kDefaultAlphaShort = 0.203;
-const double kDefaultRefinementFactor = 1.0;
+const double kDefaultSamplingRate = 1.0;
 const double kDefaultLipschitz = 0.2;
-const double kDefaultSizeMultiplier = 1.0;
+const double kDefaultFeatureScaling = 1.0;
 const int    kDefaultPadding = 0;
 const int    kDefaultMaxIterations = 1000;
 const double kDefaultSigma = 1.;
@@ -102,8 +102,8 @@ int main(int argc, char* argv[])
   double alpha_long = kDefaultAlphaLong;
   double alpha_short = kDefaultAlphaShort;
   double lipschitz = kDefaultLipschitz;
-  double size_multiplier = kDefaultSizeMultiplier;
-  double refinement_factor = kDefaultRefinementFactor;
+  double feature_scaling = kDefaultFeatureScaling;
+  double sampling_rate = kDefaultSamplingRate;
   int padding = kDefaultPadding;
   bool have_sizing_field = false;
   bool have_background_mesh = false;
@@ -137,13 +137,13 @@ int main(int argc, char* argv[])
       ("help,h", "display help message")
       ("input_files,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths or segmentation path")
       ("element_sizing_method,m", po::value<std::string>(), "background mesh mode (adaptive [default], constant)")
-      ("size_multiplier,x", po::value<double>(), "sizing field multiplier") //fix description
+      ("feature_scaling,x", po::value<double>(), "sizing field multiplier") //fix description
       ("output_path,o", po::value<std::string>(), "output path prefix")
       ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
       ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [Surface mesh only])")
       ("padding,p", po::value<int>(), "volume padding")
       ("record,r", po::value<std::string>(), "record operations on tets from input file.")
-      ("refinement_factor,c", po::value<double>(), "sizing field scale factor")//fix description
+      ("sampling_rate,c", po::value<double>(), "sizing field scale factor")//fix description
       ("segmentation,S", "The input file is a segmentation file.")
       ("simple", "Use simple interface approximation.")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
@@ -211,19 +211,19 @@ int main(int argc, char* argv[])
           return 2;
         }
       }
-      if (variables_map.count("size_multiplier")) {
+      if (variables_map.count("feature_scaling")) {
         if (!strict)
-          std::cerr << "Warning: sizing field provided, size multiplier will be ignored." << std::endl;
+          std::cerr << "Warning: sizing field provided, feature scaling will be ignored." << std::endl;
         else {
-          std::cerr << "Error: both sizing field and size multiplier parameter provided." << std::endl;
+          std::cerr << "Error: both sizing field and feature scaling parameter provided." << std::endl;
           return 3;
         }
       }
-      if (variables_map.count("refinement_factor")) {
+      if (variables_map.count("sampling_rate")) {
         if (!strict)
-          std::cerr << "Warning: sizing field provided, refinement factor will be ignored." << std::endl;
+          std::cerr << "Warning: sizing field provided, sampling rate will be ignored." << std::endl;
         else {
-          std::cerr << "Error: both sizing field and refinement factor parameter provided." << std::endl;
+          std::cerr << "Error: both sizing field and sampling rate parameter provided." << std::endl;
           return 4;
         }
       }
@@ -233,11 +233,11 @@ int main(int argc, char* argv[])
     if (variables_map.count("lipschitz")) {
       lipschitz = variables_map["lipschitz"].as<double>();
     }
-    if (variables_map.count("refinement_factor")) {
-      refinement_factor = variables_map["refinement_factor"].as<double>();
+    if (variables_map.count("sampling_rate")) {
+      sampling_rate = variables_map["sampling_rate"].as<double>();
     }
-    if (variables_map.count("size_multiplier")) {
-      size_multiplier = variables_map["size_multiplier"].as<double>();
+    if (variables_map.count("feature_scaling")) {
+      feature_scaling = variables_map["feature_scaling"].as<double>();
     }
     if (variables_map.count("padding")) {
       padding = variables_map["padding"].as<int>();
@@ -446,8 +446,8 @@ int main(int argc, char* argv[])
       sizingField.push_back(cleaver::SizingFieldCreator::createSizingFieldFromVolume(
         volume,
         (float)(1.0 / lipschitz),
-        (float)refinement_factor,
-        (float)size_multiplier,
+        (float)sampling_rate,
+        (float)feature_scaling,
         (int)padding,
         (element_sizing_method != cleaver::Constant),
         verbose));
