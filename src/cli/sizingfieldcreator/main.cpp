@@ -59,14 +59,14 @@
 
 const std::string kDefaultOutputName   = "sizingfield";
 
-const double kDefaultRefinementFactor = 2.0;
+const double kDefaultSamplingRate = 2.0;
 const double kDefaultLipschitz = 0.2;
-const double kDefaultSizeMultiplier = 1.0;
+const double kDefaultFeatureScaling = 1.0;
 const int    kDefaultPadding = 0;
 
-const std::string kDefaultRefinementFactorString = "2.0";
+const std::string kDefaultSamplingRateString = "2.0";
 const std::string kDefaultLipschitzString = "0.2";
-const std::string kDefaultSizeMultiplierString = "1.0";
+const std::string kDefaultFeatureScalingString = "1.0";
 
 namespace po = boost::program_options;
 
@@ -76,9 +76,9 @@ int main(int argc,	char* argv[])
     bool verbose = false;
     std::vector<std::string> material_fields;
     std::string output_path = kDefaultOutputName;
-    double scale      = kDefaultRefinementFactor;
+    double samplingRate      = kDefaultSamplingRate;
     double lipschitz  = kDefaultLipschitz;
-    double multiplier = kDefaultSizeMultiplier;
+    double featureScaling = kDefaultFeatureScaling;
     int    padding    = kDefaultPadding;
 
     //-------------------------------
@@ -92,8 +92,8 @@ int main(int argc,	char* argv[])
                 ("version", "display version information")
                 ("material_fields", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
                 ("lipschitz", po::value<double>(&lipschitz)->default_value(kDefaultLipschitz, kDefaultLipschitzString), "sizing field grading")//fix description
-                ("size_multiplier", po::value<double>(&multiplier)->default_value(kDefaultMultiplier), "sizing field multiplier")//fix description
-                ("refinement_factor", po::value<double>(&scale)->default_value(kDefaultScale), "sizing field scale")//fix description
+                ("feature_scaling", po::value<double>(&featureScaling)->default_value(kDefaultFeatureScaling), "sizing field multiplier")//fix description
+                ("sampling_rate", po::value<double>(&samplingRate)->default_value(kDefaultSamplingRate), "sizing field scale")//fix description
                 ("output", po::value<std::string>()->default_value(kDefaultOutputName, "sizingfield"), "output path")
                 ("padding", po::value<int>()->default_value(kDefaultPadding), "padding")
         ;
@@ -168,8 +168,8 @@ int main(int argc,	char* argv[])
             cleaver::SizingFieldCreator::createSizingFieldFromVolume(
                 volume,
                 (float)(1.0/lipschitz),
-                (float)refinement_factor,
-                (float)size_multiplier,
+                (float)sampling_rate,
+                (float)feature_scaling,
                 (int)padding,
                 false);
 
