@@ -72,7 +72,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="refinementFactor">
+        <widget class="QDoubleSpinBox" name="samplingRate">
          <property name="minimumSize">
           <size>
            <width>110</width>
