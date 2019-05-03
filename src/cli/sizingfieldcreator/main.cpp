@@ -91,13 +91,12 @@ int main(int argc,	char* argv[])
                 ("verbose,v", "enable verbose output")
                 ("version", "display version information")
                 ("material_fields", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
-                ("lipschitz", po::value<double>(&lipschitz)->default_value(kDefaultLipschitz, kDefaultLipschitzString), "sizing field grading")//fix description
-                ("feature_scaling", po::value<double>(&featureScaling)->default_value(kDefaultFeatureScaling), "sizing field multiplier")//fix description
-                ("sampling_rate", po::value<double>(&samplingRate)->default_value(kDefaultSamplingRate), "sizing field scale")//fix description
+                ("lipschitz", po::value<double>(&lipschitz)->default_value(kDefaultLipschitz, kDefaultLipschitzString), "maximum rate of change of element size: 1 is uniform")s
+                ("feature_scaling", po::value<double>(&featureScaling)->default_value(kDefaultFeatureScaling), "feature size scaling: higher values make a coarser mesh")
+                ("sampling_rate", po::value<double>(&samplingRate)->default_value(kDefaultSamplingRate), "volume sampling rate: lower values make a coarser mesh")
                 ("output", po::value<std::string>()->default_value(kDefaultOutputName, "sizingfield"), "output path")
                 ("padding", po::value<int>()->default_value(kDefaultPadding), "padding")
         ;
-
         boost::program_options::variables_map variables_map;
         boost::program_options::store(boost::program_options::parse_command_line(argc, argv, description), variables_map);
         boost::program_options::notify(variables_map);
