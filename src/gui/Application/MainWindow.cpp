@@ -128,6 +128,10 @@ void MainWindow::createActions()
   this->aboutAct->setStatusTip(tr("Show the About box"));
   connect(this->aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
+  //Documentation Menu Actions
+  this->docAction = new QAction(tr("&Cleaver2 Documentation"), this);
+  connect(this->docAction, SIGNAL(triggered()), this, SLOT(docInfo()));
+
   //other actions
   connect(this->m_cleaverWidget, SIGNAL(doneMeshing()), this, SLOT(handleDoneMeshing()));
   connect(this->m_cleaverWidget, SIGNAL(newMesh()), this, SLOT(handleNewMesh()));
@@ -182,6 +186,7 @@ void MainWindow::createMenus()
 
   // Help Menu Actions
   m_helpMenu->addAction(aboutAct);
+  m_helpMenu->addAction(docAction);
 
   // Add Menus To MenuBar
   menuBar()->addMenu(m_fileMenu);
@@ -723,6 +728,15 @@ void MainWindow::about() {
         "WARRANTY OF ANY KIND, INCLUDING THE WARRANTY"
         "OF DESIGN, MERCHANTABILITY AND FITNESS FOR A "
         "PARTICULAR PURPOSE."));
+}
+
+void MainWindow::docInfo()
+{
+  if (QMessageBox::Ok == QMessageBox::information(this, "Cleaver2 Documentation",
+    "Click OK to be taken to Cleaver2's documentation page.", QMessageBox::Ok | QMessageBox::Cancel))
+  {
+    QDesktopServices::openUrl(QUrl("https://sciinstitute.github.io/cleaver.pages/", QUrl::TolerantMode));
+  }
 }
 
 MeshWindow * MainWindow::createWindow(const QString &title) {

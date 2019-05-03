@@ -35,6 +35,7 @@ public slots :
   void exportField(cleaver::FloatField *field);
   void exportMesh(cleaver::TetMesh *mesh = NULL);
   void about();
+  void docInfo();
   void handleNewMesh();
   void handleDoneMeshing();
   void handleRepaintGL();
@@ -92,8 +93,9 @@ private:
   QAction *sizingFieldAction;
   QAction *dataViewAction;
 
-  // About Menu Actions
+  // Help Menu Actions
   QAction *aboutAct;
+  QAction *docAction;
 
   // Top Level Menus
   QMenu *m_fileMenu;
