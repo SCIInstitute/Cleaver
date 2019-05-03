@@ -123,14 +123,16 @@ void MainWindow::createActions()
   this->dataViewAction = this->m_dataManagerWidget->toggleViewAction();
   this->dataViewAction->setCheckable(true);
 
-  // About Menu Actions
+  // Help Menu Actions
   this->aboutAct = new QAction(tr("&About"), this);
   this->aboutAct->setStatusTip(tr("Show the About box"));
   connect(this->aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
-  //Documentation Menu Actions
-  this->docAction = new QAction(tr("&Cleaver2 Documentation"), this);
+  this->docAction = new QAction(tr("&Cleaver2 Documentation..."), this);
   connect(this->docAction, SIGNAL(triggered()), this, SLOT(docInfo()));
+
+  this->issueAction = new QAction(tr("&Report issue..."), this);
+  connect(this->issueAction, SIGNAL(triggered()), this, SLOT(reportIssue()));
 
   //other actions
   connect(this->m_cleaverWidget, SIGNAL(doneMeshing()), this, SLOT(handleDoneMeshing()));
@@ -187,6 +189,7 @@ void MainWindow::createMenus()
   // Help Menu Actions
   m_helpMenu->addAction(aboutAct);
   m_helpMenu->addAction(docAction);
+  m_helpMenu->addAction(issueAction);
 
   // Add Menus To MenuBar
   menuBar()->addMenu(m_fileMenu);
@@ -736,6 +739,15 @@ void MainWindow::docInfo()
     "Click OK to be taken to Cleaver2's documentation page.", QMessageBox::Ok | QMessageBox::Cancel))
   {
     QDesktopServices::openUrl(QUrl("https://sciinstitute.github.io/cleaver.pages/", QUrl::TolerantMode));
+  }
+}
+
+void MainWindow::reportIssue()
+{
+  if (QMessageBox::Ok == QMessageBox::information(this, "Report Issue",
+    "Click OK to be taken to Cleaver2's Github issue reporting page.\n\nFor bug reports, please follow the template.", QMessageBox::Ok | QMessageBox::Cancel))
+  {
+    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/Cleaver2/issues/new", QUrl::TolerantMode));
   }
 }
 

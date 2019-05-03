@@ -36,6 +36,7 @@ public slots :
   void exportMesh(cleaver::TetMesh *mesh = NULL);
   void about();
   void docInfo();
+  void reportIssue();
   void handleNewMesh();
   void handleDoneMeshing();
   void handleRepaintGL();
@@ -96,6 +97,7 @@ private:
   // Help Menu Actions
   QAction *aboutAct;
   QAction *docAction;
+  QAction *issueAction;
 
   // Top Level Menus
   QMenu *m_fileMenu;
