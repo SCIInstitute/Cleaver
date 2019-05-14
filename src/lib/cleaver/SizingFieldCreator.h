@@ -74,7 +74,7 @@ public:
       const cleaver::vec3 &padding, const cleaver::vec3 &offset);
 
     std::vector<std::vector<std::vector<bool> > > known;
-   
+
     void setDist(int l, int m, int n, double value);
     double getDist(int l, int m, int n) const;
     int distSizeX() const;
@@ -163,8 +163,8 @@ class FeatureOctant
 class SizingFieldCreator
 {
     public:
-    SizingFieldCreator(const Volume*, float speed = 1.0f,
-      float sampleFactor = 2.0f, float sizingFactor = 1.0f,
+    SizingFieldCreator(const Volume*, float lipschitz = 1.0f,
+      float samplingRate = 2.0f, float featureScaling = 1.0f,
       int padding = 0, bool adaptiveSurface=true, bool verbose=false);
     ~SizingFieldCreator();
 
@@ -179,22 +179,22 @@ class SizingFieldCreator
     }
     ScalarField<float>* getField()
     {
-        return mesh_padded_feature.convertToFloatField((float)m_sampleFactor, m_padding, m_offset);
+        return mesh_padded_feature.convertToFloatField((float)m_samplingRate, m_padding, m_offset);
     }
 
     static ScalarField<float>* createSizingFieldFromVolume(const Volume *volume,
-      float speed = 1.0f, float sampleFactor = 2.0f, float sizingFactor = 1.0f,
+      float lipschitz = 1.0f, float samplingRate = 2.0f, float featureScaling = 1.0f,
       int m_padding = 0, bool featureSize=true, bool verbose=false);
 
     private:
     bool   m_verbose;
-    double m_speed;
-    double m_sampleFactor;
-    double m_sizingFactor;
+    double m_lipschitz;
+    double m_samplingRate;
+    double m_featureScaling;
 
     double compute_size(VoxelMesh&, VoxelMesh&, FeatureOctant*, int);
     double search_size(VoxelMesh&, const Triple&, const Triple&, FeatureOctant*);
-	bool exists(QueueIndex&, VoxelMesh&);
+	  bool exists(QueueIndex&, VoxelMesh&);
     void proceed(VoxelMesh&, std::vector<Triple>&, double, double);
     Triple make_triple(int, int, int);
     QueueIndex make_index(int i, int j, int k);
@@ -216,8 +216,6 @@ class SizingFieldCreator
     VoxelMesh mesh_bdry, mesh_feature, mesh_padded_feature;
     vec3 m_padding, m_offset;
 };
-
-
 
 }
 

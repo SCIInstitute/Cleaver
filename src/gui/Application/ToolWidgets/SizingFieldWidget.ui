@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>228</width>
+    <width>229</width>
     <height>258</height>
    </size>
   </property>
@@ -36,16 +36,7 @@
     <property name="spacing">
      <number>3</number>
     </property>
-    <property name="leftMargin">
-     <number>4</number>
-    </property>
-    <property name="topMargin">
-     <number>4</number>
-    </property>
-    <property name="rightMargin">
-     <number>4</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>4</number>
     </property>
     <item>
@@ -54,22 +45,16 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
         <widget class="QLabel" name="label">
+         <property name="toolTip">
+          <string>Volume sampling rate. Lower values make a coarser mesh.</string>
+         </property>
          <property name="text">
-          <string>Scaling Factor:</string>
+          <string>Sampling Rate:</string>
          </property>
         </widget>
        </item>
@@ -87,7 +72,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="scaleFactor">
+        <widget class="QDoubleSpinBox" name="samplingRate">
          <property name="minimumSize">
           <size>
            <width>110</width>
@@ -117,16 +102,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
       </layout>
@@ -138,16 +114,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -159,13 +126,13 @@
           </size>
          </property>
          <property name="toolTip">
-          <string/>
+          <string>Feature size scaling. Higher values make a coarser mesh.</string>
          </property>
          <property name="whatsThis">
           <string/>
          </property>
          <property name="text">
-          <string>Size Multiplier:</string>
+          <string>Feature Scaling</string>
          </property>
         </widget>
        </item>
@@ -225,16 +192,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
       </layout>
@@ -246,20 +204,14 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
         <widget class="QLabel" name="label_2">
+         <property name="toolTip">
+          <string>Maximum rate of change of element size. 1 is uniform.</string>
+         </property>
          <property name="text">
           <string>Lipschitz:</string>
          </property>
@@ -318,16 +270,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -343,6 +286,9 @@
            <width>16777215</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string/>
          </property>
          <property name="text">
           <string>Padding:</string>
@@ -402,16 +348,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -427,6 +364,9 @@
            <width>16777215</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Constant: uniform elements, Adaptive: nonuniform elements</string>
          </property>
          <property name="text">
           <string>Element Sizing Method:</string>
@@ -500,16 +440,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>

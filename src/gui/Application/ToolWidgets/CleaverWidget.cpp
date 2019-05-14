@@ -118,7 +118,7 @@ void CleaverThread::run() {
   emit progress(5);
   try {
     //create background mesh
-    this->mesher_.setRegular(false);
+    this->mesher_.setConstant(false);
     this->mesher_.createBackgroundMesh(true);
     this->mesher_.getBackgroundMesh()->name = "Adaptive-BCC-Mesh";
     emit newMesh();

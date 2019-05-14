@@ -63,7 +63,7 @@
 namespace cleaver
 {
 //              BCCLattice   BCCOctree
-enum MeshType { Regular,    Structured };
+enum MeshType { Constant,    Adaptive };
 enum MeshFormat { Tetgen, Scirun, Matlab, VtkUSG, VtkPoly, PLY };
 
 class TetMesh

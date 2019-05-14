@@ -1,5 +1,3 @@
-
-
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 //
@@ -74,13 +72,12 @@ const std::string kDefaultOutputPath = "./";
 const std::string kDefaultOutputName = "output";
 const cleaver::MeshFormat kDefaultOutputFormat = cleaver::Tetgen;
 
-
 const double kDefaultAlpha = 0.4;
 const double kDefaultAlphaLong = 0.357;
 const double kDefaultAlphaShort = 0.203;
-const double kDefaultScale = 1.0;
+const double kDefaultSamplingRate = 1.0;
 const double kDefaultLipschitz = 0.2;
-const double kDefaultMultiplier = 1.0;
+const double kDefaultFeatureScaling = 1.0;
 const int    kDefaultPadding = 0;
 const int    kDefaultMaxIterations = 1000;
 const double kDefaultSigma = 1.;
@@ -103,8 +100,8 @@ int main(int argc, char* argv[])
   double alpha_long = kDefaultAlphaLong;
   double alpha_short = kDefaultAlphaShort;
   double lipschitz = kDefaultLipschitz;
-  double multiplier = kDefaultMultiplier;
-  double scaling = kDefaultScale;
+  double feature_scaling = kDefaultFeatureScaling;
+  double sampling_rate = kDefaultSamplingRate;
   int padding = kDefaultPadding;
   bool have_sizing_field = false;
   bool have_background_mesh = false;
@@ -113,7 +110,7 @@ int main(int argc, char* argv[])
   std::string recording_input;
   bool strict = false;
   bool strip_exterior = false;
-  enum cleaver::MeshType mesh_mode = cleaver::Structured;
+  enum cleaver::MeshType element_sizing_method = cleaver::Adaptive;
   cleaver::MeshFormat output_format = kDefaultOutputFormat;
   double sigma = kDefaultSigma;
 
@@ -129,24 +126,24 @@ int main(int argc, char* argv[])
     po::options_description description("Command line flags");
     description.add_options()
       ("alpha,a", po::value<double>(), "initial alpha value")
-      ("alpha_short,s", po::value<double>(), "alpha short value for regular mesh_mode")
-      ("alpha_long,l", po::value<double>(), "alpha long value for regular mesh_mode")
+      ("alpha_short,s", po::value<double>(), "alpha short value for constant element sizing method")
+      ("alpha_long,l", po::value<double>(), "alpha long value for constant element sizing method")
       ("background_mesh,b", po::value<std::string>(), "input background mesh")
-      ("blend_sigma,B", po::value<double>(), "blending sigma for input(s) to remove alias artifacts.")
-      ("fix_tet_windup,j", "Ensure positive Jacobians with proper vertex wind-up.")
-      ("grading,g", po::value<double>(), "sizing field grading")
+      ("blend_sigma,B", po::value<double>(), "blending function sigma for input(s) to remove alias artifacts")
+      ("element_sizing_method,m", po::value<std::string>(), "background mesh mode (adaptive [default], constant)")
+      ("feature_scaling,F", po::value<double>(), "feature size scaling (higher values make a coarser mesh)")
+      ("fix_tet_windup,j", "ensure positive Jacobians with proper vertex wind-up")
       ("help,h", "display help message")
       ("input_files,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths or segmentation path")
-      ("mesh_mode,m", po::value<std::string>(), "background mesh mode (structured [default], regular)")
-      ("multiplier,x", po::value<double>(), "sizing field multiplier")
+      ("lipschitz,L", po::value<double>(), "maximum rate of change of element size (1 is uniform)")
+      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [surface mesh only])")
+      ("output_name,n", po::value<std::string>(), "output mesh name (default 'output')")
       ("output_path,o", po::value<std::string>(), "output path prefix")
-      ("output_name,n", po::value<std::string>(), "output mesh name [default 'output']")
-      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [Surface mesh only])")
       ("padding,p", po::value<int>(), "volume padding")
-      ("record,r", po::value<std::string>(), "record operations on tets from input file.")
-      ("scale,c", po::value<double>(), "sizing field scale factor")
-      ("segmentation,S", "The input file is a segmentation file.")
-      ("simple", "Use simple interface approximation.")
+      ("record,r", po::value<std::string>(), "record operations on tets from input file")
+      ("sampling_rate,R", po::value<double>(), "volume sampling rate (lower values make a coarser mesh)")
+      ("segmentation,S", "the input file is a segmentation file")
+      ("simple", "use simple interface approximation")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
       ("strict,t", "warnings become errors")
       ("strip_exterior,e", "strip exterior tetrahedra")
@@ -204,41 +201,41 @@ int main(int argc, char* argv[])
       have_sizing_field = true;
       sizing_field = variables_map["sizing_field"].as<std::string>();
 
-      if (variables_map.count("grading")) {
+      if (variables_map.count("lipschitz")) {
         if (!strict)
-          std::cerr << "Warning: sizing field provided, grading will be ignored." << std::endl;
+          std::cerr << "Warning: sizing field provided, lipschitz will be ignored." << std::endl;
         else {
-          std::cerr << "Error: both sizing field and grading parameter provided." << std::endl;
+          std::cerr << "Error: both sizing field and lipschitz parameter provided." << std::endl;
           return 2;
         }
       }
-      if (variables_map.count("multiplier")) {
+      if (variables_map.count("feature_scaling")) {
         if (!strict)
-          std::cerr << "Warning: sizing field provided, multiplier will be ignored." << std::endl;
+          std::cerr << "Warning: sizing field provided, feature scaling will be ignored." << std::endl;
         else {
-          std::cerr << "Error: both sizing field and multiplier parameter provided." << std::endl;
+          std::cerr << "Error: both sizing field and feature scaling parameter provided." << std::endl;
           return 3;
         }
       }
-      if (variables_map.count("scale")) {
+      if (variables_map.count("sampling_rate")) {
         if (!strict)
-          std::cerr << "Warning: sizing field provided, scale will be ignored." << std::endl;
+          std::cerr << "Warning: sizing field provided, sampling rate will be ignored." << std::endl;
         else {
-          std::cerr << "Error: both sizing field and scale parameter provided." << std::endl;
+          std::cerr << "Error: both sizing field and sampling rate parameter provided." << std::endl;
           return 4;
         }
       }
     }
 
     // parse sizing field parameters
-    if (variables_map.count("grading")) {
-      lipschitz = variables_map["grading"].as<double>();
+    if (variables_map.count("lipschitz")) {
+      lipschitz = variables_map["lipschitz"].as<double>();
     }
-    if (variables_map.count("scale")) {
-      scaling = variables_map["scale"].as<double>();
+    if (variables_map.count("sampling_rate")) {
+      sampling_rate = variables_map["sampling_rate"].as<double>();
     }
-    if (variables_map.count("multiplier")) {
-      multiplier = variables_map["multiplier"].as<double>();
+    if (variables_map.count("feature_scaling")) {
+      feature_scaling = variables_map["feature_scaling"].as<double>();
     }
     if (variables_map.count("padding")) {
       padding = variables_map["padding"].as<int>();
@@ -274,15 +271,15 @@ int main(int argc, char* argv[])
 
 
     // parse the background mesh mode
-    if (variables_map.count("mesh_mode")) {
-      std::string mesh_mode_string = variables_map["mesh_mode"].as<std::string>();
-      if (mesh_mode_string.compare("regular") == 0) {
-        mesh_mode = cleaver::Regular;
-      } else if (mesh_mode_string.compare("structured") == 0) {
-        mesh_mode = cleaver::Structured;
+    if (variables_map.count("element_sizing_method")) {
+      std::string element_sizing_method_string = variables_map["element_sizing_method"].as<std::string>();
+      if (element_sizing_method_string.compare("constant") == 0) {
+        element_sizing_method = cleaver::Constant;
+      } else if (element_sizing_method_string.compare("adaptive") == 0) {
+        element_sizing_method = cleaver::Adaptive;
       } else {
-        std::cerr << "Error: invalid background mesh mode: " << mesh_mode_string << std::endl;
-        std::cerr << "Valid Modes: [regular] [structured] " << std::endl;
+        std::cerr << "Error: invalid background element sizing method: " << element_sizing_method_string << std::endl;
+        std::cerr << "Valid Methods: [constant] [adaptive] " << std::endl;
         return 6;
       }
     }
@@ -447,10 +444,10 @@ int main(int argc, char* argv[])
       sizingField.push_back(cleaver::SizingFieldCreator::createSizingFieldFromVolume(
         volume,
         (float)(1.0 / lipschitz),
-        (float)scaling,
-        (float)multiplier,
+        (float)sampling_rate,
+        (float)feature_scaling,
         (int)padding,
-        (mesh_mode == cleaver::Regular ? false : true),
+        (element_sizing_method != cleaver::Constant),
         verbose));
       sizing_field_timer.stop();
       sizing_field_time = sizing_field_timer.time();
@@ -461,7 +458,6 @@ int main(int argc, char* argv[])
     //------------------------------------------------------------
     volume->setSizingField(sizingField[0]);
 
-
     //-----------------------------------------------------------
     // Construct Background Mesh
     //-----------------------------------------------------------
@@ -469,16 +465,16 @@ int main(int argc, char* argv[])
     background_timer.start();
     if (verbose)
       std::cout << "Creating Octree Mesh..." << std::endl;
-    switch (mesh_mode) {
+    switch (element_sizing_method) {
 
-    case cleaver::Regular:
+    case cleaver::Constant:
       mesher.setAlphas(alpha_long, alpha_short);
-      mesher.setRegular(true);
+      mesher.setConstant(true);
       bgMesh = mesher.createBackgroundMesh(verbose);
       break;
     default:
-    case cleaver::Structured:
-      mesher.setRegular(false);
+    case cleaver::Adaptive:
+      mesher.setConstant(false);
       bgMesh = mesher.createBackgroundMesh(verbose);
       break;
     }

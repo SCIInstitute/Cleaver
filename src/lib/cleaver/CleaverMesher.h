@@ -75,13 +75,13 @@ public:
     // Data Getters / Setters
     //================================
     void setAlphas(double l, double s);
-    void setRegular(bool reg);
+    void setConstant(bool reg);
 
 private:
     CleaverMesherImp *m_pimpl;
     double m_alpha_long;
     double m_alpha_short;
-    bool m_regular;
+    bool m_constant;
 };
 }
 
