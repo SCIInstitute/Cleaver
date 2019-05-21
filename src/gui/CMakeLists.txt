@@ -2,8 +2,15 @@ PROJECT(cleaver-gui)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+###########################################
+#CLEAVER VERSION NUMBERS
+###########################################
+
 ADD_DEFINITIONS(-DCLEAVER_VERSION_MAJOR="2")
 ADD_DEFINITIONS(-DCLEAVER_VERSION_MINOR="4")
+
+SET(CLEAVER2_VERSION_MAJOR 2)
+SET(CLEAVER2_VERSION_MINOR 4)
 
 FIND_PACKAGE(OpenGL QUIET)
 
@@ -123,3 +130,75 @@ INSTALL(TARGETS cleaver-gui
   BUNDLE DESTINATION ${CLEAVER2_BUNDLE_DIR} COMPONENT Runtime
   RUNTIME DESTINATION ${CLEAVER2_RUNTIME_DIR} COMPONENT Runtime
   )
+
+###########################################
+#APPLICATION Information
+###########################################
+
+SET(APPLICATION_NAME "Cleaver2")
+SET(APPLICATION_VENDOR "SCI")
+
+###########################################
+#PACKAGING Information
+###########################################
+SET(PACKAGING_README "${CMAKE_SOURCE_DIR}/gui/CMake/ReadMe.txt")
+SET(PACKAGING_LICENSE "${CMAKE_SOURCE_DIR}/gui/CMake/License.txt")
+SET(PACKAGING_WELCOME "${CMAKE_SOURCE_DIR}/gui/CMake/Welcome.txt")
+SET(PACKAGING_ICON "${CMAKE_SOURCE_DIR}/gui/Resources/Icons\\\\cleaverIcon.png")
+
+###########################################
+#Packaging:
+#This part sets up the packager using CPack
+###########################################
+#TODO: Add Windows packaging
+IF(APPLE)
+  MESSAGE(STATUS "Configuring Cleaver2 packaging")
+
+  INCLUDE(InstallRequiredSystemLibraries)
+
+  SET(CPACK_PACKAGE_NAME "${APPLICATION_NAME}")
+
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${APPLICATION_NAME}")
+  SET(CPACK_PACKAGE_VENDOR "${APPLICATION_VENDOR}")
+
+  SET(CPACK_PACKAGE_DESCRIPTION_FILE ${PACKAGING_README} )
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${APPLICATION_NAME} ${CLEAVER2_VERSION_MAJOR}.${CLEAVER2_VERSION_MINOR} is a multi-material tetrahedral meshing program.")
+
+  SET(CPACK_RESOURCE_FILE_LICENSE ${PACKAGING_LICENSE})
+  SET(CPACK_RESOURCE_FILE_WELCOME ${PACKAGING_WELCOME})
+
+  SET(CPACK_PACKAGE_VERSION_MAJOR "${CLEAVER2_VERSION_MAJOR}")
+  SET(CPACK_PACKAGE_VERSION_MINOR "${CLEAVER2_VERSION_MINOR}")
+  SET(CPACK_PACKAGE_VERSION "${CLEAVER2_VERSION_MAJOR}.${CLEAVER2_VERSION_MINOR}")
+
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${APPLICATION_NAME}_${CLEAVER2_VERSION_MAJOR}.${CLEAVER2_VERSION_MINOR}")
+
+  ############
+  #Apple only
+  ############
+
+  SET(CPACK_GENERATOR "productbuild;TGZ")
+  SET(CPACK_TOPLEVEL_TAG "")
+  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    SET(CPACK_INSTALL_PREFIX "/")
+    SET(CMAKE_INSTALL_PREFIX "/")
+  ENDIF()
+  # productbuild packaging repair hack
+  # call repair_package.sh after running package target in build
+  # Tip: can inspect packages using the pkgutil --expand command
+  IF(CPACK_GENERATOR MATCHES "productbuild")
+    # make sure there are paths to packaging tools
+    FIND_PROGRAM(PKGBUILD_EXE pkgbuild)
+    FIND_PROGRAM(PRODUCTBUILD_EXE productbuild)
+    FIND_PROGRAM(PKGUTIL_EXE pkgutil)
+    SET(PKG_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-Darwin")
+    SET(PKG_BUILD_DIR "${CMAKE_BINARY_DIR}/_CPack_Packages/productbuild/${PKG_FILE_NAME}")
+    SET(PKG_ROOT_DIR "${PKG_BUILD_DIR}/Applications")
+
+    CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/gui/CMake/Modules/CPack.Distribution.dist.in
+                   ${CMAKE_BINARY_DIR}/CPack.Distribution.dist)
+    CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/gui/CMake/Scripts/repair_package.sh.in
+                   ${CMAKE_BINARY_DIR}/repair_package.sh)
+
+  INCLUDE(CPack)
+ENDIF()

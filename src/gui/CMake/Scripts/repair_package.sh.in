@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+cleaverbuild_dir=@CMAKE_BINARY_DIR@
+productbuild_dir=@PKG_BUILD_DIR@
+productroot_dir=@PKG_ROOT_DIR@
+
+if [[ ! -e $productroot_dir ]]; then
+  echo "$productroot_dir does not exist"
+  exit 1
+fi
+
+@PKGBUILD_EXE@ --analyze --root $productroot_dir $cleaverbuild_dir/@CPACK_PACKAGE_NAME@.plist
+@PKGBUILD_EXE@ --identifier edu.utah.sci.@CPACK_PACKAGE_NAME@ --root $productroot_dir \
+    --component-plist $cleaverbuild_dir/@CPACK_PACKAGE_NAME@.plist \
+    --install-location /Applications $cleaverbuild_dir/@CPACK_PACKAGE_NAME@.pkg
+@PRODUCTBUILD_EXE@ --distribution $cleaverbuild_dir/CPack.Distribution.dist \
+    --package-path $productroot_dir $productbuild_dir/tmp.pkg
+# Tip: pkgutil --expand can be used to debug package building
+@PKGUTIL_EXE@ --expand $productbuild_dir/tmp.pkg $productbuild_dir/tmp
+@PKGUTIL_EXE@ --flatten $productbuild_dir/tmp $cleaverbuild_dir/@PKG_FILE_NAME@.pkg
+rm -f $cleaverbuild_dir/@CPACK_PACKAGE_NAME@.pkg $cleaverbuild_dir/@CPACK_PACKAGE_NAME@.plist
+rm -Rf $productbuild_dir/tmp

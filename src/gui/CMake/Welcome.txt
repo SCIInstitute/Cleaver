@@ -1,0 +1,5 @@
+Welcome to the Cleaver2 installation.
+
+This program will guide you through the process of installing Cleaver2 on your computer.
+
+Cleaver2 is a multi-material tetrahedral meshing API and application.
