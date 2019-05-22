@@ -5,9 +5,9 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
-#include <Cleaver/CleaverMesher.h>
-#include <Cleaver/TetMesh.h>
-#include <Cleaver/Volume.h>
+#include <cleaver/CleaverMesher.h>
+#include <cleaver/TetMesh.h>
+#include <cleaver/Volume.h>
 #include "Camera.h"
 #include <QMatrix4x4>
 

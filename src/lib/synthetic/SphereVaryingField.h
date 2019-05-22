@@ -1,7 +1,7 @@
 #ifndef SPHEREVARYINGFIELD_H
 #define SPHEREVARYINGFIELD_H
 
-#include <Cleaver/ScalarField.h>
+#include <cleaver/ScalarField.h>
 #include "SphereField.h"
 
 class SphereVaryingField : public cleaver::FloatField

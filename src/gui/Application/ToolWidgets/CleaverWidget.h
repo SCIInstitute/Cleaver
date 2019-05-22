@@ -2,7 +2,7 @@
 #define CLEAVERWIDGET_H
 
 #include <QDockWidget>
-#include <Cleaver/CleaverMesher.h>
+#include <cleaver/CleaverMesher.h>
 #include <QThread>
 
 Q_DECLARE_METATYPE(std::string)
@@ -56,7 +56,7 @@ public slots:
     void handleMessage(std::string);
     void handleProgress(int);
     void handleErrorMessage(std::string);
-    
+
 private:
     Ui::CleaverWidget *ui;
     cleaver::CleaverMesher& mesher_;

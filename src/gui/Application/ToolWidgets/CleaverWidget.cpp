@@ -1,9 +1,9 @@
 #include "CleaverWidget.h"
 #include "ui_CleaverWidget.h"
-#include <Cleaver/TetMesh.h>
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/Timer.h>
-#include <Cleaver/SizingFieldCreator.h>
+#include <cleaver/TetMesh.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/Timer.h>
+#include <cleaver/SizingFieldCreator.h>
 #include <iostream>
 #include <QApplication>
 #include <stdexcept>

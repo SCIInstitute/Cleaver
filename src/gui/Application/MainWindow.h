@@ -14,8 +14,8 @@
 #include "ToolWidgets/CleaverWidget.h"
 #include "ToolWidgets/SizingFieldWidget.h"
 #include "DataWidgets/DataManagerWidget.h"
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/CleaverMesher.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/CleaverMesher.h>
 #include "Data/DataManager.h"
 #include <QProgressBar>
 
@@ -88,7 +88,7 @@ private:
   // Compute Menu Action
   QAction *computeAnglesAct;
 
-  // Tool Menu Actions    
+  // Tool Menu Actions
   QAction *cleaverAction;
   QAction *meshViewOptionsAction;
   QAction *sizingFieldAction;
@@ -105,7 +105,7 @@ private:
   QMenu *m_computeMenu;
   QMenu *m_viewMenu;
   QMenu *m_helpMenu;
-  
+
   //status bar items
   QProgressBar * progressBar_;
 

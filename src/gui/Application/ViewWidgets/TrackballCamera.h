@@ -4,8 +4,8 @@
 #include "Camera.h"
 #include <QQuaternion>
 #include <QVector2D>
-#include <Cleaver/vec3.h>
-#include <Cleaver/BoundingBox.h>
+#include <cleaver/vec3.h>
+#include <cleaver/BoundingBox.h>
 
 class TrackballCamera : public Camera
 {

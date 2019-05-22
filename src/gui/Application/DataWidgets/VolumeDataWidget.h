@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QStyle>
-#include <Cleaver/Volume.h>
+#include <cleaver/Volume.h>
 #include "MiniFieldWidget.h"
 #include <map>
 

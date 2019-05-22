@@ -1,7 +1,7 @@
 #include "MainWindow.h"
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/ConstantField.h>
-#include <Cleaver/InverseField.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/ConstantField.h>
+#include <cleaver/InverseField.h>
 #include <cstdio>
 #include <fstream>
 #include <QProgressDialog>
@@ -12,7 +12,7 @@
 #include <QStatusBar>
 #include <QLayoutItem>
 #include <QLabel>
-#include <Cleaver/ScalarField.h>
+#include <cleaver/ScalarField.h>
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent) {}

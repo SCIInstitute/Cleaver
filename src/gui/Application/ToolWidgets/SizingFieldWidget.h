@@ -2,7 +2,7 @@
 #define DATALOADERWIDGET_H
 
 #include <QDockWidget>
-#include <Cleaver/CleaverMesher.h>
+#include <cleaver/CleaverMesher.h>
 #include <QThread>
 
 namespace Ui {

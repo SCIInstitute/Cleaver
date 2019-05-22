@@ -1,5 +1,5 @@
 #include "TrackballCamera.h"
-#include <Cleaver/vec3.h>
+#include <cleaver/vec3.h>
 #include <cmath>
 #include <QMatrix4x4>
 

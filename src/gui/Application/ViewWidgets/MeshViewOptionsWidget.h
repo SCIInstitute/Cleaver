@@ -5,7 +5,7 @@
 #include <QSignalMapper>
 #include <QStandardItemModel>
 #include "MeshWindow.h"
-#include <Cleaver/CleaverMesher.h>
+#include <cleaver/CleaverMesher.h>
 
 class CheckableItemModel : public QStandardItemModel
 {

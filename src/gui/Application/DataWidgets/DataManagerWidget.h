@@ -10,9 +10,9 @@
 #include "VolumeDataWidget.h"
 #include <map>
 #include <string>
-#include <Cleaver/ScalarField.h>
-#include <Cleaver/Volume.h>
-#include <Cleaver/TetMesh.h>
+#include <cleaver/ScalarField.h>
+#include <cleaver/Volume.h>
+#include <cleaver/TetMesh.h>
 #include <Data/DataManager.h>
 
 namespace Ui {

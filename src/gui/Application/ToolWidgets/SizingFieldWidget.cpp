@@ -6,11 +6,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/ConstantField.h>
-#include <Cleaver/InverseField.h>
-#include <Cleaver/ScaledField.h>
-#include <Cleaver/SizingFieldCreator.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/ConstantField.h>
+#include <cleaver/InverseField.h>
+#include <cleaver/ScaledField.h>
+#include <cleaver/SizingFieldCreator.h>
 #include <NRRDTools.h>
 #include <stdexcept>
 

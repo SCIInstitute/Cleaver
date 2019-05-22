@@ -1,8 +1,8 @@
 #ifndef DATAMANAGER_H
 #define DATAMANAGER_H
 
-#include <Cleaver/TetMesh.h>
-#include <Cleaver/Volume.h>
+#include <cleaver/TetMesh.h>
+#include <cleaver/Volume.h>
 #include <QObject>
 #include <stdlib.h>
 
