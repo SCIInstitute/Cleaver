@@ -199,6 +199,7 @@ IF(APPLE)
                    ${CMAKE_BINARY_DIR}/CPack.Distribution.dist)
     CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/gui/CMake/Scripts/repair_package.sh.in
                    ${CMAKE_BINARY_DIR}/repair_package.sh)
+  ENDIF()
 
   INCLUDE(CPack)
 ENDIF()
