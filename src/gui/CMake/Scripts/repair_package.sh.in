@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-cleaverbuild_dir=@CMAKE_BINARY_DIR@/gui
-productbuild_dir=@PKG_BUILD_DIR@/gui
-productroot_dir=@PKG_ROOT_DIR@/gui
+cleaverbuild_dir=@CMAKE_BINARY_DIR@/bin
+productbuild_dir=@PKG_BUILD_DIR@/bin
+productroot_dir=@PKG_ROOT_DIR@/bin
 
 if [[ ! -e $productroot_dir ]]; then
   echo "$productroot_dir does not exist"
