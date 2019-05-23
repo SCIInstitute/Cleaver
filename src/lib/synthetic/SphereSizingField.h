@@ -1,7 +1,7 @@
 #ifndef SPHERESIZINGFIELD_H
 #define SPHERESIZINGFIELD_H
 
-#include <Cleaver/ScalarField.h>
+#include <cleaver/ScalarField.h>
 #include "SphereField.h"
 
 class SphereSizingField : public cleaver::FloatField
@@ -19,4 +19,3 @@ private:
 };
 
 #endif // SPHERESIZINGFIELD_H
-

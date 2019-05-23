@@ -1,8 +1,8 @@
 #include "FieldDataWidget.h"
 #include "ui_FieldDataWidget.h"
 #include <sstream>
-#include <Cleaver/ScalarField.h>
-#include <Cleaver/BoundingBox.h>
+#include <cleaver/ScalarField.h>
+#include <cleaver/BoundingBox.h>
 #include <NRRDTools.h>
 #include <QMouseEvent>
 #include <QMenu>

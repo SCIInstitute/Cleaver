@@ -1,9 +1,9 @@
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/InverseField.h>
-#include <Cleaver/ConstantField.h>
-#include <Cleaver/vec3.h>
-#include <Cleaver/AbstractScalarField.h>
-#include <Cleaver/BoundingBox.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/InverseField.h>
+#include <cleaver/ConstantField.h>
+#include <cleaver/vec3.h>
+#include <cleaver/AbstractScalarField.h>
+#include <cleaver/BoundingBox.h>
 
 #include <Synthetic/PlaneField.h>
 #include <Synthetic/PlaneSizingField.h>

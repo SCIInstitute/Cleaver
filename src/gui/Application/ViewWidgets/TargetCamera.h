@@ -2,8 +2,8 @@
 #define TARGETCAMERA_H
 
 #include "Camera.h"
-#include <Cleaver/vec3.h>
-#include <Cleaver/BoundingBox.h>
+#include <cleaver/vec3.h>
+#include <cleaver/BoundingBox.h>
 
 class TargetCamera : public Camera
 {

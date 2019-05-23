@@ -1,7 +1,7 @@
 #ifndef PLANESIZINGFIELD_H
 #define PLANESIZINGFIELD_H
 
-#include <Cleaver/ScalarField.h>
+#include <cleaver/ScalarField.h>
 #include "PlaneField.h"
 
 class PlaneSizingField : public cleaver::FloatField

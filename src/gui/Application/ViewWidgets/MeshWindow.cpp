@@ -1,8 +1,8 @@
 #include "MeshWindow.h"
 #include "TrackballCamera.h"
-#include <Cleaver/BoundingBox.h>
-#include <Cleaver/vec3.h>
-#include <Cleaver/Vertex.h>
+#include <cleaver/BoundingBox.h>
+#include <cleaver/vec3.h>
+#include <cleaver/Vertex.h>
 #include "../../lib/cleaver/Plane.h"
 #include <QMouseEvent>
 #include <QFileDialog>

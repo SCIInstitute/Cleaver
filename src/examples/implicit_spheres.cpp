@@ -5,9 +5,9 @@
 #include <cstring>
 #include <cstdlib>
 
-#include <Cleaver/Cleaver.h>
-#include <Cleaver/InverseField.h>
-#include <Cleaver/Volume.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/InverseField.h>
+#include <cleaver/Volume.h>
 
 class MockupField : public cleaver::AbstractScalarField
 {

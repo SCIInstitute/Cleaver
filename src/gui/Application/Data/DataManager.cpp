@@ -1,7 +1,7 @@
 #include "DataManager.h"
 #include <QMessageBox>
-#include <Cleaver/InverseField.h>
-#include <Cleaver/AbstractScalarField.h>
+#include <cleaver/InverseField.h>
+#include <cleaver/AbstractScalarField.h>
 
 DataManager::DataManager() : mesh_(nullptr), sizingField_(nullptr), volume_(nullptr) {}
 

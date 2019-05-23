@@ -1,8 +1,8 @@
 #ifndef TORUSFIELD_H
 #define TORUSFIELD_H
 
-#include <Cleaver/ScalarField.h>
-#include <Cleaver/BoundingBox.h>
+#include <cleaver/ScalarField.h>
+#include <cleaver/BoundingBox.h>
 #include <vector>
 
 class TorusField : public cleaver::FloatField

@@ -2,7 +2,7 @@
 #define MINIFIELDWIDGET_H
 
 #include <QWidget>
-#include <Cleaver/ScalarField.h>
+#include <cleaver/ScalarField.h>
 
 namespace Ui {
 class MiniFieldWidget;
@@ -11,7 +11,7 @@ class MiniFieldWidget;
 class MiniFieldWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     explicit MiniFieldWidget(QWidget *parent = 0);
     MiniFieldWidget(cleaver::AbstractScalarField *field, QWidget *parent = 0);
@@ -39,7 +39,7 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
 
-    
+
 private:
     Ui::MiniFieldWidget *ui;
     cleaver::AbstractScalarField *m_field;

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QStyle>
-#include <Cleaver/ScalarField.h>
+#include <cleaver/ScalarField.h>
 
 namespace Ui {
 class FieldDataWidget;
@@ -12,12 +12,12 @@ class FieldDataWidget;
 class FieldDataWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     explicit FieldDataWidget(QWidget *parent = 0);
     FieldDataWidget(cleaver::AbstractScalarField *field, QWidget *parent = 0);
     ~FieldDataWidget();
-    
+
     void setTitle(const std::string &title);
   signals:
     void exportField(void*);

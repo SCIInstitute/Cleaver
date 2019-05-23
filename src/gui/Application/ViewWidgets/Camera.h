@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <Cleaver/vec3.h>
+#include <cleaver/vec3.h>
 
 class Camera
 {

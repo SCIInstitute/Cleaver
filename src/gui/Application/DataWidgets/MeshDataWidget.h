@@ -3,7 +3,7 @@
 
 #include <QFrame>
 #include <string>
-#include <Cleaver/TetMesh.h>
+#include <cleaver/TetMesh.h>
 
 namespace Ui {
 class MeshDataWidget;
@@ -12,7 +12,7 @@ class MeshDataWidget;
 class MeshDataWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     explicit MeshDataWidget(QWidget *parent = 0);
     MeshDataWidget(cleaver::TetMesh *mesh, QWidget *parent = 0);

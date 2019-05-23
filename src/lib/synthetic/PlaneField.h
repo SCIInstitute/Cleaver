@@ -1,8 +1,8 @@
 #ifndef PLANEFIELD_H
 #define PLANEFIELD_H
 
-#include <Cleaver/ScalarField.h>
-#include <Cleaver/BoundingBox.h>
+#include <cleaver/ScalarField.h>
+#include <cleaver/BoundingBox.h>
 
 
 class PlaneField : public cleaver::FloatField
