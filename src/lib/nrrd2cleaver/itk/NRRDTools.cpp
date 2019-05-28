@@ -152,6 +152,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     size_t pixel = 0;
     float min = static_cast<float>(imageIterator.Get());
     float max = static_cast<float>(imageIterator.Get());
+    auto spacing = img->GetSpacing();
     std::string error = "none";
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel.
@@ -181,7 +182,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
 
     fields[num]->setError(error);
     ((cleaver::FloatField*)fields[num])->setScale(
-      cleaver::vec3(1., 1., 1.));
+      cleaver::vec3(spacing[0], spacing[1], spacing[2]));
   }
   return fields;
 }
