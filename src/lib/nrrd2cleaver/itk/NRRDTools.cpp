@@ -227,6 +227,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     fields[num]->setWarning(warning);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
+    auto spacing = img->GetSpacing();
     float min = static_cast<float>(imageIterator.Get());
     float max = static_cast<float>(imageIterator.Get());
     std::string error = "none";
@@ -257,7 +258,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     }
 
     fields[num]->setError(error);
-    ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
+    ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(spacing[0], spacing[1], spacing[2]));
     num++;
   }
   return fields;
