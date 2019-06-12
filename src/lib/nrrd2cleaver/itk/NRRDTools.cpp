@@ -44,7 +44,7 @@
 #include <sstream>
 #include <cmath>
 
-//typedefs needed.
+//typedefs needed
 typedef float PixelType;
 typedef itk::Image< PixelType, 3 > ImageType;
 typedef itk::ImageFileReader< ImageType > ReaderType;
@@ -67,7 +67,7 @@ bool checkImageSize(ImageType::Pointer inputImg, double sigma)
   auto spacing = inputImg->GetSpacing();
   std::vector<double> imageSize{ dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2] };
   double imageSizeMin = *(std::min_element(std::begin(imageSize), std::end(imageSize)));
-  
+
   return (sigma / imageSizeMin) >= 0.1;
 }
 
@@ -152,11 +152,12 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
     size_t pixel = 0;
     float min = static_cast<float>(imageIterator.Get());
     float max = static_cast<float>(imageIterator.Get());
+    auto spacing = img->GetSpacing();
     std::string error = "none";
     while (!imageIterator.IsAtEnd()) {
       // Get the value of the current pixel.
       float val = static_cast<float>(imageIterator.Get());
-      ((cleaver::FloatField*)fields[num])->data()[pixel++] = val;
+      ((cleaver::FloatField*)fields[num])->data()[pixel++] = -val;
       ++imageIterator;
 
       //Error checking
@@ -181,7 +182,7 @@ NRRDTools::segmentationToIndicatorFunctions(std::string filename, double sigma) 
 
     fields[num]->setError(error);
     ((cleaver::FloatField*)fields[num])->setScale(
-      cleaver::vec3(1., 1., 1.));
+      cleaver::vec3(spacing[0], spacing[1], spacing[2]));
   }
   return fields;
 }
@@ -226,6 +227,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     fields[num]->setWarning(warning);
     itk::ImageRegionConstIterator<ImageType> imageIterator(img, region);
     size_t pixel = 0;
+    auto spacing = img->GetSpacing();
     float min = static_cast<float>(imageIterator.Get());
     float max = static_cast<float>(imageIterator.Get());
     std::string error = "none";
@@ -256,7 +258,7 @@ NRRDTools::loadNRRDFiles(std::vector<std::string> files,
     }
 
     fields[num]->setError(error);
-    ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(1., 1., 1.));
+    ((cleaver::FloatField*)fields[num])->setScale(cleaver::vec3(spacing[0], spacing[1], spacing[2]));
     num++;
   }
   return fields;
