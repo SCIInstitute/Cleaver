@@ -924,7 +924,7 @@ namespace cleaver
                         << "v4(" << (int)tet3->verts[3]->order() << ")}"
                         << " parent = " << tet3->parent
                         << std::endl;
-
+					  //where Cleaver exits when padding is included
                       exit(0);
                     }
                   }
