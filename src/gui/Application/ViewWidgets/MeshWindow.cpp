@@ -350,7 +350,7 @@ void MeshWindow::initializeShaders()
   this->axisProg_.setAttributeBuffer(1, GL_FLOAT, sizeof(GL_FLOAT) * 3, 3, sizeof(GL_FLOAT) * 6);
 
   this->axisVAO_.release();
-  this->axisVAO_.release();
+  axis_vbo.release();
   this->axisProg_.release();
   //setup axis transform matrix and send down.
   auto aspect = static_cast<float>(
