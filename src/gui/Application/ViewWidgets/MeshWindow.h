@@ -143,7 +143,7 @@ private:
   void drawFaceStar(int f);
 
   QOpenGLShaderProgram faceProg_, edgeProg_, axisProg_;
-  QOpenGLBuffer * faceVBO_, *edgeVBO_, *cutVBO_, *violVBO_, bboxVBO_;
+  QOpenGLBuffer * faceVBO_, *edgeVBO_, *cutVBO_, *violVBO_, bboxVBO_, axisVBO_;
   QOpenGLVertexArrayObject * faceVAO_, *edgeVAO_, *cutVAO_, *violVAO_, axisVAO_, bboxVAO_;
   std::vector<float> faceData_, edgeData_, cutData_, violData_, bboxData_;
   bool init;

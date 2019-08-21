@@ -50,7 +50,8 @@ const char* starModeString[4] = { "No-Star Mode",
 MeshWindow::MeshWindow(const QGLFormat& format, QObject *parent) :
   QGLWidget(format, qobject_cast<QWidget *>(parent)),
   faceProg_(this), edgeProg_(this), axisProg_(this),
-  bboxVBO_(QOpenGLBuffer::VertexBuffer), bboxVAO_(this)
+  bboxVBO_(QOpenGLBuffer::VertexBuffer), bboxVAO_(this),
+  axisVBO_(QOpenGLBuffer::VertexBuffer), axisVAO_(this)
 {
   this->setAttribute(Qt::WA_DeleteOnClose);
   this->setMouseTracking(true);
@@ -334,13 +335,13 @@ void MeshWindow::initializeShaders()
       0.0f, -0.2f, 1.4f, 0.f, 0.f, 1.f,
       0.0f, -0.2f, 1.2f, 0.f, 0.f, 1.f
   } };
-  QOpenGLBuffer axis_vbo(QOpenGLBuffer::VertexBuffer);
-  axis_vbo.create();
-  axis_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-  if (!axis_vbo.bind()) {
+
+  this->axisVBO_.create();
+  this->axisVBO_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+  if (!this->axisVBO_.bind()) {
     qWarning() << "Could not bind shader program to context";
   }
-  axis_vbo.allocate(&axis_data, sizeof(GL_FLOAT) * 132);
+  this->axisVBO_.allocate(&axis_data, sizeof(GL_FLOAT) * 132);
 
   this->axisVAO_.create();
   this->axisVAO_.bind();
@@ -350,7 +351,7 @@ void MeshWindow::initializeShaders()
   this->axisProg_.setAttributeBuffer(1, GL_FLOAT, sizeof(GL_FLOAT) * 3, 3, sizeof(GL_FLOAT) * 6);
 
   this->axisVAO_.release();
-  axis_vbo.release();
+  this->axisVBO_.release();
   this->axisProg_.release();
   //setup axis transform matrix and send down.
   auto aspect = static_cast<float>(
@@ -544,7 +545,7 @@ void MeshWindow::paintGL()
     this->axisProg_.setUniformValueArray("uRotation",
         &this->rotateMatrix_, 1);
     this->axisVAO_.bind();
-    glDrawArrays(GL_LINES, 0, 132);
+    glDrawArrays(GL_LINES, 0, 22);
     this->axisVAO_.release();
     this->axisProg_.release();
   }
