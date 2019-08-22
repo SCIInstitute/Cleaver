@@ -53,7 +53,8 @@ void SizingFieldWidget::computeSizingField() {
   float samplingRate = ui->samplingRate->value();
   float featureScaling = ui->factorSpinBox->value();
   float lipschitz = 1.0 / ui->lipschitzSpinBox->value();
-  int padding = ui->paddingSpinBox->value();
+  //int padding = ui->paddingSpinBox->value();
+  int padding = 0;
   bool adaptiveSurface = QString::compare(
     ui->surfaceComboBox->currentText(),
     QString("constant"), Qt::CaseInsensitive) == 0 ? false : true;

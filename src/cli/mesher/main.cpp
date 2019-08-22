@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
       ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [surface mesh only])")
       ("output_name,n", po::value<std::string>(), "output mesh name (default 'output')")
       ("output_path,o", po::value<std::string>(), "output path prefix")
-      ("padding,p", po::value<int>(), "volume padding")
+      //("padding,p", po::value<int>(), "volume padding")
       ("record,r", po::value<std::string>(), "record operations on tets from input file")
       ("sampling_rate,R", po::value<double>(), "volume sampling rate (lower values make a coarser mesh)")
       ("segmentation,S", "the input file is a segmentation file")
@@ -237,9 +237,9 @@ int main(int argc, char* argv[])
     if (variables_map.count("feature_scaling")) {
       feature_scaling = variables_map["feature_scaling"].as<double>();
     }
-    if (variables_map.count("padding")) {
-      padding = variables_map["padding"].as<int>();
-    }
+    //if (variables_map.count("padding")) {
+      //padding = variables_map["padding"].as<int>();
+    //}
     fix_tets = variables_map.count("fix_tet_windup") == 0 ? false : true;
 
     if (variables_map.count("alpha")) {
