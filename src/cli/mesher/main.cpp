@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 {
   bool verbose = false;
   bool fix_tets = false;
-  bool segmentation = false;
+  bool segmentation = true;
   bool simple = false;
   std::vector<std::string> material_fields;
   std::string sizing_field;
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
       //("padding,p", po::value<int>(), "volume padding")
       ("record,r", po::value<std::string>(), "record operations on tets from input file")
       ("sampling_rate,R", po::value<double>(), "volume sampling rate (lower values make a coarser mesh)")
-      ("segmentation,S", "the input file is a segmentation file")
+      ("indicator_function,I", "the input file is an indicator function")
       ("simple", "use simple interface approximation")
       ("sizing_field,z", po::value<std::string>(), "sizing field path")
       ("strict,t", "warnings become errors")
@@ -177,9 +177,9 @@ int main(int argc, char* argv[])
       simple = true;
     }
 
-    // enable segmentation
-    if (variables_map.count("segmentation")) {
-      segmentation = true;
+    // enable indicator_function
+    if (variables_map.count("indicator_function")) {
+      segmentation = false;
     }
     if (variables_map.count("strict")) {
       strict = true;
