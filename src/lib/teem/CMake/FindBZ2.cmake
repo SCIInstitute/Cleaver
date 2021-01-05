@@ -27,24 +27,24 @@
 # BZ2_LIBRARIES   - List of fully qualified libraries to link against when using bzlib.
 # BZ2_FOUND       - Do not attempt to use zlib if "no" or undefined.
 
-FIND_PATH(BZ2_INCLUDE_DIR bzlib.h
+find_path(BZ2_INCLUDE_DIR bzlib.h
   /usr/local/include
   /usr/include
 )
 
-FIND_LIBRARY(BZ2_LIBRARY bz2
+find_library(BZ2_LIBRARY bz2
   /usr/lib
   /usr/local/lib
 )
 
-IF(BZ2_INCLUDE_DIR)
-  IF(BZ2_LIBRARY)
-    SET( BZ2_LIBRARIES ${BZ2_LIBRARY} )
-    SET( BZ2_FOUND "YES" )
-  ENDIF(BZ2_LIBRARY)
-ENDIF(BZ2_INCLUDE_DIR)
+if(BZ2_INCLUDE_DIR)
+  if(BZ2_LIBRARY)
+    set( BZ2_LIBRARIES ${BZ2_LIBRARY} )
+    set( BZ2_FOUND "YES" )
+  endif(BZ2_LIBRARY)
+endif(BZ2_INCLUDE_DIR)
 
-MARK_AS_ADVANCED(
+mark_as_advanced(
   BZ2_LIBRARY
   BZ2_INCLUDE_DIR
   )

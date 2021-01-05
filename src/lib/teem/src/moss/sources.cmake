@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(MOSS_SOURCES
+set(MOSS_SOURCES
   defaultsMoss.c
   hestMoss.c
   methodsMoss.c

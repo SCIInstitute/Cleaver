@@ -30,18 +30,18 @@
 #-------------------------------------------------------------------
 #-------------------------------------------------------------------
 
-PROJECT(synthetic)
+project(synthetic)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
 
 # Add library incl1udes
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ./)
+include_directories(${CMAKE_BINARY_DIR}/include)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ./)
 
 # Add Source Files
-FILE(GLOB srcs *.cpp )
-FILE(GLOB hdrs *.h   )
-SET(Synthetic_API_HEADER_FILES
+file(GLOB srcs *.cpp )
+file(GLOB hdrs *.h   )
+set(Synthetic_API_HEADER_FILES
     PlaneField.h
     PlaneSizingField.h
     SphereField.h
@@ -51,19 +51,19 @@ SET(Synthetic_API_HEADER_FILES
     )
 
 # copy header files over
-SET(Synthetic_INSTALLED_HEADER_FILES)
-FOREACH(header_file ${Synthetic_API_HEADER_FILES})
+set(Synthetic_INSTALLED_HEADER_FILES)
+foreach(header_file ${Synthetic_API_HEADER_FILES})
   # When debugging, uncomment this line
-  #MESSAGE(STATUS "Copy header file: ${header_file}")
-  GET_FILENAME_COMPONENT(file_no_path "${header_file}" NAME)
-  CONFIGURE_FILE("${header_file}"
+  #message(STATUS "Copy header file: ${header_file}")
+  get_filename_component(file_no_path "${header_file}" NAME)
+  configure_file("${header_file}"
     "${CMAKE_BINARY_DIR}/include/Synthetic/${file_no_path}" COPYONLY IMMEDIATE)
-  SET(Synthetic_INSTALLED_HEADER_FILES
+  set(Synthetic_INSTALLED_HEADER_FILES
     ${Synthetic_INSTALLED_HEADER_FILES}
     "${CMAKE_BINARY_DIR}/include/Synthetic/${file_no_path}")
-ENDFOREACH(header_file)
+endforeach(header_file)
 
 # output library
-ADD_LIBRARY(synthetic STATIC ${srcs} ${hdrs})
+add_library(synthetic STATIC ${srcs} ${hdrs})
 
 

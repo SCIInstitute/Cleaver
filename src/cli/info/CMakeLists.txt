@@ -1,19 +1,19 @@
-PROJECT(mesh-info CXX)
+project(mesh-info CXX)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
 
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 # Add library includes
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
+include_directories(${CMAKE_SOURCE_DIR}/lib)
 
 # Add Source Files
-FILE(GLOB srcs *.cpp )
-FILE(GLOB hdrs *.h   )
+file(GLOB srcs *.cpp )
+file(GLOB hdrs *.h   )
 
-ADD_EXECUTABLE(mesh-info ${srcs} ${hdrs})
+add_executable(mesh-info ${srcs} ${hdrs})
 
-TARGET_LINK_LIBRARIES(mesh-info
+target_link_libraries(mesh-info
   cleaver
   boostparts
   )

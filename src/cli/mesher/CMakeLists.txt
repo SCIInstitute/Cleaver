@@ -1,25 +1,25 @@
-PROJECT(cleaver-cli CXX)
+project(cleaver-cli CXX)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
 
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 # Add library includes
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CMAKE_SOURCE_DIR}/lib)
+include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
-FILE(GLOB srcs *.cpp )
-FILE(GLOB hdrs *.h   )
+file(GLOB srcs *.cpp )
+file(GLOB hdrs *.h   )
 
-ADD_EXECUTABLE(cleaver-cli ${srcs} ${hdrs})
+add_executable(cleaver-cli ${srcs} ${hdrs})
 
-TARGET_LINK_LIBRARIES(cleaver-cli
+target_link_libraries(cleaver-cli
   cleaver
   nrrd2cleaver
   boostparts
   )
 
-INSTALL(TARGETS cleaver-cli
+install(TARGETS cleaver-cli
   RUNTIME DESTINATION ${CLEAVER2_RUNTIME_DIR} COMPONENT RuntimeCLI
   )

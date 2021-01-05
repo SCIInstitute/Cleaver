@@ -26,20 +26,20 @@
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 #  USE OR OTHER DEALINGS IN THE SOFTWARE.
 #-------------------------------------------------------------------
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(ITK_NRRD2Cleaver)
+cmake_minimum_required(VERSION 2.6)
+project(ITK_NRRD2Cleaver)
 
 #Find ITK
-FIND_PACKAGE(ITK COMPONENTS ITKCommon ITKIONRRD ITKIOMeta
+find_package(ITK COMPONENTS ITKCommon ITKIONRRD ITKIOMeta
   ITKThresholding ITKSmoothing ITKDistanceMap ITKIOImageBase REQUIRED)
-IF (ITK_FOUND)
-  INCLUDE (${ITK_USE_FILE})
-ENDIF(ITK_FOUND)
-MESSAGE(STATUS "** ITK_DIR: ${ITK_DIR}")
+if (ITK_FOUND)
+  include (${ITK_USE_FILE})
+endif(ITK_FOUND)
+message(STATUS "** ITK_DIR: ${ITK_DIR}")
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CMAKE_SOURCE_DIR}/lib)
+include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
-ADD_LIBRARY(nrrd2cleaver NRRDTools.cpp)
+add_library(nrrd2cleaver NRRDTools.cpp)
 
-TARGET_LINK_LIBRARIES(nrrd2cleaver ${ITK_LIBRARIES} cleaver)
+target_link_libraries(nrrd2cleaver ${ITK_LIBRARIES} cleaver)

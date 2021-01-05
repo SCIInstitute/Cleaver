@@ -26,11 +26,11 @@
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 #  USE OR OTHER DEALINGS IN THE SOFTWARE.
 #-------------------------------------------------------------------
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(NRRD2Cleaver)
+cmake_minimum_required(VERSION 2.6)
+project(NRRD2Cleaver)
 
-IF(USE_ITK)
-  ADD_SUBDIRECTORY(itk)
-ELSE()
-  ADD_SUBDIRECTORY(teem)
-ENDIF()
+if(USE_ITK)
+  add_subdirectory(itk)
+else()
+  add_subdirectory(teem)
+endif()

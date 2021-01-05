@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(PULL_SOURCES
+set(PULL_SOURCES
   actionPull.c
   binningPull.c
   constraints.c

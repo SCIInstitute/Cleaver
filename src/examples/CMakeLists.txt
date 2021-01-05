@@ -1,9 +1,9 @@
 # Add library includes
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CMAKE_BINARY_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
-ADD_EXECUTABLE(implicit_spheres implicit_spheres.cpp)
-TARGET_LINK_LIBRARIES(implicit_spheres cleaver)
+add_executable(implicit_spheres implicit_spheres.cpp)
+target_link_libraries(implicit_spheres cleaver)
 
-ADD_EXECUTABLE(test_data test_data.cpp)
-TARGET_LINK_LIBRARIES(test_data cleaver nrrd2cleaver synthetic)
+add_executable(test_data test_data.cpp)
+target_link_libraries(test_data cleaver nrrd2cleaver synthetic)

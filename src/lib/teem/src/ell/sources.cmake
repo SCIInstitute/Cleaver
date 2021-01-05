@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(ELL_SOURCES
+set(ELL_SOURCES
   cubicEll.c
   eigen.c
   ell.h

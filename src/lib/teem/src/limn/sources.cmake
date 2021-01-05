@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(LIMN_SOURCES
+set(LIMN_SOURCES
   cam.c
   defaultsLimn.c
   enumsLimn.c
