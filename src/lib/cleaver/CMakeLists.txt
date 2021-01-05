@@ -94,7 +94,7 @@ if(COPY_HEADER_FILES) #TODO: Needs to be added to installation step for using as
     set(Cleaver_INSTALLED_HEADER_FILES
       ${Cleaver_INSTALLED_HEADER_FILES}
       "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}")
-  endforeach(header_file)
+  endforeach()
 endif()
 
 # output library

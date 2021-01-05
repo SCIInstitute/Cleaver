@@ -41,7 +41,7 @@ foreach(header_file ${Boost_API_HEADER_FILES})
   set(Boost_INSTALLED_HEADER_FILES
     ${Boost_INSTALLED_HEADER_FILES}
     "${CMAKE_BINARY_DIR}/include/boost/${file_no_path}")
-endforeach(header_file)
+endforeach()
 
 set(Boost_API_HEADER_FILES
     cmdline.hpp

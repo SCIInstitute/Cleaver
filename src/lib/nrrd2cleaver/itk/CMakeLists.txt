@@ -34,7 +34,7 @@ find_package(ITK COMPONENTS ITKCommon ITKIONRRD ITKIOMeta
   ITKThresholding ITKSmoothing ITKDistanceMap ITKIOImageBase REQUIRED)
 if (ITK_FOUND)
   include (${ITK_USE_FILE})
-endif(ITK_FOUND)
+endif()
 message(STATUS "** ITK_DIR: ${ITK_DIR}")
 
 include_directories(${CMAKE_SOURCE_DIR}/lib)

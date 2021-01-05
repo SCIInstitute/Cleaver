@@ -22,7 +22,7 @@
 
 if(NOT Teem_FOUND)
   message(FATAL_ERROR "Something went wrong. You are including TeemUse.cmake but Teem was not found")
-endif(NOT Teem_FOUND)
+endif()
 
 # Make Teem easier to use
 include_directories(${Teem_INCLUDE_DIRS})
@@ -32,12 +32,12 @@ link_directories(${Teem_LIBRARY_DIRS})
 if(Teem_BUILD_SETTINGS_FILE)
   include(CMakeImportBuildSettings)
   CMAKE_IMPORT_BUILD_SETTINGS(${Teem_BUILD_SETTINGS_FILE})
-endif(Teem_BUILD_SETTINGS_FILE)
+endif()
 
 # Support static builds
 if(NOT Teem_BUILD_SHARED_LIBS)
   add_definitions(-DTEEM_STATIC=1)
-endif(NOT Teem_BUILD_SHARED_LIBS)
+endif()
 
 # Add compiler flags needed to use Teem.
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${Teem_REQUIRED_C_FLAGS}")

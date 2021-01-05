@@ -54,7 +54,7 @@ foreach(header_file ${Nrrd2Cleaver_API_HEADER_FILES})
   set(Nrrd2Cleaver_INSTALLED_HEADER_FILES
     ${Nrrd2Cleaver_INSTALLED_HEADER_FILES}
     "${CMAKE_BINARY_DIR}/include/nrrd2cleaver/${file_no_path}")
-endforeach(header_file)
+endforeach()
 
 
 # output library

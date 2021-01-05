@@ -21,7 +21,7 @@ foreach(header_file ${JSONCPP_API_HEADER_FILES})
   set(JSONCPP_INSTALLED_HEADER_FILES
     ${JSONCPP_INSTALLED_HEADER_FILES}
     "${CMAKE_BINARY_DIR}/include/jsoncpp/${file_no_path}")
-endforeach(header_file)
+endforeach()
 
 # output library
 add_library(jsoncpp STATIC ${JSONCPP_HEADER_FILES} ${JSONCPP_SOURCE_FILES})

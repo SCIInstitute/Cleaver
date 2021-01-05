@@ -61,7 +61,7 @@ foreach(header_file ${Synthetic_API_HEADER_FILES})
   set(Synthetic_INSTALLED_HEADER_FILES
     ${Synthetic_INSTALLED_HEADER_FILES}
     "${CMAKE_BINARY_DIR}/include/Synthetic/${file_no_path}")
-endforeach(header_file)
+endforeach()
 
 # output library
 add_library(synthetic STATIC ${srcs} ${hdrs})

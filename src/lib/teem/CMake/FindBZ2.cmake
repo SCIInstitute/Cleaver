@@ -41,8 +41,8 @@ if(BZ2_INCLUDE_DIR)
   if(BZ2_LIBRARY)
     set( BZ2_LIBRARIES ${BZ2_LIBRARY} )
     set( BZ2_FOUND "YES" )
-  endif(BZ2_LIBRARY)
-endif(BZ2_INCLUDE_DIR)
+  endif()
+endif()
 
 mark_as_advanced(
   BZ2_LIBRARY
