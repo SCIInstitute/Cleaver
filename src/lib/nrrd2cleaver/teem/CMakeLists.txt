@@ -29,34 +29,34 @@
 #
 #-------------------------------------------------------------------
 #-------------------------------------------------------------------
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(TEEM_NRRD2Cleaver)
+cmake_minimum_required(VERSION 2.6)
+project(TEEM_NRRD2Cleaver)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib)
+include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CMAKE_BINARY_DIR}/include)
 
 # Add Source Files
-FILE(GLOB srcs *.cpp )
-FILE(GLOB hdrs *.h   )
-SET(Nrrd2Cleaver_API_HEADER_FILES
+file(GLOB srcs *.cpp )
+file(GLOB hdrs *.h   )
+set(Nrrd2Cleaver_API_HEADER_FILES
    ${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver/NRRDTools.h)
 
 
 # copy header files over
-SET(Nrrd2Cleaver_INSTALLED_HEADER_FILES)
-FOREACH(header_file ${Nrrd2Cleaver_API_HEADER_FILES})
+set(Nrrd2Cleaver_INSTALLED_HEADER_FILES)
+foreach(header_file ${Nrrd2Cleaver_API_HEADER_FILES})
   # When debugging, uncomment this line
-  #MESSAGE(STATUS "Copy header file: ${header_file}")
-  GET_FILENAME_COMPONENT(file_no_path "${header_file}" NAME)
-  CONFIGURE_FILE("${header_file}"
+  #message(STATUS "Copy header file: ${header_file}")
+  get_filename_component(file_no_path "${header_file}" NAME)
+  configure_file("${header_file}"
     "${CMAKE_BINARY_DIR}/include/nrrd2cleaver/${file_no_path}" COPYONLY IMMEDIATE)
-  SET(Nrrd2Cleaver_INSTALLED_HEADER_FILES
+  set(Nrrd2Cleaver_INSTALLED_HEADER_FILES
     ${Nrrd2Cleaver_INSTALLED_HEADER_FILES}
     "${CMAKE_BINARY_DIR}/include/nrrd2cleaver/${file_no_path}")
-ENDFOREACH(header_file)
+endforeach()
 
 
 # output library
-ADD_LIBRARY(nrrd2cleaver STATIC ${srcs} ${hdrs})
-TARGET_LINK_LIBRARIES(nrrd2cleaver teem cleaver)
+add_library(nrrd2cleaver STATIC ${srcs} ${hdrs})
+target_link_libraries(nrrd2cleaver teem cleaver)

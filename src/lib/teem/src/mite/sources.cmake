@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(MITE_SOURCES
+set(MITE_SOURCES
   defaultsMite.c
   kindnot.c
   mite.h

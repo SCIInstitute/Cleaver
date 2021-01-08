@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(UNRRDU_SOURCES
+set(UNRRDU_SOURCES
   1op.c
   2op.c
   3op.c

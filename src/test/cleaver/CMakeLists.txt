@@ -1,8 +1,8 @@
 ########################################################################
 
 # Tests for Cleaver2
-INCLUDE_DIRECTORIES(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
-LINK_DIRECTORIES(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
+link_directories(${CLEAVER2_SOURCE_DIR}/lib/cleaver)
 
 newtest(vec3_unit_tests)
 newtest(tet_unit_tests)

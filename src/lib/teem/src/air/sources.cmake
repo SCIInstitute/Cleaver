@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(AIR_SOURCES
+set(AIR_SOURCES
   754.c
   air.h
   array.c

@@ -18,32 +18,32 @@
 # define has been uncommented. Otherwise, we will get linker
 # errors on MSVC because of boost auto-linking.
 
-PROJECT(boostparts)
+project(boostparts)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.6)
 
 # project version
-SET(${PROJECT_NAME}_MAJOR_VERSION 0)
-SET(${PROJECT_NAME}_MINOR_VERSION 1)
-SET(${PROJECT_NAME}_PATCH_LEVEL 0)
+set(${PROJECT_NAME}_MAJOR_VERSION 0)
+set(${PROJECT_NAME}_MINOR_VERSION 1)
+set(${PROJECT_NAME}_PATCH_LEVEL 0)
 
 # project options
-OPTION(BUILD_SHARED_LIBS OFF)
+option(BUILD_SHARED_LIBS OFF)
 
 # copy header files over
-SET(Boost_INSTALLED_HEADER_FILES)
-FOREACH(header_file ${Boost_API_HEADER_FILES})
+set(Boost_INSTALLED_HEADER_FILES)
+foreach(header_file ${Boost_API_HEADER_FILES})
   # When debugging, uncomment this line
-  #MESSAGE(STATUS "Copy header file: ${header_file}")
-  GET_FILENAME_COMPONENT(file_no_path "${header_file}" NAME)
-  CONFIGURE_FILE("${header_file}"
+  #message(STATUS "Copy header file: ${header_file}")
+  get_filename_component(file_no_path "${header_file}" NAME)
+  configure_file("${header_file}"
     "${CMAKE_BINARY_DIR}/include/boost/${file_no_path}" COPYONLY IMMEDIATE)
-  SET(Boost_INSTALLED_HEADER_FILES
+  set(Boost_INSTALLED_HEADER_FILES
     ${Boost_INSTALLED_HEADER_FILES}
     "${CMAKE_BINARY_DIR}/include/boost/${file_no_path}")
-ENDFOREACH(header_file)
+endforeach()
 
-SET(Boost_API_HEADER_FILES
+set(Boost_API_HEADER_FILES
     cmdline.hpp
     config.hpp
     environment_iterator.hpp
@@ -67,7 +67,7 @@ SET(Boost_API_HEADER_FILES
 
 
 # source files
-SET(SOURCE_FILES
+set(SOURCE_FILES
     libs/program_options/src/cmdline.cpp
     libs/program_options/src/config_file.cpp
     libs/program_options/src/convert.cpp
@@ -100,16 +100,16 @@ SET(SOURCE_FILES
     libs/smart_ptr/src/sp_debug_hooks.cpp
    )
 
-#FILE(GLOB HEADER_FILES ../*.hpp)
+#file(GLOB HEADER_FILES ../*.hpp)
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 
 # output library
-ADD_LIBRARY(boostparts  ${SOURCE_FILES} ${HEADER_FILES})
-MESSAGE(STATUS "creating library {boost}")
+add_library(boostparts  ${SOURCE_FILES} ${HEADER_FILES})
+message(STATUS "creating library {boost}")
 
 # Special compiler and linker flags for MSVC
 if( MSVC )
-    MESSAGE(STATUS "Applying MSVC flags for Boost")
+    message(STATUS "Applying MSVC flags for Boost")
     add_definitions( /DUNICODE /D_UNICODE /Zc:wchar_t-  )
     add_definitions(-DBOOST_ALL_NO_LIB)
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" )

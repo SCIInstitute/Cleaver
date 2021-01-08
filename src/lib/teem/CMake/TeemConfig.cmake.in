@@ -28,34 +28,34 @@
 # to load Teem's settings for an external project.
 
 # The Teem source tree.
-SET(Teem_SOURCE_DIR "@Teem_SOURCE_DIR@")
+set(Teem_SOURCE_DIR "@Teem_SOURCE_DIR@")
 
 # The Teem include file directories.
-SET(Teem_EXECUTABLE_DIRS "@Teem_EXECUTABLE_DIRS@")
-SET(Teem_LIBRARY_DIRS "@Teem_LIBRARY_DIRS@")
-SET(Teem_LIBRARIES "@Teem_BUILT_LIBRARIES@")
-SET(Teem_INCLUDE_DIRS "@Teem_INCLUDE_DIRS@")
+set(Teem_EXECUTABLE_DIRS "@Teem_EXECUTABLE_DIRS@")
+set(Teem_LIBRARY_DIRS "@Teem_LIBRARY_DIRS@")
+set(Teem_LIBRARIES "@Teem_BUILT_LIBRARIES@")
+set(Teem_INCLUDE_DIRS "@Teem_INCLUDE_DIRS@")
 
 # The C flags added by Teem to the cmake-configured flags.
-SET(Teem_REQUIRED_C_FLAGS "@Teem_REQUIRED_C_FLAGS@")
+set(Teem_REQUIRED_C_FLAGS "@Teem_REQUIRED_C_FLAGS@")
 
 # The Teem version number
-SET(Teem_VERSION_MAJOR "@Teem_VERSION_MAJOR@")
-SET(Teem_VERSION_MINOR "@Teem_VERSION_MINOR@")
-SET(Teem_VERSION_PATCH "@Teem_VERSION_PATCH@")
+set(Teem_VERSION_MAJOR "@Teem_VERSION_MAJOR@")
+set(Teem_VERSION_MINOR "@Teem_VERSION_MINOR@")
+set(Teem_VERSION_PATCH "@Teem_VERSION_PATCH@")
 
 # Is Teem using shared libraries?
-SET(Teem_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
-SET(Teem_BUILD_SETTINGS_FILE "@Teem_BUILD_SETTINGS_FILE@")
+set(Teem_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
+set(Teem_BUILD_SETTINGS_FILE "@Teem_BUILD_SETTINGS_FILE@")
 
 # The location of the UseTeem.cmake file.
-SET(Teem_USE_FILE "@Teem_USE_FILE@")
+set(Teem_USE_FILE "@Teem_USE_FILE@")
 
 # The list of tools in teem
-SET(Teem_TOOLS "@Teem_TOOLS@")
+set(Teem_TOOLS "@Teem_TOOLS@")
 
 # The ExodusII library dependencies.
-IF(NOT Teem_NO_LIBRARY_DEPENDS)
-  INCLUDE("@Teem_LIBRARY_DEPENDS_FILE@")
-ENDIF(NOT Teem_NO_LIBRARY_DEPENDS)
+if(NOT Teem_NO_LIBRARY_DEPENDS)
+  include("@Teem_LIBRARY_DEPENDS_FILE@")
+endif()
 

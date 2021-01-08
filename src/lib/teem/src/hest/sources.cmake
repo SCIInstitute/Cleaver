@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(HEST_SOURCES
+set(HEST_SOURCES
   defaultsHest.c
   hest.h
   methodsHest.c

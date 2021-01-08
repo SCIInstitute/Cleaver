@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(ECHO_SOURCES
+set(ECHO_SOURCES
   bounds.c
   color.c
   echo.h
