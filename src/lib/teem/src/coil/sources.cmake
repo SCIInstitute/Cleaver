@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(COIL_SOURCES
+set(COIL_SOURCES
   coil.h
   coreCoil.c
   defaultsCoil.c

@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(TEN_SOURCES
+set(TEN_SOURCES
   aniso.c
   bimod.c
   bvec.c

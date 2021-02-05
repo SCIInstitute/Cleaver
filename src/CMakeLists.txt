@@ -37,80 +37,80 @@
 #  DEALINGS IN THE SOFTWARE.
 #-----------------------------------------------------------------------------
 
-PROJECT(CLEAVER2)
+project(CLEAVER2)
 
 # Global CMake options
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-OPTION(CMAKE_BUILD_TYPE Release)
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+cmake_minimum_required(VERSION 2.6)
+option(CMAKE_BUILD_TYPE Release)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL
     "Single output directory for building all executables.")
 
 mark_as_advanced( CLEAVER2_RUNTIME_DIR CLEAVER2_BUNDLE_DIR)
-SET(CLEAVER2_RUNTIME_DIR "bin" CACHE STRING
+set(CLEAVER2_RUNTIME_DIR "bin" CACHE STRING
   "Directory for installing runtime files; path is relative to CMAKE_INSTALL_PREFIX")
-SET(CLEAVER2_BUNDLE_DIR "." CACHE STRING
+set(CLEAVER2_BUNDLE_DIR "." CACHE STRING
   "Directory for installing runtime files; path is relative to CMAKE_INSTALL_PREFIX")
 
-IF(NOT WIN32)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
-ELSE()
-  ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
-ENDIF()
+if(NOT WIN32)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+else()
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
 
 # Build Cleaver Library
-ADD_SUBDIRECTORY(lib/jsoncpp)
-ADD_SUBDIRECTORY(lib/cleaver)
+add_subdirectory(lib/jsoncpp)
+add_subdirectory(lib/cleaver)
 
 # TODO(jonbronson): Change to not use ITK by default once teem is added.
-OPTION(USE_ITK "Use ITK instead of Teem for nrrd files." ON)
-IF(NOT USE_ITK)
-  ADD_SUBDIRECTORY(lib/teem)
-ENDIF()
+option(USE_ITK "Use ITK instead of Teem for nrrd files." ON)
+if(NOT USE_ITK)
+  add_subdirectory(lib/teem)
+endif()
 
-OPTION(BUILD_CLI "Build Cleaver CLI App (REQUIRES TEEM)" OFF)
-OPTION(BUILD_GUI "Build Cleaver GUI App (REQUIRES TEEM)" OFF)
+option(BUILD_CLI "Build Cleaver CLI App (REQUIRES TEEM)" OFF)
+option(BUILD_GUI "Build Cleaver GUI App (REQUIRES TEEM)" OFF)
 
-OPTION(BUILD_EXTRAS "Example use cases, tools" OFF)
-IF(BUILD_EXTRAS)
-  ADD_SUBDIRECTORY(examples)
-ENDIF()
+option(BUILD_EXTRAS "Example use cases, tools" OFF)
+if(BUILD_EXTRAS)
+  add_subdirectory(examples)
+endif()
 
-IF(BUILD_CLI OR BUILD_GUI)
+if(BUILD_CLI OR BUILD_GUI)
 
-  ADD_SUBDIRECTORY(lib/boost)
-  INCLUDE_DIRECTORIES(lib/boost)
-  ADD_SUBDIRECTORY(lib/nrrd2cleaver)
+  add_subdirectory(lib/boost)
+  include_directories(lib/boost)
+  add_subdirectory(lib/nrrd2cleaver)
 
-  IF(BUILD_CLI)
-    ADD_SUBDIRECTORY(cli/mesher)
-  ENDIF()
+  if(BUILD_CLI)
+    add_subdirectory(cli/mesher)
+  endif()
 
-  IF(BUILD_EXTRAS)
-      ADD_SUBDIRECTORY(lib/synthetic)
-      ADD_SUBDIRECTORY(cli/sizingfieldcreator)
-      ADD_SUBDIRECTORY(cli/info)
-  ENDIF()
+  if(BUILD_EXTRAS)
+      add_subdirectory(lib/synthetic)
+      add_subdirectory(cli/sizingfieldcreator)
+      add_subdirectory(cli/info)
+  endif()
 
-  IF(BUILD_GUI)
-    ADD_SUBDIRECTORY(gui)
-  ENDIF()
+  if(BUILD_GUI)
+    add_subdirectory(gui)
+  endif()
 
-ENDIF()
+endif()
 
 # All of the testing and test framework options
-INCLUDE(CTest)
-IF(BUILD_TESTING)
-  ENABLE_TESTING()
+include(CTest)
+if(BUILD_TESTING)
+  enable_testing()
   # Use gcov for code coverage (useful for seeing test completeness)
-  OPTION(USE_GCOV "Enable code coverage for GNUCXX Platforms" OFF)
-  IF(USE_GCOV)
-    IF(CMAKE_COMPILER_IS_GNUCXX)
-      INCLUDE(${PROJECT_SOURCE_DIR}/CodeCoverage.cmake)
-      SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-      SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    ENDIF()
-  ENDIF()
-  ADD_SUBDIRECTORY(test)
-ENDIF()
+  option(USE_GCOV "Enable code coverage for GNUCXX Platforms" OFF)
+  if(USE_GCOV)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+      include(${PROJECT_SOURCE_DIR}/CodeCoverage.cmake)
+      set(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+      set(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+    endif()
+  endif()
+  add_subdirectory(test)
+endif()

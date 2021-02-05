@@ -20,17 +20,17 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-MACRO(CREATE_EXEC name sources libraries)
-  ADD_EXECUTABLE(${name} ${sources})
-#   TARGET_LINK_LIBRARIES("${name}" ${libraries})
-  TARGET_LINK_LIBRARIES(${name} teem)
-  INSTALL(TARGETS ${name}
+macro(CREATE_EXEC name sources libraries)
+  add_executable(${name} ${sources})
+#   target_link_libraries("${name}" ${libraries})
+  target_link_libraries(${name} teem)
+  install(TARGETS ${name}
     RUNTIME DESTINATION bin
     )
-  SET_TARGET_PROPERTIES(${name} PROPERTIES
+  set_target_properties(${name} PROPERTIES
     INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib
     )
-ENDMACRO(CREATE_EXEC)
+endmacro()
 
 # These binaries should not be depending on BUILD_EXPERIMENTAL_LIBS
 CREATE_EXEC(nrrdSanity nrrdSanity.c nrrd)
@@ -44,7 +44,7 @@ CREATE_EXEC(tend tend.c ten)
 # NOTE: The BUILD_EXPERIMENTAL_LIBS-dependent inclusion of binaries has to be
 # done with knowledge of how BUILD_EXPERIMENTAL_LIBS behaves in the top-level
 # CMakeLists.txt file
-IF(BUILD_EXPERIMENTAL_APPS)
+if(BUILD_EXPERIMENTAL_APPS)
   CREATE_EXEC(airSanity airSanity.c air)
   CREATE_EXEC(affine affine.c air)
   CREATE_EXEC(cubic cubic.c ell)
@@ -58,13 +58,13 @@ IF(BUILD_EXPERIMENTAL_APPS)
   CREATE_EXEC(ninspect ninspect.c nrrd)
   CREATE_EXEC(ungantry ungantry.c gage)
   CREATE_EXEC(deconv deconv.c ten)
-  IF(BUILD_EXPERIMENTAL_LIBS)
+  if(BUILD_EXPERIMENTAL_LIBS)
     CREATE_EXEC(ilk ilk.c "unrrdu;moss")
     CREATE_EXEC(gkms gkms.c bane)
     CREATE_EXEC(spots spots.c alan)
-  ENDIF(BUILD_EXPERIMENTAL_LIBS)
-ENDIF(BUILD_EXPERIMENTAL_APPS)
+  endif()
+endif()
 
-IF(BUILD_TEEM_TESTS)
-  ADD_TEST(nrrd.Sanity ${EXECUTABLE_OUTPUT_PATH}/nrrdSanity)
-ENDIF(BUILD_TEEM_TESTS)
+if(BUILD_TEEM_TESTS)
+  add_test(nrrd.Sanity ${EXECUTABLE_OUTPUT_PATH}/nrrdSanity)
+endif()

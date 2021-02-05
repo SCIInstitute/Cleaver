@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(DYE_SOURCES
+set(DYE_SOURCES
   convertDye.c
   dye.h
   methodsDye.c

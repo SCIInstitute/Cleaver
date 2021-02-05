@@ -20,10 +20,10 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-ADD_EXECUTABLE(dehex
+add_executable(dehex
  dehex.c
 )
-ADD_EXECUTABLE(enhex
+add_executable(enhex
   enhex.c
 )  
 

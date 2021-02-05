@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(GAGE_SOURCES
+set(GAGE_SOURCES
   ctx.c
   deconvolve.c
   defaultsGage.c

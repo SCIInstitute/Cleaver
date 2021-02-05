@@ -1,6 +1,6 @@
 # This variable will help provide a master list of all the sources.
 # Add new source files here.
-SET(NRRD_SOURCES
+set(NRRD_SOURCES
   accessors.c
   apply1D.c
   apply2D.c
