@@ -12,6 +12,13 @@ include(ExternalProject)
 
 set(googletest_GIT_TAG "origin/cleaver")
 
+SET(_build_byproducts)
+IF(NOT WIN32)
+  FOREACH(_lib gtest gtest_main gmock gmock_main)
+    LIST(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
+  ENDFOREACH()
+ENDIF()
+
 ExternalProject_Add(googletest
    PREFIX "${GTEST_INSTALL_DIR}"
    GIT_REPOSITORY "https://github.com/CIBC-Internal/googletest.git"
@@ -19,6 +26,7 @@ ExternalProject_Add(googletest
    INSTALL_DIR "${GTEST_INSTALL_DIR}/include"
    BINARY_DIR "${GTEST_INSTALL_DIR}/lib"
    INSTALL_COMMAND ""
+   BUILD_BYPRODUCTS "${_build_byproducts}"
 )
 
 # Copy and Specify Include Directory
