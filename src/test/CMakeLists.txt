@@ -12,12 +12,12 @@ include(ExternalProject)
 
 set(googletest_GIT_TAG "origin/cleaver")
 
-SET(_build_byproducts)
-IF(NOT WIN32)
-  FOREACH(_lib gtest gtest_main gmock gmock_main)
-    LIST(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
-  ENDFOREACH()
-ENDIF()
+set(_build_byproducts)
+if(NOT WIN32)
+  foreach(_lib IN ITEMS gtest gtest_main gmock gmock_main)
+    list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
+  endforeach()
+endif()
 
 ExternalProject_Add(googletest
    PREFIX "${GTEST_INSTALL_DIR}"
