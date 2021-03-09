@@ -32,7 +32,7 @@
 
 project(synthetic)
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10.2)
 
 # Add library incl1udes
 include_directories(${CMAKE_BINARY_DIR}/include)
