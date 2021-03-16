@@ -1,6 +1,6 @@
 project(cleaver-gui)
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10.2)
 
 add_definitions(-DCLEAVER_VERSION_MAJOR="2")
 add_definitions(-DCLEAVER_VERSION_MINOR="4")
