@@ -13,16 +13,30 @@ include(ExternalProject)
 set(googletest_GIT_TAG "origin/cleaver")
 
 set(_build_byproducts)
-if(NOT WIN32)
+if(WIN32)
+  foreach(_lib IN ITEMS gtest gtest_main gmock gmock_main)
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+      list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}d${CMAKE_STATIC_LIBRARY_SUFFIX})
+    else()
+      list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
+    endif()
+  endforeach()
+else()
   foreach(_lib IN ITEMS gtest gtest_main gmock gmock_main)
     list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
   endforeach()
 endif()
 
+set(_cmake_args)
+if(DEFINED CMAKE_BUILD_TYPE)
+  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+endif()
 ExternalProject_Add(googletest
    PREFIX "${GTEST_INSTALL_DIR}"
    GIT_REPOSITORY "https://github.com/CIBC-Internal/googletest.git"
    GIT_TAG ${googletest_GIT_TAG}
+   CMAKE_ARGS
+     ${_cmake_args}
    INSTALL_DIR "${GTEST_INSTALL_DIR}/include"
    BINARY_DIR "${GTEST_INSTALL_DIR}/lib"
    INSTALL_COMMAND ""
@@ -83,12 +97,22 @@ function(NEWTEST name)
   if(NOT WIN32)
     target_link_libraries(${name} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${GMOCK_LIBRARY} ${GMOCK_MAIN_LIBRARY} cleaver -lpthread)
   else ()
-    target_link_libraries(${name}
-       ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gtest$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
-       ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gtest_main$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
-       ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gmock$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
-       ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gmock_main$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
-        cleaver )
+    if (CMAKE_CONFIGURATION_TYPES)
+      target_link_libraries(${name}
+         ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gtest$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+         ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gtest_main$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+         ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gmock$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+         ${binary_dir}/lib/$<CONFIG>/${CMAKE_FIND_LIBRARY_PREFIXES}gmock_main$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+          cleaver )
+      else()
+        # Ninja
+        target_link_libraries(${name}
+         ${binary_dir}/lib/${CMAKE_FIND_LIBRARY_PREFIXES}gtest$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+         ${binary_dir}/lib/${CMAKE_FIND_LIBRARY_PREFIXES}gtest_main$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+         ${binary_dir}/lib/${CMAKE_FIND_LIBRARY_PREFIXES}gmock$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+         ${binary_dir}/lib/${CMAKE_FIND_LIBRARY_PREFIXES}gmock_main$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
+          cleaver )
+      endif()
   endif()
   add_test(${name} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name})
   add_dependencies(${name} gtest gtest_main cleaver)
