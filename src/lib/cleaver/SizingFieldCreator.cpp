@@ -82,34 +82,34 @@ namespace cleaver
   {
   }
 
-  void VoxelMesh::init(int l, int m, int n)
+  void VoxelMesh::init(size_t l, size_t m, size_t n)
   {
     fill3DVector(known, false, l, m, n);
 
     fill3DVector(dist, 1e10, l, m, n);
   }
 
-  void VoxelMesh::setDist(int l, int m, int n, double value)
+  void VoxelMesh::setDist(size_t l, size_t m, size_t n, double value)
   {
     dist[l][m][n] = value;
   }
 
-  double VoxelMesh::getDist(int l, int m, int n) const
+  double VoxelMesh::getDist(size_t l, size_t m, size_t n) const
   {
     return dist[l][m][n];
   }
 
-  int VoxelMesh::distSizeX() const
+  size_t VoxelMesh::distSizeX() const
   {
     return dist.size();
   }
 
-  int VoxelMesh::distSizeY() const
+  size_t VoxelMesh::distSizeY() const
   {
     return dist[0].size();
   }
 
-  int VoxelMesh::distSizeZ() const
+  size_t VoxelMesh::distSizeZ() const
   {
     return dist[0][0].size();
   }
@@ -117,7 +117,7 @@ namespace cleaver
   ScalarField<float>* VoxelMesh::convertToFloatField(float factor, const cleaver::vec3 &padding, const cleaver::vec3 &offset)
   {
     float *field;
-    int w, h, d, i, j, k;
+    size_t w, h, d, i, j, k;
     ScalarField<float> *ret;
     double min = 0;
 
@@ -135,7 +135,7 @@ namespace cleaver
         }
       }
     }
-    ret = new ScalarField<float>(field, w, h, d);
+    ret = new ScalarField<float>(field, static_cast<int>(w), static_cast<int>(h), static_cast<int>(d));
     double sx = 1.0 / factor;
     double sy = 1.0 / factor;
     double sz = 1.0 / factor;
@@ -435,9 +435,9 @@ namespace cleaver
     //------------------------------------------
     if (m_featureScaling != 1.0)
     {
-      int w = mesh_padded_feature.distSizeX();
-      int h = mesh_padded_feature.distSizeY();
-      int d = mesh_padded_feature.distSizeZ();
+      const size_t w = mesh_padded_feature.distSizeX();
+      const size_t h = mesh_padded_feature.distSizeY();
+      const size_t d = mesh_padded_feature.distSizeZ();
 
       if (verbose) status = Status(w*h*d);
       for (int k = 0; k < d; k++) {
@@ -575,19 +575,18 @@ namespace cleaver
 
     priority_queue<QueueIndex, vector<QueueIndex>, CompareDist> myqueue;
     QueueIndex temp, newtemp, left, leftleft, right, rightright;
-    set<int> mySet, doneSet;
+    set<size_t> mySet, doneSet;
 
 
-    int w, h, d;
-    w = mesh.distSizeX();
-    h = mesh.distSizeY();
-    d = mesh.distSizeZ();
+    const size_t w = mesh.distSizeX();
+    const size_t h = mesh.distSizeY();
+    const size_t d = mesh.distSizeZ();
 
-    for (int i = 0; i < w; i++)
+    for (size_t i = 0; i < w; i++)
     {
-      for (int j = 0; j < h; j++)
+      for (size_t j = 0; j < h; j++)
       {
-        for (int k = 0; k < d; k++)
+        for (size_t k = 0; k < d; k++)
         {
           mesh.known[i][j][k] = false;
         }
@@ -652,7 +651,7 @@ namespace cleaver
           }
           if (exists(left, mesh) && mesh.known[left.index[0]][left.index[1]][left.index[2]])
             flag0 = 1;
-          int dummy = w*h*left.index[0] + w*left.index[1] + left.index[2];
+          size_t dummy = w*h*left.index[0] + w*left.index[1] + left.index[2];
           if (exists(leftleft, mesh) && mesh.known[leftleft.index[0]][leftleft.index[1]][leftleft.index[2]] && mySet.find(dummy) == mySet.end())
             flag1 = 1;
           if (exists(right, mesh) && mesh.known[right.index[0]][right.index[1]][right.index[2]])
@@ -1152,20 +1151,20 @@ namespace cleaver
 
   void SizingFieldCreator::appendPadding(const vec3 &mypadding, const vec3 &myoffset, vector<Triple> &zeros)
   {
-    int full_w, full_h, full_d;
+    size_t full_w, full_h, full_d;
 
-    int w = mesh_feature.distSizeX();
-    int h = mesh_feature.distSizeY();
-    int d = mesh_feature.distSizeZ();
+    size_t w = mesh_feature.distSizeX();
+    size_t h = mesh_feature.distSizeY();
+    size_t d = mesh_feature.distSizeZ();
 
     full_w = w + (int)mypadding[0];
     full_h = h + (int)mypadding[1];
     full_d = d + (int)mypadding[2];
     mesh_padded_feature.init(full_w, full_h, full_d);
 
-    for (int i = 0; i < full_w; i++)
-      for (int j = 0; j < full_h; j++)
-        for (int k = 0; k < full_d; k++)
+    for (size_t i = 0; i < full_w; i++)
+      for (size_t j = 0; j < full_h; j++)
+        for (size_t k = 0; k < full_d; k++)
           mesh_padded_feature.known[i][j][k] = false;
 
     int x_offset = (int)myoffset[0];

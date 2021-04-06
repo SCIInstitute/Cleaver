@@ -157,8 +157,8 @@ namespace cleaver
     }
 
     Json::Value badTets = root["badtets"];
-    for (int i = 0; i < badTets.size(); i++) {
-      Json::Value tet = badTets[i];
+    for (size_t i = 0; i < badTets.size(); i++) {
+      Json::Value tet = badTets[static_cast<int>(i)];
       m_tets_to_record.insert((size_t)tet["parent"].asUInt64());
     }
 
@@ -321,7 +321,7 @@ namespace cleaver
         status.printStatus();
       }
       // Get Vertex
-      cleaver::Vertex *vertex = m_bgMesh->verts[v];
+      cleaver::Vertex *vertex = (*m_bgMesh).verts[v];
 
       // Grab Material Label
       vertex->label = m_volume->maxAt(vertex->pos());
@@ -430,7 +430,7 @@ namespace cleaver
     double altitude = std::abs(dot(n, ray));
     double safe_length = (0.5 - xi)*altitude;
 
-    return safe_length;
+    return static_cast<float>(safe_length);
   }
 
 
@@ -485,7 +485,7 @@ namespace cleaver
     double safe_length1 = (0.5 - xi)*altitude1;
     double safe_length2 = (0.5 - xi)*altitude2;
     double safe_length3 = (0.5 - xi)*altitude3;
-    return std::min(std::min(safe_length1, safe_length2), safe_length3);
+    return static_cast<float>(std::min(std::min(safe_length1, safe_length2), safe_length3));
   }
 
 
@@ -1856,7 +1856,7 @@ namespace cleaver
       for (unsigned int i = 0; i < viol_tets.size(); i++)
         warp_point += viol_tets[i]->quadruple->pos();
 
-      warp_point /= viol_edges.size() + viol_faces.size() + viol_tets.size();
+      warp_point /= static_cast<double>(viol_edges.size() + viol_faces.size() + viol_tets.size());
     }
 
     //---------------------------------------
@@ -3038,7 +3038,8 @@ namespace cleaver
       //-----------------------------------
       // set parent to self
       //-----------------------------------
-      int parent = tet->parent = t;
+      tet->parent = static_cast<int>(t);
+      const int parent = tet->parent;
 
       //----------------------------------------
       // Prepare adjacency info for Stenciling
@@ -3178,7 +3179,7 @@ namespace cleaver
             {
               if (tet->verts[v]->tm_v_index < 0)
               {
-                tet->verts[v]->tm_v_index = m_bgMesh->verts.size();
+                tet->verts[v]->tm_v_index = static_cast<int>(m_bgMesh->verts.size());
                 m_bgMesh->verts.push_back(tet->verts[v]);
               }
               tet->verts[v]->tets.push_back(tet);
@@ -3203,10 +3204,10 @@ namespace cleaver
         // set tet to proper material
         total_changed++;
         tet->mat_label = tet->verts[0]->label;
-        tet->tm_index = t;
+        tet->tm_index = static_cast<int>(t);
         for (int v = 0; v < 4; v++) {
           if (tet->verts[v]->tm_v_index < 0) {
-            tet->verts[v]->tm_v_index = m_bgMesh->verts.size();
+            tet->verts[v]->tm_v_index = static_cast<int>(m_bgMesh->verts.size());
             m_bgMesh->verts.push_back(tet->verts[v]);
           }
           tet->verts[v]->tets.push_back(tet);
