@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
     }
 
     // enable indicator_function
-    if (variables_map.count("indicator_function")) {
+    if (variables_map.count("indicator_functions")) {
       segmentation = false;
     }
     if (variables_map.count("strict")) {
