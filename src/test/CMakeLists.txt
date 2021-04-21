@@ -12,19 +12,23 @@ include(ExternalProject)
 
 set(googletest_GIT_TAG "origin/cleaver")
 
-set(_build_byproducts)
-if(WIN32)
-  foreach(_lib IN ITEMS gtest gtest_main gmock gmock_main)
-    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-      list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}d${CMAKE_STATIC_LIBRARY_SUFFIX})
-    else()
+set(_ep_arg_build_byproducts)
+if("${CMAKE_GENERATOR}" STREQUAL "Ninja")
+  set(_build_byproducts "")
+  if(WIN32)
+    foreach(_lib IN ITEMS gtest gtest_main gmock gmock_main)
+      if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}d${CMAKE_STATIC_LIBRARY_SUFFIX})
+      else()
+        list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
+      endif()
+    endforeach()
+  else()
+    foreach(_lib IN ITEMS gtest gtest_main gmock gmock_main)
       list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
-    endif()
-  endforeach()
-else()
-  foreach(_lib IN ITEMS gtest gtest_main gmock gmock_main)
-    list(APPEND _build_byproducts ${GTEST_INSTALL_DIR}/lib/lib/${CMAKE_FIND_LIBRARY_PREFIXES}${_lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
-  endforeach()
+    endforeach()
+  endif()
+  set(_ep_arg_build_byproducts BUILD_BYPRODUCTS ${_build_byproducts})
 endif()
 
 set(_cmake_args)
@@ -40,7 +44,7 @@ ExternalProject_Add(googletest
    INSTALL_DIR "${GTEST_INSTALL_DIR}/include"
    BINARY_DIR "${GTEST_INSTALL_DIR}/lib"
    INSTALL_COMMAND ""
-   BUILD_BYPRODUCTS "${_build_byproducts}"
+   ${_ep_arg_build_byproducts}
 )
 
 # Copy and Specify Include Directory
