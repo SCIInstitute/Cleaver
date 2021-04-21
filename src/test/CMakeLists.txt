@@ -29,13 +29,13 @@ endif()
 
 set(_cmake_args)
 if(DEFINED CMAKE_BUILD_TYPE)
-  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
 endif()
 ExternalProject_Add(googletest
    PREFIX "${GTEST_INSTALL_DIR}"
    GIT_REPOSITORY "https://github.com/CIBC-Internal/googletest.git"
    GIT_TAG ${googletest_GIT_TAG}
-   CMAKE_ARGS
+   CMAKE_CACHE_ARGS
      ${_cmake_args}
    INSTALL_DIR "${GTEST_INSTALL_DIR}/include"
    BINARY_DIR "${GTEST_INSTALL_DIR}/lib"
