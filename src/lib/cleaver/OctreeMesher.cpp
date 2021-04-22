@@ -321,7 +321,7 @@ void OctreeMesherImp::adaptCell(OTCell *cell)
 
   // if cell completely inside, done
  else if(cell->bounds.maxCorner().x <= max_x &&
-         cell->bounds.maxCorner().y <= max_y &
+         cell->bounds.maxCorner().y <= max_y &&
          cell->bounds.maxCorner().z <= max_z)
  {
    cell->celltype = OTCell::Inside;
