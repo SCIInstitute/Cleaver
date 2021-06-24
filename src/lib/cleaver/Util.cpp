@@ -218,7 +218,7 @@ bool triangle_intersection(Vertex *v1, Vertex *v2, Vertex *v3, vec3 origin, vec3
 //-------------------------------------------------------------------
 Json::Value vertex_to_json(Vertex *vertex) {
   Json::Value root(Json::objectValue);
-  root["id"] = vertex->tm_v_index;
+  root["id"] = static_cast<int>(vertex->tm_v_index);
   root["material"] = vertex->label;
   root["position"] = Json::Value(Json::objectValue);
   root["position"]["x"] = vertex->pos().x;
@@ -237,7 +237,7 @@ Json::Value vertex_to_json(Vertex *vertex) {
 Json::Value tet_to_json(Tet *tet, TetMesh *mesh, bool includeInterfaces) {
 
   Json::Value root(Json::objectValue);
-  root["id"] = tet->tm_index;
+  root["id"] = static_cast<int>(tet->tm_index);
   root["verts"] = Json::Value(Json::arrayValue);
   for (int v = 0; v < VERTS_PER_TET; v++) {
     root["verts"].append(vertex_to_json(tet->verts[v]));
