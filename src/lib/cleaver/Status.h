@@ -10,7 +10,7 @@
 
 class Status {
   public:
-    Status(int tot) : total_(double(tot)), count_(0), percent_(-1) {
+    Status(size_t tot) : total_(double(tot)), count_(0), percent_(-1) {
     } ;
     ~Status() {}
     void printStatus() {
