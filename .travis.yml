@@ -1,9 +1,6 @@
 language: c++
 dist: bionic
 
-travis endpoint --com --set-default
-
-
 compiler:
   - clang
 
