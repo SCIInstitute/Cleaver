@@ -29,7 +29,7 @@
 #
 #-------------------------------------------------------------------
 #-------------------------------------------------------------------
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10.2)
 project(TEEM_NRRD2Cleaver)
 
 include_directories(${CMAKE_SOURCE_DIR}/lib)
