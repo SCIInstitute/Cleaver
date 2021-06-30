@@ -1,9 +1,10 @@
 docutils
+linkify-it-py
+lxml
+myst-parser
 pygments
-recommonmark
 sphinx
 sphinx-issues
 sphinx-markdown-tables
 sphinx-notfound-page
-sphinx_rtd_theme
-
+sphinx_rtd_theme>=0.5.2
