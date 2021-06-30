@@ -40,8 +40,21 @@ release = 'v2.4'
 #]
 
 extensions = [
-    'recommonmark'
+    'sphinx.ext.autodoc',
+    'myst_parser',
+    'sphinx_markdown_tables',
+    'notfound.extension'
 ]
+
+myst_enable_extensions = [
+    "colon_fence",  # Allow code fence using ::: (see https://myst-parser.readthedocs.io/en/latest/using/syntax-optional.html#syntax-colon-fence)
+    "linkify",  # Allow automatic creation of links from URLs (it is sufficient to write https://google.com instead of <https://google.com>)
+]
+
+# Auto-generate header anchors up to level 6, so that it can be referenced like [](file.md#header-anchor).
+# (see https://myst-parser.readthedocs.io/en/latest/using/syntax-optional.html#auto-generated-header-anchors)
+myst_heading_anchors = 6
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -66,6 +79,24 @@ source_suffix = {
     '.md': 'markdown',
 }
 
+notfound_context = {
+    'title': 'Page Not Found',
+    'body': '''
+<h1>Page Not Found</h1>
+<p>Sorry, we couldn't find that page.</p>
+<p>Try using the search box or go to the homepage.</p>
+''',
+}
+
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'sphinx'
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = False
+
+# A string of reStructuredText that will be included at the beginning of every source file that is read.
+rst_prolog = open('global.rst.in').read()
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -79,7 +110,12 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     import sphinx_rtd_theme
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-    
+  
+  
+latex_documents = [
+    (master_doc, '3DSlicer.tex', '3D Slicer Documentation',
+     'Slicer Community', 'manual'),
+]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
