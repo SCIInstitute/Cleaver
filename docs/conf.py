@@ -10,6 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import lxml.etree as ET
 import os
 import sys
 # sys.path.insert(0, os.path.abspath('.'))
@@ -130,10 +131,10 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
   
   
-latex_documents = [
-    (master_doc, '3DSlicer.tex', '3D Slicer Documentation',
-     'Slicer Community', 'manual'),
-]
+#latex_documents = [
+#    (master_doc, '3DSlicer.tex', '3D Slicer Documentation',
+#     'Slicer Community', 'manual'),
+#]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

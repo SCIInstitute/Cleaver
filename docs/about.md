@@ -1,11 +1,3 @@
----
-layout: default
-title: Main Page
-sciurl: https://www.sci.utah.edu/software/cleaver.html
-releaseurl: https://github.com/SCIInstitute/Cleaver2/releases
-project: Cleaver2
----
-
 <h2>{{ page.project }}</h3>
 
 <p>{{ page.project }} (<a href={{ page.releaseurl }}> {{ page.releaseurl }}</a>) is a free multimaterial tetrahedral meshing tool developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.</p>
