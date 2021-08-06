@@ -7,22 +7,6 @@ project: Cleaver2
 supportEmail: cleaver@sci.utah.edu
 ---
 
-## Table of Contents
-
-* [Installing {{ page.project }} from source](#installing-cleaver2-from-source)
-  * [Dependencies](#dependencies)
-    * [Qt](#qt)
-    * [CMake](#cmake)
-    * [ITK](#itk)
-  * [Compiling From Source](#compiling-from-source)
-    * [Compiling ITK](#compiling-itk)
-    * [Compiling {{ page.project }}](#compiling-cleaver2)
-      * [Unix and OSX](#unix-and-osx)
-      * [Windows](#windows)
-  * [All Platforms](#all-platforms)
-* [Testing](#testing)
-  * [Windows](#windows)
-* [{{ page.project }} Support](#cleaver2-support)
 
 # Installing {{ page.project }} from source
 
