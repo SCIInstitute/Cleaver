@@ -791,7 +791,7 @@ namespace cleaver
 
   void exponentiate(VoxelMesh &mesh)
   {
-    int a, b, c, i, j, k;
+    size_t a, b, c, i, j, k;
     a = mesh.distSizeX();
     b = mesh.distSizeY();
     c = mesh.distSizeZ();
