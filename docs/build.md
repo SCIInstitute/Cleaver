@@ -1,14 +1,4 @@
----
-title: Build Instructions
-category: info
-tags: build
-layout: default
-project: Cleaver2
-supportEmail: cleaver@sci.utah.edu
----
-
-
-# Installing {{ page.project }} from source
+# Installing Cleaver from source
 
 ## Dependencies
 
