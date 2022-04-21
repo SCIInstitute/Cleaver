@@ -1,4 +1,4 @@
-<img src="http://www.sci.utah.edu/images/software/Cleaver/cleaver.png">
+![Cleaver](docs/_static/images/splash.png "Cleaver")
 
 ## Cleaver2
 https://github.com/SCIInstitute/Cleaver2
@@ -12,10 +12,10 @@ https://github.com/SCIInstitute/Cleaver2
 
 
 ### Documentation
-For documentation, please see: http://sciinstitute.github.io/cleaver.pages
+For documentation, please see: <https://cleaver2.readthedocs.io>
 
 #### Build
-Please see http://sciinstitute.github.io/cleaver.pages/build.html
+Please see <https://cleaver2.readthedocs.io/build.html>
 
 #### Build Status
 [![Build Status](https://travis-ci.org/SCIInstitute/Cleaver2.svg?branch=master)](https://travis-ci.org/SCIInstitute/Cleaver2)

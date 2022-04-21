@@ -19,78 +19,81 @@ from source code. Gcc/Clang/MSVC with C++11 support is required.
 ## Compiling From Source
 
 Once you have obtained a compatible compiler and installed Qt on your system, you need to
-download and install CMake (http://www.cmake.org) to actually build the software.
+download and install CMake (<http://www.cmake.org>) to actually build the software.
 CMake is a platform independent configuring system that is used for generating Makefiles,Visual Studio project files, or Xcode project files.
 
 ### Compiling ITK
 
 Configure with:
-<br/><br/>
-``` CMAKE_CXX_FLAGS+="-std=c++11" ``` <br/>
-``` BUILD_SHARED_LIBS=FALSE ``` <br/>
-``` BUILD_EXAMPLES=FALSE ``` <br/>
-``` BUILD_TESTING=FALSE ``` <br/>
-``` ITKV3_COMPATIBILTY=TRUE ``` <br/>
-<br/>
-Then build ITK.
-<br/><br/>
-``` make -j12 all ``` <br/>
-<br/>
-You may need to use the CMake GUI in Windows. It is best to configure with "NMake Makefiles". Once you have configured and generated, you can build in a command prompt.
-<br/><br/>
-``` cd C:\ITK_DIR ``` <br/>
-``` mkdir build ``` <br/>
-``` cd build ``` <br/>
-``` nmake all ``` <br/>
-<br/>
+```c++
+CMAKE_CXX_FLAGS+="-std=c++11"
+BUILD_SHARED_LIBS=FALSE
+BUILD_EXAMPLES=FALSE
+BUILD_TESTING=FALSE
+ITKV3_COMPATIBILTY=TRUE 
+```
 
-### Compiling {{ page.project }}
+Then build ITK.
+
+```bash 
+make -j12 all 
+```
+
+You may need to use the CMake GUI in Windows. It is best to configure with `NMake Makefiles`. Once you have configured and generated, you can build in a command prompt.
+
+```bash
+cd C:\ITK_DIR
+mkdir build
+cd build
+nmake all
+```
+
+### Compiling Cleaver
 Once CMake, Qt, ITK have been installed and/or built, run CMake from your build directory and give a path to the ShapeworksStudio directory containing the master CMakeLists.txt file.
 
 #### Unix and OSX
-``` mkdir {{ page.project }}/build ``` <br/>
-``` cd {{ page.project }}/build ``` <br/>
-``` cmake -D ITK_DIR=Path/To/Your/ITK/build -D QT_DIR=Path/To/Your/Qt5/build -D CMAKE_BUILD_TYPE=Release ../src ``` <br/>
-``` make ``` <br/>
-<br/>
+```bash
+mkdir Cleaver2/build 
+cd Cleaver2/build
+cmake -D ITK_DIR=Path/To/Your/ITK/build -D QT_DIR=Path/To/Your/Qt5/build -D CMAKE_BUILD_TYPE=Release ../src
+make
+```
 Depending on how you obtained Qt, you may need to specify other Qt directories:
-<br/><br/>
-``` -D Qt5Widgets_DIR="Path/To/Qt/5.6/gcc/lib/cmake/Qt5Widgets" ``` <br/>
-``` -D Qt5OpenGL_DIR="Path/To/Qt/5.6/gcc/lib/cmake/Qt5OpenGL" ``` <br/>
+```bash
+-D Qt5Widgets_DIR="Path/To/Qt/5.6/gcc/lib/cmake/Qt5Widgets"
+-D Qt5OpenGL_DIR="Path/To/Qt/5.6/gcc/lib/cmake/Qt5OpenGL"
+```
 
 #### Windows
 Open a Visual Studio 64 bit Native Tools Command Prompt.
 Follow these commands:
-<br/><br/>
-``` mkdir C:\Path\To\{{ page.project }}\build ``` <br/>
-``` cd C:\Path\To\{{ page.project }}\build ``` <br/>
-``` cmake -G "NMake Makefiles" -DITK_DIR="C:/Path/To/Your/ITK/build" -DQT_DIR="C:/Path/To/Your/Qt5/build" -DCMAKE_BUILD_TYPE=Release ../src ``` <br/>
-``` nmake ``` <br/>
-<br/>
+```
+mkdir C:\Path\To\Cleaver2\build
+cd C:\Path\To\Cleaver2\build
+cmake -G "NMake Makefiles" -DITK_DIR="C:/Path/To/Your/ITK/build" -DQT_DIR="C:/Path/To/Your/Qt5/build" -DCMAKE_BUILD_TYPE=Release ../src
+nmake
+```
 **NOTE** Be sure to copy the Qt5 DLL files to the Executable directory for the program to run.
-<br/><br/>
-``` C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Widgets.dll ``` <br/>
-``` C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Core.dll ``` <br/>
-``` C:\Qt5_DIR\msvc2015\5.6\bin\Qt5OpenGL.dll ``` <br/>
-``` C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Gui.dll ``` <br/>
+```
+C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Widgets.dll
+C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Core.dll
+C:\Qt5_DIR\msvc2015\5.6\bin\Qt5OpenGL.dll
+C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Gui.dll
+```
 
 #### All Platforms
 Your paths may differ slightly based on your Qt5 and ITK versions and where they are installed/built.
 
-The console version ``ccmake``, or GUI version can also be used.
-You may be prompted to specify your location of the Qt installation.
-If you installed Qt in the default location, it should find Qt automatically.
-After configuration is done, generate the make files or project files for your favorite
-development environment and build.
+The console version `ccmake`, or GUI version can also be used. You may be prompted to specify your location of the Qt installation. If you installed Qt in the default location, it should find Qt automatically. After configuration is done, generate the make files or project files for your favorite development environment and build.
 
-The {{ page.project }} application will be built in build/bin.
+The Cleaver application will be built in build/bin.
 
-# Testing
+## Testing
 
 The repo comes with a set of regression tests to see if recent
 changes break expected results. To build the tests, you will
-need to set <code>BUILD_TESTING</code> to "ON" in either
-<code>ccmake</code> or when calling CMake:
+need to set `BUILD_TESTING` to `ON` in either
+`ccmake` or when calling CMake:
 
 ```c++
 cmake -DBUILD_TESTING=ON ../src
@@ -103,7 +106,7 @@ built with forced shared libraries on Windows, so use the following:
 ```c++
 cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON ../src
 ```
-<br/>
+
 
 Be sure to include all other necessary CMake definitions as annotated above.
 
