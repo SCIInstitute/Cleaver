@@ -1,12 +1,22 @@
-.. Cleaver documentation master file, created by
-   sphinx-quickstart on Fri Oct 30 12:41:40 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Cleaver's documentation!
 ===================================
 
-some text
+.. figure:: _static/image/splash.png
+    :width: 495 px
+    :align: center
+    :target: https://www.sci.utah.edu/cibc-software/seg3d.html
+
+`Cleaver <https://www.sci.utah.edu/software/cleaver.html>`_ is a free multimaterial tetrahedral meshing tool developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
+
+Installation
+------------
+Check the :doc:`Platform Specifications <dev_docs/specs>` for system requirements.
+
+`Installers <https://github.com/SCIInstitute/Cleaver2/releases>`_ are provided for Windows and Mac OS X. Linux users need to build Seg3D from :doc:`source <build>`
+
+User Documentation
+------------------
+For information on how to use cleaver, checkout the Cleaver :doc:`Manual <manual>`.
 
 .. toctree::
    ./about.md
