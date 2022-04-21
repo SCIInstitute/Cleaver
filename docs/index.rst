@@ -19,7 +19,9 @@ User Documentation
 For information on how to use cleaver, checkout the Cleaver :doc:`Manual <manual>`.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :caption: Contents:
+
    ./build.md
    ./manual.md
    ./specs.md
