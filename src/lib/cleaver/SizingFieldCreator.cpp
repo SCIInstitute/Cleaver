@@ -715,8 +715,8 @@ namespace cleaver
           }
         }
 
-        x = (-coeff[1] + sqrt((coeff[1] * coeff[1]) - 4 * coeff[0] * coeff[2])) / (2 * coeff[0]);
-        if (isnan(x))
+        // check for coeff that could cause NaN when calculating x below
+        if (((coeff[1] * coeff[1]) - 4 * coeff[0] * coeff[2]) < 0 || coeff[0] == 0.0)
         {
           coeff[0] = 0;
           coeff[1] = 0;
@@ -761,8 +761,8 @@ namespace cleaver
             coeff[1] -= 2 * val1;
             coeff[2] += val1*val1;
           }
-          x = (-coeff[1] + sqrt((coeff[1] * coeff[1]) - 4 * coeff[0] * coeff[2])) / (2 * coeff[0]);
         }
+        x = (-coeff[1] + sqrt((coeff[1] * coeff[1]) - 4 * coeff[0] * coeff[2])) / (2 * coeff[0]);
 
         //push into queue
         newtemp.dist = x;
@@ -791,7 +791,7 @@ namespace cleaver
 
   void exponentiate(VoxelMesh &mesh)
   {
-    int a, b, c, i, j, k;
+    size_t a, b, c, i, j, k;
     a = mesh.distSizeX();
     b = mesh.distSizeY();
     c = mesh.distSizeZ();

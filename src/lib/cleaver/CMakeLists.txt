@@ -90,10 +90,10 @@ if(COPY_HEADER_FILES) #TODO: Needs to be added to installation step for using as
     # When debugging, uncomment this line
     get_filename_component(file_no_path "${header_file}" NAME)
     configure_file("${header_file}"
-      "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}" COPYONLY IMMEDIATE)
+      "${CMAKE_BINARY_DIR}/include/cleaver/${file_no_path}" COPYONLY IMMEDIATE)
     set(Cleaver_INSTALLED_HEADER_FILES
       ${Cleaver_INSTALLED_HEADER_FILES}
-      "${CMAKE_BINARY_DIR}/include/Cleaver/${file_no_path}")
+      "${CMAKE_BINARY_DIR}/include/cleaver/${file_no_path}")
   endforeach()
 endif()
 
