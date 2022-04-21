@@ -1,4 +1,4 @@
-## Specifications for Cleaver
+# Specifications for Cleaver
 
 ## Minimum recommended system configuration:
 

@@ -9,7 +9,8 @@ bin/cleaver-cli --output_name spheres -i ../src/test/test_data/input/spheres*.nr
 ```
 
 Type: 
-```bin/cleaver-cli --help
+```
+bin/cleaver-cli --help
 ```
 For a list of command line tool options.
 ```
@@ -53,72 +54,70 @@ You should see a window similar to this:
 ![Cleaver Window](../_static/images/application.png "Cleaver Window")
 Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File -> Import Volume`, or load your own indicator functions or segmentation file. 
        
-       *Dialog Indicator Function Check:* Click the check in the dialog if you are importing individual indicator functions.
-       *Blending Function Sigma:* Choose a sigma for pre-process smoothing either
-       your segmentation labels or indicator functions to avoid stair-step aliasing.
-       
-       **Sizing Field Creator**
-       This tool allows a user to set parameters for the cleaving sizing field.<br/>
-       *Sampling Rate:* the sampling rate of the input indicator functions or calculated indicator functions 
-       from segmentation files. The default sample rate will be the dimensions of the volume. Smaller sampling 
-       creates coarser meshes. Adjusting this parameter will also affect Cleaver's runtime, with smaller values
-       running  faster.<br/>
-       *Feature Scaling:* scales features of the mesh effecting element size. Higher feature scaling creates 
-       coaser meshes. <br/>
-       *Lipschitz:* the maximum rate of change of element size throughout a mesh. Helpful for meshes with high 
-       and low curvature. Will have no effect on meshes with constant element sizing methods.<br/>
-       *Padding:* adds a volume buffer around the data. Useful when volumes intersect near the boundary.<br/>
-       *Element Sizing Method:* select whether to adaptively/nonuniformly resize tetrahedra for more detail at 
-       volume interactions, or to keep tetrahedra sizes constant/uniform based on the sample scale.<br/>
-       *Compute Sizing Field:* once you have your desired parameters, click this to create the sizing field.
-       This is assuming a volume has been loaded <code>(ctrl+v or File->Import Volume)</code>. New information will be added
-       to the Data Manager at each step. If a sizing field is not created here, a default one will be
-       created for you automatically before cleaving. <br/>
-       <img src="https://sciinstitute.github.io/cleaver.pages/images/mesh.png"><br/>
-       **Cleaving Tool**<br/>
-       This tab runs the cleaving algorithm and displays steps that have completed.<br/>
-       *Cleave Mesh:* Run the cleaving algorithm. The steps are shown as complete with the check below.
-       The rendering window will also update with each applicable step.<br/>
-       **Data Manager**<br/>
-       This tool displays information about meshes, volumes, and sizing fields loaded and created. <br/>
-       *Mesh:* a mesh will have number of vertices, number of tetrahedra, and the min/max mesh boundaries.<br/>
-       *Volume:* a volume will display the dimensions, origin, number of materials, the file names,
-       and the associated sizing field (if any other than the default).<br/>
-       **Mesh View Options**<br/>
-       Here are are a number of options for visualizing the generated mesh.<br/>
-       *Show Axis:* Toggle the rendering of the coordinate axis (x-y-z). <br/>
-       *Show BBox:* Toggle the rendering of the mesh/volume bounding box. <br/>
-       *Show Mesh Faces:* Toggle the rendering of the mesh's faces. <br/>
-       *Show Edges:* Toggle the rendering of the mesh's edges. <br/>
-       *Show Cuts:* Toggle the rendering of nodes where cuts took place. <br/>
-       <img src="https://sciinstitute.github.io/cleaver.pages/images/surface.png"><br/>
-       *Show Surfaces Only:* Toggle the rendering of the tets (volume) vs. the surface
-       representing the interface between volumes. <br/>
-       *Color by Quality:* Toggle the coloring of faces based on the quality of the tet vs. the material itself. <br/>
-       <img src="https://sciinstitute.github.io/cleaver.pages/images/clip.png"><br/>
-       *Clipping:* Toggle the clipping of tets based on the below sliders. <br/>
-       *Sync:* When checked, faces will update during slider movement (slower). Otherwise,
-       faces will update once the clipping plane has stopped moving (mouse is released). <br/>
-       *X-Y-Z Axes:* Select which axis to clip the volume. The associated slider will permit clipping
-       from one end of the bounding box to the other. <br/>
-       *Material Visibility Locks:* A list of the materials is here. When the faces of a material is locked, clipping
-       is ignored for that material and it is always visible. Locked cells refers to tets/volumes that
-       will remain visible despite the clip.<br/>
-       **File Menu**<br/>
-       *Import Volume:* Select 1-10 indicator function NRRDs, or 1 segmentation NRRD (if built in) to load in.<br/>
-       *Import Sizing Field:* Load a sizing field NRRD to use for a Volume.<br/>
-       *Import Mesh:* Import a tetgen mesh (*.node/*.ele pair) to visualize.<br/>
-       *Export Mesh:* Write the current mesh to file in either node/ele (tetgen) format, or VTK format. <br/>
-       **Edit Menu**<br/>
-       *Remove External Tets:* Removes tets that were created as padding around the volume.<br/>
-       *Remove Locked Tets:* Removes tets that were not warped during cleaving.<br/>
-       *Dihedral Angles:* Computes the min/max Dihedral angles. And displays them in the status bar.<br/>
-       **View:** Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools. <br/>
-       **Help:** Show information and documentation about Cleaver2, as well as issue reporting. <br/>
+   *Dialog Indicator Function Check:* Click the check in the dialog if you are importing individual indicator functions.
+   *Blending Function Sigma:* Choose a sigma for pre-process smoothing either
+   your segmentation labels or indicator functions to avoid stair-step aliasing.
+   
+### Sizing Field Creator
+   This tool allows a user to set parameters for the cleaving sizing field.
+   
+   + *Sampling Rate:* the sampling rate of the input indicator functions or calculated indicator functions from segmentation files. The default sample rate will be the dimensions of the volume. Smaller sampling creates coarser meshes. Adjusting this parameter will also affect Cleaver's runtime, with smaller values running  faster.
+   + *Feature Scaling:* scales features of the mesh effecting element size. Higher feature scaling creates coaser meshes.
+   + *Lipschitz:* the maximum rate of change of element size throughout a mesh. Helpful for meshes with high and low curvature. Will have no effect on meshes with constant element sizing methods.
+   + *Padding:* adds a volume buffer around the data. Useful when volumes intersect near the boundary.
+   + *Element Sizing Method:* select whether to adaptively/nonuniformly resize tetrahedra for more detail at volume interactions, or to keep tetrahedra sizes constant/uniform based on the sample scale.
+   + *Compute Sizing Field:* once you have your desired parameters, click this to create the sizing field. This is assuming a volume has been loaded (`ctrl+v or File->Import  Volume`). New information will be added to the Data Manager at each step. If a sizing field is not created here, a default one will be created for you automatically before cleaving.
+  
+  ![Cleaver mesh](_static/images/mesh.png "Cleaver Mesh"]
+
+### Cleaving Tool
+   This tab runs the cleaving algorithm and displays steps that have completed.
+   + *Cleave Mesh:* Run the cleaving algorithm. The steps are shown as complete with the check below. The rendering window will also update with each applicable step.
+
+### Data Manager
+   This tool displays information about meshes, volumes, and sizing fields loaded and created. 
+   + *Mesh:* a mesh will have number of vertices, number of tetrahedra, and the min/max mesh boundaries.
+   + *Volume:* a volume will display the dimensions, origin, number of materials, the file names, and the associated sizing field (if any other than the default).<br/>
+
+### Mesh View Options
+   Here are are a number of options for visualizing the generated mesh.
+   + *Show Axis:* Toggle the rendering of the coordinate axis (x-y-z). 
+   + *Show BBox:* Toggle the rendering of the mesh/volume bounding box. <br/>
+   + *Show Mesh Faces:* Toggle the rendering of the mesh's faces. <br/>
+   + *Show Edges:* Toggle the rendering of the mesh's edges. <br/>
+   + *Show Cuts:* Toggle the rendering of nodes where cuts took place. <br/>
+   ![surface visualization](https://sciinstitute.github.io/cleaver.pages/images/surface.png "Surface Visualization")
+   + *Show Surfaces Only:* Toggle the rendering of the tets (volume) vs. the surface
+   representing the interface between volumes. <br/>
+   + *Color by Quality:* Toggle the coloring of faces based on the quality of the tet vs. the material itself. <br/>
+   ![clipping](_static/images/clip.png "clipping planes")
+   + *Clipping:* Toggle the clipping of tets based on the below sliders. <br/>
+   + *Sync:* When checked, faces will update during slider movement (slower). Otherwise,
+   faces will update once the clipping plane has stopped moving (mouse is released). <br/>
+   + *X-Y-Z Axes:* Select which axis to clip the volume. The associated slider will permit clipping
+   from one end of the bounding box to the other. <br/>
+   + *Material Visibility Locks:* A list of the materials is here. When the faces of a material is locked, clipping is ignored for that material and it is always visible. Locked cells refers to tets/volumes that will remain visible despite the clip.
+
+### File Menu
++ *Import Volume:* Select 1-10 indicator function NRRDs, or 1 segmentation NRRD (if built in) to load in.
++ *Import Sizing Field:* Load a sizing field NRRD to use for a Volume.
++ *Import Mesh:* Import a tetgen mesh (*.node/*.ele pair) to visualize.
++  *Export Mesh:* Write the current mesh to file in either node/ele (tetgen) format, or VTK format.
+   
+### Edit Menu
++ *Remove External Tets:* Removes tets that were created as padding around the volume.<br/>
++ *Remove Locked Tets:* Removes tets that were not warped during cleaving.<br/>
++ *Dihedral Angles:* Computes the min/max Dihedral angles. And displays them in the status bar.<br/>
+   
+### View
+Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools.
+
+### Help
+Show information and documentation about Cleaver2, as well as issue reporting.
 
 ## Cleaver Library
-To include the cleaver library, you should link to the library build, <code>libcleaver.a</code> or
-<code>cleaver.lib</code> and include the following headers in your project: <br/>
+To include the cleaver library, you should link to the library build, `libcleaver.a` or
+`cleaver.lib` and include the following headers in your project: 
 
 ```bash
 ##CMake calls
@@ -166,7 +165,7 @@ The basic set of calls are in the following code snippet:
 
 Look at the `Cleaver2/src/cli/mesher/main.cpp` file for more details on how to apply and use the different options of the cleaver library.
 
-# Known Issues
+## Known Issues
 
 * On larger data sets with a potentially high number of quadruple points
        (> 3 material fields), some functions are failing to ensure valid tets
