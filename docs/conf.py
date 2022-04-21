@@ -144,4 +144,6 @@ html_theme_options = {
     },
 }
 
+html_extra_path = ["doxygen"]
+
 autosectionlabel_prefix_document = True
