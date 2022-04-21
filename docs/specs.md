@@ -1,16 +1,8 @@
----
-layout: default
-title: Platform Specifications
-category: info
-tags: build
-project: Cleaver2
----
-
-## Specifications
+## Specifications for Cleaver
 
 ## Minimum recommended system configuration:
 
-+ Windows 7+, OSX 10.9+, and OpenSuse 13.1+ Recommended. Other platforms may work, but are not officially supported.
++ Windows 10+, OSX 10.12+, and OpenSuse 15.1+ Recommended. Other platforms may work, but are not officially supported.
 + CPU: Core Duo or higher, recommended i5 or i7
 + Memory: 4Gb, recommended 8Gb or more
 + Dedicated Graphics Card (OpenGL 4.1+, Dedicated Shared Memory, no integrated graphics cards)
@@ -22,7 +14,7 @@ The current source code must be compiled with the 64-bit version of Visual Studi
 
 ## Mac OS X
 
-The source code base was built with Xcode as well as GNU Make and works for both environments on OS X 10.9+.
+The source code base was built with Xcode as well as GNU Make and works for both environments on OS X 10.12+.
 
 ## Linux specifications
 
@@ -30,11 +22,11 @@ The code base has been tested for use with GCC, and this is the recommended comp
 
 ### Build from source
 
-{{ page.project }} can be ([compiled]({{ site.github.url }}/build.html)) from source on Linux platforms (OpenSuSE, Ubuntu etc.), OSX, and Windows. It requires at least the following:
+Cleaver can be ([compiled](#build.html)) from source on Linux platforms (OpenSuSE, Ubuntu etc.), OSX, and Windows. It requires at least the following:
 
 + C++11 64-bit compatible compiler
 + Git 1.8 or higher (https://git-scm.com/)
-+ CMake 2.8+ (http://www.cmake.org/)
++ CMake 3.10.2 + (http://www.cmake.org/)
 + Insight Toolkit (ITK 4.7+ recommended) (http://www.itk.org/)
 + Qt 5.* (http://www.qt.io/developers/)
 + NVIDIA card and drivers for Linux

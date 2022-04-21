@@ -102,11 +102,12 @@ built with forced shared libraries on Windows, so use the following:
 
 ```c++
 cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON ../src
-```<br/>
+```
+<br/>
 
 Be sure to include all other necessary CMake definitions as annotated above.
 
-# {{ page.project }} Support
+# Cleaver Support
 
 For questions and issues regarding building the software from source,
-    please email our support list: [{{ page.supportEmail }}](mailto:{{ page.supportEmail }})
+    please email our support list <cleaver@sci.utah.edu>

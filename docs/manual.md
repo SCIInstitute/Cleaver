@@ -1,34 +1,18 @@
----
-layout: default
-title: Usage Instructions
-category: info
-tags: manual
-project: Cleaver2
-supportEmail: cleaver@sci.utah.edu
----
-
-## Table of Contents
-
-- [Using {{ page.project }}](#using-cleaver2)
-  - [Command line Tool](#command-line-tool)
-  - [Graphical Interface](#graphical-interface)
-  - [Cleaver Library](#cleaver-library)
-- [Known Issues](#known-issues)<br/>
-
-# Using {{ page.project }}
+# Using Cleaver
 
 ## Command Line Tool
 
-Using the sphere indicator functions in
-<code>src/test/test_data/input/</code>, you can generate a simple tet mesh
-using the following command: <br/>
+Using the sphere indicator functions in `src/test/test_data/input/`, you can generate a simple tet mesh using the following command: 
+
 ```
 bin/cleaver-cli --output_name spheres -i ../src/test/test_data/input/spheres*.nrrd
+```
 
-Type:
-<code> bin/cleaver-cli --help
+Type: 
+```bin/cleaver-cli --help
+```
 For a list of command line tool options.
-
+```
 Command line flags:
 -a [ --alpha ] arg                  initial alpha value
 -s [ --alpha_short ] arg            alpha short value for constant element sizing method
@@ -61,17 +45,19 @@ Command line flags:
 ## Graphical Interface
 
 You can run the GUI from the command line, or by double-clicking it in a folder.
-<br/><code> gui/cleaver-gui</code><br/>
-You should see a window similar to this:<br/>
-<img src="https://sciinstitute.github.io/cleaver.pages/images/application.png"><br/>
-Load the spheres in <code>src/test/test_data/input</code>
-either with <code>ctrl+v</code> or <code>File -> Import Volume</code>,
-       or load your own indicator functions or segmentation file. <br/>
-       *Dialog Indicator Function Check:* Click the check in the dialog if you are
-       importing individual indicator functions.<br/>
+```
+gui/cleaver-gui.app
+```
+
+You should see a window similar to this:
+![Cleaver Window](../_static/images/application.png "Cleaver Window")
+Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File -> Import Volume`, or load your own indicator functions or segmentation file. 
+       
+       *Dialog Indicator Function Check:* Click the check in the dialog if you are importing individual indicator functions.
        *Blending Function Sigma:* Choose a sigma for pre-process smoothing either
-       your segmentation labels or indicator functions to avoid stair-step aliasing.<br/>
-       **Sizing Field Creator**<br/>
+       your segmentation labels or indicator functions to avoid stair-step aliasing.
+       
+       **Sizing Field Creator**
        This tool allows a user to set parameters for the cleaving sizing field.<br/>
        *Sampling Rate:* the sampling rate of the input indicator functions or calculated indicator functions 
        from segmentation files. The default sample rate will be the dimensions of the volume. Smaller sampling 
@@ -178,9 +164,7 @@ The basic set of calls are in the following code snippet:
 
 ```
 
-Look at the <code>Cleaver2/src/cli/mesher/main.cpp</code> file
-for more details on how to apply
-and use the different options of the cleaver library.
+Look at the `Cleaver2/src/cli/mesher/main.cpp` file for more details on how to apply and use the different options of the cleaver library.
 
 # Known Issues
 
