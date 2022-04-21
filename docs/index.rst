@@ -1,16 +1,16 @@
 Welcome to Cleaver's documentation!
 ===================================
 
-.. figure:: _static/image/splash.png
+.. figure:: _static/images/splash.png
     :width: 495 px
     :align: center
-    :target: https://www.sci.utah.edu/cibc-software/seg3d.html
+    :target: https://www.sci.utah.edu/software/cleaver.html
 
 `Cleaver <https://www.sci.utah.edu/software/cleaver.html>`_ is a free multimaterial tetrahedral meshing tool developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
 
 Installation
 ------------
-Check the :doc:`Platform Specifications <dev_docs/specs>` for system requirements.
+Check the :doc:`Platform Specifications <specs>` for system requirements.
 
 `Installers <https://github.com/SCIInstitute/Cleaver2/releases>`_ are provided for Windows and Mac OS X. Linux users need to build Seg3D from :doc:`source <build>`
 
@@ -19,7 +19,6 @@ User Documentation
 For information on how to use cleaver, checkout the Cleaver :doc:`Manual <manual>`.
 
 .. toctree::
-   ./about.md
    ./build.md
    ./manual.md
    ./specs.md
