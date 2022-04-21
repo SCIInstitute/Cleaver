@@ -25,6 +25,11 @@ For information on how to use cleaver, checkout the Cleaver :doc:`Manual <manual
    ./build.md
    ./manual.md
    ./specs.md
+   ./doxygen/index.html
+
+Code Documentations
+--------------
+[Doxygen Code Reference](doxygen/index.html)
 
 Contributors
 ===============
