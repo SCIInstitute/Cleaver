@@ -42,7 +42,7 @@
 //
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 #include <cleaver/Cleaver.h>
-#include <boost/program_options.hpp>
+#include <CLI11.hpp>
 
 // STL Includes
 #include <exception>
@@ -57,8 +57,6 @@
 #define NOMINMAX
 #endif
 
-namespace po = boost::program_options;
-
 // Entry Point
 int main(int argc, char* argv[])
 {
@@ -69,31 +67,15 @@ int main(int argc, char* argv[])
   //  Parse Command Line Params
   //-------------------------------
   try {
-    po::options_description description("Command line flags");
-    description.add_options()
-      ("input,i", po::value<std::string>(), "input mesh")
-      ("help,h", "display help message")
-      ("verbose,v", "enable verbose output");
+    CLI::App app{ "Cleaver - A MultiMaterial Conforming Tetrahedral Meshing Library - mesh information" };
+    app.add_option("-i,--input", meshName, "input mesh")->required();
+    app.add_flag("-v,--verbose", verbose, "enable verbose output");
 
-    boost::program_options::variables_map variables_map;
-    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, description), variables_map);
-    boost::program_options::notify(variables_map);
+    CLI11_PARSE(app, argc, argv);
 
     // print help
-    if (variables_map.count("help") || (argc == 1)) {
-      std::cout << description << std::endl;
-      return 0;
-    }
-
-    // enable verbose mode
-    if (variables_map.count("verbose")) {
-        verbose = true;
-    }
-
-    if (variables_map.count("input")) {
-      meshName = variables_map["input"].as<std::string>();
-    } else {
-     std::cout << description << std::endl;
+    if (argc == 1) {
+      std::cout << app.help() << std::endl;
       return 0;
     }
 

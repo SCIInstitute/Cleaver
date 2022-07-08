@@ -46,7 +46,7 @@
 #include <cleaver/SizingFieldCreator.h>
 #include <NRRDTools.h>
 
-#include <boost/program_options.hpp>
+#include <CLI11.hpp>
 
 // STL Includes
 #include <exception>
@@ -68,8 +68,6 @@ const std::string kDefaultSamplingRateString = "2.0";
 const std::string kDefaultLipschitzString = "0.2";
 const std::string kDefaultFeatureScalingString = "1.0";
 
-namespace po = boost::program_options;
-
 // Entry Point
 int main(int argc,	char* argv[])
 {
@@ -85,51 +83,29 @@ int main(int argc,	char* argv[])
     //  Parse Command Line Params
     //-------------------------------
     try{
-        po::options_description description("Command line flags");
-        description.add_options()
-                ("help,h", "display help message")
-                ("verbose,v", "enable verbose output")
-                ("version", "display version information")
-                ("material_fields", po::value<std::vector<std::string> >()->multitoken(), "material field paths")
-                ("lipschitz", po::value<double>(&lipschitz)->default_value(kDefaultLipschitz, kDefaultLipschitzString), "maximum rate of change of element size: 1 is uniform")s
-                ("feature_scaling", po::value<double>(&featureScaling)->default_value(kDefaultFeatureScaling), "feature size scaling: higher values make a coarser mesh")
-                ("sampling_rate", po::value<double>(&samplingRate)->default_value(kDefaultSamplingRate), "volume sampling rate: lower values make a coarser mesh")
-                ("output", po::value<std::string>()->default_value(kDefaultOutputName, "sizingfield"), "output path")
-                ("padding", po::value<int>()->default_value(kDefaultPadding), "padding")
-        ;
-        boost::program_options::variables_map variables_map;
-        boost::program_options::store(boost::program_options::parse_command_line(argc, argv, description), variables_map);
-        boost::program_options::notify(variables_map);
+        bool show_version = false;
+
+        CLI::App app{ "Cleaver - A MultiMaterial Conforming Tetrahedral Meshing Library - sizing field creator" };
+        app.add_flag("-v,--verbose", verbose, "enable verbose output");
+        app.add_flag("--version", show_version, "display version information");
+        app.add_option("--material_fields", material_fields, "material field paths")->required();
+        app.add_option("--lipschitz", lipschitz, "maximum rate of change of element size (1 is uniform)");
+        app.add_option("--feature_scaling", featureScaling, "feature size scaling (higher values make a coarser mesh)");
+        app.add_option("--sampling_rate", samplingRate, "volume sampling rate (lower values make a coarser mesh)");
+        app.add_option("--output", output_path, "output path");
+        app.add_option("--padding", padding, "volume padding");
+        CLI11_PARSE(app, argc, argv);
+
+        // print help
+        if (argc == 1) {
+          std::cout << app.help() << std::endl;
+          return 0;
+        }
 
         // print version info
-        if (variables_map.count("version")) {
+        if (show_version) {
             std::cout << cleaver::Version << std::endl;
             return 0;
-        }
-        // print help
-        else if (variables_map.count("help") || (argc ==1)) {
-            std::cout << description << std::endl;
-            return 0;
-        }
-
-        // enable verbose mode
-        if (variables_map.count("verbose")) {
-            verbose = true;
-        }
-
-        // parse the material field input file names
-        if (variables_map.count("material_fields")) {
-            material_fields = variables_map["material_fields"].as<std::vector<std::string> >();
-            int file_count = material_fields.size();
-        }
-        else{
-            std::cout << "Error: At least one material field file must be specified." << std::endl;
-            return 0;
-        }
-
-        // set output path
-        if (variables_map.count("output")) {
-            output_path = variables_map["output"].as<std::string>();
         }
     }
     catch (std::exception& e) {
@@ -167,8 +143,8 @@ int main(int argc,	char* argv[])
             cleaver::SizingFieldCreator::createSizingFieldFromVolume(
                 volume,
                 (float)(1.0/lipschitz),
-                (float)sampling_rate,
-                (float)feature_scaling,
+                (float)samplingRate,
+                (float)featureScaling,
                 (int)padding,
                 false);
 

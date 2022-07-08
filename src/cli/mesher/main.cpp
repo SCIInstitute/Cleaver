@@ -46,7 +46,7 @@
 #include <cleaver/Timer.h>
 #include <NRRDTools.h>
 
-#include <boost/program_options.hpp>
+#include <CLI11.hpp>
 
 // STL Includes
 #include <exception>
@@ -81,8 +81,6 @@ const double kDefaultFeatureScaling = 1.0;
 const int    kDefaultPadding = 0;
 const int    kDefaultMaxIterations = 1000;
 const double kDefaultSigma = 1.;
-
-namespace po = boost::program_options;
 
 // Entry Point
 int main(int argc, char* argv[])
@@ -123,72 +121,61 @@ int main(int argc, char* argv[])
   //  Parse Command Line Params
   //-------------------------------
   try {
-    po::options_description description("Command line flags");
-    description.add_options()
-      ("alpha,a", po::value<double>(), "initial alpha value")
-      ("alpha_short,s", po::value<double>(), "alpha short value for constant element sizing method")
-      ("alpha_long,l", po::value<double>(), "alpha long value for constant element sizing method")
-      ("background_mesh,b", po::value<std::string>(), "input background mesh")
-      ("blend_sigma,B", po::value<double>(), "blending function sigma for input(s) to remove alias artifacts")
-      ("element_sizing_method,m", po::value<std::string>(), "background mesh mode (adaptive [default], constant)")
-      ("feature_scaling,F", po::value<double>(), "feature size scaling (higher values make a coarser mesh)")
-      ("fix_tet_windup,j", "ensure positive Jacobians with proper vertex wind-up")
-      ("help,h", "display help message")
-      ("input_files,i", po::value<std::vector<std::string> >()->multitoken(), "material field paths or segmentation path")
-      ("lipschitz,L", po::value<double>(), "maximum rate of change of element size (1 is uniform)")
-      ("output_format,f", po::value<std::string>(), "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [surface mesh only])")
-      ("output_name,n", po::value<std::string>(), "output mesh name (default 'output')")
-      ("output_path,o", po::value<std::string>(), "output path prefix")
-      //("padding,p", po::value<int>(), "volume padding")
-      ("record,r", po::value<std::string>(), "record operations on tets from input file")
-      ("sampling_rate,R", po::value<double>(), "volume sampling rate (lower values make a coarser mesh)")
-      ("indicator_functions,I", "the input files are indicator functions")
-      ("simple", "use simple interface approximation")
-      ("sizing_field,z", po::value<std::string>(), "sizing field path")
-      ("strict,t", "warnings become errors")
-      ("strip_exterior,e", "strip exterior tetrahedra")
-      ("write_background_mesh,w", "write background mesh")
-      ("verbose,v", "enable verbose output")
-      ("version,V", "display version information");
+    std::string element_sizing_method_string;
+    bool show_help = false;
+    std::string format_string;
+    bool indicator_functions = false;
+    bool show_version = false;
 
-    boost::program_options::variables_map variables_map;
-    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, description), variables_map);
-    boost::program_options::notify(variables_map);
+    CLI::App app{ "Cleaver - A MultiMaterial Conforming Tetrahedral Meshing Library - mesher" };
+    //po::options_description description("Command line flags");
+    app.add_option("-a,--alpha", alpha, "initial alpha value");
+    app.add_option("-s,--alpha_short", alpha_short, "alpha short value for constant element sizing method");
+    app.add_option("-l,--alpha_long", alpha_long, "alpha long value for constant element sizing method");
+    app.add_option("-b,--background_mesh", background_mesh, "input background mesh");
+    app.add_option("-B,--blend_sigma", sigma, "blending function sigma for input(s) to remove alias artifacts");
+    app.add_option("-m,--element_sizing_method", element_sizing_method_string, "background mesh mode (adaptive [default], constant)");
+    app.add_option("-F,--feature_scaling", feature_scaling, "feature size scaling (higher values make a coarser mesh)");
+    app.add_flag("-j,--fix_tet_windup", fix_tets, "ensure positive Jacobians with proper vertex wind-up");
+    //app.add_option("-h,--help", show_help, "display help message");
+    app.add_option("-i,--input_files", material_fields, "material field paths or segmentation path");
+    app.add_option("-L,--lipschitz", lipschitz, "maximum rate of change of element size (1 is uniform)");
+    app.add_option("-f,--output_format", format_string, "output mesh format (tetgen [default], scirun, matlab, vtkUSG, vtkPoly, ply [surface mesh only])");
+    app.add_option("-n,--output_name", output_name, "output mesh name (default 'output')");
+    app.add_option("-o,--output_path", output_path, "output path prefix");
+    //app.add_option("-p,--padding", padding, "volume padding");
+    app.add_option("-r,--record", recording_input, "record operations on tets from input file");
+    app.add_option("-R,--sampling_rate", sampling_rate, "volume sampling rate (lower values make a coarser mesh)");
+    app.add_flag("-I,--indicator_functions", indicator_functions, "the input files are indicator functions");
+    app.add_flag("--simple", simple, "use simple interface approximation");
+    app.add_option("-z,--sizing_field", sizing_field, "sizing field path");
+    app.add_flag("-t,--strict", strict, "warnings become errors");
+    app.add_flag("-e,--strip_exterior", strip_exterior, "strip exterior tetrahedra");
+    app.add_flag("-w,--write_background_mesh", write_background_mesh, "write background mesh");
+    app.add_flag("-v,--verbose", verbose, "enable verbose output");
+    app.add_flag("-V,--version", show_version, "display version information");
+
+    CLI11_PARSE(app, argc, argv);
 
     // print help
-    if (variables_map.count("help") || (argc == 1)) {
-      std::cout << description << std::endl;
+    if (argc == 1) {
+      std::cout << app.help() << std::endl;
       return 0;
     }
 
     // print version info
-    if (variables_map.count("version")) {
+    if (show_version) {
       std::cout << cleaver::Version << std::endl;
       return 0;
     }
 
-    // enable verbose mode
-    if (variables_map.count("verbose")) {
-      verbose = true;
-    }
-
-    // enable simple interfaces
-    if (variables_map.count("simple")) {
-      simple = true;
-    }
-
     // enable indicator_function
-    if (variables_map.count("indicator_functions")) {
+    if (indicator_functions) {
       segmentation = false;
-    }
-    if (variables_map.count("strict")) {
-      strict = true;
     }
 
     // parse the material field input file names
-    if (variables_map.count("input_files")) {
-      material_fields = variables_map["input_files"].as<std::vector<std::string> >();
-    } else {
+    if (material_fields.empty()) {
       std::cerr << "Error: At least one material field file must be specified." << std::endl;
       return 1;
     }
@@ -197,11 +184,10 @@ int main(int argc, char* argv[])
     // parse the sizing field input file name
     // and check for conflicting parameters
     //----------------------------------------
-    if (variables_map.count("sizing_field")) {
+    if (!sizing_field.empty()) {
       have_sizing_field = true;
-      sizing_field = variables_map["sizing_field"].as<std::string>();
 
-      if (variables_map.count("lipschitz")) {
+      if (app.count("--lipschitz")) {
         if (!strict)
           std::cerr << "Warning: sizing field provided, lipschitz will be ignored." << std::endl;
         else {
@@ -209,7 +195,7 @@ int main(int argc, char* argv[])
           return 2;
         }
       }
-      if (variables_map.count("feature_scaling")) {
+      if (app.count("--feature_scaling")) {
         if (!strict)
           std::cerr << "Warning: sizing field provided, feature scaling will be ignored." << std::endl;
         else {
@@ -217,7 +203,7 @@ int main(int argc, char* argv[])
           return 3;
         }
       }
-      if (variables_map.count("sampling_rate")) {
+      if (app.count("--sampling_rate")) {
         if (!strict)
           std::cerr << "Warning: sizing field provided, sampling rate will be ignored." << std::endl;
         else {
@@ -227,39 +213,10 @@ int main(int argc, char* argv[])
       }
     }
 
-    // parse sizing field parameters
-    if (variables_map.count("lipschitz")) {
-      lipschitz = variables_map["lipschitz"].as<double>();
-    }
-    if (variables_map.count("sampling_rate")) {
-      sampling_rate = variables_map["sampling_rate"].as<double>();
-    }
-    if (variables_map.count("feature_scaling")) {
-      feature_scaling = variables_map["feature_scaling"].as<double>();
-    }
-    //if (variables_map.count("padding")) {
-      //padding = variables_map["padding"].as<int>();
-    //}
-    fix_tets = variables_map.count("fix_tet_windup") == 0 ? false : true;
-
-    if (variables_map.count("alpha")) {
-      alpha = variables_map["alpha"].as<double>();
-    }
-    if (variables_map.count("alpha_short")) {
-      alpha_short = variables_map["alpha_short"].as<double>();
-    }
-    if (variables_map.count("alpha_long")) {
-      alpha_long = variables_map["alpha_long"].as<double>();
-    }
-    if (variables_map.count("blend_sigma")) {
-      sigma = variables_map["blend_sigma"].as<double>();
-    }
-
-    if (variables_map.count("background_mesh")) {
+    if (!background_mesh.empty()) {
       have_background_mesh = true;
-      background_mesh = variables_map["background_mesh"].as<std::string>();
 
-      if (variables_map.count("sizing_field")) {
+      if (app.count("--sizing_field")) {
         if (!strict)
           std::cerr << "Warning: background mesh provided, sizing field will be ignored." << std::endl;
         else {
@@ -271,8 +228,7 @@ int main(int argc, char* argv[])
 
 
     // parse the background mesh mode
-    if (variables_map.count("element_sizing_method")) {
-      std::string element_sizing_method_string = variables_map["element_sizing_method"].as<std::string>();
+    if (!element_sizing_method_string.empty()) {
       if (element_sizing_method_string.compare("constant") == 0) {
         element_sizing_method = cleaver::Constant;
       } else if (element_sizing_method_string.compare("adaptive") == 0) {
@@ -284,24 +240,12 @@ int main(int argc, char* argv[])
       }
     }
 
-    if (variables_map.count("record")) {
+    if (!recording_input.empty()) {
       record_operations = true;
-      recording_input = variables_map["record"].as<std::string>();
-    }
-
-    // strip exterior tetra after mesh generation
-    if (variables_map.count("strip_exterior")) {
-      strip_exterior = true;
-    }
-
-    // enable writing background mesh if request
-    if (variables_map.count("write_background_mesh")) {
-      write_background_mesh = true;
     }
 
     // set the proper output mesh format
-    if (variables_map.count("output_format")) {
-      std::string format_string = variables_map["output_format"].as<std::string>();
+    if (!format_string.empty()) {
       if (format_string.compare(tetgen) == 0) {
         output_format = cleaver::Tetgen;
       } else if (format_string.compare(scirun) == 0) {
@@ -318,16 +262,6 @@ int main(int argc, char* argv[])
         std::cerr << "Error: unsupported output format: " << format_string << std::endl;
         return 7;
       }
-    }
-
-    // set output path
-    if (variables_map.count("output_path")) {
-      output_path = variables_map["output_path"].as<std::string>();
-    }
-
-    // set output mesh name
-    if (variables_map.count("output_name")) {
-      output_name = variables_map["output_name"].as<std::string>();
     }
 
   } catch (std::exception& e) {

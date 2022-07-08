@@ -15,7 +15,7 @@
 #include "Shaders/Shaders.h"
 #include <QMatrix4x4>
 #include <array>
-#include <boost/math/special_functions/fpclassify.hpp>
+#include <cmath>
 
 
 #ifndef M_PI
@@ -530,7 +530,7 @@ void MeshWindow::paintGL()
   }
   auto matTest = this->rotateMatrix_.data();
   for(size_t i = 0; i < 16; i++) {
-    if(boost::math::isnan(matTest[i])) {
+    if(std::isnan(matTest[i])) {
       std::cout << "Recovering from a NaN matrix error..." << std::endl;
       this->resetView();
       break;

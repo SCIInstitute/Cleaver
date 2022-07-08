@@ -15,5 +15,4 @@ add_executable(mesh-info ${srcs} ${hdrs})
 
 target_link_libraries(mesh-info
   cleaver
-  boostparts
   )
