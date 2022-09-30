@@ -17,7 +17,6 @@ add_executable(cleaver-cli ${srcs} ${hdrs})
 target_link_libraries(cleaver-cli
   cleaver
   nrrd2cleaver
-  boostparts
   )
 
 install(TARGETS cleaver-cli

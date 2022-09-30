@@ -37,6 +37,7 @@ cmake_minimum_required(VERSION 3.10.2)
 # Add library incl1udes
 include_directories(${CMAKE_BINARY_DIR}/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ./)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ../)
 
 # Add Source Files
 file(GLOB srcs *.cpp )

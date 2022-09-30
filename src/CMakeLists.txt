@@ -60,6 +60,7 @@ else()
 endif()
 
 # Build Cleaver Library
+include_directories(lib/cli11)
 add_subdirectory(lib/jsoncpp)
 add_subdirectory(lib/cleaver)
 
@@ -79,8 +80,6 @@ endif()
 
 if(BUILD_CLI OR BUILD_GUI)
 
-  add_subdirectory(lib/boost)
-  include_directories(lib/boost)
   add_subdirectory(lib/nrrd2cleaver)
 
   if(BUILD_CLI)
