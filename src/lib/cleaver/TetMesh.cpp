@@ -103,6 +103,12 @@ namespace cleaver
   }
 
   TetMesh::~TetMesh() {
+    // Delete of half edges in map of vert pairs
+    for (auto & x : halfEdges)
+    {
+      x.second->halfFaces.clear();
+      delete x.second;
+    }
 
     // delete tets verts, faces, etc
     for (size_t f = 0; f < faces.size(); f++) {
