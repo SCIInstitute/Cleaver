@@ -43,11 +43,3 @@ Cleaver was supported by grants from the National Institute of General Medicine 
 Bibliography
 ================
 .. bibliography::
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
