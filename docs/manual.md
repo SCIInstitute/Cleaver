@@ -113,7 +113,7 @@ Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File ->
 Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools.
 
 ### Help
-Show information and documentation about Cleaver2, as well as issue reporting.
+Show information and documentation about Cleaver, as well as issue reporting.
 
 ## Cleaver Library
 To include the cleaver library, you should link to the library build, `libcleaver.a` or
@@ -121,8 +121,8 @@ To include the cleaver library, you should link to the library build, `libcleave
 
 ```bash
 ##CMake calls
-include_directories(Cleaver2/src/lib/cleaver)
-target_link_libraries(YOUR_TARGET ${your_libs} Cleaver2/build/lib/libcleaver.a)
+include_directories(Cleaver/src/lib/cleaver)
+target_link_libraries(YOUR_TARGET ${your_libs} Cleaver/build/lib/libcleaver.a)
 ```
 
 There are other headers for different options,
@@ -163,7 +163,7 @@ The basic set of calls are in the following code snippet:
 
 ```
 
-Look at the `Cleaver2/src/cli/mesher/main.cpp` file for more details on how to apply and use the different options of the cleaver library.
+Look at the `Cleaver/src/cli/mesher/main.cpp` file for more details on how to apply and use the different options of the cleaver library.
 
 ## Known Issues
 

@@ -53,8 +53,8 @@ Once CMake, Qt, ITK have been installed and/or built, run CMake from your build 
 
 #### Unix and OSX
 ```bash
-mkdir Cleaver2/build 
-cd Cleaver2/build
+mkdir Cleaver/build
+cd Cleaver/build
 cmake -D ITK_DIR=Path/To/Your/ITK/build -D QT_DIR=Path/To/Your/Qt5/build -D CMAKE_BUILD_TYPE=Release ../src
 make
 ```
@@ -68,8 +68,8 @@ Depending on how you obtained Qt, you may need to specify other Qt directories:
 Open a Visual Studio 64 bit Native Tools Command Prompt.
 Follow these commands:
 ```
-mkdir C:\Path\To\Cleaver2\build
-cd C:\Path\To\Cleaver2\build
+mkdir C:\Path\To\Cleaver\build
+cd C:\Path\To\Cleaver\build
 cmake -G "NMake Makefiles" -DITK_DIR="C:/Path/To/Your/ITK/build" -DQT_DIR="C:/Path/To/Your/Qt5/build" -DCMAKE_BUILD_TYPE=Release ../src
 nmake
 ```
