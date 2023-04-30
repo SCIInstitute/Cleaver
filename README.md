@@ -29,15 +29,15 @@ Reference:
 
 ## Documentation
 
-Refer to the [documentation](https://cleaver2.readthedocs.io) for detailed installation and usage details.
+Refer to the [documentation](https://cleaver.readthedocs.io) for detailed installation and usage details.
 
-For general questions about the project, its applications, or about software usage, please create a discussion in [Cleaver2/discussions](https://github.com/SCIInstitute/Cleaver2/discussions) where the community can collectively address your questions.
+For general questions about the project, its applications, or about software usage, please create a discussion in [Cleaver/discussions](https://github.com/SCIInstitute/Cleaver/discussions) where the community can collectively address your questions.
 
 ## Authors
 
 Cleaver was developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
 
-Please take a look at the [contributors page](https://github.com/SCIInstitute/Cleaver2/graphs/contributors) to learn more about the developers of Cleaver.
+Please take a look at the [contributors page](https://github.com/SCIInstitute/Cleaver/graphs/contributors) to learn more about the developers of Cleaver.
 
 ## Acknowledgement
 

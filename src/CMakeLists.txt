@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------------
 #
-# Cleaver2 - A MultiMaterial Tetrahedral Mesher
+# Cleaver - A MultiMaterial Tetrahedral Mesher
 # -- CMakeList
 #
 # Primary Author:        Jonathan R. Bronson (bronson@sci.utah.edu)
