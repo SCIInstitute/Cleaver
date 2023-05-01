@@ -36,7 +36,6 @@ extensions = [
         'sphinx.ext.autodoc',
         'sphinx.ext.napoleon',
         'myst_parser',
-        'sphinx_markdown_tables',
         'sphinxcontrib.bibtex',
         'notfound.extension',  # Show a better 404 page when an invalid address is entered
 ]
