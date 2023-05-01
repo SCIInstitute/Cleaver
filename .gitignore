@@ -17,7 +17,7 @@ WIN32_DLLS
 *~
 build
 buildR
-build*
+build*/
 docs/_build
 .svn
 msvc
