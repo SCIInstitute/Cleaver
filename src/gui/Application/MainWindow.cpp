@@ -738,7 +738,7 @@ void MainWindow::docInfo()
   if (QMessageBox::Ok == QMessageBox::information(this, "Cleaver Documentation",
     "Click OK to be taken to Cleaver's documentation page.", QMessageBox::Ok | QMessageBox::Cancel))
   {
-    QDesktopServices::openUrl(QUrl("https://sciinstitute.github.io/cleaver.pages/", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://cleaver.readthedocs.io", QUrl::TolerantMode));
   }
 }
 
