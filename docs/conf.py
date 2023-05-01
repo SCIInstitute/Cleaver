@@ -33,6 +33,7 @@ release = 'v2.4'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+        'sphinx_design',
         'sphinx.ext.autodoc',
         'sphinx.ext.napoleon',
         'myst_parser',

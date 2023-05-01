@@ -1,4 +1,4 @@
-# Using Cleaver
+# Manual
 
 ## Command Line Tool
 
@@ -116,6 +116,7 @@ Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools.
 Show information and documentation about Cleaver, as well as issue reporting.
 
 ## Cleaver Library
+
 To include the cleaver library, you should link to the library build, `libcleaver.a` or
 `cleaver.lib` and include the following headers in your project: 
 
@@ -168,10 +169,8 @@ Look at the `Cleaver/src/cli/mesher/main.cpp` file for more details on how to ap
 ## Known Issues
 
 * On larger data sets with a potentially high number of quadruple points
-       (> 3 material fields), some functions are failing to ensure valid tets
-       and meshes, causing bad tets in the final output. This code is being
-       debugged now for a future release.<br/>
-* The following graphics cards are known to not support Cleaver:
-  - AMD Radeon HD 6310 (Integrated Card)
-  - AMD Radeon 7400 M
-  - INTEL HD 3000 (Integrated Card)
+  (> 3 material fields), some functions are failing to ensure valid tets
+  and meshes, causing bad tets in the final output. This code is being
+  debugged now for a future release.
+
+* The graphics cards documented in <project:getting_started.md#system-requirements> are known to not support Cleaver.
