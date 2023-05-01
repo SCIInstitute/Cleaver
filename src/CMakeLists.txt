@@ -41,8 +41,9 @@ project(CLEAVER2)
 
 # Global CMake options
 cmake_minimum_required(VERSION 3.10.2)
-option(CMAKE_BUILD_TYPE Release)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+include(cleaverInitializeBuildType)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL
     "Single output directory for building all executables.")
