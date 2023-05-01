@@ -22,7 +22,7 @@ The code base has been tested for use with GCC, and this is the recommended comp
 
 ### Build from source
 
-Cleaver can be ([compiled](#build.html)) from source on Linux platforms (OpenSuSE, Ubuntu etc.), OSX, and Windows. It requires at least the following:
+Cleaver can be [compiled](build.md) from source on Linux platforms (OpenSuSE, Ubuntu etc.), OSX, and Windows. It requires at least the following:
 
 + C++11 64-bit compatible compiler
 + Git 1.8 or higher (https://git-scm.com/)

@@ -4,7 +4,7 @@
 
 ### Qt
 
-[Qt binaries](qt.io) and packages are available on the Qt website or can be built 
+[Qt binaries](https://www.qt.io/) and packages are available on the Qt website or can be built
 from source code. Gcc/Clang/MSVC with C++11 support is required.
 
 ### CMake
