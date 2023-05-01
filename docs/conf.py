@@ -10,12 +10,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import lxml.etree as ET
-import os
-import sys
-# sys.path.insert(0, os.path.abspath('.'))
+#import os
+#import sys
 
-#from recommonmark.parser import CommonMarkParse
+# sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
@@ -33,26 +31,19 @@ release = 'v2.4'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-#extensions = [
-#    'sphinx.ext.autodoc',
-#    'recommonmark',
-#    'sphinx_markdown_tables',
-#    'notfound.extension'
-#]
-
 extensions = [
         'sphinx.ext.autodoc',
         'sphinx.ext.napoleon',
         'myst_parser',
         'sphinx_markdown_tables',
         'sphinxcontrib.bibtex',
-        'notfound.extension'
+        'notfound.extension',  # Show a better 404 page when an invalid address is entered
 ]
 
 myst_enable_extensions = [
     "colon_fence",  # Allow code fence using ::: (see https://myst-parser.readthedocs.io/en/latest/using/syntax-optional.html#syntax-colon-fence)
     "linkify",  # Allow automatic creation of links from URLs (it is sufficient to write https://google.com instead of <https://google.com>)
-    "substitution"
+    "substitution",  # Allow adding substitutions added in either the conf.py using myst_substitutions or in front-matter section
 ]
 
 # Auto-generate header anchors up to level 6, so that it can be referenced like [](file.md#header-anchor).
@@ -62,6 +53,7 @@ myst_heading_anchors = 6
 # auto number figures
 numfig = True
 
+# sphinxcontrib.bibtex
 # Path for bibtex files
 bibtex_bibfiles = ['references.bib']
 
@@ -78,6 +70,8 @@ source_suffix = {
     '.md': 'markdown',
 }
 
+# sphinx-notfound-page
+# https://github.com/readthedocs/sphinx-notfound-page
 notfound_context = {
     'title': 'Page Not Found',
     'body': '''
@@ -108,30 +102,22 @@ language = 'python'
 #
 html_theme = 'furo'
 
-#html_theme = 'groundwork'
-
-# html_style = '/css/main.css'
-
-#on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-#if not on_rtd:  # only import and set the theme if we're building docs locally
-#    import sphinx_rtd_theme
-#    html_theme = 'sphinx_book_theme'
-#    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-
-
 html_static_path = ['_static']
 
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
 html_css_files = ['css/main.css']
 
+# The "title" for HTML documentation generated with Sphinx’s own templates.
 html_title = project
 
+# See https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-html_logo
 html_logo = '_static/images/splash.png'
 
+# See https://pradyunsg.me/furo/customisation/#theme-options
 html_theme_options = {
     "sidebar_hide_name": True,
     "light_css_variables": {
@@ -146,4 +132,6 @@ html_theme_options = {
 
 html_extra_path = ["doxygen"]
 
+# sphinx.ext.autosectionlabel
+# See https://www.sphinx-doc.org/en/master/usage/extensions/autosectionlabel.html
 autosectionlabel_prefix_document = True
