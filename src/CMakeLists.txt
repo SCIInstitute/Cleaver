@@ -39,11 +39,13 @@
 
 project(CLEAVER2)
 
-# Global CMake options
 cmake_minimum_required(VERSION 3.10.2)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
 include(cleaverInitializeBuildType)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL
     "Single output directory for building all executables.")
@@ -55,7 +57,7 @@ set(CLEAVER2_BUNDLE_DIR "." CACHE STRING
   "Directory for installing runtime files; path is relative to CMAKE_INSTALL_PREFIX")
 
 if(NOT WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else()
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
