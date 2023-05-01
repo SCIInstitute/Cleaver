@@ -12,7 +12,7 @@ Installation
 ------------
 Check the :doc:`Platform Specifications <specs>` for system requirements.
 
-`Installers <https://github.com/SCIInstitute/Cleaver/releases>`_ are provided for Windows and Mac OS X. Linux users need to build Seg3D from :doc:`source <build>`
+`Installers <https://github.com/SCIInstitute/Cleaver/releases>`_ are provided for Windows and Mac OS X. Linux users need to build Cleaver from :doc:`source <build>`
 
 User Documentation
 ------------------
