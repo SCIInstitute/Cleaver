@@ -12,6 +12,7 @@
 #
 #import os
 #import sys
+from datetime import date
 
 # sys.path.insert(0, os.path.abspath('.'))
 
@@ -19,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Cleaver'
-copyright = '2020, Scientific Computing and Imaging Institute, University of Utah'
+copyright = f'{date.today().year}, Scientific Computing and Imaging Institute, University of Utah'
 author = 'Jonathan Branson, Brig Bagley, Jess Tate, Ally Warner, Dan White, Ross Whitaker'
 
 # The full version, including alpha/beta/rc tags
