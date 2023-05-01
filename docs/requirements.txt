@@ -2,6 +2,7 @@ furo
 linkify-it-py
 myst-parser
 sphinx
+sphinx-design
 sphinx-issues
 sphinx-notfound-page
 sphinxcontrib-bibtex

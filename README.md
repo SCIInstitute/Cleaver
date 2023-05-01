@@ -1,31 +1,14 @@
 # Cleaver
 
-Cleaver is a multi-material tetrahedral meshing tool
+Cleaver is an open-source multi-material tetrahedral meshing tool.
 
 <p align="center">
   <img src="docs/_static/images/splash.png"/>
 </p>
 
-## Overview
+Cleaver creates conforming tetrahedral meshes for multimaterial or multiphase volumetric data using the Lattice Cleaving algorithm described [here](https://cleaver.readthedocs.io/en/latest/about.html#method).
 
-Cleaver creates conforming tetrahedral meshes for multimaterial or multiphase volumetric data in which both geometric accuracy and element quality are
-bounded.
-
-## Method
-
-The Cleaver Library is based on the `Lattice Cleaving` algorithm.
-
-The method is a stencil-based approach, and relies on an octree structure to provide a coarse level of grading in regions of homogeneity. The cleaving algorithm works by utilizing indicator functions, which indicate the strength or relative presence of a particular material. At each point, only the
-material with the largest indicator value is considered present.
-
-The method is theoretically guaranteed to produce valid meshes with bounded dihedral angles, while still conforming to multimaterial material sur-
-faces. Empirically these bounds have been shown to be well within useful ranges, thus creating efficient meshes for analysis, simulation, and visualization.
-
-Reference:
-
-> Bronson J., Levine, J., Whitaker R., "Lattice Cleaving: Conforming Tetrahedral Meshes of Multimaterial Domains with Bounded Quality". Proceedings of the 21st International Meshing Roundtable (San Jose, CA, Oct 7-10, 2012)
->
-> See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4190882/
+The software was initially developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
 
 ## Documentation
 
@@ -37,7 +20,18 @@ For general questions about the project, its applications, or about software usa
 
 Cleaver was developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
 
-Please take a look at the [contributors page](https://github.com/SCIInstitute/Cleaver/graphs/contributors) to learn more about the developers of Cleaver.
+Cleaver is an open-source project with a growing community of contributors. The following authors have made significant contributions to the software:
+
+* Jonathan Branson
+* Brig Bagley
+* Jess Tate
+* Ally Warner
+* Dan White
+* Ross Whitaker
+
+Many Cleaver contributors are listed in the [contributors page](https://github.com/SCIInstitute/Cleaver/graphs/contributors).
+
+We are grateful for their dedication and outstanding work on the Cleaver project.
 
 ## Acknowledgement
 
@@ -45,13 +39,13 @@ This project was supported by the National Institute of General Medical Sciences
 
 ## Citing Cleaver
 
-If you are using Cleaver in your scientific research, please help our scientific visibility by citing our work.
+When citing Cleaver in your scientific research, please mention the following work to support increased visibility and dissemination of our software:
 
 > Cleaver: A MultiMaterial Tetrahedral Meshing Library and Application. Scientific Computing and Imaging Institute (SCI), Download from: http://www.sci.utah.edu/cibc/software.html, 2015.
 
-BibTex:
+For your convenience, you may use the following BibTex entry:
 
-```
+```bibtex
 @Misc{SCI:Cleaver,
   author =    "CIBC",
   year =      "2015",
