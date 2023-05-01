@@ -37,10 +37,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #-----------------------------------------------------------------------------
 
-project(CLEAVER2)
-
 cmake_minimum_required(VERSION 3.10.2)
 
+# Setting C++ Standard
+set(_msg "Setting C++ standard")
+message(STATUS "${_msg}")
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11)
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+message(STATUS "${_msg} - C++${CMAKE_CXX_STANDARD}")
+
+project(CLEAVER2)
+
+# Update CMake module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 include(cleaverInitializeBuildType)
@@ -56,9 +67,7 @@ set(CLEAVER2_RUNTIME_DIR "bin" CACHE STRING
 set(CLEAVER2_BUNDLE_DIR "." CACHE STRING
   "Directory for installing runtime files; path is relative to CMAKE_INSTALL_PREFIX")
 
-if(NOT WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-else()
+if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 

@@ -77,14 +77,6 @@ elseif(WIN32)
   add_definitions(-DICON_RC_FILE="${CMAKE_CURRENT_SOURCE_DIR}/Resources/Icons/cleaverIcon.ico")
   set(srcs ${srcs} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/cleaver-gui.rc)
 endif()
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif()
-endif()
-
 
 add_executable(cleaver-gui MACOSX_BUNDLE WIN32
    ${srcs} ${hdrs}
