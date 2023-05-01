@@ -49,5 +49,13 @@ Cleaver was supported by grants from the National Institute of General Medicine 
 
 
 Bibliography
-================
+============
+
+Below is a list of publications that reference Cleaver.
+
+.. note::
+
+   Please note that this list only includes citations from publications published after 2017 and not involving researchers or developers from the SCI Institute.
+
 .. bibliography::
+   :all:
