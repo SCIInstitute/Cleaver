@@ -49,7 +49,8 @@ nmake all
 ```
 
 ### Compiling Cleaver
-Once CMake, Qt, ITK have been installed and/or built, run CMake from your build directory and give a path to the ShapeworksStudio directory containing the master CMakeLists.txt file.
+
+Once CMake, Qt, ITK have been installed and/or built, run CMake from your build directory and give a path to the Cleaver directory containing the top-level `CMakeLists.txt` file.
 
 #### Unix and OSX
 ```bash
