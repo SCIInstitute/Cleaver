@@ -27,7 +27,7 @@ For information on how to use cleaver, checkout the Cleaver :doc:`Manual <manual
    ./specs.md
 
 Code Documentations
---------------
+-------------------
 `Doxygen Code Reference <https://sciinstitute.github.io/cleaver.pages/doxygen/index.html>`_
 
 Authors

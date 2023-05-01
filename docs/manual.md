@@ -51,7 +51,7 @@ gui/cleaver-gui.app
 ```
 
 You should see a window similar to this:
-![Cleaver Window](../_static/images/application.png "Cleaver Window")
+![Cleaver Window](_static/images/application.png "Cleaver Window")
 Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File -> Import Volume`, or load your own indicator functions or segmentation file. 
        
    *Dialog Indicator Function Check:* Click the check in the dialog if you are importing individual indicator functions.
@@ -68,7 +68,7 @@ Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File ->
    + *Element Sizing Method:* select whether to adaptively/nonuniformly resize tetrahedra for more detail at volume interactions, or to keep tetrahedra sizes constant/uniform based on the sample scale.
    + *Compute Sizing Field:* once you have your desired parameters, click this to create the sizing field. This is assuming a volume has been loaded (`ctrl+v or File->Import  Volume`). New information will be added to the Data Manager at each step. If a sizing field is not created here, a default one will be created for you automatically before cleaving.
   
-  ![Cleaver mesh](_static/images/mesh.png "Cleaver Mesh"]
+  ![Cleaver mesh](_static/images/mesh.png "Cleaver Mesh")
 
 ### Cleaving Tool
    This tab runs the cleaving algorithm and displays steps that have completed.
