@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-20.04, macos-10.15, windows-2022]
+        include:
+          - os: ubuntu-20.04
+            c-compiler: "gcc"
+            cxx-compiler: "g++"
+          - os: macos-10.15
+            c-compiler: "clang"
+            cxx-compiler: "clang++"
+          - os: windows-2022
+            c-compiler: "cl.exe"
+            cxx-compiler: "cl.exe"
+
+    name: Tests on ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup visual studio environment
+      uses: ilammy/msvc-dev-cmd@v1
+      if: matrix.os == 'windows-2022'
+      with:
+        arch: x64
+
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v1.12
+      with:
+        cmake-version: 3.22.2
+
+    - name: Setup ninja
+      uses: urkle/action-get-ninja@v1
+      with:
+        version: 1.10.2
+
+    - name: Configure
+      run: cmake -GNinja -S src -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE:STRING=Release -DBUILD_CLI:BOOL=ON -DUSE_ITK:BOOL=OFF
+      env:
+        CC: ${{ matrix.c-compiler }}
+        CXX: ${{ matrix.cxx-compiler }}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config Release
+
+
