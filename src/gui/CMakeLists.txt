@@ -11,10 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 # Find QT5
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui OpenGL Widgets REQUIRED)
 
 # Ensure GUI and OpenGL Work
 add_definitions(-DTETLIBRARY)
