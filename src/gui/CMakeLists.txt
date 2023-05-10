@@ -21,8 +21,6 @@ add_definitions(-DTETLIBRARY)
 
 include_directories(./Application ./Application/DataWidgets)
 
-file(GLOB moc_srcs ./Application/*.cpp ./Application/Data/*.cpp ./Application/DataWidgets/*.cpp ./Application/ToolWidgets/*.cpp ./Application/ViewWidgets/*.cpp)
-
 # Add QT Files
 file(GLOB Forms_UIS ./Application/*.ui ./Application/DataWidgets/*.ui ./Application/ToolWidgets/*.ui ./Application/ViewWidgets/*.ui)
 file(GLOB RCC_FILES ./Resources/*.qrc)
@@ -35,8 +33,24 @@ include_directories(${CMAKE_SOURCE_DIR}/lib)
 include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
-file(GLOB srcs *.cpp ./Main/*.cpp )
-file(GLOB hdrs *.h   ./Main/*.h   )
+file(GLOB srcs
+  *.cpp
+  Main/*.cpp
+  Application/*.cpp
+  Application/Data/*.cpp
+  Application/DataWidgets/*.cpp
+  Application/ToolWidgets/*.cpp
+  Application/ViewWidgets/*.cpp
+  )
+file(GLOB hdrs
+  *.h
+  Main/*.h
+  Application/*.h
+  Application/Data/*.h
+  Application/DataWidgets/*.h
+  Application/ToolWidgets/*.h
+  Application/ViewWidgets/*.h
+  )
 
 # Generate QT Stuff
 QT5_WRAP_UI(UI_SRC ${Forms_UIS})
