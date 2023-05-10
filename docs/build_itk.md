@@ -4,31 +4,58 @@
 Consider building ITK only if not already available through the system package manager.
 :::
 
-Download sources:
+## Linux and macOS
+
+Download ITK sources:
 
 ```bash
-git clone -b v5.2.0 https://github.com/InsightSoftwareConsortium/ITK
+git clone -b v5.2.0 https://github.com/InsightSoftwareConsortium/ITK $HOME/ITK
 ```
 
 Configure with:
 
 ```bash
-BUILD_SHARED_LIBS=FALSE
-BUILD_EXAMPLES=FALSE
-BUILD_TESTING=FALSE
+cmake \
+  -DBUILD_SHARED_LIBS=FALSE \
+  -DBUILD_EXAMPLES=FALSE \
+  -DBUILD_TESTING=FALSE \
+  -S $HOME/ITK \
+  -B $HOME/ITK-build
 ```
 
 Then build ITK.
 
 ```bash
-make -j12 all
+cmake --build $HOME/ITK-build --config Release --parallel 8
 ```
 
-You may need to use the CMake GUI in Windows. It is best to configure with `NMake Makefiles`. Once you have configured and generated, you can build in a command prompt.
+## Windows
+
+Download ITK sources:
 
 ```bash
-cd C:\ITK_DIR
-mkdir build
-cd build
-nmake all
+git clone -b v5.2.0 https://github.com/InsightSoftwareConsortium/ITK %HOMEPATH%/ITK
 ```
+
+Open a Visual Studio 64 bit Native Tools Command Prompt.
+
+Configure with:
+
+```bash
+cmake -G "NMake Makefiles" ^
+  -DBUILD_SHARED_LIBS=FALSE ^
+  -DBUILD_EXAMPLES=FALSE ^
+  -DBUILD_TESTING=FALSE ^
+  -S %HOMEPATH%/ITK ^
+  -B %HOMEPATH%/ITK-build
+```
+
+Then build ITK.
+
+```bash
+cmake --build %HOMEPATH%/ITK-build --config Release --parallel 8
+```
+
+## Getting Help
+
+See https://itk.org/ITKSoftwareGuide/html/

@@ -85,7 +85,7 @@ mkdir Cleaver/build
 cd Cleaver/build
 
 cmake \
-  -DITK_DIR:PATH=/Path/To/Your/ITK/build \
+  -DITK_DIR:PATH=$HOME/ITK-build \
   -DQT_DIR:PATH=/Path/To/Your/Qt5/build \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   ../src
@@ -113,7 +113,7 @@ mkdir C:\Path\To\Cleaver\build
 cd C:\Path\To\Cleaver\build
 
 cmake -G "NMake Makefiles" ^
-  -DITK_DIR:PATH="C:/Path/To/Your/ITK/build" ^
+  -DITK_DIR:PATH="%HOMEPATH%/ITK-build" ^
   -DQT_DIR:PATH="C:/Path/To/Your/Qt5/build" ^
   -DCMAKE_BUILD_TYPE:STRING=Release ^
   ../src
