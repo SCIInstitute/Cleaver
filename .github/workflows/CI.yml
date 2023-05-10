@@ -18,12 +18,12 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        os: [ubuntu-20.04, macos-10.15, windows-2022]
+        os: [ubuntu-20.04, macos-11, windows-2022]
         include:
           - os: ubuntu-20.04
             c-compiler: "gcc"
             cxx-compiler: "g++"
-          - os: macos-10.15
+          - os: macos-11
             c-compiler: "clang"
             cxx-compiler: "clang++"
           - os: windows-2022
