@@ -45,13 +45,19 @@ jobs:
       with:
         cmake-version: 3.22.2
 
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: "5.15.2"
+        target: "desktop"
+
     - name: Setup ninja
       uses: urkle/action-get-ninja@v1
       with:
         version: 1.10.2
 
     - name: Configure
-      run: cmake -GNinja -S src -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE:STRING=Release -DBUILD_CLI:BOOL=ON -DUSE_ITK:BOOL=OFF
+      run: cmake -GNinja -S src -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE:STRING=Release -DBUILD_CLI:BOOL=ON -DBUILD_GUI:BOOL=ON -DUSE_ITK:BOOL=OFF
       env:
         CC: ${{ matrix.c-compiler }}
         CXX: ${{ matrix.cxx-compiler }}
