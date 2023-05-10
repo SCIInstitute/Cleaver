@@ -86,20 +86,12 @@ cd Cleaver/build
 
 cmake \
   -DITK_DIR:PATH=$HOME/ITK-build \
-  -DQT_DIR:PATH=/Path/To/Your/Qt5/build \
+  -DQt5_DIR:PATH=/Path/To/Qt5/lib/cmake/Qt5 \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   ../src
 
 make
 ```
-
-:::{warning}
-Depending on how you obtained Qt, you may need to specify other Qt directories:
-```bash
--DQt5Widgets_DIR:PATH="/Path/To/Qt/5.6/gcc/lib/cmake/Qt5Widgets"
--DQt5OpenGL_DIR:PATH="/Path/To/Qt/5.6/gcc/lib/cmake/Qt5OpenGL"
-```
-:::
 
 ### Windows
 
@@ -114,7 +106,7 @@ cd C:\Path\To\Cleaver\build
 
 cmake -G "NMake Makefiles" ^
   -DITK_DIR:PATH="%HOMEPATH%/ITK-build" ^
-  -DQT_DIR:PATH="C:/Path/To/Your/Qt5/build" ^
+  -DQt5_DIR:PATH="C:/Path/To/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5" ^
   -DCMAKE_BUILD_TYPE:STRING=Release ^
   ../src
 
@@ -124,10 +116,10 @@ nmake
 :::{warning}
 Be sure to copy the Qt5 DLL files to the Executable directory for the program to run.
 ```
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Widgets.dll
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Core.dll
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5OpenGL.dll
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Gui.dll
+C:/Path/To/Qt/5.15.2/msvc2019_64/bin/Qt5Core.dll
+C:/Path/To/Qt/5.15.2/msvc2019_64/bin/Qt5Gui.dll
+C:/Path/To/Qt/5.15.2/msvc2019_64/bin/Qt5OpenGL.dll
+C:/Path/To/Qt/5.15.2/msvc2019_64/bin/Qt5Widgets.dll
 ```
 :::
 
