@@ -67,4 +67,5 @@ Please note that this list only includes citations from publications published a
 
 ```{bibliography}
 :all:
+:list: enumerated
 ```
