@@ -1,52 +1,58 @@
-![Cleaver](docs/_static/images/splash.png "Cleaver")
+# Cleaver
 
-## Cleaver2
-https://github.com/SCIInstitute/Cleaver2
+Cleaver is an open-source multi-material tetrahedral meshing tool.
 
-##### [Contents](#contents)
+<p align="center">
+  <img src="docs/_static/images/splash.png"/>
+</p>
 
-- [Documentation](#documentation)
-- [Build](#build)
-- [Questions and Answers](#questions-and-answers)
-- [License and Credits](#license-and-credits)
+Cleaver creates conforming tetrahedral meshes for multimaterial or multiphase volumetric data using the Lattice Cleaving algorithm described [here](https://cleaver.readthedocs.io/en/latest/about.html#method).
 
+The software was initially developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
 
-### Documentation
-For documentation, please see: <https://cleaver2.readthedocs.io>
+## Documentation
 
-#### Build
-Please see <https://cleaver2.readthedocs.io/build.html>
+Refer to the [documentation](https://cleaver.readthedocs.io) for detailed installation and usage details.
 
-#### Build Status
-[![Build Status](https://travis-ci.org/SCIInstitute/Cleaver2.svg?branch=master)](https://travis-ci.org/SCIInstitute/Cleaver2)
+For general questions about the project, its applications, or about software usage, please create a discussion in [Cleaver/discussions](https://github.com/SCIInstitute/Cleaver/discussions) where the community can collectively address your questions.
 
-### Questions and Answers
-For help, email the testing mailing list at cleaver@sci.utah.edu.
+## Authors
 
-### License and Credits
-For more information, please see: http://software.sci.utah.edu
-```c++
-The MIT License
+Cleaver was developed by the NIH Center for Integrative Biomedical Computing at the University of Utah Scientific Computing and Imaging (SCI) Institute.
 
-Copyright (c) 2016 Scientific Computing and Imaging Institute,
-          University of Utah.
+Cleaver is an open-source project with a growing community of contributors. The following authors have made significant contributions to the software:
 
+* Jonathan Bronson
+* Brig Bagley
+* Jess Tate
+* Ally Warner
+* Dan White
+* Ross Whitaker
 
-          Permission is hereby granted, free of charge, to any person obtaining a
-          copy of this software and associated documentation files (the "Software"),
-          to deal in the Software without restriction, including without limitation
-          the rights to use, copy, modify, merge, publish, distribute, sublicense,
-          and/or sell copies of the Software, and to permit persons to whom the
-          Software is furnished to do so, subject to the following conditions:
+Many Cleaver contributors are listed in the [contributors page](https://github.com/SCIInstitute/Cleaver/graphs/contributors).
 
-          The above copyright notice and this permission notice shall be included
-          in all copies or substantial portions of the Software.
+We are grateful for their dedication and outstanding work on the Cleaver project.
 
-          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-          OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-          FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-          THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-          LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-          FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-          DEALINGS IN THE SOFTWARE.
+## Acknowledgement
+
+This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant numbers P41 GM103545 and R24 GM136986.
+
+## Citing Cleaver
+
+When citing Cleaver in your scientific research, please mention the following work to support increased visibility and dissemination of our software:
+
+> Cleaver: A MultiMaterial Tetrahedral Meshing Library and Application. Scientific Computing and Imaging Institute (SCI), Download from: http://www.sci.utah.edu/software.html, 2015.
+
+For your convenience, you may use the following BibTex entry:
+
+```bibtex
+@Misc{SCI:Cleaver,
+  author =    "CIBC",
+  year =      "2015",
+  note =      "Cleaver: A MultiMaterial Tetrahedral Meshing
+              Library and Application. Scientific Computing and
+              Imaging Institute (SCI), Download from:
+              http://www.sci.utah.edu/software.html",
+  keywords =  "Cleaver, CIBC",
+}
 ```

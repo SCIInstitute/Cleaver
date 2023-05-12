@@ -1,116 +1,159 @@
-# Installing Cleaver from source
+# Building
+
+```{toctree}
+:hidden:
+
+build_itk.md
+```
+
+## Overview
+
+Building Cleaver is the process of obtaining a copy of the source code of the project and use tools, such as compilers, project generators and build systems, to create binary libraries and executables.
+
+Cleaver can be compiled from source on Linux platforms (OpenSuSE, Ubuntu etc.), macOS, and Windows.
+
+CMake is a cross-platform build system generator that is used for generating Makefiles, Ninja, Visual Studio or Xcode project files.
+
+The build-system generator provides options to selectively build Cleaver [Command Line Tool](manual.md#command-line-tool) and [Graphical Interface](manual.md#graphical-interface).
+
+:::{tip}
+Users of the Cleaver command line tool or graphical interface may not need to build the project as they can instead download and install pre-built packages as described in the <project:getting_started.md> section.
+:::
+
+## Build Environment
+
+**Windows**: 64-bit version of Visual Studio 2015 or newer.
+
+**macOS**: macOS 10.12+ using either `Ninja`, `Xcode` or `Unix Makefiles` CMake generator.
+
+**Linux**: GCC compiler supporting C++11 using either `Ninja` or `Unix Makefiles` CMake generator.
+
+## Build Options
+
+The table below describes some of build options available when configuring Cleaver using CMake.
+
+| Option      | Description | Default |
+|-------------|-------------|---------|
+| `BUILD_CLI` | Build Cleaver Command Line Tool (CLI) application   | `OFF` |
+| `BUILD_GUI` | Build Cleaver Graphical Interface (GUI) application | `OFF` |
+
+:::{tip}
+By default, when both `BUILD_CLI` and `BUILD_GUI` are `OFF`, only the <project:manual.md#cleaver-library> is built.
+:::
 
 ## Dependencies
 
-### Qt
+### Tools
 
-[Qt binaries](qt.io) and packages are available on the Qt website or can be built 
-from source code. Gcc/Clang/MSVC with C++11 support is required.
++ C++11 64-bit compatible compiler
+* [Git](https://git-scm.com/) 1.8 or higher
+* [CMake](https://www.cmake.org/) 3.10.2+
 
-### CMake
+### Libraries
 
-[CMake](https://cmake.org/) versions 2.8 - 3.4 are supported.
+|       | Command Line Tool                 | Graphical Interface               |
+|-------|-----------------------------------|-----------------------------------|
+| ITK   | {octicon}`check;1em;sd-text-info` | {octicon}`check;1em;sd-text-info` |
+| Qt    |                                   | {octicon}`check;1em;sd-text-info` |
 
-### ITK
 
-[ITK](http://www.itk.org/) Insight Toolkit (ITK 4.7+ recommended) 
+**Qt**:
+
+Qt 5 libraries are required to build the Cleaver Graphical Interface. The libraries may be installed by downloading the [Qt universal installer](https://www.qt.io/download-open-source) and selecting the Qt 5.15.2 components.
+
+Alternatively, the Qt libraries may be installed through the system package manager or as a least resort by building Qt from source.
+
+**ITK**:
+
+[ITK](http://www.itk.org/) Insight Toolkit 5.0+ is required. See  <project:build_itk.md>.
 
 
-## Compiling From Source
+## Building
 
-Once you have obtained a compatible compiler and installed Qt on your system, you need to
-download and install CMake (<http://www.cmake.org>) to actually build the software.
-CMake is a platform independent configuring system that is used for generating Makefiles,Visual Studio project files, or Xcode project files.
+Once CMake, Qt, ITK have been installed and/or built:
+1. Download the Cleaver sources.
+2. Run CMake to configure the project by specifying a build directory, the path to the Cleaver directory containing the `src/CMakeLists.txt` file.
+3. Build the project
 
-### Compiling ITK
-
-Configure with:
-```c++
-CMAKE_CXX_FLAGS+="-std=c++11"
-BUILD_SHARED_LIBS=FALSE
-BUILD_EXAMPLES=FALSE
-BUILD_TESTING=FALSE
-ITKV3_COMPATIBILTY=TRUE 
-```
-
-Then build ITK.
-
-```bash 
-make -j12 all 
-```
-
-You may need to use the CMake GUI in Windows. It is best to configure with `NMake Makefiles`. Once you have configured and generated, you can build in a command prompt.
+### Linux and macOS
 
 ```bash
-cd C:\ITK_DIR
-mkdir build
-cd build
-nmake all
+git clone https://github.com/SCIInstitute/Cleaver.git $HOME/Cleaver
+
+cmake \
+  -DITK_DIR:PATH=$HOME/ITK-build \
+  -DQt5_DIR:PATH=/Path/To/Qt5/lib/cmake/Qt5 \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
+  -DBUILD_CLI:BOOL=ON \
+  -DBUILD_GUI:BOOL=ON \
+  -S $HOME/Cleaver/src \
+  -B $HOME/Cleaver-build
+
+cmake --build $HOME/Cleaver-build --config Release --parallel 8
 ```
 
-### Compiling Cleaver
-Once CMake, Qt, ITK have been installed and/or built, run CMake from your build directory and give a path to the ShapeworksStudio directory containing the master CMakeLists.txt file.
+### Windows
 
-#### Unix and OSX
-```bash
-mkdir Cleaver2/build 
-cd Cleaver2/build
-cmake -D ITK_DIR=Path/To/Your/ITK/build -D QT_DIR=Path/To/Your/Qt5/build -D CMAKE_BUILD_TYPE=Release ../src
-make
-```
-Depending on how you obtained Qt, you may need to specify other Qt directories:
-```bash
--D Qt5Widgets_DIR="Path/To/Qt/5.6/gcc/lib/cmake/Qt5Widgets"
--D Qt5OpenGL_DIR="Path/To/Qt/5.6/gcc/lib/cmake/Qt5OpenGL"
-```
-
-#### Windows
 Open a Visual Studio 64 bit Native Tools Command Prompt.
+
 Follow these commands:
+
 ```
-mkdir C:\Path\To\Cleaver2\build
-cd C:\Path\To\Cleaver2\build
-cmake -G "NMake Makefiles" -DITK_DIR="C:/Path/To/Your/ITK/build" -DQT_DIR="C:/Path/To/Your/Qt5/build" -DCMAKE_BUILD_TYPE=Release ../src
-nmake
-```
-**NOTE** Be sure to copy the Qt5 DLL files to the Executable directory for the program to run.
-```
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Widgets.dll
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Core.dll
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5OpenGL.dll
-C:\Qt5_DIR\msvc2015\5.6\bin\Qt5Gui.dll
+git clone https://github.com/SCIInstitute/Cleaver.git %HOMEPATH%/Cleaver
+
+set Qt5_DIR=C:/Path/To/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5
+
+cmake -G "NMake Makefiles" ^
+  -DQt5_DIR:PATH="%Qt5_DIR%" ^
+  -DITK_DIR:PATH="%HOMEPATH%/ITK-build" ^
+  -DCMAKE_BUILD_TYPE:STRING=Release ^
+  -DBUILD_CLI:BOOL=ON ^
+  -DBUILD_GUI:BOOL=ON ^
+  -S %HOMEPATH%/Cleaver/src ^
+  -B %HOMEPATH%/Cleaver-build
+
+cmake --build %HOMEPATH%/Cleaver-build --config Release --parallel 8
 ```
 
-#### All Platforms
+:::{warning}
+Be sure to copy the Qt5 DLL files to the Executable directory for the program to run.
+
+```
+copy %Qt5_DIR%\..\..\..\bin\Qt5Core.dll %HOMEPATH%\Cleaver-build\bin\
+copy %Qt5_DIR%\..\..\..\bin\Qt5Gui.dll %HOMEPATH%\Cleaver-build\bin\
+copy %Qt5_DIR%\..\..\..\bin\Qt5OpenGL.dll %HOMEPATH%\Cleaver-build\bin\
+copy %Qt5_DIR%\..\..\..\bin\Qt5Widgets.dll %HOMEPATH%\Cleaver-build\bin\
+```
+:::
+
+### All Platforms
+
 Your paths may differ slightly based on your Qt5 and ITK versions and where they are installed/built.
 
 The console version `ccmake`, or GUI version can also be used. You may be prompted to specify your location of the Qt installation. If you installed Qt in the default location, it should find Qt automatically. After configuration is done, generate the make files or project files for your favorite development environment and build.
 
-The Cleaver application will be built in build/bin.
+The Cleaver applications will be built in `Cleaver-build/bin`.
 
 ## Testing
 
 The repo comes with a set of regression tests to see if recent
-changes break expected results. To build the tests, you will
-need to set `BUILD_TESTING` to `ON` in either
-`ccmake` or when calling CMake:
+changes break expected results.
 
-```c++
-cmake -DBUILD_TESTING=ON ../src
+### Linux and macOS
+
+To build the tests, you may set `BUILD_TESTING` to `ON` in using either `ccmake` or when calling CMake:
+
+```bash
+cmake -DBUILD_TESTING=ON $HOME/Cleaver/src
 ```
 
 ## Windows
+
 The gtest library included in the repo needs to be
 built with forced shared libraries on Windows, so use the following:
 
-```c++
-cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON ../src
+```bash
+cmake -DBUILD_TESTING=ON -Dgtest_forced_shared_crt=ON %HOMEPATH%/Cleaver/src
 ```
-
-
 Be sure to include all other necessary CMake definitions as annotated above.
 
-# Cleaver Support
-
-For questions and issues regarding building the software from source,
-    please email our support list <cleaver@sci.utah.edu>

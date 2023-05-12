@@ -128,7 +128,7 @@ void MainWindow::createActions()
   this->aboutAct->setStatusTip(tr("Show the About box"));
   connect(this->aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
-  this->docAction = new QAction(tr("&Cleaver2 Documentation..."), this);
+  this->docAction = new QAction(tr("&Cleaver Documentation..."), this);
   connect(this->docAction, SIGNAL(triggered()), this, SLOT(docInfo()));
 
   this->issueAction = new QAction(tr("&Report issue..."), this);
@@ -735,19 +735,19 @@ void MainWindow::about() {
 
 void MainWindow::docInfo()
 {
-  if (QMessageBox::Ok == QMessageBox::information(this, "Cleaver2 Documentation",
-    "Click OK to be taken to Cleaver2's documentation page.", QMessageBox::Ok | QMessageBox::Cancel))
+  if (QMessageBox::Ok == QMessageBox::information(this, "Cleaver Documentation",
+    "Click OK to be taken to Cleaver's documentation page.", QMessageBox::Ok | QMessageBox::Cancel))
   {
-    QDesktopServices::openUrl(QUrl("https://sciinstitute.github.io/cleaver.pages/", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://cleaver.readthedocs.io", QUrl::TolerantMode));
   }
 }
 
 void MainWindow::reportIssue()
 {
   if (QMessageBox::Ok == QMessageBox::information(this, "Report Issue",
-    "Click OK to be taken to Cleaver2's Github issue reporting page.\n\nFor bug reports, please follow the template.", QMessageBox::Ok | QMessageBox::Cancel))
+    "Click OK to be taken to Cleaver's Github issue reporting page.\n\nFor bug reports, please follow the template.", QMessageBox::Ok | QMessageBox::Cancel))
   {
-    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/Cleaver2/issues/new", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/Cleaver/issues/new", QUrl::TolerantMode));
   }
 }
 
