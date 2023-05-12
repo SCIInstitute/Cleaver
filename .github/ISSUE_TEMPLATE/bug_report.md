@@ -18,9 +18,9 @@ Please follow these instructions for your issue to be worked on:
 
 ### Prerequisites
 
-* [ ] Are you running the [latest version of Cleaver2](https://github.com/SCIInstitute/Cleaver2/releases)?
-* [ ] Are you reporting to the [correct repository](https://github.com/SCIInstitute/Cleaver2)?
-* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/Cleaver2/issues) to see if your bug or enhancement is already reported?
+* [ ] Are you running the [latest version of Cleaver](https://github.com/SCIInstitute/Cleaver/releases)?
+* [ ] Are you reporting to the [correct repository](https://github.com/SCIInstitute/Cleaver)?
+* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/Cleaver/issues) to see if your bug or enhancement is already reported?
 
 For more information on how to write a good [bug report](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-bug-report) or [enhancement request](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-enhancement-suggestion), see the `CONTRIBUTING` guide. These links point to another project, but most of the advice holds in general.
 

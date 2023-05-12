@@ -1,4 +1,4 @@
-# Using Cleaver
+# Manual
 
 ## Command Line Tool
 
@@ -51,7 +51,7 @@ gui/cleaver-gui.app
 ```
 
 You should see a window similar to this:
-![Cleaver Window](../_static/images/application.png "Cleaver Window")
+![Cleaver Window](_static/images/application.png "Cleaver Window")
 Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File -> Import Volume`, or load your own indicator functions or segmentation file. 
        
    *Dialog Indicator Function Check:* Click the check in the dialog if you are importing individual indicator functions.
@@ -68,7 +68,7 @@ Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File ->
    + *Element Sizing Method:* select whether to adaptively/nonuniformly resize tetrahedra for more detail at volume interactions, or to keep tetrahedra sizes constant/uniform based on the sample scale.
    + *Compute Sizing Field:* once you have your desired parameters, click this to create the sizing field. This is assuming a volume has been loaded (`ctrl+v or File->Import  Volume`). New information will be added to the Data Manager at each step. If a sizing field is not created here, a default one will be created for you automatically before cleaving.
   
-  ![Cleaver mesh](_static/images/mesh.png "Cleaver Mesh"]
+  ![Cleaver mesh](_static/images/mesh.png "Cleaver Mesh")
 
 ### Cleaving Tool
    This tab runs the cleaving algorithm and displays steps that have completed.
@@ -113,16 +113,17 @@ Load the spheres in  `src/test/test_data/input` either with `ctrl+v` or `File ->
 Toggle view of the Sizing Field, Cleaving, Data, and Mesh View tools.
 
 ### Help
-Show information and documentation about Cleaver2, as well as issue reporting.
+Show information and documentation about Cleaver, as well as issue reporting.
 
 ## Cleaver Library
+
 To include the cleaver library, you should link to the library build, `libcleaver.a` or
 `cleaver.lib` and include the following headers in your project: 
 
 ```bash
 ##CMake calls
-include_directories(Cleaver2/src/lib/cleaver)
-target_link_libraries(YOUR_TARGET ${your_libs} Cleaver2/build/lib/libcleaver.a)
+include_directories(Cleaver/src/lib/cleaver)
+target_link_libraries(YOUR_TARGET ${your_libs} Cleaver/build/lib/libcleaver.a)
 ```
 
 There are other headers for different options,
@@ -163,15 +164,13 @@ The basic set of calls are in the following code snippet:
 
 ```
 
-Look at the `Cleaver2/src/cli/mesher/main.cpp` file for more details on how to apply and use the different options of the cleaver library.
+Look at the `Cleaver/src/cli/mesher/main.cpp` file for more details on how to apply and use the different options of the cleaver library.
 
 ## Known Issues
 
 * On larger data sets with a potentially high number of quadruple points
-       (> 3 material fields), some functions are failing to ensure valid tets
-       and meshes, causing bad tets in the final output. This code is being
-       debugged now for a future release.<br/>
-* The following graphics cards are known to not support Cleaver:
-  - AMD Radeon HD 6310 (Integrated Card)
-  - AMD Radeon 7400 M
-  - INTEL HD 3000 (Integrated Card)
+  (> 3 material fields), some functions are failing to ensure valid tets
+  and meshes, causing bad tets in the final output. This code is being
+  debugged now for a future release.
+
+* The graphics cards documented in <project:getting_started.md#system-requirements> are known to not support Cleaver.
