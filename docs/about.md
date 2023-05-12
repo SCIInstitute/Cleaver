@@ -26,7 +26,7 @@ Cleaver is an open-source project with a growing community of contributors. The 
 
 Many Cleaver contributors are listed in the [Contributors Graph](https://github.com/SCIInstitute/Cleaver/graphs/contributors). However, the following authors have made significant contributions to the conception, design, or implementation of the software and are considered "The Cleaver Developers":
 
-* Jonathan Branson
+* Jonathan Bronson
 * Brig Bagley
 * Jess Tate
 * Ally Warner
@@ -41,7 +41,7 @@ This project was supported by the National Institute of General Medical Sciences
 
 When citing Cleaver in your scientific research, please mention the following work to support increased visibility and dissemination of our software:
 
-> Cleaver: A MultiMaterial Tetrahedral Meshing Library and Application. Scientific Computing and Imaging Institute (SCI), Download from: http://www.sci.utah.edu/cibc/software.html, 2015.
+> Cleaver: A MultiMaterial Tetrahedral Meshing Library and Application. Scientific Computing and Imaging Institute (SCI), Download from: http://www.sci.utah.edu/software.html, 2015.
 
 For your convenience, you may use the following BibTex entry:
 
@@ -52,7 +52,7 @@ For your convenience, you may use the following BibTex entry:
   note =      "Cleaver: A MultiMaterial Tetrahedral Meshing
               Library and Application. Scientific Computing and
               Imaging Institute (SCI), Download from:
-              http://www.sci.utah.edu/cibc/software.html",
+              http://www.sci.utah.edu/software.html",
   keywords =  "Cleaver, CIBC",
 }
 ```
