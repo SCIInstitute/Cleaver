@@ -26,7 +26,7 @@ Cleaver is an open-source project with a growing community of contributors. The 
 
 Many Cleaver contributors are listed in the [Contributors Graph](https://github.com/SCIInstitute/Cleaver/graphs/contributors). However, the following authors have made significant contributions to the conception, design, or implementation of the software and are considered "The Cleaver Developers":
 
-* Jonathan Branson
+* Jonathan Bronson
 * Brig Bagley
 * Jess Tate
 * Ally Warner

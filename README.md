@@ -22,7 +22,7 @@ Cleaver was developed by the NIH Center for Integrative Biomedical Computing at 
 
 Cleaver is an open-source project with a growing community of contributors. The following authors have made significant contributions to the software:
 
-* Jonathan Branson
+* Jonathan Bronson
 * Brig Bagley
 * Jess Tate
 * Ally Warner
