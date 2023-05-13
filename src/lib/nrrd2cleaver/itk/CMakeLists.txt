@@ -37,8 +37,8 @@ if (ITK_FOUND)
 endif()
 message(STATUS "** ITK_DIR: ${ITK_DIR}")
 
-include_directories(${CMAKE_SOURCE_DIR}/lib)
-include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib/nrrd2cleaver)
 
 add_library(nrrd2cleaver NRRDTools.cpp)
 
