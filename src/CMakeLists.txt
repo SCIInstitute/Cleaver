@@ -52,7 +52,7 @@ message(STATUS "${_msg} - C++${CMAKE_CXX_STANDARD}")
 project(CLEAVER2)
 
 # Update CMake module path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 include(cleaverInitializeBuildType)
 
