@@ -23,11 +23,11 @@ file(GLOB Forms_UIS ./Application/*.ui ./Application/DataWidgets/*.ui ./Applicat
 file(GLOB RCC_FILES ./Resources/*.qrc)
 file(GLOB APP_ICNS Resources/Icons/*.ico)
 file(GLOB WINDOW_ICNS Resources/Icons/cleaverIcon.png)
-add_definitions(-DWINDOW_ICON="${CMAKE_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.png")
+add_definitions(-DWINDOW_ICON="${CLEAVER2_SOURCE_DIR}/gui/Resources/Icons/cleaverIcon.png")
 
 # Add library includes
-include_directories(${CMAKE_SOURCE_DIR}/lib)
-include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib/nrrd2cleaver)
 
 # Add Source Files
 file(GLOB srcs

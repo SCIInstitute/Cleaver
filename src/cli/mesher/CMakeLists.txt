@@ -3,8 +3,8 @@ project(cleaver-cli CXX)
 cmake_minimum_required(VERSION 3.10.2)
 
 # Add library includes
-include_directories(${CMAKE_SOURCE_DIR}/lib)
-include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib/nrrd2cleaver)
 
 set(srcs
   main.cpp

@@ -32,9 +32,9 @@
 cmake_minimum_required(VERSION 3.10.2)
 project(TEEM_NRRD2Cleaver)
 
-include_directories(${CMAKE_SOURCE_DIR}/lib)
-include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
-include_directories(${CMAKE_BINARY_DIR}/include)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib/nrrd2cleaver)
+include_directories(${CLEAVER2_BINARY_DIR}/include)
 
 # Add Source Files
 file(GLOB srcs *.cpp )

@@ -3,7 +3,7 @@ project(mesh-info CXX)
 cmake_minimum_required(VERSION 3.10.2)
 
 # Add library includes
-include_directories(${CMAKE_SOURCE_DIR}/lib)
+include_directories(${CLEAVER2_SOURCE_DIR}/lib)
 
 set(srcs
   main.cpp
