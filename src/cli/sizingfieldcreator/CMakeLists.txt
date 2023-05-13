@@ -2,16 +2,14 @@ project(sfcreator CXX)
 
 cmake_minimum_required(VERSION 3.10.2)
 
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
-
 # Add library includes
 include_directories(${CMAKE_SOURCE_DIR}/lib)
 include_directories(${CMAKE_SOURCE_DIR}/lib/nrrd2cleaver)
 
-# Add Source Files
-file(GLOB srcs *.cpp )
-file(GLOB hdrs *.h   )
+set(srcs
+  main.cpp
+  )
 
-add_executable(sfcreator ${srcs} ${hdrs})
+add_executable(sfcreator ${srcs})
 
 target_link_libraries(sfcreator cleaver nrrd2cleaver)
